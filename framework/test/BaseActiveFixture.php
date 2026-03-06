@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -40,7 +42,6 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
      * @var \yii\db\ActiveRecord[] the loaded AR models
      */
     private $_models = [];
-
 
     /**
      * Returns the AR model by the specified model name.

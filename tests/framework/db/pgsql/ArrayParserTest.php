@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\framework\db\pgsql;
 
 use yii\db\pgsql\ArrayParser;
@@ -32,7 +34,7 @@ class ArrayParserTest extends TestCase
             ['{"string1","str\\\\in\\"g2","str,ing3"}', ['string1','str\\in"g2','str,ing3']],
             ['{{1,2,3},{4,5,6},{7,8,9}}', [['1','2','3'], ['4','5','6'], ['7','8','9']]],
             ['{utf8€,👍}', ['utf8€', '👍']],
-            ['{"","","{}",{}}', ['', '', '{}', []]]
+            ['{"","","{}",{}}', ['', '', '{}', []]],
         ];
     }
 

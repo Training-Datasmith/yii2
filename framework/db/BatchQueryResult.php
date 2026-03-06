@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -86,7 +88,6 @@ class BatchQueryResult extends Component implements \Iterator
      */
     private $_key;
 
-
     /**
      * Destructor.
      */
@@ -100,7 +101,7 @@ class BatchQueryResult extends Component implements \Iterator
      * Resets the batch query.
      * This method will clean up the existing batch query so that a new batch query can be performed.
      */
-    public function reset()
+    public function reset(): void
     {
         if ($this->_dataReader !== null) {
             $this->_dataReader->close();
@@ -117,7 +118,7 @@ class BatchQueryResult extends Component implements \Iterator
      * This method is required by the interface [[\Iterator]].
      */
     #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->reset();
         $this->next();
@@ -128,7 +129,7 @@ class BatchQueryResult extends Component implements \Iterator
      * This method is required by the interface [[\Iterator]].
      */
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         if ($this->_batch === null || !$this->each || $this->each && next($this->_batch) === false) {
             $this->_batch = $this->fetchData();
@@ -168,10 +169,9 @@ class BatchQueryResult extends Component implements \Iterator
 
     /**
      * Reads and collects rows for batch
-     * @return array
      * @since 2.0.23
      */
-    protected function getRows()
+    protected function getRows(): array
     {
         $rows = [];
         $count = 0;
@@ -187,7 +187,7 @@ class BatchQueryResult extends Component implements \Iterator
                 }
             }
         } catch (\PDOException $e) {
-            $errorCode = isset($e->errorInfo[1]) ? $e->errorInfo[1] : null;
+            $errorCode = $e->errorInfo[1] ?? null;
             if ($this->getDbDriverName() !== 'sqlsrv' || $errorCode !== self::MSSQL_NO_MORE_ROWS_ERROR_CODE) {
                 throw $e;
             }
@@ -258,6 +258,6 @@ class BatchQueryResult extends Component implements \Iterator
      */
     public function __wakeup()
     {
-        throw new \BadMethodCallException('Cannot unserialize ' . __CLASS__);
+        throw new \BadMethodCallException('Cannot unserialize ' . self::class);
     }
 }

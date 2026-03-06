@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,13 +10,13 @@
 
 namespace yiiunit\framework\db\mysql\connection;
 
-use yiiunit\framework\db\mysql\ConnectionTest;
-use Throwable;
-use RuntimeException;
 use ErrorException;
+use RuntimeException;
+use Throwable;
 use yii\db\Connection;
 use yii\db\Exception;
 use yii\db\Transaction;
+use yiiunit\framework\db\mysql\ConnectionTest;
 
 /**
  * @group db

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,10 +10,10 @@
 
 namespace yiiunit\framework\widgets;
 
-use yiiunit\TestCase;
 use Yii;
 use yii\base\View;
 use yii\caching\ArrayCache;
+use yiiunit\TestCase;
 
 /**
  * @group widgets

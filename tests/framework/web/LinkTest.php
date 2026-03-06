@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -26,7 +28,7 @@ class LinkTest extends TestCase
 
         $expected = [
             'self' => [
-                'href' => 'https://example.com/users/1'
+                'href' => 'https://example.com/users/1',
             ],
             'manager' => [
                 'href' => 'https://example.com/users/4',
@@ -60,8 +62,8 @@ class LinkTest extends TestCase
                         'href' => 'https://example.com/users/5',
                         'name' => 'Lola Bunny',
                     ]),
-                ]
-            ]
+                ],
+            ],
         ];
 
         $expected = [
@@ -74,14 +76,14 @@ class LinkTest extends TestCase
                     [
                         'href' => 'https://example.com/users/4',
                         'name' => 'Bugs Bunny',
-                    ]
+                    ],
                 ],
                 [
                     [
                         'href' => 'https://example.com/users/5',
                         'name' => 'Lola Bunny',
-                    ]
-                ]
+                    ],
+                ],
             ],
         ];
 

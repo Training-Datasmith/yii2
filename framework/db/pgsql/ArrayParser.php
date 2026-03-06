@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -21,8 +23,7 @@ class ArrayParser
     /**
      * @var string Character used in array
      */
-    private $delimiter = ',';
-
+    private string $delimiter = ',';
 
     /**
      * Convert array from PostgreSQL to PHP
@@ -48,9 +49,8 @@ class ArrayParser
      *
      * @param string $value
      * @param int $i parse starting position
-     * @return array
      */
-    private function parseArray($value, &$i = 0)
+    private function parseArray($value, &$i = 0): array
     {
         $result = [];
         $len = strlen($value);
@@ -82,9 +82,8 @@ class ArrayParser
      *
      * @param string $value
      * @param int $i parse starting position
-     * @return string|null
      */
-    private function parseString($value, &$i)
+    private function parseString($value, &$i): ?string
     {
         $isQuoted = $value[$i] === '"';
         $stringEndChars = $isQuoted ? ['"'] : [$this->delimiter, '}'];
@@ -103,7 +102,7 @@ class ArrayParser
         $i -= $isQuoted ? 0 : 1;
 
         if (!$isQuoted && $result === 'NULL') {
-            $result = null;
+            return null;
         }
 
         return $result;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -49,10 +51,7 @@ class m200409_110543_rbac_update_mssql_trigger extends Migration
             ->scalar($this->db);
     }
 
-    /**
-     * @return bool
-     */
-    protected function isMSSQL()
+    protected function isMSSQL(): bool
     {
         return $this->db->driverName === 'mssql' || $this->db->driverName === 'sqlsrv' || $this->db->driverName === 'dblib';
     }
@@ -60,7 +59,7 @@ class m200409_110543_rbac_update_mssql_trigger extends Migration
     /**
      * {@inheritdoc}
      */
-    public function up()
+    public function up(): ?bool
     {
         if ($this->isMSSQL()) {
             $authManager = $this->getAuthManager();
@@ -113,7 +112,7 @@ class m200409_110543_rbac_update_mssql_trigger extends Migration
     /**
      * {@inheritdoc}
      */
-    public function down()
+    public function down(): ?bool
     {
         if ($this->isMSSQL()) {
             $authManager = $this->getAuthManager();

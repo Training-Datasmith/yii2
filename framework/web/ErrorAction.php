@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -85,11 +87,10 @@ class ErrorAction extends Action
      */
     protected $exception;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         $this->exception = $this->findException();
 
@@ -125,10 +126,9 @@ class ErrorAction extends Action
     /**
      * Builds string that represents the exception.
      * Normally used to generate a response to AJAX request.
-     * @return string
      * @since 2.0.11
      */
-    protected function renderAjaxResponse()
+    protected function renderAjaxResponse(): string
     {
         return $this->getExceptionName() . ': ' . $this->getExceptionMessage();
     }
@@ -145,10 +145,9 @@ class ErrorAction extends Action
 
     /**
      * Builds array of parameters that will be passed to the view.
-     * @return array
      * @since 2.0.11
      */
-    protected function getViewRenderParams()
+    protected function getViewRenderParams(): array
     {
         return [
             'name' => $this->getExceptionName(),
@@ -167,7 +166,7 @@ class ErrorAction extends Action
     protected function findException()
     {
         if (($exception = Yii::$app->getErrorHandler()->exception) === null) {
-            $exception = new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
+            return new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
         }
 
         return $exception;

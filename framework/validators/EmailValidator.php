@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -71,11 +73,10 @@ class EmailValidator extends Validator
      */
     public $enableLocalIDN = true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->enableIDN && !function_exists('idn_to_ascii')) {
@@ -89,7 +90,7 @@ class EmailValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         if (!is_string($value)) {
             $valid = false;
@@ -132,12 +133,15 @@ class EmailValidator extends Validator
      * @return bool if DNS records for domain are valid
      * @see https://github.com/yiisoft/yii2/issues/17083
      */
-    protected function isDNSValid($domain)
+    protected function isDNSValid($domain): bool
     {
-        return $this->hasDNSRecord($domain, true) || $this->hasDNSRecord($domain, false);
+        if ($this->hasDNSRecord($domain, true)) {
+            return true;
+        }
+        return (bool) $this->hasDNSRecord($domain, false);
     }
 
-    private function hasDNSRecord($domain, $isMX)
+    private function hasDNSRecord(string $domain, bool $isMX)
     {
         $normalizedDomain = $domain . '.';
         if (!checkdnsrr($normalizedDomain, ($isMX ? 'MX' : 'A'))) {
@@ -162,7 +166,7 @@ class EmailValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         if ($this->enableIDN) {
@@ -176,7 +180,7 @@ class EmailValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $options = [
             'pattern' => new JsExpression($this->pattern),
@@ -195,17 +199,17 @@ class EmailValidator extends Validator
     }
 
     /**
-     * @param string $value
      * @return string|bool returns string if it is valid and/or can be converted, bool false if it can't be converted and/or is invalid
      * @see https://github.com/yiisoft/yii2/issues/18585
      */
-    private function idnToAsciiWithFallback($value)
+    private function idnToAsciiWithFallback(string $value)
     {
         $ascii = $this->idnToAscii($value);
-        if ($ascii === false) {
-            if (preg_match($this->patternASCII, $value) || ($this->allowName && preg_match($this->fullPatternASCII, $value))) {
-                return $value;
-            }
+        if ($ascii !== false) {
+            return $ascii;
+        }
+        if (preg_match($this->patternASCII, $value) || ($this->allowName && preg_match($this->fullPatternASCII, $value))) {
+            return $value;
         }
 
         return $ascii;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -11,8 +13,8 @@ namespace yii\db;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidArgumentException;
-use yii\helpers\ArrayHelper;
 use yii\base\InvalidConfigException;
+use yii\helpers\ArrayHelper;
 
 /**
  * Query represents a SELECT SQL statement in a way that is independent of DBMS.
@@ -142,7 +144,6 @@ class Query extends Component implements QueryInterface, ExpressionInterface
      * @since 2.0.14
      */
     public $queryCacheDependency;
-
 
     /**
      * Creates a DB command that can be used to execute this query.
@@ -584,7 +585,6 @@ PATTERN;
                     }
                 }
             }
-
 
             if ($tableName instanceof Expression) {
                 if (!is_string($alias)) {

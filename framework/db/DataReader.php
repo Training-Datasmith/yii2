@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -57,10 +59,9 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * @var \PDOStatement the PDOStatement associated with the command
      */
     private $_statement;
-    private $_closed = false;
+    private bool $_closed = false;
     private $_row;
-    private $_index = -1;
-
+    private int $_index = -1;
 
     /**
      * Constructor.
@@ -85,7 +86,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * @param int|null $dataType Data type of the parameter
      * @see https://www.php.net/manual/en/function.PDOStatement-bindColumn.php
      */
-    public function bindColumn($column, &$value, $dataType = null)
+    public function bindColumn($column, &$value, $dataType = null): void
     {
         if ($dataType === null) {
             $this->_statement->bindColumn($column, $value);
@@ -100,7 +101,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * @param int $mode fetch mode
      * @see https://www.php.net/manual/en/function.PDOStatement-setFetchMode.php
      */
-    public function setFetchMode($mode)
+    public function setFetchMode($mode): void
     {
         $params = func_get_args();
         call_user_func_array([$this->_statement, 'setFetchMode'], $params);
@@ -141,7 +142,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * @return array the result set (each array element represents a row of data).
      * An empty array will be returned if the result contains no row.
      */
-    public function readAll()
+    public function readAll(): array
     {
         return $this->_statement->fetchAll();
     }
@@ -166,7 +167,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * This frees up the resources allocated for executing this SQL statement.
      * Read attempts after this method call are unpredictable.
      */
-    public function close()
+    public function close(): void
     {
         $this->_statement->closeCursor();
         $this->_closed = true;
@@ -187,7 +188,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * In this case, use "SELECT COUNT(*) FROM tableName" to obtain the number of rows.
      * @return int number of rows contained in the result.
      */
-    public function getRowCount()
+    public function getRowCount(): int
     {
         return $this->_statement->rowCount();
     }
@@ -210,7 +211,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * Note, even there's no row in the reader, this still gives correct column number.
      * @return int the number of columns in the result set.
      */
-    public function getColumnCount()
+    public function getColumnCount(): int
     {
         return $this->_statement->columnCount();
     }
@@ -221,7 +222,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * @throws InvalidCallException if this method is invoked twice
      */
     #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         if ($this->_index < 0) {
             $this->_row = $this->_statement->fetch();
@@ -258,7 +259,7 @@ class DataReader extends \yii\base\BaseObject implements \Iterator, \Countable
      * This method is required by the interface [[\Iterator]].
      */
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         $this->_row = $this->_statement->fetch();
         $this->_index++;

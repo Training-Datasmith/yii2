@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -160,7 +162,7 @@ class QueryBuilderTest extends \yiiunit\framework\db\QueryBuilderTest
                 [['=', 'prices', new JsonExpression(['seeds' => 15, 'apples' => 25], 'jsonb')], '[[prices]] = :qp0::jsonb', [':qp0' => '{"seeds":15,"apples":25}']],
                 'nested json' => [
                     ['=', 'data', new JsonExpression(['user' => ['login' => 'silverfire', 'password' => 'c4ny0ur34d17?'], 'props' => ['mood' => 'good']])],
-                    '"data" = :qp0', [':qp0' => '{"user":{"login":"silverfire","password":"c4ny0ur34d17?"},"props":{"mood":"good"}}']
+                    '"data" = :qp0', [':qp0' => '{"user":{"login":"silverfire","password":"c4ny0ur34d17?"},"props":{"mood":"good"}}'],
                 ],
                 'null value' => [['=', 'jsoncol', new JsonExpression(null)], '"jsoncol" = :qp0', [':qp0' => 'null']],
                 'null as array value' => [['=', 'jsoncol', new JsonExpression([null])], '"jsoncol" = :qp0', [':qp0' => '[null]']],
@@ -173,12 +175,12 @@ class QueryBuilderTest extends \yiiunit\framework\db\QueryBuilderTest
                 'array of json expressions' => [
                     ['=', 'colname', new ArrayExpression([new JsonExpression(['a' => null, 'b' => 123, 'c' => [4, 5]]), new JsonExpression([true])])],
                     '"colname" = ARRAY[:qp0, :qp1]',
-                    [':qp0' => '{"a":null,"b":123,"c":[4,5]}', ':qp1' => '[true]']
+                    [':qp0' => '{"a":null,"b":123,"c":[4,5]}', ':qp1' => '[true]'],
                 ],
                 'Items in ArrayExpression of type json should be casted to Json' => [
                     ['=', 'colname', new ArrayExpression([['a' => null, 'b' => 123, 'c' => [4, 5]], [true]], 'json')],
                     '"colname" = ARRAY[:qp0, :qp1]::json[]',
-                    [':qp0' => '{"a":null,"b":123,"c":[4,5]}', ':qp1' => '[true]']
+                    [':qp0' => '{"a":null,"b":123,"c":[4,5]}', ':qp1' => '[true]'],
                 ],
                 'Two dimension array of text' => [
                     ['=', 'colname', new ArrayExpression([['text1', 'text2'], ['text3', 'text4'], [null, 'text5']], 'text', 2)],

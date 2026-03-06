@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,9 +10,9 @@
 
 namespace yiiunit\framework\widgets;
 
-use yiiunit\TestCase;
 use ReflectionMethod;
 use yii\widgets\Breadcrumbs;
+use yiiunit\TestCase;
 
 /**
  * @author Nelson J Morais <njmorais@gmail.com>

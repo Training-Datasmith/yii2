@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -82,13 +84,12 @@ class DbSession extends MultiFieldSession
      */
     protected $fields = [];
 
-
     /**
      * Initializes the DbSession component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
      * @throws InvalidConfigException if [[db]] is invalid.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->db = Instance::ensure($this->db, Connection::className());
@@ -117,7 +118,7 @@ class DbSession extends MultiFieldSession
     /**
      * {@inheritdoc}
      */
-    public function regenerateID($deleteOldSession = false)
+    public function regenerateID($deleteOldSession = false): void
     {
         $oldID = session_id();
 
@@ -126,7 +127,7 @@ class DbSession extends MultiFieldSession
             return;
         }
 
-        parent::regenerateID(false);
+        parent::regenerateID();
         $newID = session_id();
         // if session id regeneration failed, no need to create/update it.
         if (empty($newID)) {
@@ -134,12 +135,10 @@ class DbSession extends MultiFieldSession
             return;
         }
 
-        $row = $this->db->useMaster(function () use ($oldID) {
-            return (new Query())->from($this->sessionTable)
-               ->where(['id' => $oldID])
-               ->createCommand($this->db)
-               ->queryOne();
-        });
+        $row = $this->db->useMaster(fn () => (new Query())->from($this->sessionTable)
+           ->where(['id' => $oldID])
+           ->createCommand($this->db)
+           ->queryOne());
 
         if ($row !== false && $this->getIsActive()) {
             if ($deleteOldSession) {
@@ -159,7 +158,7 @@ class DbSession extends MultiFieldSession
      * Ends the current session and store session data.
      * @since 2.0.17
      */
-    public function close()
+    public function close(): void
     {
         if ($this->getIsActive()) {
             // prepare writeCallback fields before session closes
@@ -194,7 +193,7 @@ class DbSession extends MultiFieldSession
      * @param string $data session data
      * @return bool whether session write is successful
      */
-    public function writeSession($id, $data)
+    public function writeSession($id, $data): bool
     {
         if ($this->getUseStrictMode() && $id === $this->_forceRegenerateId) {
             //Ignore write when forceRegenerate is active for this id
@@ -235,7 +234,7 @@ class DbSession extends MultiFieldSession
      * @param string $id session ID
      * @return bool whether session is destroyed successfully
      */
-    public function destroySession($id)
+    public function destroySession($id): bool
     {
         $this->db->createCommand()
             ->delete($this->sessionTable, ['id' => $id])
@@ -275,10 +274,9 @@ class DbSession extends MultiFieldSession
      * You can override this method in case you need special type casting.
      *
      * @param array $fields Fields, that will be passed to PDO. Key - name, Value - value
-     * @return array
      * @since 2.0.13
      */
-    protected function typecastFields($fields)
+    protected function typecastFields(array $fields): array
     {
         if (isset($fields['data']) && !is_array($fields['data']) && !is_object($fields['data'])) {
             $fields['data'] = new PdoValue($fields['data'], \PDO::PARAM_LOB);

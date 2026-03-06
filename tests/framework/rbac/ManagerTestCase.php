@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,11 +10,11 @@
 
 namespace yiiunit\framework\rbac;
 
-use Yii;
 use InvalidArgumentException;
-use yii\rbac\ManagerInterface;
+use Yii;
 use yii\rbac\BaseManager;
 use yii\rbac\Item;
+use yii\rbac\ManagerInterface;
 use yii\rbac\Permission;
 use yii\rbac\Role;
 use yiiunit\TestCase;

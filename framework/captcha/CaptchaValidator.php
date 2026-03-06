@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -42,11 +44,10 @@ class CaptchaValidator extends Validator
      */
     public $captchaAction = 'site/captcha';
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message === null) {
@@ -57,7 +58,7 @@ class CaptchaValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         $captcha = $this->createCaptchaAction();
         $valid = !is_array($value) && $captcha->validate($value, $this->caseSensitive);
@@ -75,7 +76,7 @@ class CaptchaValidator extends Validator
         $ca = Yii::$app->createController($this->captchaAction);
         if ($ca !== false) {
             /** @var Controller $controller */
-            list($controller, $actionID) = $ca;
+            [$controller, $actionID] = $ca;
             /** @var CaptchaAction|null $action */
             $action = $controller->createAction($actionID);
             if ($action !== null) {
@@ -88,7 +89,7 @@ class CaptchaValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
@@ -99,7 +100,7 @@ class CaptchaValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $captcha = $this->createCaptchaAction();
         $code = $captcha->getVerifyCode(false);

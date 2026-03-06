@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -104,14 +106,13 @@ class MemCache extends Cache
     /**
      * @var array list of memcache server configurations
      */
-    private $_servers = [];
-
+    private array $_servers = [];
 
     /**
      * Initializes this application component.
      * It creates the memcache instance and adds memcache servers.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->addServers($this->getMemcache(), $this->getServers());
@@ -253,7 +254,7 @@ class MemCache extends Cache
      * @see https://www.php.net/manual/en/memcache.addserver.php
      * @see https://www.php.net/manual/en/memcached.addserver.php
      */
-    public function setServers($config)
+    public function setServers($config): void
     {
         foreach ($config as $c) {
             $this->_servers[] = new MemCacheServer($c);

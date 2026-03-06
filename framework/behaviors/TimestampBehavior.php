@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -93,11 +95,10 @@ class TimestampBehavior extends AttributeBehavior
      */
     public $value;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -133,7 +134,7 @@ class TimestampBehavior extends AttributeBehavior
      * @param string $attribute the name of the attribute to update.
      * @throws InvalidCallException if owner is a new record (since version 2.0.6).
      */
-    public function touch($attribute)
+    public function touch($attribute): void
     {
         /** @var BaseActiveRecord $owner */
         $owner = $this->owner;

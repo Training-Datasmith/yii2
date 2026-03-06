@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -153,11 +155,10 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      */
     public $cacheHeaders = true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->view === null) {
@@ -168,7 +169,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         if (!$this->enabled) {
             return true;
@@ -203,7 +204,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @return bool|array whether to cache or not, return an array instead of `true` to store an additional data.
      * @since 2.0.11
      */
-    public function beforeCacheResponse()
+    public function beforeCacheResponse(): bool
     {
         return true;
     }
@@ -224,7 +225,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @param array $data the response property data.
      * @since 2.0.3
      */
-    protected function restoreResponse($response, $data)
+    protected function restoreResponse($response, array $data)
     {
         foreach (['format', 'version', 'statusCode', 'statusText', 'content'] as $name) {
             $response->{$name} = $data[$name];
@@ -237,14 +238,14 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
         if (!empty($data['dynamicPlaceholders']) && is_array($data['dynamicPlaceholders'])) {
             $response->content = $this->updateDynamicContent($response->content, $data['dynamicPlaceholders'], true);
         }
-        $this->afterRestoreResponse(isset($data['cacheData']) ? $data['cacheData'] : null);
+        $this->afterRestoreResponse($data['cacheData'] ?? null);
     }
 
     /**
      * Caches response properties.
      * @since 2.0.3
      */
-    public function cacheResponse()
+    public function cacheResponse(): void
     {
         $this->view->popDynamicContent();
         $beforeCacheResponseResult = $this->beforeCacheResponse();
@@ -280,7 +281,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @param Response $response the response.
      * @param array $data the cache data.
      */
-    private function insertResponseCookieCollectionIntoData(Response $response, array &$data)
+    private function insertResponseCookieCollectionIntoData(Response $response, array &$data): void
     {
         if ($this->cacheCookies === false) {
             return;
@@ -304,7 +305,7 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @param Response $response the response.
      * @param array $data the cache data.
      */
-    private function insertResponseHeaderCollectionIntoData(Response $response, array &$data)
+    private function insertResponseHeaderCollectionIntoData(Response $response, array &$data): void
     {
         if ($this->cacheHeaders === false) {
             return;
@@ -327,9 +328,9 @@ class PageCache extends ActionFilter implements DynamicContentAwareInterface
      * @return array the key used to cache response properties.
      * @since 2.0.3
      */
-    protected function calculateCacheKey()
+    protected function calculateCacheKey(): array
     {
-        $key = [__CLASS__];
+        $key = [self::class];
         if ($this->varyByRoute) {
             $key[] = Yii::$app->requestedRoute;
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,9 +11,9 @@
 namespace yiiunit\framework\web;
 
 use Exception;
+use Yii;
 use yii\BaseYii;
 use yii\web\Application;
-use Yii;
 use yii\web\NotFoundHttpException;
 use yii\web\View;
 use yiiunit\TestCase;

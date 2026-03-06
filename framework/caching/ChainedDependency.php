@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,12 +37,11 @@ class ChainedDependency extends Dependency
      */
     public $dependOnAll = true;
 
-
     /**
      * Evaluates the dependency by generating and saving the data related with dependency.
      * @param CacheInterface $cache the cache component that is currently evaluating this dependency
      */
-    public function evaluateDependency($cache)
+    public function evaluateDependency($cache): void
     {
         foreach ($this->dependencies as $dependency) {
             $dependency->evaluateDependency($cache);
@@ -66,7 +67,8 @@ class ChainedDependency extends Dependency
         foreach ($this->dependencies as $dependency) {
             if ($this->dependOnAll && $dependency->isChanged($cache)) {
                 return true;
-            } elseif (!$this->dependOnAll && !$dependency->isChanged($cache)) {
+            }
+            if (!$this->dependOnAll && !$dependency->isChanged($cache)) {
                 return false;
             }
         }

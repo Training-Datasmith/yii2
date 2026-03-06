@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,10 +11,10 @@
 namespace yiiunit\framework\filters\auth;
 
 use Yii;
-use yii\filters\auth\HttpBasicAuth;
-use yiiunit\framework\filters\stubs\UserIdentity;
 use yii\base\Event;
+use yii\filters\auth\HttpBasicAuth;
 use yii\web\User;
+use yiiunit\framework\filters\stubs\UserIdentity;
 
 /**
  * @group filters

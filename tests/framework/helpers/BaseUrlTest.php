@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\framework\helpers;
 
 use PHPUnit\Framework\TestCase;
@@ -65,7 +67,7 @@ class BaseUrlTest extends TestCase
                 'url' => 'http://acme.com/test?tnt-link=https://tnt.com/',
                 'scheme' => 'https',
                 'expected' => 'https://acme.com/test?tnt-link=https://tnt.com/',
-            ]
+            ],
         ];
     }
 
@@ -110,7 +112,7 @@ class BaseUrlTest extends TestCase
             ],
             'file url' => [
                 'url' => 'file:///home/User/2ndFile.html',
-            ]
+            ],
         ];
     }
 }

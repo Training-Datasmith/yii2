@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -83,13 +85,12 @@ abstract class Cache extends Component implements CacheInterface
     /**
      * @var bool whether [igbinary serialization](https://pecl.php.net/package/igbinary) is available or not.
      */
-    private $_igbinaryAvailable = false;
-
+    private bool $_igbinaryAvailable = false;
 
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->_igbinaryAvailable = \extension_loaded('igbinary');
@@ -135,7 +136,8 @@ abstract class Cache extends Component implements CacheInterface
         $value = $this->getValue($key);
         if ($value === false || $this->serializer === false) {
             return $value;
-        } elseif ($this->serializer === null) {
+        }
+        if ($this->serializer === null) {
             $value = unserialize((string)$value);
         } else {
             $value = call_user_func($this->serializer[1], $value);
@@ -344,7 +346,7 @@ abstract class Cache extends Component implements CacheInterface
      *
      * @return array The prepared data for caching.
      */
-    private function prepareCacheData($items, $dependency)
+    private function prepareCacheData($items, $dependency): array
     {
         if ($dependency !== null && $this->serializer !== false) {
             $dependency->evaluateDependency($this);
@@ -555,7 +557,7 @@ abstract class Cache extends Component implements CacheInterface
      * @param mixed $value the value to be cached
      */
     #[\ReturnTypeWillChange]
-    public function offsetSet($key, $value)
+    public function offsetSet($key, $value): void
     {
         $this->set($key, $value);
     }
@@ -566,7 +568,7 @@ abstract class Cache extends Component implements CacheInterface
      * @param string $key the key of the value to be deleted
      */
     #[\ReturnTypeWillChange]
-    public function offsetUnset($key)
+    public function offsetUnset($key): void
     {
         $this->delete($key);
     }

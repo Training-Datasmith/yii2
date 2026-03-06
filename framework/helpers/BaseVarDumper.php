@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -21,10 +23,9 @@ use yii\base\InvalidValueException;
  */
 class BaseVarDumper
 {
-    private static $_objects;
+    private static ?array $_objects = null;
     private static $_output;
     private static $_depth;
-
 
     /**
      * Displays a variable.
@@ -34,7 +35,7 @@ class BaseVarDumper
      * @param int $depth maximum depth that the dumper should go into the variable. Defaults to 10.
      * @param bool $highlight whether the result should be syntax-highlighted
      */
-    public static function dump($var, $depth = 10, $highlight = false)
+    public static function dump($var, $depth = 10, $highlight = false): void
     {
         echo static::dumpAsString($var, $depth, $highlight);
     }
@@ -66,15 +67,13 @@ class BaseVarDumper
      * @param mixed $var variable to be dumped
      * @param int $level depth level
      */
-    private static function dumpInternal($var, $level)
+    private static function dumpInternal($var, $level): void
     {
         switch (gettype($var)) {
             case 'boolean':
                 self::$_output .= $var ? 'true' : 'false';
                 break;
             case 'integer':
-                self::$_output .= (string)$var;
-                break;
             case 'double':
                 self::$_output .= (string)$var;
                 break;
@@ -153,7 +152,7 @@ class BaseVarDumper
      * @param mixed $var the variable to be exported.
      * @return string a string representation of the variable
      */
-    public static function export($var)
+    public static function export($var): string
     {
         self::$_output = '';
         self::exportInternal($var, 0);
@@ -164,7 +163,7 @@ class BaseVarDumper
      * @param mixed $var variable to be exported
      * @param int $level depth level
      */
-    private static function exportInternal($var, $level)
+    private static function exportInternal($var, $level): void
     {
         switch (gettype($var)) {
             case 'NULL':
@@ -202,14 +201,16 @@ class BaseVarDumper
                         if ($var instanceof Arrayable) {
                             self::exportInternal($var->toArray(), $level);
                             return;
-                        } elseif ($var instanceof \IteratorAggregate) {
+                        }
+                        if ($var instanceof \IteratorAggregate) {
                             $varAsArray = [];
                             foreach ($var as $key => $value) {
                                 $varAsArray[$key] = $value;
                             }
                             self::exportInternal($varAsArray, $level);
                             return;
-                        } elseif ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__toString')) {
+                        }
+                        if ('__PHP_Incomplete_Class' !== get_class($var) && method_exists($var, '__toString')) {
                             $output = var_export($var->__toString(), true);
                         } else {
                             $outputBackup = self::$_output;
@@ -228,9 +229,8 @@ class BaseVarDumper
     /**
      * Exports a [[Closure]] instance.
      * @param \Closure $closure closure instance.
-     * @return string
      */
-    private static function exportClosure(\Closure $closure)
+    private static function exportClosure(\Closure $closure): string
     {
         $reflection = new \ReflectionFunction($closure);
 
@@ -256,7 +256,7 @@ class BaseVarDumper
                 continue;
             }
             if ($closureTokens !== []) {
-                $closureTokens[] = isset($token[1]) ? $token[1] : $token;
+                $closureTokens[] = $token[1] ?? $token;
                 if ($token === '}') {
                     $pendingParenthesisCount--;
                     if ($pendingParenthesisCount === 0) {

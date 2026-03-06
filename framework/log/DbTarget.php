@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -44,13 +46,12 @@ class DbTarget extends Target
      */
     public $logTable = '{{%log}}';
 
-
     /**
      * Initializes the DbTarget component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
      * @throws InvalidConfigException if [[db]] is invalid.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->db = Instance::ensure($this->db, Connection::className());
@@ -62,7 +63,7 @@ class DbTarget extends Target
      * @throws Exception
      * @throws LogRuntimeException
      */
-    public function export()
+    public function export(): void
     {
         if ($this->db->getTransaction()) {
             // create new database connection, if there is an open transaction
@@ -75,7 +76,7 @@ class DbTarget extends Target
                 VALUES (:level, :category, :log_time, :prefix, :message)";
         $command = $this->db->createCommand($sql);
         foreach ($this->messages as $message) {
-            list($text, $level, $category, $timestamp) = $message;
+            [$text, $level, $category, $timestamp] = $message;
             if (!is_string($text)) {
                 // exceptions may not be serializable if in the call stack somewhere is a Closure
                 if ($text instanceof \Exception || $text instanceof \Throwable) {

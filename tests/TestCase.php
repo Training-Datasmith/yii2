@@ -10,8 +10,8 @@ declare(strict_types=1);
 
 namespace yiiunit;
 
-use ReflectionObject;
 use ReflectionClass;
+use ReflectionObject;
 use Yii;
 use yii\helpers\ArrayHelper;
 
@@ -283,7 +283,6 @@ abstract class TestCase extends \PHPUnit\Framework\TestCase
 
         return $result;
     }
-
 
     /**
      * Asserts that value is one of expected values.

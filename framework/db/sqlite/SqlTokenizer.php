@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -22,7 +24,7 @@ class SqlTokenizer extends \yii\db\SqlTokenizer
     /**
      * {@inheritdoc}
      */
-    protected function isWhitespace(&$length)
+    protected function isWhitespace(&$length): bool
     {
         static $whitespaces = [
             "\f" => true,
@@ -39,7 +41,7 @@ class SqlTokenizer extends \yii\db\SqlTokenizer
     /**
      * {@inheritdoc}
      */
-    protected function isComment(&$length)
+    protected function isComment(&$length): bool
     {
         static $comments = [
             '--' => true,
@@ -98,7 +100,7 @@ class SqlTokenizer extends \yii\db\SqlTokenizer
     /**
      * {@inheritdoc}
      */
-    protected function isIdentifier(&$length, &$content)
+    protected function isIdentifier(&$length, &$content): bool
     {
         static $identifierDelimiters = [
             '"' => '"',
@@ -130,7 +132,7 @@ class SqlTokenizer extends \yii\db\SqlTokenizer
     /**
      * {@inheritdoc}
      */
-    protected function isStringLiteral(&$length, &$content)
+    protected function isStringLiteral(&$length, &$content): bool
     {
         if ($this->substring(1) !== "'") {
             return false;
@@ -151,7 +153,7 @@ class SqlTokenizer extends \yii\db\SqlTokenizer
     /**
      * {@inheritdoc}
      */
-    protected function isKeyword($string, &$content)
+    protected function isKeyword($string, &$content): bool
     {
         static $keywords = [
             'ABORT' => true,

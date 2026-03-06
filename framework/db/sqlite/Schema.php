@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -18,11 +20,11 @@ use yii\db\ConstraintFinderTrait;
 use yii\db\Expression;
 use yii\db\ForeignKeyConstraint;
 use yii\db\IndexConstraint;
+use yii\db\Schema as BaseSchema;
 use yii\db\SqlToken;
 use yii\db\TableSchema;
 use yii\db\Transaction;
 use yii\helpers\ArrayHelper;
-use yii\db\Schema as BaseSchema;
 
 /**
  * Schema is the class for retrieving metadata from a SQLite (2/3) database.
@@ -83,7 +85,6 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      */
     protected $columnQuoteCharacter = '`';
 
-
     /**
      * {@inheritdoc}
      */
@@ -96,7 +97,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    protected function loadTableSchema($name)
+    protected function loadTableSchema($name): ?\yii\db\TableSchema
     {
         $table = new TableSchema();
         $table->name = $name;
@@ -120,8 +121,9 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\ForeignKeyConstraint[]
      */
-    protected function loadTableForeignKeys($tableName)
+    protected function loadTableForeignKeys($tableName): array
     {
         $foreignKeys = $this->db->createCommand('PRAGMA FOREIGN_KEY_LIST (' . $this->quoteValue($tableName) . ')')->queryAll();
         $foreignKeys = $this->normalizePdoRowKeyCase($foreignKeys, true);
@@ -133,8 +135,8 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
                 'columnNames' => ArrayHelper::getColumn($foreignKey, 'from'),
                 'foreignTableName' => $table,
                 'foreignColumnNames' => ArrayHelper::getColumn($foreignKey, 'to'),
-                'onDelete' => isset($foreignKey[0]['on_delete']) ? $foreignKey[0]['on_delete'] : null,
-                'onUpdate' => isset($foreignKey[0]['on_update']) ? $foreignKey[0]['on_update'] : null,
+                'onDelete' => $foreignKey[0]['on_delete'] ?? null,
+                'onUpdate' => $foreignKey[0]['on_update'] ?? null,
             ]);
         }
 
@@ -159,8 +161,9 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\CheckConstraint[]
      */
-    protected function loadTableChecks($tableName)
+    protected function loadTableChecks($tableName): array
     {
         $sql = $this->db->createCommand('SELECT `sql` FROM `sqlite_master` WHERE name = :tableName', [
             ':tableName' => $tableName,
@@ -229,7 +232,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      * @param TableSchema $table the table metadata
      * @return bool whether the table exists in the database
      */
-    protected function findColumns($table)
+    protected function findColumns($table): bool
     {
         $sql = 'PRAGMA table_info(' . $this->quoteSimpleTableName($table->name) . ')';
         $columns = $this->db->createCommand($sql)->queryAll();
@@ -286,7 +289,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      * @param TableSchema $table the table metadata
      * @return array all unique indexes for the given table.
      */
-    public function findUniqueIndexes($table)
+    public function findUniqueIndexes($table): array
     {
         $sql = 'PRAGMA index_list(' . $this->quoteSimpleTableName($table->name) . ')';
         $indexes = $this->db->createCommand($sql)->queryAll();
@@ -312,7 +315,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      * @param array $info column information
      * @return T the column schema object
      */
-    protected function loadColumnSchema($info)
+    protected function loadColumnSchema(array $info)
     {
         $column = $this->createColumnSchema();
         $column->name = $info['name'];
@@ -370,7 +373,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      * SQLite only supports SERIALIZABLE and READ UNCOMMITTED.
      * @see https://www.sqlite.org/pragma.html#pragma_read_uncommitted
      */
-    public function setTransactionIsolationLevel($level)
+    public function setTransactionIsolationLevel($level): void
     {
         switch ($level) {
             case Transaction::SERIALIZABLE:
@@ -406,7 +409,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      * - uniques
      * @return mixed constraints.
      */
-    private function loadTableConstraints($tableName, $returnType)
+    private function loadTableConstraints($tableName, string $returnType)
     {
         $indexes = $this->db->createCommand('PRAGMA INDEX_LIST (' . $this->quoteValue($tableName) . ')')->queryAll();
         $indexes = $this->normalizePdoRowKeyCase($indexes, true);
@@ -482,10 +485,9 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * Return whether the specified identifier is a SQLite system identifier.
      * @param string $identifier
-     * @return bool
      * @see https://www.sqlite.org/src/artifact/74108007d286232f
      */
-    private function isSystemIdentifier($identifier)
+    private function isSystemIdentifier($identifier): bool
     {
         return strncmp($identifier, 'sqlite_', 7) === 0;
     }

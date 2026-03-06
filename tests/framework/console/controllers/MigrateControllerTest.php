@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,10 +10,10 @@
 
 namespace yiiunit\framework\console\controllers;
 
-use yii\db\Exception;
 use Yii;
 use yii\console\controllers\MigrateController;
 use yii\console\ExitCode;
+use yii\db\Exception;
 use yii\db\Migration;
 use yii\db\Query;
 use yii\helpers\Inflector;

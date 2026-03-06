@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -106,7 +108,7 @@ class SchemaTest extends \yiiunit\framework\db\SchemaTest
             'precision' => null,
             'scale' => null,
             'defaultValue' => null,
-            'dimension' => 1
+            'dimension' => 1,
         ];
         $columns['textarray2_col'] = [
             'type' => 'text',
@@ -119,7 +121,7 @@ class SchemaTest extends \yiiunit\framework\db\SchemaTest
             'precision' => null,
             'scale' => null,
             'defaultValue' => null,
-            'dimension' => 2
+            'dimension' => 2,
         ];
         $columns['json_col'] = [
             'type' => 'json',
@@ -132,7 +134,7 @@ class SchemaTest extends \yiiunit\framework\db\SchemaTest
             'precision' => null,
             'scale' => null,
             'defaultValue' => ['a' => 1],
-            'dimension' => 0
+            'dimension' => 0,
         ];
         $columns['jsonb_col'] = [
             'type' => 'json',
@@ -145,7 +147,7 @@ class SchemaTest extends \yiiunit\framework\db\SchemaTest
             'precision' => null,
             'scale' => null,
             'defaultValue' => null,
-            'dimension' => 0
+            'dimension' => 0,
         ];
         $columns['jsonarray_col'] = [
             'type' => 'json',
@@ -158,7 +160,7 @@ class SchemaTest extends \yiiunit\framework\db\SchemaTest
             'precision' => null,
             'scale' => null,
             'defaultValue' => null,
-            'dimension' => 1
+            'dimension' => 1,
         ];
 
         return $columns;

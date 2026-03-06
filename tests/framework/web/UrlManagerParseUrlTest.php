@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,8 @@
 
 namespace yiiunit\framework\web;
 
-use yii\web\Application;
 use yii\caching\ArrayCache;
+use yii\web\Application;
 use yii\web\Request;
 use yii\web\UrlManager;
 use yiiunit\TestCase;
@@ -292,8 +294,6 @@ class UrlManagerParseUrlTest extends TestCase
         $this->assertFalse($result);
     }
 
-
-
     // TODO implement with hostinfo
 
     public function testParseRESTRequest(): void
@@ -402,7 +402,7 @@ class UrlManagerParseUrlTest extends TestCase
         $manager->addRules(['posts' => 'post/index']);
         $manager->addRules([
             'book/<id:\d+>/<title>' => 'book/view',
-            'book/<id:\d+>/<author>' => 'book/view'
+            'book/<id:\d+>/<author>' => 'book/view',
         ]);
 
         $this->assertCount(4, $manager->rules);

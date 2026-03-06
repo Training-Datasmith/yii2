@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -24,7 +26,6 @@ class NotCondition implements ConditionInterface
      */
     private $condition;
 
-
     /**
      * NotCondition constructor.
      *
@@ -47,7 +48,7 @@ class NotCondition implements ConditionInterface
      * {@inheritdoc}
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition($operator, $operands): self
     {
         if (count($operands) !== 1) {
             throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");

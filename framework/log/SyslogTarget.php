@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -37,7 +39,7 @@ class SyslogTarget extends Target
     /**
      * @var array syslog levels
      */
-    private $_syslogLevels = [
+    private array $_syslogLevels = [
         Logger::LEVEL_TRACE => LOG_DEBUG,
         Logger::LEVEL_PROFILE_BEGIN => LOG_DEBUG,
         Logger::LEVEL_PROFILE_END => LOG_DEBUG,
@@ -47,11 +49,10 @@ class SyslogTarget extends Target
         Logger::LEVEL_ERROR => LOG_ERR,
     ];
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->options === null) {
@@ -64,7 +65,7 @@ class SyslogTarget extends Target
      * Starting from version 2.0.14, this method throws LogRuntimeException in case the log can not be exported.
      * @throws LogRuntimeException
      */
-    public function export()
+    public function export(): void
     {
         openlog($this->identity, $this->options, $this->facility);
         foreach ($this->messages as $message) {
@@ -78,9 +79,9 @@ class SyslogTarget extends Target
     /**
      * {@inheritdoc}
      */
-    public function formatMessage($message)
+    public function formatMessage($message): string
     {
-        list($text, $level, $category, $timestamp) = $message;
+        [$text, $level, $category, $timestamp] = $message;
         $level = Logger::getLevelName($level);
         if (!is_string($text)) {
             // exceptions may not be serializable if in the call stack somewhere is a Closure

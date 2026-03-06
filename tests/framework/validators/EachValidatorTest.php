@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -12,8 +14,8 @@ use yii\validators\EachValidator;
 use yiiunit\data\base\ArrayAccessObject;
 use yiiunit\data\base\Speaker;
 use yiiunit\data\validators\models\FakedValidationModel;
-use yiiunit\data\validators\models\ValidatorTestTypedPropModel;
 use yiiunit\data\validators\models\ValidatorTestEachAndInlineMethodModel;
+use yiiunit\data\validators\models\ValidatorTestTypedPropModel;
 use yiiunit\TestCase;
 
 /**

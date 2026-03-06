@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -60,11 +62,10 @@ class FilterValidator extends Validator
      */
     public $skipOnEmpty = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->filter === null) {
@@ -75,7 +76,7 @@ class FilterValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
         if (!$this->skipOnArray || !is_array($value)) {
@@ -86,7 +87,7 @@ class FilterValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): ?string
     {
         if ($this->filter !== 'trim') {
             return null;
@@ -100,8 +101,9 @@ class FilterValidator extends Validator
 
     /**
      * {@inheritdoc}
+     * @return int[]
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $options = [];
         if ($this->skipOnEmpty) {

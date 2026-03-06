@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -16,9 +18,9 @@ use yii\db\ConstraintFinderTrait;
 use yii\db\DefaultValueConstraint;
 use yii\db\ForeignKeyConstraint;
 use yii\db\IndexConstraint;
+use yii\db\Schema as BaseSchema;
 use yii\db\ViewFinderTrait;
 use yii\helpers\ArrayHelper;
-use yii\db\Schema as BaseSchema;
 
 /**
  * Schema is the class for retrieving metadata from MS SQL Server databases (version 2008 and above).
@@ -98,13 +100,12 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      */
     protected $columnQuoteCharacter = ['[', ']'];
 
-
     /**
      * Resolves the table name and schema name (if any).
      * @param string $name the table name
      * @return TableSchema resolved table, schema, etc. names.
      */
-    protected function resolveTableName($name)
+    protected function resolveTableName($name): \yii\db\mssql\TableSchema
     {
         $resolvedName = new TableSchema();
         $parts = $this->getTableNameParts($name);
@@ -138,10 +139,9 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritDoc}
      * @param string $name
-     * @return array
      * @since 2.0.22
      */
-    protected function getTableNameParts($name)
+    protected function getTableNameParts($name): array
     {
         $parts = [$name];
         preg_match_all('/([^.\[\]]+)|\[([^\[\]]+)\]/', $name, $matches);
@@ -149,9 +149,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
             $parts = $matches[0];
         }
 
-        $parts = str_replace(['[', ']'], '', $parts);
-
-        return $parts;
+        return str_replace(['[', ']'], '', $parts);
     }
 
     /**
@@ -192,7 +190,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    protected function loadTableSchema($name)
+    protected function loadTableSchema($name): ?\yii\db\mssql\TableSchema
     {
         $table = new TableSchema();
         $this->resolveTableNames($table, $name);
@@ -207,14 +205,13 @@ SQL;
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    protected function getSchemaMetadata($schema, $type, $refresh)
+    protected function getSchemaMetadata($schema, $type, $refresh): array
     {
         $metadata = [];
         $methodName = 'getTable' . ucfirst($type);
-        $tableNames = array_map(function ($table) {
-            return $this->quoteSimpleTableName($table);
-        }, $this->getTableNames($schema, $refresh));
+        $tableNames = array_map(fn (string $table) => $this->quoteSimpleTableName($table), $this->getTableNames($schema, $refresh));
         foreach ($tableNames as $name) {
             if ($schema !== '') {
                 $name = $schema . '.' . $name;
@@ -246,8 +243,9 @@ SQL;
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\IndexConstraint[]
      */
-    protected function loadTableIndexes($tableName)
+    protected function loadTableIndexes($tableName): array
     {
         static $sql = <<<'SQL'
 SELECT
@@ -310,7 +308,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    public function createSavepoint($name)
+    public function createSavepoint($name): void
     {
         $this->db->createCommand("SAVE TRANSACTION $name")->execute();
     }
@@ -318,7 +316,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    public function releaseSavepoint($name)
+    public function releaseSavepoint($name): void
     {
         // does nothing as MSSQL does not support this
     }
@@ -326,7 +324,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    public function rollBackSavepoint($name)
+    public function rollBackSavepoint($name): void
     {
         $this->db->createCommand("ROLLBACK TRANSACTION $name")->execute();
     }
@@ -378,7 +376,7 @@ SQL;
      * @param array $info column information
      * @return T the column schema object
      */
-    protected function loadColumnSchema($info)
+    protected function loadColumnSchema(array $info)
     {
         $isVersion2017orLater = version_compare($this->db->getSchema()->getServerVersion(), '14', '>=');
         $column = $this->createColumnSchema();
@@ -391,7 +389,7 @@ SQL;
         $column->autoIncrement = $info['is_identity'] == 1;
         $column->isComputed = (bool)$info['is_computed'];
         $column->unsigned = stripos($column->dbType, 'unsigned') !== false;
-        $column->comment = $info['comment'] === null ? '' : $info['comment'];
+        $column->comment = $info['comment'] ?? '';
 
         $column->type = self::TYPE_STRING;
         if (preg_match('/^(\w+)(?:\(([^\)]+)\))?/', $column->dbType, $matches)) {
@@ -443,7 +441,7 @@ SQL;
      * @param TableSchema $table the table metadata
      * @return bool whether the table exists in the database
      */
-    protected function findColumns($table)
+    protected function findColumns($table): bool
     {
         $columnsTableName = 'INFORMATION_SCHEMA.COLUMNS';
         $whereSql = '[t1].[table_name] = ' . $this->db->quoteValue($table->name);
@@ -650,7 +648,7 @@ SQL;
      * @return array all unique indexes for the given table.
      * @since 2.0.4
      */
-    public function findUniqueIndexes($table)
+    public function findUniqueIndexes($table): array
     {
         $result = [];
         foreach ($this->findTableConstraints($table, 'UNIQUE') as $row) {
@@ -671,7 +669,7 @@ SQL;
      * - defaults
      * @return mixed constraints.
      */
-    private function loadTableConstraints($tableName, $returnType)
+    private function loadTableConstraints($tableName, string $returnType)
     {
         static $sql = <<<'SQL'
 SELECT

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -25,7 +27,6 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
 
-
     /**
      * {@inheritdoc}
      * @param ArrayExpression|ExpressionInterface $expression the expression to be built
@@ -38,7 +39,7 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
         }
 
         if ($value instanceof Query) {
-            list ($sql, $params) = $this->queryBuilder->build($value, $params);
+            [$sql, $params] = $this->queryBuilder->build($value, $params);
             return $this->buildSubqueryArray($sql, $expression);
         }
 
@@ -49,11 +50,9 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
 
     /**
      * Builds placeholders array out of $expression values
-     * @param ExpressionInterface|ArrayExpression $expression
      * @param array $params the binding parameters.
-     * @return array
      */
-    protected function buildPlaceholders(ExpressionInterface $expression, &$params)
+    protected function buildPlaceholders(ExpressionInterface $expression, &$params): array
     {
         $value = $expression->getValue();
 
@@ -71,7 +70,7 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
 
         foreach ($value as $item) {
             if ($item instanceof Query) {
-                list ($sql, $params) = $this->queryBuilder->build($item, $params);
+                [$sql, $params] = $this->queryBuilder->build($item, $params);
                 $placeholders[] = $this->buildSubqueryArray($sql, $expression);
                 continue;
             }
@@ -89,7 +88,6 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @param ArrayExpression $expression
      * @param mixed $value
      * @return ArrayExpression
      */
@@ -101,29 +99,26 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @param ArrayExpression $expression
      * @return string the typecast expression based on [[type]].
      */
-    protected function getTypehint(ArrayExpression $expression)
+    protected function getTypehint(ArrayExpression $expression): string
     {
         if ($expression->getType() === null) {
             return '';
         }
 
         $result = '::' . $expression->getType();
-        $result .= str_repeat('[]', $expression->getDimension());
 
-        return $result;
+        return $result . str_repeat('[]', $expression->getDimension());
     }
 
     /**
      * Build an array expression from a subquery SQL.
      *
      * @param string $sql the subquery SQL.
-     * @param ArrayExpression $expression
      * @return string the subquery array expression.
      */
-    protected function buildSubqueryArray($sql, ArrayExpression $expression)
+    protected function buildSubqueryArray(string $sql, ArrayExpression $expression): string
     {
         return 'ARRAY(' . $sql . ')' . $this->getTypehint($expression);
     }
@@ -131,7 +126,6 @@ class ArrayExpressionBuilder implements ExpressionBuilderInterface
     /**
      * Casts $value to use in $expression
      *
-     * @param ArrayExpression $expression
      * @param mixed $value
      * @return mixed
      */

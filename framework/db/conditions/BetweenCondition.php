@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,7 +37,6 @@ class BetweenCondition implements ConditionInterface
      * @var mixed end of the interval
      */
     private $intervalEnd;
-
 
     /**
      * Creates a condition with the `BETWEEN` operator.
@@ -89,7 +90,7 @@ class BetweenCondition implements ConditionInterface
      * {@inheritdoc}
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition($operator, $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
             throw new InvalidArgumentException("Operator '$operator' requires three operands.");

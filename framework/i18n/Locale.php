@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -29,11 +31,10 @@ class Locale extends Component
      */
     public $locale;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         if (!extension_loaded('intl')) {
             throw new InvalidConfigException('Locale component requires PHP intl extension to be installed.');
@@ -49,9 +50,8 @@ class Locale extends Component
      *
      * @param string|null $currencyCode the 3-letter ISO 4217 currency code to get symbol for. If null,
      * method will attempt using currency code from [[locale]].
-     * @return string
      */
-    public function getCurrencySymbol($currencyCode = null)
+    public function getCurrencySymbol($currencyCode = null): string
     {
         $locale = $this->locale;
 

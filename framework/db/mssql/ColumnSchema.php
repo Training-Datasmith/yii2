@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -20,7 +22,6 @@ class ColumnSchema extends \yii\db\ColumnSchema
      * @since 2.0.39
      */
     public $isComputed;
-
 
     /**
      * Prepares default value and converts it according to [[phpType]]

@@ -1,14 +1,14 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  *
- * @var YiiRequirementChecker $this
  * @var array $summary
  * @var array[] $requirements
  */
-
 echo "\nYii Application Requirement Checker\n\n";
 
 echo "This script checks if your server configuration meets the requirements\n";
@@ -20,7 +20,7 @@ $header = 'Check conclusion:';
 echo "\n{$header}\n";
 echo str_pad('', strlen($header), '-') . "\n\n";
 
-foreach ($requirements as $key => $requirement) {
+foreach ($requirements as $requirement) {
     if ($requirement['condition']) {
         echo $requirement['name'] . ": OK\n";
     } else {

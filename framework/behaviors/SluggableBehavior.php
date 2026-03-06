@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -129,11 +131,10 @@ class SluggableBehavior extends AttributeBehavior
      */
     public $uniqueSlugGenerator;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -176,10 +177,9 @@ class SluggableBehavior extends AttributeBehavior
      * Checks whether the new slug generation is needed
      * This method is called by [[getValue]] to check whether the new slug generation is needed.
      * You may override it to customize checking.
-     * @return bool
      * @since 2.0.7
      */
-    protected function isNewSlugNeeded()
+    protected function isNewSlugNeeded(): bool
     {
         if (empty($this->owner->{$this->slugAttribute})) {
             return true;
@@ -241,7 +241,7 @@ class SluggableBehavior extends AttributeBehavior
      * @param string $slug slug value
      * @return bool whether slug is unique.
      */
-    protected function validateSlug($slug)
+    protected function validateSlug($slug): bool
     {
         /** @var UniqueValidator $validator */
         $validator = Yii::createObject(array_merge(
@@ -267,7 +267,7 @@ class SluggableBehavior extends AttributeBehavior
      * @return string new slug value
      * @throws \yii\base\InvalidConfigException
      */
-    protected function generateUniqueSlug($baseSlug, $iteration)
+    protected function generateUniqueSlug(string $baseSlug, $iteration)
     {
         if (is_callable($this->uniqueSlugGenerator)) {
             return call_user_func($this->uniqueSlugGenerator, $baseSlug, $iteration, $this->owner);
@@ -283,7 +283,7 @@ class SluggableBehavior extends AttributeBehavior
      * @return bool whether $slugPart empty or not.
      * @since 2.0.13
      */
-    protected function isEmpty($slugPart)
+    protected function isEmpty($slugPart): bool
     {
         return $slugPart === null || $slugPart === '';
     }

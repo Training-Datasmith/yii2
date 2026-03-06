@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -52,13 +54,12 @@ class Link extends BaseObject
      */
     public $hreflang;
 
-
     /**
      * Serializes a list of links into proper array format.
      * @param array $links the links to be serialized
      * @return array the proper array representation of the links.
      */
-    public static function serialize(array $links)
+    public static function serialize(array $links): array
     {
         foreach ($links as $rel => $link) {
             if (is_array($link)) {

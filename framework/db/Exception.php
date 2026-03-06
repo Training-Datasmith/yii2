@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -22,7 +24,6 @@ class Exception extends \yii\base\Exception
      */
     public $errorInfo = [];
 
-
     /**
      * Constructor.
      * @param string $message PDO error message
@@ -40,7 +41,7 @@ class Exception extends \yii\base\Exception
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
+    public function getName(): string
     {
         return 'Database Exception';
     }
@@ -48,7 +49,7 @@ class Exception extends \yii\base\Exception
     /**
      * @return string readable representation of exception
      */
-    public function __toString()
+    public function __toString(): string
     {
         return parent::__toString() . PHP_EOL
         . 'Additional Information:' . PHP_EOL . print_r($this->errorInfo, true);

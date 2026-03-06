@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -87,13 +89,12 @@ class SqlDataProvider extends BaseDataProvider
      */
     public $key;
 
-
     /**
      * Initializes the DB connection component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
      * @throws InvalidConfigException if [[db]] is invalid.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->db = Instance::ensure($this->db, Connection::className());
@@ -139,8 +140,9 @@ class SqlDataProvider extends BaseDataProvider
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    protected function prepareKeys($models)
+    protected function prepareKeys($models): array
     {
         $keys = [];
         if ($this->key !== null) {

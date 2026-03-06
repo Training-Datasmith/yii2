@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -77,7 +79,6 @@ abstract class MultiFieldSession extends Session
      */
     public $writeCallback;
 
-
     /**
      * Returns a value indicating whether to use custom session storage.
      * This method overrides the parent implementation and always returns true.
@@ -111,7 +112,7 @@ abstract class MultiFieldSession extends Session
      * @param array $fields storage fields.
      * @return string session data.
      */
-    protected function extractData($fields)
+    protected function extractData(array $fields)
     {
         if ($this->readCallback !== null) {
             if (!isset($fields['data'])) {
@@ -120,13 +121,13 @@ abstract class MultiFieldSession extends Session
             $extraData = call_user_func($this->readCallback, $fields);
             if (!empty($extraData)) {
                 session_decode($fields['data']);
-                $_SESSION = array_merge((array) $_SESSION, (array) $extraData);
+                $_SESSION = array_merge($_SESSION, (array) $extraData);
                 return session_encode();
             }
 
             return $fields['data'];
         }
 
-        return isset($fields['data']) ? $fields['data'] : '';
+        return $fields['data'] ?? '';
     }
 }

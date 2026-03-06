@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -144,7 +146,7 @@ class FileValidatorTest extends TestCase
             'file_2' => [
                 'name' => 'test_up_2.txt',
                 'size' => 1024,
-            ]
+            ],
         ];
         $m = FakedValidationModel::createWithAttributes(
             [
@@ -246,7 +248,7 @@ class FileValidatorTest extends TestCase
                             'type' => 'image/png',
                         ],
                     ]
-                )
+                ),
             ]
         );
 
@@ -273,7 +275,7 @@ class FileValidatorTest extends TestCase
                             'type' => 'image/png',
                         ],
                     ]
-                )
+                ),
             ]
         );
 
@@ -298,7 +300,7 @@ class FileValidatorTest extends TestCase
                             'error' => UPLOAD_ERR_NO_FILE,
                         ],
                     ]
-                )
+                ),
             ]
         );
 
@@ -707,7 +709,7 @@ class FileValidatorTest extends TestCase
                     'name' => 'image.png',
                     'size' => 1024,
                     'type' => 'image/png',
-                ]
+                ],
             ]
         );
         $model = new FakedValidationTypedModel();
@@ -732,7 +734,7 @@ class FileValidatorTest extends TestCase
                     'name' => 'image.png',
                     'size' => 1024,
                     'type' => 'image/png',
-                ]
+                ],
             ]
         );
         $model = new FakedValidationTypedModel();
@@ -757,7 +759,7 @@ class FileValidatorTest extends TestCase
                     'name' => 'image.png',
                     'size' => 1024,
                     'type' => 'image/png',
-                ]
+                ],
             ]
         );
         $model = new FakedValidationTypedModel();
@@ -782,7 +784,7 @@ class FileValidatorTest extends TestCase
                     'name' => 'image.png',
                     'size' => 1024,
                     'type' => 'image/png',
-                ]
+                ],
             ]
         );
         $model = new FakedValidationTypedModel();
@@ -812,7 +814,7 @@ class FileValidatorTest extends TestCase
                     'name' => 'image.png',
                     'size' => 1024,
                     'type' => 'image/png',
-                ]
+                ],
             ]
         );
         $model = new FakedValidationTypedModel();

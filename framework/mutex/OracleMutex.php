@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -59,12 +61,11 @@ class OracleMutex extends DbMutex
      */
     public $releaseOnCommit = false;
 
-
     /**
      * Initializes Oracle specific mutex component implementation.
      * @throws InvalidConfigException if [[db]] is not Oracle connection.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (strncmp($this->db->driverName, 'oci', 3) !== 0 && strncmp($this->db->driverName, 'odbc', 4) !== 0) {
@@ -79,7 +80,7 @@ class OracleMutex extends DbMutex
      * @param int $timeout time (in seconds) to wait for lock to become released.
      * @return bool acquiring result.
      */
-    protected function acquireLock($name, $timeout = 0)
+    protected function acquireLock($name, $timeout = 0): bool
     {
         $lockStatus = null;
 
@@ -88,7 +89,7 @@ class OracleMutex extends DbMutex
         $timeout = abs((int) $timeout);
 
         // inside pl/sql scopes pdo binding not working correctly :(
-        $this->db->useMaster(function ($db) use ($name, $timeout, $releaseOnCommit, &$lockStatus) {
+        $this->db->useMaster(function ($db) use ($name, $timeout, $releaseOnCommit, &$lockStatus): void {
             /** @var \yii\db\Connection $db */
             $db->createCommand(
                 'DECLARE
@@ -112,10 +113,10 @@ END;',
      * @return bool release result.
      * @see https://docs.oracle.com/cd/B19306_01/appdev.102/b14258/d_lock.htm#ARPLS021
      */
-    protected function releaseLock($name)
+    protected function releaseLock($name): bool
     {
         $releaseStatus = null;
-        $this->db->useMaster(function ($db) use ($name, &$releaseStatus) {
+        $this->db->useMaster(function ($db) use ($name, &$releaseStatus): void {
             /** @var \yii\db\Connection $db */
             $db->createCommand(
                 'DECLARE

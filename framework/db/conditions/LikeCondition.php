@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -25,19 +27,6 @@ class LikeCondition extends SimpleCondition
      */
     protected $escapingReplacements;
 
-
-    /**
-     * @param string $column the column name.
-     * @param string $operator the operator to use (e.g. `LIKE`, `NOT LIKE`, `OR LIKE` or `OR NOT LIKE`)
-     * @param string[]|string $value single value or an array of values that $column should be compared with.
-     * If it is an empty array the generated expression will  be a `false` value if operator is `LIKE` or `OR LIKE`
-     * and empty if operator is `NOT LIKE` or `OR NOT LIKE`.
-     */
-    public function __construct($column, $operator, $value)
-    {
-        parent::__construct($column, $operator, $value);
-    }
-
     /**
      * This method allows to specify how to escape special characters in the value(s).
      *
@@ -47,7 +36,7 @@ class LikeCondition extends SimpleCondition
      * Note that when using an escape mapping (or the third operand is not provided),
      * the values will be automatically enclosed within a pair of percentage characters.
      */
-    public function setEscapingReplacements($escapingReplacements)
+    public function setEscapingReplacements($escapingReplacements): void
     {
         $this->escapingReplacements = $escapingReplacements;
     }
@@ -64,7 +53,7 @@ class LikeCondition extends SimpleCondition
      * {@inheritdoc}
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition($operator, $operands): self
     {
         if (!isset($operands[0], $operands[1])) {
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");

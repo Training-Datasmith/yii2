@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -55,11 +57,10 @@ class CompositeAuth extends AuthMethod
      */
     public $authMethods = [];
 
-
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         return empty($this->authMethods) ? true : parent::beforeAction($action);
     }
@@ -94,21 +95,24 @@ class CompositeAuth extends AuthMethod
                 $authUser = $auth->user;
                 if ($authUser != null && !$authUser instanceof \yii\web\User) {
                     throw new InvalidConfigException(get_class($authUser) . ' must implement yii\web\User');
-                } elseif ($authUser != null) {
+                }
+                if ($authUser != null) {
                     $user = $authUser;
                 }
 
                 $authRequest = $auth->request ?? null;
                 if ($authRequest != null && !$authRequest instanceof \yii\web\Request) {
                     throw new InvalidConfigException(get_class($authRequest) . ' must implement yii\web\Request');
-                } elseif ($authRequest != null) {
+                }
+                if ($authRequest != null) {
                     $request = $authRequest;
                 }
 
                 $authResponse = $auth->response;
                 if ($authResponse != null && !$authResponse instanceof \yii\web\Response) {
                     throw new InvalidConfigException(get_class($authResponse) . ' must implement yii\web\Response');
-                } elseif ($authResponse != null) {
+                }
+                if ($authResponse != null) {
                     $response = $authResponse;
                 }
             }
@@ -125,7 +129,7 @@ class CompositeAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function challenge($response)
+    public function challenge($response): void
     {
         foreach ($this->authMethods as $method) {
             /** @var AuthInterface $method */

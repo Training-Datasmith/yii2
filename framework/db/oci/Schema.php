@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -20,9 +22,9 @@ use yii\db\ConstraintFinderTrait;
 use yii\db\Expression;
 use yii\db\ForeignKeyConstraint;
 use yii\db\IndexConstraint;
+use yii\db\Schema as BaseSchema;
 use yii\db\TableSchema;
 use yii\helpers\ArrayHelper;
-use yii\db\Schema as BaseSchema;
 
 /**
  * Schema is the class for retrieving metadata from an Oracle database.
@@ -53,17 +55,16 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      */
     protected $tableQuoteCharacter = '"';
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->defaultSchema === null) {
             $username = $this->db->username;
             if (empty($username)) {
-                $username = isset($this->db->masters[0]['username']) ? $this->db->masters[0]['username'] : '';
+                $username = $this->db->masters[0]['username'] ?? '';
             }
             $this->defaultSchema = strtoupper($username);
         }
@@ -72,7 +73,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    protected function resolveTableName($name)
+    protected function resolveTableName($name): \yii\db\TableSchema
     {
         $resolvedName = new TableSchema();
         $parts = explode('.', str_replace('"', '', $name));
@@ -105,8 +106,9 @@ SQL;
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    protected function findTableNames($schema = '')
+    protected function findTableNames($schema = ''): array
     {
         if ($schema === '') {
             $sql = <<<'SQL'
@@ -152,7 +154,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    protected function loadTableSchema($name)
+    protected function loadTableSchema($name): ?\yii\db\TableSchema
     {
         $table = new TableSchema();
         $this->resolveTableNames($table, $name);
@@ -182,8 +184,9 @@ SQL;
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\IndexConstraint[]
      */
-    protected function loadTableIndexes($tableName)
+    protected function loadTableIndexes($tableName): array
     {
         static $sql = <<<'SQL'
 SELECT
@@ -249,7 +252,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    public function releaseSavepoint($name)
+    public function releaseSavepoint($name): void
     {
         // does nothing as Oracle does not support this
     }
@@ -303,7 +306,7 @@ SQL;
      * @param TableSchema $table the table schema
      * @return bool whether the table exists
      */
-    protected function findColumns($table)
+    protected function findColumns($table): bool
     {
         $sql = <<<'SQL'
 SELECT
@@ -390,26 +393,22 @@ SQL;
         if ($this->db->isActive) {
             // get the last insert id from the master connection
             $sequenceName = $this->quoteSimpleTableName($sequenceName);
-            return $this->db->useMaster(function (Connection $db) use ($sequenceName) {
-                return $db->createCommand("SELECT {$sequenceName}.CURRVAL FROM DUAL")->queryScalar();
-            });
-        } else {
-            throw new InvalidCallException('DB Connection is not active.');
+            return $this->db->useMaster(fn (Connection $db) => $db->createCommand("SELECT {$sequenceName}.CURRVAL FROM DUAL")->queryScalar());
         }
+        throw new InvalidCallException('DB Connection is not active.');
     }
 
     /**
      * Creates ColumnSchema instance.
      *
-     * @param array $column
      * @return T
      */
-    protected function createColumn($column)
+    protected function createColumn(array $column)
     {
         $c = $this->createColumnSchema();
         $c->name = $column['COLUMN_NAME'];
         $c->allowNull = $column['NULLABLE'] === 'Y';
-        $c->comment = $column['COLUMN_COMMENT'] === null ? '' : $column['COLUMN_COMMENT'];
+        $c->comment = $column['COLUMN_COMMENT'] ?? '';
         $c->isPrimaryKey = false;
         $this->extractColumnType($c, $column['DATA_TYPE'], $column['DATA_PRECISION'], $column['DATA_SCALE'], $column['DATA_LENGTH']);
         $this->extractColumnSize($c, $column['DATA_TYPE'], $column['DATA_PRECISION'], $column['DATA_SCALE'], $column['DATA_LENGTH']);
@@ -424,16 +423,14 @@ SQL;
                 if ($c->type === 'timestamp' && $defaultValue === 'CURRENT_TIMESTAMP') {
                     $c->defaultValue = new Expression('CURRENT_TIMESTAMP');
                 } else {
-                    if ($defaultValue !== null) {
-                        if (
-                            strlen($defaultValue) > 2
-                            && strncmp($defaultValue, "'", 1) === 0
-                            && substr($defaultValue, -1) === "'"
-                        ) {
-                            $defaultValue = substr($defaultValue, 1, -1);
-                        } else {
-                            $defaultValue = trim($defaultValue);
-                        }
+                    if (
+                        strlen($defaultValue) > 2
+                        && strncmp($defaultValue, "'", 1) === 0
+                        && substr($defaultValue, -1) === "'"
+                    ) {
+                        $defaultValue = substr($defaultValue, 1, -1);
+                    } else {
+                        $defaultValue = trim($defaultValue);
                     }
                     $c->defaultValue = $c->phpTypecast($defaultValue);
                 }
@@ -525,7 +522,7 @@ SQL;
      * @return array all unique indexes for the given table.
      * @since 2.0.4
      */
-    public function findUniqueIndexes($table)
+    public function findUniqueIndexes($table): array
     {
         $query = <<<'SQL'
 SELECT
@@ -629,7 +626,7 @@ SQL;
                 } else {
                     $returnParams[$phName]['dataType'] = \PDO::PARAM_INT;
                 }
-                $returnParams[$phName]['size'] = isset($columnSchemas[$name]->size) ? $columnSchemas[$name]->size : -1;
+                $returnParams[$phName]['size'] = $columnSchemas[$name]->size ?? -1;
                 $returning[] = $this->quoteColumnName($name);
             }
             $sql .= ' RETURNING ' . implode(', ', $returning) . ' INTO ' . implode(', ', array_keys($returnParams));
@@ -664,7 +661,7 @@ SQL;
      * - checks
      * @return mixed constraints.
      */
-    private function loadTableConstraints($tableName, $returnType)
+    private function loadTableConstraints($tableName, string $returnType)
     {
         static $sql = <<<'SQL'
 SELECT

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -52,7 +54,6 @@ class PhpMessageSource extends MessageSource
      */
     public $fileMap;
 
-
     /**
      * Loads the message translation for the specified $language and $category.
      * If translation for specific locale code such as `en-US` isn't found it
@@ -68,7 +69,7 @@ class PhpMessageSource extends MessageSource
      * @see loadFallbackMessages
      * @see sourceLanguage
      */
-    protected function loadMessages($category, $language)
+    protected function loadMessages($category, $language): array
     {
         $messageFile = $this->getMessageFilePath($category, $language);
         $messages = $this->loadMessagesFromFile($messageFile);
@@ -132,7 +133,7 @@ class PhpMessageSource extends MessageSource
      * @param string $language the target language
      * @return string path to message file
      */
-    protected function getMessageFilePath($category, $language)
+    protected function getMessageFilePath($category, $language): string
     {
         $language = (string) $language;
         if ($language !== '' && !preg_match('/^[a-z0-9_-]+$/i', $language)) {
@@ -154,12 +155,12 @@ class PhpMessageSource extends MessageSource
      * @param string $messageFile path to message file
      * @return array|null array of messages or null if file not found
      */
-    protected function loadMessagesFromFile($messageFile)
+    protected function loadMessagesFromFile($messageFile): ?array
     {
         if (is_file($messageFile)) {
             $messages = include $messageFile;
             if (!is_array($messages)) {
-                $messages = [];
+                return [];
             }
 
             return $messages;

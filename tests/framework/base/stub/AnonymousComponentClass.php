@@ -2,8 +2,8 @@
 
 declare(strict_types=1);
 
-use yii\base\Component;
 use yii\base\Behavior;
+use yii\base\Component;
 
 $obj = new class () extends Component {
     public $foo = 0;

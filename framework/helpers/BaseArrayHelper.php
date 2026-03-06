@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,9 +10,9 @@
 
 namespace yii\helpers;
 
-use Yii;
 use ArrayAccess;
 use Traversable;
+use Yii;
 use yii\base\Arrayable;
 use yii\base\InvalidArgumentException;
 
@@ -69,11 +71,12 @@ class BaseArrayHelper
                     }
                 }
             }
-
             return $object;
-        } elseif ($object instanceof \DateTimeInterface) {
+        }
+        if ($object instanceof \DateTimeInterface) {
             return (array)$object;
-        } elseif (is_object($object)) {
+        }
+        if (is_object($object)) {
             if (!empty($properties)) {
                 $className = get_class($object);
                 if (!empty($properties[$className])) {
@@ -97,7 +100,6 @@ class BaseArrayHelper
                     $result[$key] = $value;
                 }
             }
-
             return $recursive ? static::toArray($result, $properties) : $result;
         }
 
@@ -284,7 +286,7 @@ class BaseArrayHelper
      * @param mixed $value the value to be written
      * @since 2.0.13
      */
-    public static function setValue(&$array, $path, $value)
+    public static function setValue(array &$array, $path, $value): void
     {
         if ($path === null) {
             $array = $value;
@@ -361,7 +363,7 @@ class BaseArrayHelper
      * @return array the items that were removed from the array
      * @since 2.0.11
      */
-    public static function removeValue(&$array, $value)
+    public static function removeValue(&$array, $value): array
     {
         $result = [];
         if (is_array($array)) {
@@ -475,7 +477,7 @@ class BaseArrayHelper
      * to the result array without any key. This parameter is available since version 2.0.8.
      * @return array the indexed and/or grouped array
      */
-    public static function index($array, $key, $groups = [])
+    public static function index($array, $key, $groups = []): array
     {
         $result = [];
         $groups = (array) $groups;
@@ -536,7 +538,7 @@ class BaseArrayHelper
      * will be re-indexed with integers.
      * @return array the list of column values
      */
-    public static function getColumn($array, $name, $keepKeys = true)
+    public static function getColumn($array, $name, $keepKeys = true): array
     {
         $result = [];
         if ($keepKeys) {
@@ -591,9 +593,8 @@ class BaseArrayHelper
      * @param string|\Closure $from
      * @param string|\Closure $to
      * @param string|\Closure|null $group
-     * @return array
      */
-    public static function map($array, $from, $to, $group = null)
+    public static function map($array, $from, $to, $group = null): array
     {
         if (is_string($from) && is_string($to) && $group === null && strpos($from, '.') === false && strpos($to, '.') === false) {
             return array_column($array, $to, $from);
@@ -665,7 +666,7 @@ class BaseArrayHelper
      * @throws InvalidArgumentException if the $direction or $sortFlag parameters do not have
      * correct number of elements as that of $key.
      */
-    public static function multisort(&$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR)
+    public static function multisort(&$array, $key, $direction = SORT_ASC, $sortFlag = SORT_REGULAR): void
     {
         $keys = is_array($key) ? $key : [$key];
         if (empty($keys) || empty($array)) {
@@ -713,7 +714,7 @@ class BaseArrayHelper
      * @return array the encoded data
      * @see https://www.php.net/manual/en/function.htmlspecialchars.php
      */
-    public static function htmlEncode($data, $valuesOnly = true, $charset = null)
+    public static function htmlEncode($data, $valuesOnly = true, $charset = null): array
     {
         if ($charset === null) {
             $charset = Yii::$app ? Yii::$app->charset : 'UTF-8';
@@ -748,7 +749,7 @@ class BaseArrayHelper
      * @return array the decoded data
      * @see https://www.php.net/manual/en/function.htmlspecialchars-decode.php
      */
-    public static function htmlDecode($data, $valuesOnly = true)
+    public static function htmlDecode($data, $valuesOnly = true): array
     {
         $d = [];
         foreach ($data as $key => $value) {
@@ -780,7 +781,7 @@ class BaseArrayHelper
      * the array to be treated as associative.
      * @return bool whether the array is associative
      */
-    public static function isAssociative($array, $allStrings = true)
+    public static function isAssociative($array, $allStrings = true): bool
     {
         if (empty($array) || !is_array($array)) {
             return false;
@@ -886,9 +887,9 @@ class BaseArrayHelper
      * @see https://www.php.net/manual/en/function.is-array.php
      * @since 2.0.8
      */
-    public static function isTraversable($var)
+    public static function isTraversable($var): bool
     {
-        return is_array($var) || $var instanceof Traversable;
+        return is_iterable($var);
     }
 
     /**
@@ -904,7 +905,7 @@ class BaseArrayHelper
      * @throws InvalidArgumentException if `$haystack` or `$needles` is neither traversable nor an array.
      * @since 2.0.7
      */
-    public static function isSubset($needles, $haystack, $strict = false)
+    public static function isSubset($needles, $haystack, $strict = false): bool
     {
         if (!static::isTraversable($needles)) {
             throw new InvalidArgumentException('Argument $needles must be an array or implement Traversable');
@@ -963,7 +964,7 @@ class BaseArrayHelper
      * @return array Filtered array
      * @since 2.0.9
      */
-    public static function filter($array, $filters)
+    public static function filter($array, $filters): array
     {
         $result = [];
         $excludeFilters = [];
@@ -1000,7 +1001,7 @@ class BaseArrayHelper
 
         foreach ($excludeFilters as $filter) {
             $excludeNode = &$result;
-            $keys = explode('.', (string) $filter);
+            $keys = explode('.', $filter);
             $numNestedKeys = count($keys) - 1;
             foreach ($keys as $i => $key) {
                 if (!array_key_exists($key, $excludeNode)) {
@@ -1024,9 +1025,8 @@ class BaseArrayHelper
      *
      * @param array $array An array passing by reference.
      * @param callable|null $sorter The array sorter. If omitted, sort index array by values, sort assoc array by keys.
-     * @return array
      */
-    public static function recursiveSort(array &$array, $sorter = null)
+    public static function recursiveSort(array &$array, $sorter = null): array
     {
         foreach ($array as &$value) {
             if (is_array($value)) {
@@ -1078,7 +1078,7 @@ class BaseArrayHelper
      * @return array the flattened array.
      * @throws InvalidArgumentException if `$array` is neither traversable nor an array.
      */
-    public static function flatten($array, $separator = '.'): array
+    public static function flatten($array, string $separator = '.'): array
     {
         if (!static::isTraversable($array)) {
             throw new InvalidArgumentException('Argument $array must be an array or implement Traversable');

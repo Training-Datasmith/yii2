@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,12 +37,11 @@ class ApcCache extends Cache
      */
     public $useApcu = false;
 
-
     /**
      * Initializes this application component.
      * It checks if extension required is loaded.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $extension = $this->useApcu ? 'apcu' : 'apc';
@@ -82,7 +83,7 @@ class ApcCache extends Cache
      * @param array $keys a list of keys identifying the cached values
      * @return array a list of cached values indexed by the keys
      */
-    protected function getValues($keys)
+    protected function getValues($keys): array
     {
         $values = $this->useApcu ? apcu_fetch($keys) : apc_fetch($keys);
         return is_array($values) ? $values : [];
@@ -157,7 +158,7 @@ class ApcCache extends Cache
      * This is the implementation of the method declared in the parent class.
      * @return bool whether the flush operation was successful.
      */
-    protected function flushValues()
+    protected function flushValues(): bool
     {
         return $this->useApcu ? apcu_clear_cache() : apc_clear_cache('user');
     }

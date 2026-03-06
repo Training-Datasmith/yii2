@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -17,10 +19,10 @@ use yii\db\ConstraintFinderTrait;
 use yii\db\Expression;
 use yii\db\ForeignKeyConstraint;
 use yii\db\IndexConstraint;
+use yii\db\Schema as BaseSchema;
 use yii\db\TableSchema;
 use yii\db\ViewFinderTrait;
 use yii\helpers\ArrayHelper;
-use yii\db\Schema as BaseSchema;
 
 /**
  * Schema is the class for retrieving metadata from a PostgreSQL database
@@ -135,11 +137,10 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      */
     protected $tableQuoteCharacter = '"';
 
-
     /**
      * {@inheritdoc}
      */
-    protected function resolveTableName($name)
+    protected function resolveTableName($name): \yii\db\TableSchema
     {
         $resolvedName = new TableSchema();
         $parts = explode('.', str_replace('"', '', $name));
@@ -190,7 +191,7 @@ SQL;
     /**
      * {@inheritdoc}
      */
-    protected function loadTableSchema($name)
+    protected function loadTableSchema($name): ?\yii\db\TableSchema
     {
         $table = new TableSchema();
         $this->resolveTableNames($table, $name);
@@ -220,8 +221,9 @@ SQL;
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\IndexConstraint[]
      */
-    protected function loadTableIndexes($tableName)
+    protected function loadTableIndexes($tableName): array
     {
         static $sql = <<<'SQL'
 SELECT
@@ -439,7 +441,7 @@ SQL;
      * @param TableSchema $table the table metadata
      * @return array all unique indexes for the given table.
      */
-    public function findUniqueIndexes($table)
+    public function findUniqueIndexes($table): array
     {
         $uniqueIndexes = [];
 
@@ -464,7 +466,7 @@ SQL;
      * @param TableSchema $table the table metadata
      * @return bool whether the table exists in the database
      */
-    protected function findColumns($table)
+    protected function findColumns($table): bool
     {
         $tableName = $this->db->quoteValue($table->name);
         $schemaName = $this->db->quoteValue($table->schemaName);
@@ -594,7 +596,7 @@ SQL;
      * @param array $info column information
      * @return T the column schema object
      */
-    protected function loadColumnSchema($info)
+    protected function loadColumnSchema(array $info)
     {
         /** @var ColumnSchema $column */
         $column = $this->createColumnSchema();
@@ -665,7 +667,7 @@ SQL;
      * - checks
      * @return mixed constraints.
      */
-    private function loadTableConstraints($tableName, $returnType)
+    private function loadTableConstraints($tableName, string $returnType)
     {
         static $sql = <<<'SQL'
 SELECT
@@ -731,8 +733,8 @@ SQL;
                             'foreignSchemaName' => $constraint[0]['foreign_table_schema'],
                             'foreignTableName' => $constraint[0]['foreign_table_name'],
                             'foreignColumnNames' => array_keys(array_count_values(ArrayHelper::getColumn($constraint, 'foreign_column_name'))),
-                            'onDelete' => isset($actionTypes[$constraint[0]['on_delete']]) ? $actionTypes[$constraint[0]['on_delete']] : null,
-                            'onUpdate' => isset($actionTypes[$constraint[0]['on_update']]) ? $actionTypes[$constraint[0]['on_update']] : null,
+                            'onDelete' => $actionTypes[$constraint[0]['on_delete']] ?? null,
+                            'onUpdate' => $actionTypes[$constraint[0]['on_update']] ?? null,
                         ]);
                         break;
                     case 'u':

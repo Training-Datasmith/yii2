@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -80,7 +82,6 @@ class ColumnSchema extends BaseObject
      */
     public $comment;
 
-
     /**
      * Converts the input value according to [[phpType]] after retrieval from the database.
      * If the value is null or an [[Expression]], it will not be converted.
@@ -123,7 +124,7 @@ class ColumnSchema extends BaseObject
                     Schema::TYPE_TEXT,
                     Schema::TYPE_STRING,
                     Schema::TYPE_BINARY,
-                    Schema::TYPE_CHAR
+                    Schema::TYPE_CHAR,
                 ],
                 true
             )
@@ -191,7 +192,7 @@ class ColumnSchema extends BaseObject
     /**
      * @return int[] array of numbers that represent possible PDO parameter types
      */
-    private function getPdoParamTypes()
+    private function getPdoParamTypes(): array
     {
         return [\PDO::PARAM_BOOL, \PDO::PARAM_INT, \PDO::PARAM_STR, \PDO::PARAM_LOB, \PDO::PARAM_NULL, \PDO::PARAM_STMT];
     }

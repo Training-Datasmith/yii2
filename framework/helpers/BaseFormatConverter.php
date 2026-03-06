@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -75,13 +77,12 @@ class BaseFormatConverter
         ],
     ];
 
-    private static $_icuShortFormats = [
+    private static array $_icuShortFormats = [
         'short' => 3, // IntlDateFormatter::SHORT,
         'medium' => 2, // IntlDateFormatter::MEDIUM,
         'long' => 1, // IntlDateFormatter::LONG,
         'full' => 0, // IntlDateFormatter::FULL,
     ];
-
 
     /**
      * Converts a date format pattern from [ICU format](https://unicode-org.github.io/icu/userguide/format_parse/datetime/#datetime-format-syntax)
@@ -234,7 +235,7 @@ class BaseFormatConverter
      * @param string $pattern date format pattern in PHP `date()` function format.
      * @return string The converted date format pattern.
      */
-    public static function convertDatePhpToIcu($pattern)
+    public static function convertDatePhpToIcu($pattern): string
     {
         // https://www.php.net/manual/en/function.date
         $result = strtr($pattern, [
@@ -478,7 +479,7 @@ class BaseFormatConverter
      * @param string $pattern date format pattern in PHP `date()` function format.
      * @return string The converted date format pattern.
      */
-    public static function convertDatePhpToJui($pattern)
+    public static function convertDatePhpToJui($pattern): string
     {
         // https://www.php.net/manual/en/function.date
         return strtr($pattern, [

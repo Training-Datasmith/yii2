@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -23,7 +25,7 @@ class InConditionBuilder extends \yii\db\conditions\InConditionBuilder
      * {@inheritdoc}
      * @throws NotSupportedException if `$columns` is an array
      */
-    protected function buildSubqueryInCondition($operator, $columns, $values, &$params)
+    protected function buildSubqueryInCondition($operator, $columns, \yii\db\ExpressionInterface $values, &$params)
     {
         if (is_array($columns)) {
             throw new NotSupportedException(__METHOD__ . ' is not supported by MSSQL.');
@@ -35,7 +37,7 @@ class InConditionBuilder extends \yii\db\conditions\InConditionBuilder
     /**
      * {@inheritdoc}
      */
-    protected function buildCompositeInCondition($operator, $columns, $values, &$params)
+    protected function buildCompositeInCondition($operator, $columns, $values, &$params): string
     {
         $quotedColumns = [];
         foreach ($columns as $i => $column) {

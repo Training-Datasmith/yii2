@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -23,7 +25,6 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
 
-
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
@@ -32,7 +33,7 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
      * @param array $params the binding parameters.
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = $expression->getOperator();
 
@@ -53,11 +54,13 @@ class BetweenColumnsConditionBuilder implements ExpressionBuilderInterface
     protected function escapeColumnName($columnName, &$params = [])
     {
         if ($columnName instanceof Query) {
-            list($sql, $params) = $this->queryBuilder->build($columnName, $params);
+            [$sql, $params] = $this->queryBuilder->build($columnName, $params);
             return "($sql)";
-        } elseif ($columnName instanceof ExpressionInterface) {
+        }
+        if ($columnName instanceof ExpressionInterface) {
             return $this->queryBuilder->buildExpression($columnName, $params);
-        } elseif (strpos($columnName, '(') === false) {
+        }
+        if (strpos($columnName, '(') === false) {
             return $this->queryBuilder->db->quoteColumnName($columnName);
         }
 

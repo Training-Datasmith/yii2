@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\framework\db\pgsql;
 
 use yii\db\JsonExpression;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -59,11 +61,10 @@ class ActiveController extends Controller
      */
     public $createScenario = Model::SCENARIO_DEFAULT;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->modelClass === null) {
@@ -74,7 +75,7 @@ class ActiveController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function actions()
+    public function actions(): array
     {
         return [
             'index' => [
@@ -113,7 +114,7 @@ class ActiveController extends Controller
     /**
      * {@inheritdoc}
      */
-    protected function verbs()
+    protected function verbs(): array
     {
         return [
             'index' => ['GET', 'HEAD'],

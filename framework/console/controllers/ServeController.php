@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -46,15 +48,12 @@ class ServeController extends Controller
      */
     public $router;
 
-
     /**
      * Runs PHP built-in web server.
      *
      * @param string $address address to serve on. Either "host" or "host:port".
-     *
-     * @return int
      */
-    public function actionIndex($address = 'localhost')
+    public function actionIndex($address = 'localhost'): int
     {
         $documentRoot = Yii::getAlias($this->docroot);
         $router = $this->router !== null ? Yii::getAlias($this->router) : null;
@@ -99,7 +98,7 @@ class ServeController extends Controller
     /**
      * {@inheritdoc}
      */
-    public function options($actionID)
+    public function options($actionID): array
     {
         return array_merge(parent::options($actionID), [
             'docroot',
@@ -112,7 +111,7 @@ class ServeController extends Controller
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function optionAliases()
+    public function optionAliases(): array
     {
         return array_merge(parent::optionAliases(), [
             't' => 'docroot',
@@ -125,9 +124,9 @@ class ServeController extends Controller
      * @param string $address server address
      * @return bool if address is already in use
      */
-    protected function isAddressTaken($address)
+    protected function isAddressTaken($address): bool
     {
-        list($hostname, $port) = explode(':', $address);
+        [$hostname, $port] = explode(':', $address);
         $fp = @fsockopen($hostname, $port, $errno, $errstr, 3);
         if ($fp === false) {
             return false;

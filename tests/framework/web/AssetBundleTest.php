@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,14 +10,14 @@
 
 namespace yiiunit\framework\web;
 
-use yiiunit\TestCase;
 use Exception;
-use yii\base\InvalidConfigException;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\helpers\FileHelper;
 use yii\web\AssetBundle;
 use yii\web\AssetManager;
 use yii\web\View;
+use yiiunit\TestCase;
 
 /**
  * @group web

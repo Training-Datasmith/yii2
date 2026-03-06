@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,17 +10,17 @@
 
 namespace yiiunit\framework\web;
 
-use yii\web\Application;
-use yiiunit\framework\web\stubs\ModelBindingStub;
-use yii\base\Module;
-use yii\data\ArrayDataProvider;
 use RuntimeException;
 use Yii;
 use yii\base\InlineAction;
+use yii\base\Module;
+use yii\data\ArrayDataProvider;
+use yii\web\Application;
 use yii\web\BadRequestHttpException;
 use yii\web\NotFoundHttpException;
 use yii\web\Response;
 use yii\web\ServerErrorHttpException;
+use yiiunit\framework\web\stubs\ModelBindingStub;
 use yiiunit\framework\web\stubs\VendorImage;
 use yiiunit\TestCase;
 
@@ -274,7 +276,6 @@ class ControllerTest extends TestCase
         $mixedParameter = new InlineAction('mixed-parameter', $this->controller, 'actionMixedParameter');
         list($foo) = $this->controller->bindActionParams($mixedParameter, $params);
         $this->assertSame('foobar', $foo);
-
 
         $params = ['foo' => 'oops', 'bar' => null];
         $this->expectException('yii\web\BadRequestHttpException');

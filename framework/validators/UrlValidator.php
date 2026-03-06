@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -49,11 +51,10 @@ class UrlValidator extends Validator
      */
     public $enableIDN = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->enableIDN && !function_exists('idn_to_ascii')) {
@@ -67,7 +68,7 @@ class UrlValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
         $result = $this->validateValue($value);
@@ -81,7 +82,7 @@ class UrlValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         // make sure the length is limited to avoid DOS attacks
         if (is_string($value) && strlen($value) < 2000) {
@@ -96,9 +97,7 @@ class UrlValidator extends Validator
             }
 
             if ($this->enableIDN) {
-                $value = preg_replace_callback('/:\/\/([^\/]+)/', function ($matches) {
-                    return '://' . $this->idnToAscii($matches[1]);
-                }, $value);
+                $value = preg_replace_callback('/:\/\/([^\/]+)/', fn ($matches) => '://' . $this->idnToAscii($matches[1]), $value);
             }
 
             if (preg_match($pattern, $value)) {
@@ -109,7 +108,7 @@ class UrlValidator extends Validator
         return [$this->message, []];
     }
 
-    private function idnToAscii($idn)
+    private function idnToAscii(string $idn)
     {
         return idn_to_ascii($idn, IDNA_NONTRANSITIONAL_TO_ASCII, INTL_IDNA_VARIANT_UTS46);
     }
@@ -117,7 +116,7 @@ class UrlValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         if ($this->enableIDN) {
@@ -131,7 +130,7 @@ class UrlValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         if (strpos($this->pattern, '{schemes}') !== false) {
             $pattern = str_replace('{schemes}', '(' . implode('|', $this->validSchemes) . ')', $this->pattern);

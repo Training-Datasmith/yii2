@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\framework\db;
 
 use yiiunit\data\ar\ActiveRecord;

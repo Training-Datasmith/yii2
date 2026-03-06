@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -72,11 +74,10 @@ class EachValidator extends Validator
      */
     public $stopOnFirstError = true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message === null) {
@@ -114,7 +115,7 @@ class EachValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $arrayOfValues = $model->$attribute;
         if (!is_array($arrayOfValues) && !$arrayOfValues instanceof \ArrayAccess) {

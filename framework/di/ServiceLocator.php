@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -56,12 +58,11 @@ class ServiceLocator extends Component
     /**
      * @var array shared component instances indexed by their IDs
      */
-    private $_components = [];
+    private array $_components = [];
     /**
      * @var array component definitions indexed by their IDs
      */
-    private $_definitions = [];
-
+    private array $_definitions = [];
 
     /**
      * Getter magic method.
@@ -107,7 +108,7 @@ class ServiceLocator extends Component
      * @return bool whether the locator has the specified component definition or has instantiated the component.
      * @see set()
      */
-    public function has($id, $checkInstance = false)
+    public function has($id, $checkInstance = false): bool
     {
         return $checkInstance ? isset($this->_components[$id]) : isset($this->_definitions[$id]);
     }
@@ -128,15 +129,15 @@ class ServiceLocator extends Component
         if (isset($this->_components[$id])) {
             return $this->_components[$id];
         }
-
         if (isset($this->_definitions[$id])) {
             $definition = $this->_definitions[$id];
             if (is_object($definition) && !$definition instanceof Closure) {
                 return $this->_components[$id] = $definition;
             }
-
             return $this->_components[$id] = Yii::createObject($definition);
-        } elseif ($throwException) {
+        }
+
+        if ($throwException) {
             throw new InvalidConfigException("Unknown component ID: $id");
         }
 
@@ -186,7 +187,7 @@ class ServiceLocator extends Component
      *
      * @throws InvalidConfigException if the definition is an invalid configuration array
      */
-    public function set($id, $definition)
+    public function set($id, $definition): void
     {
         unset($this->_components[$id]);
 
@@ -218,7 +219,7 @@ class ServiceLocator extends Component
      * Removes the component from the locator.
      * @param string $id the component ID
      */
-    public function clear($id)
+    public function clear($id): void
     {
         unset($this->_definitions[$id], $this->_components[$id]);
     }
@@ -260,7 +261,7 @@ class ServiceLocator extends Component
      *
      * @param array $components component definitions or instances
      */
-    public function setComponents($components)
+    public function setComponents($components): void
     {
         foreach ($components as $id => $component) {
             $this->set($id, $component);

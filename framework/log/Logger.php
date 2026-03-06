@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -124,14 +126,13 @@ class Logger extends Component
      */
     public $profilingAware = false;
 
-
     /**
      * Initializes the logger by registering [[flush()]] as a shutdown function.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
-        register_shutdown_function(function () {
+        register_shutdown_function(function (): void {
             // make regular flush before other shutdown functions, which allows session data collection and so on
             $this->flush();
             // make sure log entries written by shutdown functions are also flushed
@@ -151,7 +152,7 @@ class Logger extends Component
      * `Logger::LEVEL_PROFILE_BEGIN`, `Logger::LEVEL_PROFILE_END`.
      * @param string $category the category of the message.
      */
-    public function log($message, $level, $category = 'application')
+    public function log($message, $level, $category = 'application'): void
     {
         $time = microtime(true);
         $traces = [];
@@ -185,7 +186,7 @@ class Logger extends Component
      * Flushes log messages from memory to targets.
      * @param bool $final whether this is a final call during a request.
      */
-    public function flush($final = false)
+    public function flush($final = false): void
     {
         if ($this->profilingAware) {
             $keep = [];
@@ -306,7 +307,7 @@ class Logger extends Component
      * @return array the first element indicates the number of SQL statements executed,
      * and the second element the total time spent in SQL execution.
      */
-    public function getDbProfiling()
+    public function getDbProfiling(): array
     {
         $timings = $this->getProfiling($this->dbEventNames);
         $count = count($timings);
@@ -325,14 +326,14 @@ class Logger extends Component
      * `info`, `category`, `timestamp`, `trace`, `level`, `duration`, `memory`, `memoryDiff`.
      * The `memory` and `memoryDiff` values are available since version 2.0.11.
      */
-    public function calculateTimings($messages)
+    public function calculateTimings($messages): array
     {
         $timings = [];
         $stack = [];
 
         foreach ($messages as $i => $log) {
-            list($token, $level, $category, $timestamp, $traces) = $log;
-            $memory = isset($log[5]) ? $log[5] : 0;
+            [$token, $level, $category, $timestamp, $traces] = $log;
+            $memory = $log[5] ?? 0;
             $log[6] = $i;
             $hash = md5(json_encode($token));
             if ($level == self::LEVEL_PROFILE_BEGIN) {
@@ -347,7 +348,7 @@ class Logger extends Component
                         'level' => count($stack) - 1,
                         'duration' => $timestamp - $stack[$hash][3],
                         'memory' => $memory,
-                        'memoryDiff' => $memory - (isset($stack[$hash][5]) ? $stack[$hash][5] : 0),
+                        'memoryDiff' => $memory - ($stack[$hash][5] ?? 0),
                     ];
                     unset($stack[$hash]);
                 }
@@ -358,7 +359,6 @@ class Logger extends Component
 
         return array_values($timings);
     }
-
 
     /**
      * Returns the text display of the specified level.
@@ -377,6 +377,6 @@ class Logger extends Component
             self::LEVEL_PROFILE => 'profile',
         ];
 
-        return isset($levels[$level]) ? $levels[$level] : 'unknown';
+        return $levels[$level] ?? 'unknown';
     }
 }

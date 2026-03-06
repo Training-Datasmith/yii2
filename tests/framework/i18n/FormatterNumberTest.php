@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -830,32 +832,32 @@ class FormatterNumberTest extends TestCase
             'not-int key for int options' => [
                 ['a' => 1],
                 [],
-                'The $options array keys must be integers recognizable by NumberFormatter::setAttribute(). "string" provided instead.'
+                'The $options array keys must be integers recognizable by NumberFormatter::setAttribute(). "string" provided instead.',
             ],
             'string value for int options' => [
                 [1 => 'a'],
                 [],
-                'The $options array values must be integers. Did you mean to use $textOptions?'
+                'The $options array values must be integers. Did you mean to use $textOptions?',
             ],
             'non-string-int value for int options' => [
                 [1 => 1.1],
                 [],
-                'The $options array values must be integers. "double" provided instead.'
+                'The $options array values must be integers. "double" provided instead.',
             ],
             'not-int key for text options' => [
                 [],
                 ['a' => 1],
-                'The $textOptions array keys must be integers recognizable by NumberFormatter::setTextAttribute(). "string" provided instead.'
+                'The $textOptions array keys must be integers recognizable by NumberFormatter::setTextAttribute(). "string" provided instead.',
             ],
             'int value for text options' => [
                 [],
                 [1 => 1],
-                'The $textOptions array values must be strings. Did you mean to use $options?'
+                'The $textOptions array values must be strings. Did you mean to use $options?',
             ],
             'non-string-int value for text options' => [
                 [],
                 [1 => 1.1],
-                'The $textOptions array values must be strings. "double" provided instead.'
+                'The $textOptions array values must be strings. "double" provided instead.',
             ],
         ];
     }
@@ -877,49 +879,49 @@ class FormatterNumberTest extends TestCase
                 ['a' => 1],
                 [],
                 [],
-                'The numberFormatterOptions array keys must be integers recognizable by NumberFormatter::setAttribute(). "string" provided instead.'
+                'The numberFormatterOptions array keys must be integers recognizable by NumberFormatter::setAttribute(). "string" provided instead.',
             ],
             'string value for int options' => [
                 [1 => 'a'],
                 [],
                 [],
-                'The numberFormatterOptions array values must be integers. Did you mean to use numberFormatterTextOptions?'
+                'The numberFormatterOptions array values must be integers. Did you mean to use numberFormatterTextOptions?',
             ],
             'non-string-int value for int options' => [
                 [1 => 1.1],
                 [],
                 [],
-                'The numberFormatterOptions array values must be integers. "double" provided instead.'
+                'The numberFormatterOptions array values must be integers. "double" provided instead.',
             ],
             'not-int key for text options' => [
                 [],
                 ['a' => 1],
                 [],
-                'The numberFormatterTextOptions array keys must be integers recognizable by NumberFormatter::setTextAttribute(). "string" provided instead.'
+                'The numberFormatterTextOptions array keys must be integers recognizable by NumberFormatter::setTextAttribute(). "string" provided instead.',
             ],
             'int value for text options' => [
                 [],
                 [1 => 1],
                 [],
-                'The numberFormatterTextOptions array values must be strings. Did you mean to use numberFormatterOptions?'
+                'The numberFormatterTextOptions array values must be strings. Did you mean to use numberFormatterOptions?',
             ],
             'non-string-int value for text options' => [
                 [],
                 [1 => 1.1],
                 [],
-                'The numberFormatterTextOptions array values must be strings. "double" provided instead.'
+                'The numberFormatterTextOptions array values must be strings. "double" provided instead.',
             ],
             'non-int key for symbol' => [
                 [],
                 [],
                 ['a' => 2],
-                'The numberFormatterSymbols array keys must be integers recognizable by NumberFormatter::setSymbol(). "string" provided instead.'
+                'The numberFormatterSymbols array keys must be integers recognizable by NumberFormatter::setSymbol(). "string" provided instead.',
             ],
             'non-string value for symbol' => [
                 [],
                 [],
                 [1 => 3],
-                'The numberFormatterSymbols array values must be strings. "integer" provided instead.'
+                'The numberFormatterSymbols array values must be strings. "integer" provided instead.',
             ],
         ];
     }

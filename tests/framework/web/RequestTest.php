@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,9 +10,9 @@
 
 namespace yiiunit\framework\web;
 
+use stdClass;
 use Yii;
 use yii\base\InvalidConfigException;
-use stdClass;
 use yii\web\Request;
 use yiiunit\TestCase;
 
@@ -395,7 +397,7 @@ class RequestTest extends TestCase
             // empty
             [
                 [],
-                [null, null]
+                [null, null],
             ],
             // normal
             [
@@ -406,7 +408,7 @@ class RequestTest extends TestCase
                 [
                     'http://example1.com',
                     'example1.com',
-                ]
+                ],
             ],
             // HTTP header missing
             [
@@ -416,7 +418,7 @@ class RequestTest extends TestCase
                 [
                     'http://example2.com',
                     'example2.com',
-                ]
+                ],
             ],
             // forwarded from untrusted server
             [
@@ -428,7 +430,7 @@ class RequestTest extends TestCase
                 [
                     'http://example1.com',
                     'example1.com',
-                ]
+                ],
             ],
             // forwarded from trusted proxy
             [
@@ -441,7 +443,7 @@ class RequestTest extends TestCase
                 [
                     'http://example3.com',
                     'example3.com',
-                ]
+                ],
             ],
             // forwarded from trusted proxy
             [
@@ -454,7 +456,7 @@ class RequestTest extends TestCase
                 [
                     'http://example3.com',
                     'example3.com',
-                ]
+                ],
             ],
             // RFC 7239 forwarded from untrusted server
             [
@@ -466,7 +468,7 @@ class RequestTest extends TestCase
                 [
                     'http://example1.com',
                     'example1.com',
-                ]
+                ],
             ],
             // RFC 7239 forwarded from trusted proxy
             [
@@ -478,7 +480,7 @@ class RequestTest extends TestCase
                 [
                     'http://example3.com',
                     'example3.com',
-                ]
+                ],
             ],
             // RFC 7239 forwarded from trusted proxy
             [
@@ -490,7 +492,7 @@ class RequestTest extends TestCase
                 [
                     'http://example2.com',
                     'example2.com',
-                ]
+                ],
             ],
         ];
     }
@@ -516,7 +518,6 @@ class RequestTest extends TestCase
             ],
         ]);
 
-
         $this->assertEquals($expected[0], $request->getHostInfo());
         $this->assertEquals($expected[1], $request->getHostName());
 
@@ -531,7 +532,6 @@ class RequestTest extends TestCase
                 'forwarded',
             ],
         ]);
-
 
         $this->assertEquals($expected[0], $request->getHostInfo());
         $this->assertEquals($expected[1], $request->getHostName());
@@ -1310,7 +1310,7 @@ class RequestTest extends TestCase
         $_SERVER['HTTP_X_FORWARDED_PROTO'] = $xForwardedProto;
         $request = new Request([
             'trustedHosts' => $trustedHosts,
-            'ipHeaders' => []
+            'ipHeaders' => [],
         ]);
         $this->assertSame($expectedRemoteAddress, $request->remoteIP, 'Remote IP fail!');
         $this->assertSame($expectedUserIp, $request->userIP, 'User IP fail!');
@@ -1324,44 +1324,44 @@ class RequestTest extends TestCase
                 '192.168.10.10',
                 'for=10.0.0.2;host=yiiframework.com;proto=https',
                 'https://yiiframework.com',
-                '10.0.0.2'
+                '10.0.0.2',
             ],
             [
                 '192.168.10.10',
                 'for=10.0.0.2;proto=https',
                 'https://example.com',
-                '10.0.0.2'
+                '10.0.0.2',
             ],
             [
                 '192.168.10.10',
                 'host=yiiframework.com;proto=https',
                 'https://yiiframework.com',
-                '192.168.10.10'
+                '192.168.10.10',
             ],
             [
                 '192.168.10.10',
                 'host=yiiframework.com;for=10.0.0.2',
                 'http://yiiframework.com',
-                '10.0.0.2'
+                '10.0.0.2',
             ],
             [
                 '192.168.20.10',
                 'host=yiiframework.com;for=10.0.0.2;proto=https',
                 'https://yiiframework.com',
-                '10.0.0.2'
+                '10.0.0.2',
             ],
             [
                 '192.168.10.10',
                 'for=10.0.0.1;host=yiiframework.com;proto=https, for=192.168.20.20;host=awesome.proxy.com;proto=http',
                 'https://yiiframework.com',
-                '10.0.0.1'
+                '10.0.0.1',
             ],
             [
                 '192.168.10.10',
                 'for=8.8.8.8;host=spoofed.host;proto=https, for=10.0.0.1;host=yiiframework.com;proto=https, for=192.168.20.20;host=trusted.proxy;proto=http',
                 'https://yiiframework.com',
-                '10.0.0.1'
-            ]
+                '10.0.0.1',
+            ],
         ];
     }
 
@@ -1377,7 +1377,7 @@ class RequestTest extends TestCase
         $request = new Request([
             'trustedHosts' => [
                 '192.168.10.0/24',
-                '192.168.20.0/24'
+                '192.168.20.0/24',
             ],
             'secureHeaders' => [
                 'X-Forwarded-For',
@@ -1403,7 +1403,7 @@ class RequestTest extends TestCase
         $request = new Request([
             'trustedHosts' => [
                 '192.168.10.0/24',
-                '192.168.20.0/24'
+                '192.168.20.0/24',
             ],
             'secureHeaders' => [
                 'X-Forwarded-For',

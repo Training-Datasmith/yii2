@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -65,7 +67,6 @@ class ActiveDataFilter extends DataFilter
      */
     public $queryOperatorMap = [];
 
-
     /**
      * {@inheritdoc}
      */
@@ -118,7 +119,7 @@ class ActiveDataFilter extends DataFilter
      * @param mixed $condition raw condition.
      * @return array actual condition.
      */
-    protected function buildConjunctionCondition($operator, $condition)
+    protected function buildConjunctionCondition($operator, $condition): array
     {
         if (isset($this->queryOperatorMap[$operator])) {
             $operator = $this->queryOperatorMap[$operator];
@@ -139,7 +140,7 @@ class ActiveDataFilter extends DataFilter
      * @param mixed $condition raw condition.
      * @return array actual condition.
      */
-    protected function buildBlockCondition($operator, $condition)
+    protected function buildBlockCondition($operator, $condition): array
     {
         if (isset($this->queryOperatorMap[$operator])) {
             $operator = $this->queryOperatorMap[$operator];
@@ -194,7 +195,7 @@ class ActiveDataFilter extends DataFilter
      * @param string $attribute attribute name.
      * @return array actual condition.
      */
-    protected function buildOperatorCondition($operator, $condition, $attribute)
+    protected function buildOperatorCondition($operator, $condition, $attribute): array
     {
         if (isset($this->queryOperatorMap[$operator])) {
             $operator = $this->queryOperatorMap[$operator];

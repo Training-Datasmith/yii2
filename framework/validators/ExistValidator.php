@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -91,11 +93,10 @@ class ExistValidator extends Validator
      */
     public $forceMasterDb = true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message === null) {
@@ -106,7 +107,7 @@ class ExistValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         if (!empty($this->targetRelation)) {
             $this->checkTargetRelationExistence($model, $attribute);
@@ -120,7 +121,7 @@ class ExistValidator extends Validator
      * @param ActiveRecord $model the data model to be validated
      * @param string $attribute the name of the attribute to be validated.
      */
-    private function checkTargetRelationExistence($model, $attribute)
+    private function checkTargetRelationExistence($model, $attribute): void
     {
         $exists = false;
 
@@ -135,9 +136,7 @@ class ExistValidator extends Validator
 
         $connection = $model::getDb();
         if ($this->forceMasterDb && method_exists($connection, 'useMaster')) {
-            $exists = $connection->useMaster(function () use ($relationQuery) {
-                return $relationQuery->exists();
-            });
+            $exists = $connection->useMaster(fn () => $relationQuery->exists());
         } else {
             $exists = $relationQuery->exists();
         }
@@ -152,9 +151,9 @@ class ExistValidator extends Validator
      * @param \yii\base\Model $model the data model to be validated
      * @param string $attribute the name of the attribute to be validated.
      */
-    private function checkTargetAttributeExistence($model, $attribute)
+    private function checkTargetAttributeExistence($model, $attribute): void
     {
-        $targetAttribute = $this->targetAttribute === null ? $attribute : $this->targetAttribute;
+        $targetAttribute = $this->targetAttribute ?? $attribute;
         if ($this->skipOnError) {
             foreach ((array)$targetAttribute as $k => $v) {
                 if ($model->hasErrors(is_int($k) ? $v : $k)) {
@@ -231,13 +230,13 @@ class ExistValidator extends Validator
      */
     private function getTargetClass($model)
     {
-        return $this->targetClass === null ? get_class($model) : $this->targetClass;
+        return $this->targetClass ?? get_class($model);
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         if ($this->targetClass === null) {
             throw new InvalidConfigException('The "targetClass" property must be set.');
@@ -268,14 +267,11 @@ class ExistValidator extends Validator
         $db = $targetClass::getDb();
 
         if ($this->forceMasterDb && method_exists($db, 'useMaster')) {
-            return $db->useMaster(function () use ($query, $value) {
-                return $this->queryValueExists($query, $value);
-            });
+            return $db->useMaster(fn () => $this->queryValueExists($query, $value));
         }
 
         return $this->queryValueExists($query, $value);
     }
-
 
     /**
      * Run query to check if value exists.
@@ -317,9 +313,8 @@ class ExistValidator extends Validator
      * @param ActiveQuery<ActiveRecord> $query
      * @param array $conditions array of condition, keys to be modified
      * @param string|null $alias set empty string for no apply alias. Set null for apply primary table alias
-     * @return array
      */
-    private function applyTableAlias($query, $conditions, $alias = null)
+    private function applyTableAlias($query, array $conditions, $alias = null): array
     {
         if ($alias === null) {
             $alias = array_keys($query->getTablesUsedInFrom())[0];

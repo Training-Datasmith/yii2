@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -17,10 +19,10 @@ use yii\db\ConstraintFinderTrait;
 use yii\db\Expression;
 use yii\db\ForeignKeyConstraint;
 use yii\db\IndexConstraint;
+use yii\db\Schema as BaseSchema;
 use yii\db\TableSchema;
 use yii\db\Transaction;
 use yii\helpers\ArrayHelper;
-use yii\db\Schema as BaseSchema;
 
 /**
  * Schema is the class for retrieving metadata from a CUBRID database (version 9.3.x and higher).
@@ -92,11 +94,11 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      */
     protected $tableQuoteCharacter = '"';
 
-
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    protected function findTableNames($schema = '')
+    protected function findTableNames($schema = ''): array
     {
         $pdo = $this->db->getSlavePdo(true);
         $tables = $pdo->cubrid_schema(\PDO::CUBRID_SCH_TABLE);
@@ -114,7 +116,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    protected function loadTableSchema($name)
+    protected function loadTableSchema($name): ?\yii\db\TableSchema
     {
         $pdo = $this->db->getSlavePdo(true);
 
@@ -163,7 +165,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    protected function loadTablePrimaryKey($tableName)
+    protected function loadTablePrimaryKey($tableName): ?\yii\db\Constraint
     {
         $primaryKey = $this->db->getSlavePdo(true)->cubrid_schema(\PDO::CUBRID_SCH_PRIMARY_KEY, $tableName);
         if (empty($primaryKey)) {
@@ -179,8 +181,9 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\ForeignKeyConstraint[]
      */
-    protected function loadTableForeignKeys($tableName)
+    protected function loadTableForeignKeys($tableName): array
     {
         static $actionTypes = [
             0 => 'CASCADE',
@@ -199,8 +202,8 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
                 'columnNames' => ArrayHelper::getColumn($foreignKey, 'FKCOLUMN_NAME'),
                 'foreignTableName' => $foreignKey[0]['PKTABLE_NAME'],
                 'foreignColumnNames' => ArrayHelper::getColumn($foreignKey, 'PKCOLUMN_NAME'),
-                'onDelete' => isset($actionTypes[$foreignKey[0]['DELETE_RULE']]) ? $actionTypes[$foreignKey[0]['DELETE_RULE']] : null,
-                'onUpdate' => isset($actionTypes[$foreignKey[0]['UPDATE_RULE']]) ? $actionTypes[$foreignKey[0]['UPDATE_RULE']] : null,
+                'onDelete' => $actionTypes[$foreignKey[0]['DELETE_RULE']] ?? null,
+                'onUpdate' => $actionTypes[$foreignKey[0]['UPDATE_RULE']] ?? null,
             ]);
         }
 
@@ -244,7 +247,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    public function releaseSavepoint($name)
+    public function releaseSavepoint($name): void
     {
         // does nothing as cubrid does not support this
     }
@@ -263,7 +266,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      * @param array $info column information
      * @return T the column schema object
      */
-    protected function loadColumnSchema($info)
+    protected function loadColumnSchema(array $info)
     {
         $column = $this->createColumnSchema();
 
@@ -348,14 +351,14 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
         ];
         $type = gettype($data);
 
-        return isset($typeMap[$type]) ? $typeMap[$type] : \PDO::PARAM_STR;
+        return $typeMap[$type] ?? \PDO::PARAM_STR;
     }
 
     /**
      * {@inheritdoc}
      * @see https://www.cubrid.org/manual/en/9.3.0/sql/transaction.html#database-concurrency
      */
-    public function setTransactionIsolationLevel($level)
+    public function setTransactionIsolationLevel($level): void
     {
         // translate SQL92 levels to CUBRID levels:
         switch ($level) {
@@ -378,7 +381,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    public function createColumnSchemaBuilder($type, $length = null)
+    public function createColumnSchemaBuilder($type, $length = null): \yii\db\cubrid\ColumnSchemaBuilder
     {
         return new ColumnSchemaBuilder($type, $length, $this->db);
     }
@@ -391,7 +394,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
      * - uniques
      * @return mixed constraints.
      */
-    private function loadTableConstraints($tableName, $returnType)
+    private function loadTableConstraints($tableName, string $returnType)
     {
         $constraints = $this->db->getSlavePdo(true)->cubrid_schema(\PDO::CUBRID_SCH_CONSTRAINT, $tableName);
         $constraints = ArrayHelper::index($constraints, null, ['TYPE', 'NAME']);

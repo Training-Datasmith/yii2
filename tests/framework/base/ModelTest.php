@@ -185,7 +185,7 @@ class ModelTest extends TestCase
         $model->rules = [
             [
                 [123456], 'safe',
-            ]
+            ],
         ];
 
         $this->assertTrue($model->isAttributeSafe(123456));

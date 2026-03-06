@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -291,7 +293,6 @@ class BaseInflector
      */
     public static $transliterator = self::TRANSLITERATE_LOOSE;
 
-
     /**
      * Converts a word to its plural form.
      * Note that this is for English only!
@@ -363,10 +364,9 @@ class BaseInflector
      * will remove non alphanumeric character from the word, so
      * "who's online" will be converted to "WhoSOnline".
      * @param string $word the word to CamelCase
-     * @return string
      * @see variablize()
      */
-    public static function camelize($word)
+    public static function camelize($word): string
     {
         if (empty($word)) {
             return (string) $word;
@@ -404,7 +404,7 @@ class BaseInflector
      * @param bool|string $strict whether to insert a separator between two consecutive uppercase chars, defaults to false
      * @return string the resulting ID
      */
-    public static function camel2id($name, $separator = '-', $strict = false)
+    public static function camel2id($name, $separator = '-', $strict = false): string
     {
         if (empty($name)) {
             return (string) $name;
@@ -425,7 +425,7 @@ class BaseInflector
      * @param string $separator the character used to separate the words in the ID
      * @return string the resulting CamelCase name
      */
-    public static function id2camel($id, $separator = '-')
+    public static function id2camel($id, $separator = '-'): string
     {
         if (empty($id)) {
             return (string) $id;
@@ -436,9 +436,8 @@ class BaseInflector
     /**
      * Converts any "CamelCased" into an "underscored_word".
      * @param string $words the word(s) to underscore
-     * @return string
      */
-    public static function underscore($words)
+    public static function underscore($words): string
     {
         if (empty($words)) {
             return (string) $words;
@@ -470,9 +469,8 @@ class BaseInflector
      * will remove non alphanumeric character from the word, so
      * "who's online" will be converted to "whoSOnline".
      * @param string $word to lowerCamelCase
-     * @return string
      */
-    public static function variablize($word)
+    public static function variablize($word): string
     {
         if (empty($word)) {
             return (string) $word;
@@ -521,7 +519,7 @@ class BaseInflector
             $parts = [static::transliterate($string)];
         }
 
-        $replaced = array_map(function ($element) use ($replacement) {
+        $replaced = array_map(function ($element) use ($replacement): ?string {
             $element = preg_replace('/[^a-zA-Z0-9=\s—–-]+/u', '', $element);
             return preg_replace('/[=\s—–-]+/u', $replacement, $element);
         }, $parts);
@@ -589,9 +587,8 @@ class BaseInflector
     /**
      * Converts number to its ordinal English form. For example, converts 13 to 13th, 2 to 2nd ...
      * @param int $number the number to get its ordinal value
-     * @return string
      */
-    public static function ordinalize($number)
+    public static function ordinalize($number): string
     {
         if (in_array($number % 100, range(11, 13))) {
             return $number . 'th';

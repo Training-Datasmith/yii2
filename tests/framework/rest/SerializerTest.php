@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,12 +10,12 @@
 
 namespace yiiunit\framework\rest;
 
-use Yii;
 use JsonSerializable;
 use ReturnTypeWillChange;
-use yii\data\DataProviderInterface;
+use Yii;
 use yii\base\Model;
 use yii\data\ArrayDataProvider;
+use yii\data\DataProviderInterface;
 use yii\rest\Serializer;
 use yiiunit\TestCase;
 
@@ -161,7 +163,7 @@ class SerializerTest extends TestCase
         Yii::$app->request->setQueryParams(
             [
                 'fields' => 'field1,extraField3.field3',
-                'expand' => 'extraField3.extraField4'
+                'expand' => 'extraField3.extraField4',
             ]
         );
         $this->assertSame([
@@ -188,7 +190,7 @@ class SerializerTest extends TestCase
         Yii::$app->request->setQueryParams(
             [
                 'fields' => 'extraField3.*',
-                'expand' => 'extraField3.extraField4'
+                'expand' => 'extraField3.extraField4',
             ]
         );
         $this->assertSame([

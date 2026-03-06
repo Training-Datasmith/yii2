@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,18 +10,18 @@
 
 namespace yiiunit\framework\widgets;
 
-use yiiunit\TestCase;
-use Exception;
-use yii\validators\Validator;
 use DMS\PHPUnitExtensions\ArraySubset\ArraySubsetAsserts;
+use Exception;
 use Yii;
 use yii\base\DynamicModel;
+use yii\validators\Validator;
 use yii\web\AssetManager;
 use yii\web\View;
 use yii\widgets\ActiveField;
 use yii\widgets\ActiveForm;
 use yii\widgets\InputWidget;
 use yii\widgets\MaskedInput;
+use yiiunit\TestCase;
 
 /**
  * @author Nelson J Morais <njmorais@gmail.com>
@@ -699,7 +701,7 @@ HTML;
         $this->activeField->inputOptions = ['placeholder' => 'pholder_both_input'];
         $widget = $this->activeField->widget(TestMaskedInput::class, [
             'mask' => '999-999-9999',
-            'options' => ['placeholder' => 'pholder_both_direct']
+            'options' => ['placeholder' => 'pholder_both_direct'],
         ]);
         $this->assertStringContainsString('placeholder="pholder_both_direct"', (string) $widget);
     }

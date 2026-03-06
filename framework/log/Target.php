@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -136,7 +138,6 @@ abstract class Target extends Component
     private $_levels = 0;
     private $_enabled = true;
 
-
     /**
      * Exports log [[messages]] to a specific destination.
      * Child classes must implement this method.
@@ -151,7 +152,7 @@ abstract class Target extends Component
      * of each message.
      * @param bool $final whether this method is called at the end of the current application
      */
-    public function collect($messages, $final)
+    public function collect($messages, $final): void
     {
         $this->messages = array_merge($this->messages, static::filterMessages($messages, $this->getLevels(), $this->categories, $this->except));
         $count = count($this->messages);
@@ -222,7 +223,7 @@ abstract class Target extends Component
      * @param array|int $levels message levels that this target is interested in.
      * @throws InvalidConfigException if $levels value is not correct.
      */
-    public function setLevels($levels)
+    public function setLevels($levels): void
     {
         static $levelMap = [
             'error' => Logger::LEVEL_ERROR,
@@ -241,9 +242,7 @@ abstract class Target extends Component
                 }
             }
         } else {
-            $bitmapValues = array_reduce($levelMap, function ($carry, $item) {
-                return $carry | $item;
-            });
+            $bitmapValues = array_reduce($levelMap, fn ($carry, $item) => $carry | $item);
             if (!($bitmapValues & $levels) && $levels !== 0) {
                 throw new InvalidConfigException("Incorrect $levels value");
             }
@@ -261,7 +260,7 @@ abstract class Target extends Component
      * @param array $except the message categories to exclude. If empty, it means all categories are allowed.
      * @return array the filtered messages.
      */
-    public static function filterMessages($messages, $levels = 0, $categories = [], $except = [])
+    public static function filterMessages(array $messages, $levels = 0, $categories = [], $except = [])
     {
         foreach ($messages as $i => $message) {
             if ($levels && !($levels & $message[1])) {
@@ -301,7 +300,7 @@ abstract class Target extends Component
      * The message structure follows that in [[Logger::messages]].
      * @return string the formatted message
      */
-    public function formatMessage($message)
+    public function formatMessage(array $message)
     {
         [$text, $level, $category, $timestamp] = $message;
         $level = Logger::getLevelName($level);
@@ -376,7 +375,7 @@ abstract class Target extends Component
      * }
      * ```
      */
-    public function setEnabled($value)
+    public function setEnabled($value): void
     {
         $this->_enabled = $value;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -33,7 +35,7 @@ class WinCache extends Cache
      * a complex data structure consisting of factors representing the key.
      * @return bool true if a value exists in cache, false if the value is not in the cache or expired.
      */
-    public function exists($key)
+    public function exists($key): bool
     {
         $key = $this->buildKey($key);
 
@@ -71,7 +73,7 @@ class WinCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function setValue($key, $value, $duration)
+    protected function setValue($key, $value, $duration): bool
     {
         return wincache_ucache_set($key, $value, $duration);
     }
@@ -82,7 +84,7 @@ class WinCache extends Cache
      * @param int $duration the number of seconds in which the cached values will expire. 0 means never expire.
      * @return array array of failed keys
      */
-    protected function setValues($data, $duration)
+    protected function setValues($data, $duration): bool
     {
         return wincache_ucache_set($data, null, $duration);
     }
@@ -97,7 +99,7 @@ class WinCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function addValue($key, $value, $duration)
+    protected function addValue($key, $value, $duration): bool
     {
         return wincache_ucache_add($key, $value, $duration);
     }
@@ -110,7 +112,7 @@ class WinCache extends Cache
      * @param int $duration the number of seconds in which the cached values will expire. 0 means never expire.
      * @return array array of failed keys
      */
-    protected function addValues($data, $duration)
+    protected function addValues($data, $duration): bool
     {
         return wincache_ucache_add($data, null, $duration);
     }
@@ -121,7 +123,7 @@ class WinCache extends Cache
      * @param string $key the key of the value to be deleted
      * @return bool if no error happens during deletion
      */
-    protected function deleteValue($key)
+    protected function deleteValue($key): bool
     {
         return wincache_ucache_delete($key);
     }
@@ -131,7 +133,7 @@ class WinCache extends Cache
      * This is the implementation of the method declared in the parent class.
      * @return bool whether the flush operation was successful.
      */
-    protected function flushValues()
+    protected function flushValues(): bool
     {
         return wincache_ucache_clear();
     }

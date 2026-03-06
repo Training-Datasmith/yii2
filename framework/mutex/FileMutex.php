@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -73,15 +75,14 @@ class FileMutex extends Mutex
     /**
      * @var resource[] stores all opened lock files. Keys are lock names and values are file handles.
      */
-    private $_files = [];
-
+    private array $_files = [];
 
     /**
      * Initializes mutex component implementation dedicated for UNIX, GNU/Linux, Mac OS X, and other UNIX-like
      * operating systems.
      * @throws InvalidConfigException
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->mutexPath = Yii::getAlias($this->mutexPath);
@@ -102,7 +103,7 @@ class FileMutex extends Mutex
     protected function acquireLock($name, $timeout = 0)
     {
         $filePath = $this->getLockFilePath($name);
-        return $this->retryAcquire($timeout, function () use ($filePath, $name) {
+        return $this->retryAcquire($timeout, function () use ($filePath, $name): bool {
             $file = fopen($filePath, 'w+');
             if ($file === false) {
                 return false;
@@ -144,7 +145,7 @@ class FileMutex extends Mutex
      * @param string $name of the lock to be released.
      * @return bool release result.
      */
-    protected function releaseLock($name)
+    protected function releaseLock($name): bool
     {
         if (!isset($this->_files[$name])) {
             return false;
@@ -171,10 +172,9 @@ class FileMutex extends Mutex
     /**
      * Generate path for lock file.
      * @param string $name
-     * @return string
      * @since 2.0.10
      */
-    protected function getLockFilePath($name)
+    protected function getLockFilePath($name): string
     {
         return $this->mutexPath . DIRECTORY_SEPARATOR . md5($name) . '.lock';
     }

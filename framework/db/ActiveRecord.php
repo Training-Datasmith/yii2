@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -109,7 +111,7 @@ class ActiveRecord extends BaseActiveRecord
      * This will only set defaults for attributes that are `null`.
      * @return $this the model instance itself.
      */
-    public function loadDefaultValues($skipIfSet = true)
+    public function loadDefaultValues($skipIfSet = true): self
     {
         $columns = static::getTableSchema()->columns;
         foreach ($this->attributes() as $name) {
@@ -184,7 +186,7 @@ class ActiveRecord extends BaseActiveRecord
                 // if condition is scalar, search for a single primary key, if it is array, search for multiple primary key values
                 $condition = [$pk => is_array($condition) ? array_values($condition) : $condition];
             } else {
-                throw new InvalidConfigException('"' . get_called_class() . '" must have a primary key.');
+                throw new InvalidConfigException('"' . static::class . '" must have a primary key.');
             }
         } elseif (is_array($condition)) {
             $aliases = static::filterValidAliases($query);
@@ -197,21 +199,17 @@ class ActiveRecord extends BaseActiveRecord
     /**
      * Returns table aliases which are not the same as the name of the tables.
      *
-     * @param Query $query
-     * @return array
      * @throws InvalidConfigException
      * @since 2.0.17
      * @internal
      */
-    protected static function filterValidAliases(Query $query)
+    protected static function filterValidAliases(Query $query): array
     {
         $tables = $query->getTablesUsedInFrom();
 
         $aliases = array_diff(array_keys($tables), $tables);
 
-        return array_map(function ($alias) {
-            return preg_replace('/{{(\w+)}}/', '$1', $alias);
-        }, array_values($aliases));
+        return array_map(fn ($alias) => preg_replace('/{{(\w+)}}/', '$1', $alias), array_values($aliases));
     }
 
     /**
@@ -220,14 +218,13 @@ class ActiveRecord extends BaseActiveRecord
      * This method will ensure that an array condition only filters on existing table columns.
      *
      * @param array $condition condition to filter.
-     * @param array $aliases
      * @return array filtered condition.
      * @throws InvalidArgumentException in case array contains unsafe values.
      * @throws InvalidConfigException
      * @since 2.0.15
      * @internal
      */
-    protected static function filterCondition(array $condition, array $aliases = [])
+    protected static function filterCondition(array $condition, array $aliases = []): array
     {
         $result = [];
         $db = static::getDb();
@@ -247,13 +244,11 @@ class ActiveRecord extends BaseActiveRecord
      * Valid column names are table column names or column names prefixed with table name or table alias
      *
      * @param Connection $db
-     * @param array $aliases
-     * @return array
      * @throws InvalidConfigException
      * @since 2.0.17
      * @internal
      */
-    protected static function filterValidColumnNames($db, array $aliases)
+    protected static function filterValidColumnNames($db, array $aliases): array
     {
         $columnNames = [];
         $tableName = static::tableName();
@@ -407,7 +402,7 @@ class ActiveRecord extends BaseActiveRecord
      */
     public static function find()
     {
-        return Yii::createObject(ActiveQuery::className(), [get_called_class()]);
+        return Yii::createObject(ActiveQuery::className(), [static::class]);
     }
 
     /**
@@ -418,9 +413,9 @@ class ActiveRecord extends BaseActiveRecord
      * if the table is not named after this convention.
      * @return string the table name
      */
-    public static function tableName()
+    public static function tableName(): string
     {
-        return '{{%' . Inflector::camel2id(StringHelper::basename(get_called_class()), '_') . '}}';
+        return '{{%' . Inflector::camel2id(StringHelper::basename(static::class), '_') . '}}';
     }
 
     /**
@@ -496,7 +491,7 @@ class ActiveRecord extends BaseActiveRecord
      * @return array the declarations of transactional operations. The array keys are scenarios names,
      * and the array values are the corresponding transaction operations.
      */
-    public function transactions()
+    public function transactions(): array
     {
         return [];
     }
@@ -504,7 +499,7 @@ class ActiveRecord extends BaseActiveRecord
     /**
      * {@inheritdoc}
      */
-    public static function populateRecord($record, $row)
+    public static function populateRecord($record, $row): void
     {
         $columns = static::getTableSchema()->columns;
         foreach ($row as $name => $value) {
@@ -576,10 +571,7 @@ class ActiveRecord extends BaseActiveRecord
             }
 
             return $result;
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception|\Throwable $e) {
             $transaction->rollBack();
             throw $e;
         }
@@ -619,7 +611,7 @@ class ActiveRecord extends BaseActiveRecord
      * meaning all attributes that are loaded from DB will be saved.
      * @return bool whether the record is inserted successfully.
      */
-    protected function insertInternal($attributes = null)
+    protected function insertInternal($attributes = null): bool
     {
         if (!$this->beforeSave(true)) {
             return false;
@@ -714,10 +706,7 @@ class ActiveRecord extends BaseActiveRecord
             }
 
             return $result;
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception|\Throwable $e) {
             $transaction->rollBack();
             throw $e;
         }
@@ -758,10 +747,7 @@ class ActiveRecord extends BaseActiveRecord
             }
 
             return $result;
-        } catch (\Exception $e) {
-            $transaction->rollBack();
-            throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception|\Throwable $e) {
             $transaction->rollBack();
             throw $e;
         }
@@ -817,7 +803,7 @@ class ActiveRecord extends BaseActiveRecord
      * @param int $operation the operation to check. Possible values are [[OP_INSERT]], [[OP_UPDATE]] and [[OP_DELETE]].
      * @return bool whether the specified operation is transactional in the current [[scenario]].
      */
-    public function isTransactional($operation)
+    public function isTransactional($operation): bool
     {
         $scenario = $this->getScenario();
         $transactions = $this->transactions();

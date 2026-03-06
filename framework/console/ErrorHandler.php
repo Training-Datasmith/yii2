@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -69,7 +71,7 @@ class ErrorHandler extends \yii\base\ErrorHandler
         } else {
             echo $message . "\n";
         }
-        if (YII_DEBUG && $previous !== null) {
+        if ($previous !== null) {
             $causedBy = $this->formatMessage('Caused by: ', [Console::BOLD]);
             if (PHP_SAPI === 'cli') {
                 Console::stderr($causedBy);
@@ -95,7 +97,7 @@ class ErrorHandler extends \yii\base\ErrorHandler
             Yii::$app->controller instanceof \yii\console\Controller && Yii::$app->controller->isColorEnabled($stream)
             || Yii::$app instanceof \yii\console\Application && Console::streamSupportsAnsiColors($stream)
         ) {
-            $message = Console::ansiFormat($message, $format);
+            return Console::ansiFormat($message, $format);
         }
 
         return $message;

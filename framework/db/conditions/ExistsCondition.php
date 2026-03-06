@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -29,7 +31,6 @@ class ExistsCondition implements ConditionInterface
      */
     private $query;
 
-
     /**
      * ExistsCondition constructor.
      *
@@ -45,7 +46,7 @@ class ExistsCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition($operator, $operands): self
     {
         if (!isset($operands[0]) || !$operands[0] instanceof Query) {
             throw new InvalidArgumentException('Subquery for EXISTS operator must be a Query object.');

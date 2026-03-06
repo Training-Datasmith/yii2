@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -28,12 +30,11 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
     /**
      * @var array<string, string[]> the headers in this collection (indexed by the normalized header names)
      */
-    private $_headers = [];
+    private array $_headers = [];
     /**
      * @var array<string, string> the original names of the headers (indexed by the normalized header names)
      */
     private $_originalHeaderNames = [];
-
 
     /**
      * Returns an iterator for traversing the headers in the collection.
@@ -64,7 +65,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return int the number of headers in the collection.
      */
     #[\ReturnTypeWillChange]
-    public function getCount()
+    public function getCount(): int
     {
         return count($this->_headers);
     }
@@ -95,7 +96,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $value the value of the header
      * @return $this the collection object itself
      */
-    public function set($name, $value = '')
+    public function set($name, $value = ''): self
     {
         $normalizedName = strtolower($name);
         $this->_headers[$normalizedName] = (array) $value;
@@ -112,7 +113,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $value the value of the header
      * @return $this the collection object itself
      */
-    public function add($name, $value)
+    public function add($name, $value): self
     {
         $normalizedName = strtolower($name);
         $this->_headers[$normalizedName][] = $value;
@@ -130,7 +131,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $value the value of the header
      * @return $this the collection object itself
      */
-    public function setDefault($name, $value)
+    public function setDefault($name, $value): self
     {
         $normalizedName = strtolower($name);
         if (empty($this->_headers[$normalizedName])) {
@@ -146,7 +147,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the name of the header
      * @return bool whether the named header exists
      */
-    public function has($name)
+    public function has($name): bool
     {
         return isset($this->_headers[strtolower($name)]);
     }
@@ -171,7 +172,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
     /**
      * Removes all headers.
      */
-    public function removeAll()
+    public function removeAll(): void
     {
         $this->_headers = [];
         $this->_originalHeaderNames = [];
@@ -193,11 +194,9 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return array the array representation of the collection.
      * @since 2.0.45
      */
-    public function toOriginalArray()
+    public function toOriginalArray(): array
     {
-        return \array_map(function ($normalizedName) {
-            return $this->_headers[$normalizedName];
-        }, \array_flip($this->_originalHeaderNames));
+        return \array_map(fn (string $normalizedName) => $this->_headers[$normalizedName], \array_flip($this->_originalHeaderNames));
     }
 
     /**
@@ -205,7 +204,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param array $array the headers to populate from
      * @since 2.0.3
      */
-    public function fromArray(array $array)
+    public function fromArray(array $array): void
     {
         foreach ($array as $name => $value) {
             $this->set($name, $value);
@@ -248,7 +247,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $value the header value to be added
      */
     #[\ReturnTypeWillChange]
-    public function offsetSet($name, $value)
+    public function offsetSet($name, $value): void
     {
         $this->set($name, $value);
     }
@@ -261,7 +260,7 @@ class HeaderCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the header name
      */
     #[\ReturnTypeWillChange]
-    public function offsetUnset($name)
+    public function offsetUnset($name): void
     {
         $this->remove($name);
     }

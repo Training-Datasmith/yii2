@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -37,11 +39,10 @@ class BooleanValidator extends Validator
      */
     public $strict = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message === null) {
@@ -52,7 +53,7 @@ class BooleanValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         if ($this->strict) {
             $valid = $value === $this->trueValue || $value === $this->falseValue;
@@ -73,7 +74,7 @@ class BooleanValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
@@ -84,7 +85,7 @@ class BooleanValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $options = [
             'trueValue' => $this->trueValue,

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,7 +37,6 @@ final class PdoValue implements ExpressionInterface
      * @see https://www.php.net/manual/en/pdo.constants.php
      */
     private $type;
-
 
     /**
      * PdoValue constructor.

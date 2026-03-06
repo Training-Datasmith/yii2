@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -50,7 +52,6 @@ class BaseMarkdown
      */
     public static $defaultFlavor = 'original';
 
-
     /**
      * Converts markdown into HTML.
      *
@@ -98,7 +99,8 @@ class BaseMarkdown
         }
         if (!isset(static::$flavors[$flavor])) {
             throw new InvalidArgumentException("Markdown flavor '$flavor' is not defined.'");
-        } elseif (!is_object($config = static::$flavors[$flavor])) {
+        }
+        if (!is_object($config = static::$flavors[$flavor])) {
             static::$flavors[$flavor] = Yii::createObject($config);
         }
 

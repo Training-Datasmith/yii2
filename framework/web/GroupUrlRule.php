@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -72,11 +74,10 @@ class GroupUrlRule extends CompositeUrlRule
      */
     public $ruleConfig = ['class' => 'yii\web\UrlRule'];
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         $this->prefix = trim((string)$this->prefix, '/');
         $this->routePrefix = $this->routePrefix === null ? $this->prefix : trim($this->routePrefix, '/');
@@ -85,8 +86,9 @@ class GroupUrlRule extends CompositeUrlRule
 
     /**
      * {@inheritdoc}
+     * @return \yii\web\UrlRuleInterface[]
      */
-    protected function createRules()
+    protected function createRules(): array
     {
         $rules = [];
         foreach ($this->rules as $key => $rule) {
@@ -100,7 +102,7 @@ class GroupUrlRule extends CompositeUrlRule
                 $rule = [
                     'pattern' => ltrim($this->prefix . '/' . $key, '/'),
                     'route' => ltrim($this->routePrefix . '/' . $rule, '/'),
-                    'verb' => $verb
+                    'verb' => $verb,
                 ];
             } elseif (isset($rule['pattern'], $rule['route'])) {
                 $rule['pattern'] = ltrim($this->prefix . '/' . $rule['pattern'], '/');

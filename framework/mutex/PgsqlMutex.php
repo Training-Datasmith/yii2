@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -38,12 +40,11 @@ class PgsqlMutex extends DbMutex
 {
     use RetryAcquireTrait;
 
-
     /**
      * Initializes PgSQL specific mutex component implementation.
      * @throws InvalidConfigException if [[db]] is not PgSQL connection.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->db->driverName !== 'pgsql') {
@@ -70,17 +71,15 @@ class PgsqlMutex extends DbMutex
      */
     protected function acquireLock($name, $timeout = 0)
     {
-        list($key1, $key2) = $this->getKeysFromName($name);
+        [$key1, $key2] = $this->getKeysFromName($name);
 
-        return $this->retryAcquire($timeout, function () use ($key1, $key2) {
-            return $this->db->useMaster(function ($db) use ($key1, $key2) {
-                /** @var \yii\db\Connection $db */
-                return (bool) $db->createCommand(
-                    'SELECT pg_try_advisory_lock(:key1, :key2)',
-                    [':key1' => $key1, ':key2' => $key2]
-                )->queryScalar();
-            });
-        });
+        return $this->retryAcquire($timeout, fn () => $this->db->useMaster(function ($db) use ($key1, $key2): bool {
+            /** @var \yii\db\Connection $db */
+            return (bool) $db->createCommand(
+                'SELECT pg_try_advisory_lock(:key1, :key2)',
+                [':key1' => $key1, ':key2' => $key2]
+            )->queryScalar();
+        }));
     }
 
     /**
@@ -91,8 +90,8 @@ class PgsqlMutex extends DbMutex
      */
     protected function releaseLock($name)
     {
-        list($key1, $key2) = $this->getKeysFromName($name);
-        return $this->db->useMaster(function ($db) use ($key1, $key2) {
+        [$key1, $key2] = $this->getKeysFromName($name);
+        return $this->db->useMaster(function ($db) use ($key1, $key2): bool {
             /** @var \yii\db\Connection $db */
             return (bool) $db->createCommand(
                 'SELECT pg_advisory_unlock(:key1, :key2)',

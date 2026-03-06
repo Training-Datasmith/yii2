@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -80,7 +82,6 @@ class Application extends \yii\base\Application
      */
     public $controller;
 
-
     /**
      * {@inheritdoc}
      */
@@ -120,7 +121,7 @@ class Application extends \yii\base\Application
     /**
      * Initialize the application.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->enableCoreCommands) {
@@ -143,7 +144,7 @@ class Application extends \yii\base\Application
      */
     public function handleRequest($request)
     {
-        list($route, $params) = $request->resolve();
+        [$route, $params] = $request->resolve();
         $this->requestedRoute = $route;
         $result = $this->runAction($route, $params);
         if ($result instanceof Response) {
@@ -175,7 +176,7 @@ class Application extends \yii\base\Application
      * Exit code 0 means normal, and other values mean abnormal. Exit code of `null` is treated as `0` as well.
      * @throws Exception if the route is invalid
      */
-    public function runAction($route, $params = [])
+    public function runAction(string $route, $params = [])
     {
         try {
             $res = parent::runAction($route, $params);
@@ -189,7 +190,7 @@ class Application extends \yii\base\Application
      * Returns the configuration of the built-in commands.
      * @return array the configuration of the built-in commands.
      */
-    public function coreCommands()
+    public function coreCommands(): array
     {
         return [
             'asset' => 'yii\console\controllers\AssetController',
@@ -232,7 +233,7 @@ class Application extends \yii\base\Application
     /**
      * {@inheritdoc}
      */
-    public function coreComponents()
+    public function coreComponents(): array
     {
         return array_merge(parent::coreComponents(), [
             'request' => ['class' => 'yii\console\Request'],

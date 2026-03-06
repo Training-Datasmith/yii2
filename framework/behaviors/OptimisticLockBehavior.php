@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,10 +11,10 @@
 namespace yii\behaviors;
 
 use Yii;
-use yii\db\BaseActiveRecord;
 use yii\base\InvalidCallException;
-use yii\validators\NumberValidator;
+use yii\db\BaseActiveRecord;
 use yii\helpers\ArrayHelper;
+use yii\validators\NumberValidator;
 
 /**
  * OptimisticLockBehavior automatically upgrades a model's lock version using the column name
@@ -84,11 +86,10 @@ class OptimisticLockBehavior extends AttributeBehavior
      */
     private $_lockAttribute;
 
-
     /**
      * {@inheritdoc}
      */
-    public function attach($owner)
+    public function attach($owner): void
     {
         parent::attach($owner);
 
@@ -161,7 +162,7 @@ class OptimisticLockBehavior extends AttributeBehavior
      * @throws InvalidCallException if owner is a new record.
      * @since 2.0.16
      */
-    public function upgrade()
+    public function upgrade(): void
     {
         /** @var BaseActiveRecord $owner */
         $owner = $this->owner;

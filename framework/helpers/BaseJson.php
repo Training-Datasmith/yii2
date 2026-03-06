@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -53,7 +55,6 @@ class BaseJson
         'JSON_ERROR_UTF8' => 'Malformed UTF-8 characters, possibly incorrectly encoded',
     ];
 
-
     /**
      * Encodes the given value into a JSON string.
      *
@@ -74,7 +75,7 @@ class BaseJson
     {
         $expressions = [];
         $value = static::processData($value, $expressions, uniqid('', true));
-        set_error_handler(function () {
+        set_error_handler(function (): void {
             static::handleJsonError(JSON_ERROR_SYNTAX);
         }, E_WARNING);
 
@@ -122,7 +123,8 @@ class BaseJson
     {
         if (is_array($json)) {
             throw new InvalidArgumentException('Invalid JSON data.');
-        } elseif ($json === null || $json === '') {
+        }
+        if ($json === null || $json === '') {
             return null;
         }
         $decode = json_decode((string) $json, $asArray);
@@ -143,18 +145,7 @@ class BaseJson
         if ($lastError === JSON_ERROR_NONE) {
             return;
         }
-
-        if (PHP_VERSION_ID >= 50500) {
-            throw new InvalidArgumentException(json_last_error_msg(), $lastError);
-        }
-
-        foreach (static::$jsonErrorMessages as $const => $message) {
-            if (defined($const) && constant($const) === $lastError) {
-                throw new InvalidArgumentException($message, $lastError);
-            }
-        }
-
-        throw new InvalidArgumentException('Unknown JSON encoding/decoding error.');
+        throw new InvalidArgumentException(json_last_error_msg(), $lastError);
     }
 
     /**
@@ -164,7 +155,7 @@ class BaseJson
      * @param string $expPrefix a prefix internally used to handle JS expressions
      * @return mixed the processed data
      */
-    protected static function processData($data, &$expressions, $expPrefix)
+    protected static function processData($data, array &$expressions, $expPrefix)
     {
         $revertToObject = false;
 
@@ -259,7 +250,7 @@ class BaseJson
      * @return array of the validation errors
      * @since 2.0.14
      */
-    private static function collectErrors($models, $showAllErrors)
+    private static function collectErrors($models, $showAllErrors): array
     {
         $lines = [];
 

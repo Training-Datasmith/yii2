@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,8 @@
 
 namespace yiiunit\framework\grid;
 
-use yii\base\InvalidConfigException;
 use Yii;
+use yii\base\InvalidConfigException;
 use yii\data\ArrayDataProvider;
 use yii\grid\GridView;
 use yii\grid\RadioButtonColumn;
@@ -66,14 +68,14 @@ class RadiobuttonColumnTest extends TestCase
         $column = new RadioButtonColumn([
             'content' => function ($model, $key, $index, $column) {
                 return null;
-            }
+            },
         ]);
         $this->assertStringContainsString('<td></td>', $column->renderDataCell([], 1, 0));
 
         $column = new RadioButtonColumn([
             'content' => function ($model, $key, $index, $column) {
                 return Html::radio('radioButtonInput', false);
-            }
+            },
         ]);
         $this->assertStringContainsString(Html::radio('radioButtonInput', false), $column->renderDataCell([], 1, 0));
     }

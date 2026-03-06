@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\framework\caching;
 
 use PHPUnit\Framework\TestCase;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,8 @@
 
 namespace yiiunit\framework\caching;
 
-use yii\db\Connection;
 use yii\caching\DbCache;
+use yii\db\Connection;
 
 /**
  * Class for testing file cache backend.

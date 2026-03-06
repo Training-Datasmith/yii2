@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -65,8 +67,7 @@ class ReleaseController extends Controller
      */
     public $version;
 
-
-    public function options($actionID)
+    public function options($actionID): array
     {
         $options = ['basePath'];
         if ($actionID === 'release') {
@@ -81,14 +82,13 @@ class ReleaseController extends Controller
         return array_merge(parent::options($actionID), $options);
     }
 
-
     public function beforeAction($action)
     {
         if (!$this->interactive) {
             throw new Exception('Sorry, but releases should be run interactively to ensure you actually verify what you are doing ;)');
         }
         if ($this->basePath === null) {
-            $this->basePath = \dirname(\dirname(__DIR__));
+            $this->basePath = \dirname(__DIR__, 2);
         }
         $this->basePath = rtrim($this->basePath, '\\/');
         return parent::beforeAction($action);
@@ -97,7 +97,7 @@ class ReleaseController extends Controller
     /**
      * Shows information about current framework and extension versions.
      */
-    public function actionInfo()
+    public function actionInfo(): void
     {
         $items = [
             'framework',
@@ -139,7 +139,7 @@ class ReleaseController extends Controller
         }
     }
 
-    private function minWidth($a)
+    private function minWidth(array $a): int
     {
         $w = 1;
         foreach ($a as $s) {
@@ -184,10 +184,8 @@ class ReleaseController extends Controller
      * - an extension name such as `redis` or `bootstrap`,
      * - an application indicated by prefix `app-`, e.g. `app-basic`,
      * - or `framework` if you want to release a new version of the framework itself.
-     *
-     * @return int
      */
-    public function actionRelease(array $what)
+    public function actionRelease(array $what): int
     {
         if (\count($what) > 1) {
             $this->stdout("Currently only one simultaneous release is supported.\n");
@@ -262,10 +260,8 @@ class ReleaseController extends Controller
      * @param array $what what do you want to package? this can either be:
      *
      * - an application indicated by prefix `app-`, e.g. `app-basic`,
-     *
-     * @return int
      */
-    public function actionPackage(array $what)
+    public function actionPackage(array $what): int
     {
         $this->validateWhat($what, ['app']);
         $versions = $this->getCurrentVersions($what);
@@ -299,7 +295,8 @@ class ReleaseController extends Controller
         foreach ($what as $ext) {
             if ($ext === 'framework') {
                 throw new Exception('Can not package framework.');
-            } elseif (strncmp('app-', $ext, 4) === 0) {
+            }
+            if (strncmp('app-', $ext, 4) === 0) {
                 $this->packageApplication(substr($ext, 4), $versions[$ext], $packagePath);
             } else {
                 throw new Exception('Can not package extension.');
@@ -339,7 +336,7 @@ class ReleaseController extends Controller
         $this->stdout("done.\n", Console::BOLD, Console::FG_GREEN);
     }
 
-    protected function printWhat(array $what, $newVersions, $versions)
+    protected function printWhat(array $what, array $newVersions, array $versions)
     {
         foreach ($what as $ext) {
             if (strncmp('app-', $ext, 4) === 0) {
@@ -358,7 +355,7 @@ class ReleaseController extends Controller
         }
     }
 
-    protected function printWhatUrls(array $what, $oldVersions)
+    protected function printWhatUrls(array $what, array $oldVersions)
     {
         foreach ($what as $ext) {
             if ($ext === 'framework') {
@@ -414,7 +411,6 @@ class ReleaseController extends Controller
             }
         }
     }
-
 
     protected function releaseFramework($frameworkPath, $version)
     {
@@ -492,14 +488,12 @@ class ReleaseController extends Controller
         // TODO release applications
         // $this->composerSetStability($what, $version);
 
-
         //        $this->resortChangelogs($what, $version);
         //        $this->closeChangelogs($what, $version);
         //        $this->composerSetStability($what, $version);
         //        if (in_array('framework', $what)) {
         //            $this->updateYiiVersion($version);
         //        }
-
 
         // if done:
         //     * ./build/build release/done framework 2.0.0-dev 2.0.0-rc
@@ -509,8 +503,6 @@ class ReleaseController extends Controller
         //            if (in_array('framework', $what)) {
         //                $this->updateYiiVersion($devVersion);
         //            }
-
-
 
         // prepare next release
 
@@ -524,7 +516,6 @@ class ReleaseController extends Controller
         $this->stdout('updating Yii version...');
         $this->dryRun || $this->updateYiiVersion($frameworkPath, $nextVersion['framework'] . '-dev');
         $this->stdout("done.\n", Console::FG_GREEN, Console::BOLD);
-
 
         $this->stdout("\n");
         $this->runGit('git diff --color', $frameworkPath);
@@ -756,7 +747,6 @@ class ReleaseController extends Controller
         $this->stdout("\n");
     }
 
-
     protected function runCommand($cmd, $path)
     {
         $this->stdout("running  $cmd  ...", Console::BOLD);
@@ -802,7 +792,7 @@ class ReleaseController extends Controller
         }
     }
 
-    protected function gitFetchTags($path)
+    protected function gitFetchTags(string $path)
     {
         try {
             chdir($path);
@@ -815,7 +805,6 @@ class ReleaseController extends Controller
         }
     }
 
-
     protected function checkComposer($fwPath)
     {
         if (!$this->confirm("\nNot yet automated: Please check if composer.json dependencies in framework dir match the one in repo root. Continue?", false)) {
@@ -823,8 +812,7 @@ class ReleaseController extends Controller
         }
     }
 
-
-    protected function closeChangelogs($what, $version)
+    protected function closeChangelogs($what, string $version)
     {
         $v = str_replace('\\-', '[\\- ]', preg_quote($version, '/'));
         $headline = $version . ' ' . date('F d, Y');
@@ -855,7 +843,7 @@ class ReleaseController extends Controller
     {
         foreach ($this->getChangelogs($what) as $file) {
             // split the file into relevant parts
-            list($start, $changelog, $end) = $this->splitChangelog($file, $version);
+            [$start, $changelog, $end] = $this->splitChangelog($file, $version);
             $changelog = $this->resortChangelog($changelog);
             file_put_contents($file, implode("\n", array_merge($start, $changelog, $end)));
         }
@@ -865,9 +853,8 @@ class ReleaseController extends Controller
      * Extract changelog content for a specific version.
      * @param string $file
      * @param string $version
-     * @return array
      */
-    protected function splitChangelog($file, $version)
+    protected function splitChangelog($file, $version): array
     {
         $lines = explode("\n", file_get_contents($file));
 
@@ -890,9 +877,7 @@ class ReleaseController extends Controller
             }
             // add continued lines to the last item to keep them together
             if (!empty(${$state}) && trim($line) !== '' && strncmp($line, '- ', 2) !== 0) {
-                end(${$state});
-
-                if (($k = key(${$state})) !== null) {
+                if (($k = array_key_last(${$state})) !== null) {
                     ${$state}[$k] .= "\n" . $line;
                 }
             } else {
@@ -908,7 +893,7 @@ class ReleaseController extends Controller
      * @param string[] $changelog
      * @return string[]
      */
-    protected function resortChangelog($changelog)
+    protected function resortChangelog($changelog): array
     {
         // cleanup whitespace
         foreach ($changelog as $i => $line) {
@@ -917,7 +902,7 @@ class ReleaseController extends Controller
         $changelog = array_filter($changelog);
 
         $i = 0;
-        ArrayHelper::multisort($changelog, function ($line) use (&$i) {
+        ArrayHelper::multisort($changelog, function ($line) use (&$i): string {
             if (preg_match('/^- (Chg|Enh|Bug|New)( #\d+(, #\d+)*)?: .+/', $line, $m)) {
                 $o = ['Bug' => 'C', 'Enh' => 'D', 'Chg' => 'E', 'New' => 'F'];
                 return $o[$m[1]] . ' ' . (!empty($m[2]) ? $m[2] : 'AAAA' . $i++);
@@ -934,7 +919,7 @@ class ReleaseController extends Controller
         return $changelog;
     }
 
-    protected function getChangelogs($what)
+    protected function getChangelogs($what): array
     {
         $changelogs = [];
         if (\in_array('framework', $what)) {
@@ -944,14 +929,14 @@ class ReleaseController extends Controller
         return array_merge($changelogs, $this->getExtensionChangelogs($what));
     }
 
-    protected function getFrameworkChangelog()
+    protected function getFrameworkChangelog(): string
     {
         return $this->basePath . '/framework/CHANGELOG.md';
     }
 
-    protected function getExtensionChangelogs($what)
+    protected function getExtensionChangelogs($what): array
     {
-        return array_filter(glob($this->basePath . '/extensions/*/CHANGELOG.md'), function ($elem) use ($what) {
+        return array_filter(glob($this->basePath . '/extensions/*/CHANGELOG.md'), function ($elem) use ($what): bool {
             foreach ($what as $ext) {
                 if (strpos($elem, "extensions/$ext/CHANGELOG.md") !== false) {
                     return true;
@@ -996,7 +981,7 @@ class ReleaseController extends Controller
         );
     }
 
-    protected function updateYiiVersion($frameworkPath, $version)
+    protected function updateYiiVersion(string $frameworkPath, $version)
     {
         $this->sed(
             '/function getVersion\(\)\R {4}\{\R {8}return \'(.+?)\';/',
@@ -1012,7 +997,10 @@ class ReleaseController extends Controller
         }
     }
 
-    protected function getCurrentVersions(array $what)
+    /**
+     * @return mixed[]
+     */
+    protected function getCurrentVersions(array $what): array
     {
         $versions = [];
         foreach ($what as $ext) {
@@ -1044,7 +1032,7 @@ class ReleaseController extends Controller
     public const MINOR = 'minor';
     public const PATCH = 'patch';
 
-    protected function getNextVersions(array $versions, $type)
+    protected function getNextVersions(array $versions, $type): array
     {
         foreach ($versions as $k => $v) {
             if (empty($v)) {

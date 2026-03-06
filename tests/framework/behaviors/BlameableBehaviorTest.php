@@ -165,7 +165,7 @@ class BlameableBehaviorTest extends TestCase
         $model = new ActiveRecordBlameable([
             'as blameable' => [
                 'class' => BlameableBehavior::class,
-                'defaultValue' => 2
+                'defaultValue' => 2,
             ],
         ]);
 
@@ -199,7 +199,7 @@ class ActiveRecordBlameableWithDefaultValueClosure extends ActiveRecordBlameable
                 'class' => BlameableBehavior::class,
                 'defaultValue' => function () {
                     return $this->created_by + 1;
-                }
+                },
             ],
         ];
     }

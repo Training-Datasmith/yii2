@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -242,8 +244,8 @@ class DataPathDbTestCase extends BaseDbTestCase
         return [
             'customers' => [
                 'class' => CustomDirectoryFixture::class,
-                'dataFile' => '@app/framework/test/data/customer.php'
-            ]
+                'dataFile' => '@app/framework/test/data/customer.php',
+            ],
         ];
     }
 }
@@ -255,7 +257,7 @@ class TruncateTestCase extends BaseDbTestCase
         return [
             'animals' => [
                 'class' => AnimalFixture::class,
-            ]
+            ],
         ];
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -84,7 +86,6 @@ class Cookie extends \yii\base\BaseObject
      */
     public $sameSite = self::SAME_SITE_LAX;
 
-
     /**
      * Magic method to turn a cookie object into a string without having to explicitly access [[value]].
      *
@@ -96,7 +97,7 @@ class Cookie extends \yii\base\BaseObject
      *
      * @return string The value of the cookie. If the value property is null, an empty string will be returned.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->value;
     }

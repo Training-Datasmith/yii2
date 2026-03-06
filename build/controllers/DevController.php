@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -77,7 +79,6 @@ class DevController extends Controller
         'twig' => 'git@github.com:yiisoft/yii2-twig.git',
     ];
 
-
     /**
      * Install all extensions and advanced + basic app.
      */
@@ -113,12 +114,12 @@ class DevController extends Controller
      *
      * @param string $command the command to run
      */
-    public function actionRun($command)
+    public function actionRun($command): void
     {
         $command = implode(' ', \func_get_args());
 
         // root of the dev repo
-        $base = \dirname(\dirname(__DIR__));
+        $base = \dirname(__DIR__, 2);
         $dirs = $this->listSubDirs("$base/extensions");
         $dirs = array_merge($dirs, $this->listSubDirs("$base/apps"));
         asort($dirs);
@@ -151,10 +152,10 @@ class DevController extends Controller
      * @param string $repo url of the git repo to clone if it does not already exist.
      * @return int return code
      */
-    public function actionApp($app, $repo = null)
+    public function actionApp($app, $repo = null): int
     {
         // root of the dev repo
-        $base = \dirname(\dirname(__DIR__));
+        $base = \dirname(__DIR__, 2);
         $appDir = "$base/apps/$app";
 
         if (!file_exists($appDir)) {
@@ -207,13 +208,11 @@ class DevController extends Controller
      *
      * @param string $extension the application name e.g. `basic` or `advanced`.
      * @param string $repo url of the git repo to clone if it does not already exist.
-     *
-     * @return int
      */
-    public function actionExt($extension, $repo = null)
+    public function actionExt($extension, $repo = null): int
     {
         // root of the dev repo
-        $base = \dirname(\dirname(__DIR__));
+        $base = \dirname(__DIR__, 2);
         $extensionDir = "$base/extensions/$extension";
 
         if (!file_exists($extensionDir)) {
@@ -270,7 +269,6 @@ class DevController extends Controller
 
         return $options;
     }
-
 
     /**
      * Remove all symlinks in the vendor subdirectory of the directory specified.
@@ -331,7 +329,7 @@ class DevController extends Controller
      *
      * @return array list of subdirectories
      */
-    protected function listSubDirs($dir)
+    protected function listSubDirs($dir): array
     {
         $list = [];
         $handle = opendir($dir);
@@ -339,7 +337,10 @@ class DevController extends Controller
             throw new InvalidParamException("Unable to open directory: $dir");
         }
         while (($file = readdir($handle)) !== false) {
-            if ($file === '.' || $file === '..') {
+            if ($file === '.') {
+                continue;
+            }
+            if ($file === '..') {
                 continue;
             }
             // ignore hidden directories
@@ -360,7 +361,7 @@ class DevController extends Controller
      * @param string $dir directory to search in
      * @return array list of applications command can link
      */
-    protected function findDirs($dir)
+    protected function findDirs(string $dir): array
     {
         $list = [];
         $handle = @opendir($dir);
@@ -368,7 +369,10 @@ class DevController extends Controller
             return [];
         }
         while (($file = readdir($handle)) !== false) {
-            if ($file === '.' || $file === '..') {
+            if ($file === '.') {
+                continue;
+            }
+            if ($file === '..') {
                 continue;
             }
             $path = $dir . DIRECTORY_SEPARATOR . $file;

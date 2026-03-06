@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -23,7 +25,6 @@ class Request extends \yii\base\Request
 {
     private $_params;
 
-
     /**
      * Returns the command line arguments.
      * @return array the command line arguments. It does not include the entry script name.
@@ -46,7 +47,7 @@ class Request extends \yii\base\Request
      * Sets the command line arguments.
      * @param array $params the command line arguments
      */
-    public function setParams($params)
+    public function setParams($params): void
     {
         $this->_params = $params;
     }
@@ -56,7 +57,7 @@ class Request extends \yii\base\Request
      * @return array the first element is the route, and the second is the associated parameters.
      * @throws Exception when parameter is wrong and can not be resolved
      */
-    public function resolve()
+    public function resolve(): array
     {
         $rawParams = $this->getParams();
         $endOfOptionsFound = false;
@@ -85,7 +86,7 @@ class Request extends \yii\base\Request
                 }
 
                 if ($name !== Application::OPTION_APPCONFIG) {
-                    $params[$name] = isset($matches[2]) ? $matches[2] : true;
+                    $params[$name] = $matches[2] ?? true;
                     $prevOption = &$params[$name];
                 }
             } elseif (preg_match('/^-([\w-]+)(?:=(.*))?$/', $param, $matches)) {
@@ -93,7 +94,7 @@ class Request extends \yii\base\Request
                 if (is_numeric($name)) {
                     $params[] = $param;
                 } else {
-                    $params['_aliases'][$name] = isset($matches[2]) ? $matches[2] : true;
+                    $params['_aliases'][$name] = $matches[2] ?? true;
                     $prevOption = &$params['_aliases'][$name];
                 }
             } elseif ($prevOption === true) {

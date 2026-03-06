@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -76,11 +78,10 @@ class FragmentCache extends Widget implements DynamicContentAwareInterface
      */
     public $enabled = true;
 
-
     /**
      * Initializes the FragmentCache object.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -99,7 +100,7 @@ class FragmentCache extends Widget implements DynamicContentAwareInterface
      * will be captured and saved in cache.
      * This method does nothing if valid content is already found in cache.
      */
-    public function run()
+    public function run(): void
     {
         if (($content = $this->getCachedContent()) !== false) {
             echo $content;
@@ -146,7 +147,7 @@ class FragmentCache extends Widget implements DynamicContentAwareInterface
             return $this->_content;
         }
 
-        list($this->_content, $placeholders) = $data;
+        [$this->_content, $placeholders] = $data;
         if (!is_array($placeholders) || count($placeholders) === 0) {
             return $this->_content;
         }
@@ -160,8 +161,8 @@ class FragmentCache extends Widget implements DynamicContentAwareInterface
      * The key generated depends on both [[id]] and [[variations]].
      * @return mixed a valid cache key
      */
-    protected function calculateKey()
+    protected function calculateKey(): array
     {
-        return array_merge([__CLASS__, $this->getId()], (array)$this->variations);
+        return array_merge([self::class, $this->getId()], (array)$this->variations);
     }
 }

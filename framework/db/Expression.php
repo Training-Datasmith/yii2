@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -42,7 +44,6 @@ class Expression extends \yii\base\BaseObject implements ExpressionInterface
      */
     public $params = [];
 
-
     /**
      * Constructor.
      * @param string $expression the DB expression
@@ -60,7 +61,7 @@ class Expression extends \yii\base\BaseObject implements ExpressionInterface
      * String magic method.
      * @return string the DB expression.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->expression;
     }

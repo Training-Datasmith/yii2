@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -49,7 +51,6 @@ class GettextMoFile extends GettextFile
      */
     public $useBigEndian = false;
 
-
     /**
      * Loads messages from an MO file.
      * @param string $filePath file path
@@ -58,7 +59,7 @@ class GettextMoFile extends GettextFile
      * source message => translated message.
      * @throws Exception if unable to read the MO file
      */
-    public function load($filePath, $context)
+    public function load($filePath, $context): array
     {
         if (false === ($fileHandle = @fopen($filePath, 'rb'))) {
             throw new Exception('Unable to read file "' . $filePath . '".');
@@ -109,7 +110,6 @@ class GettextMoFile extends GettextFile
             $id = $this->readString($fileHandle, $sourceLengths[$i], $sourceOffsets[$i]);
             $separatorPosition = strpos((string)$id, chr(4));
 
-
             if ((!$context && $separatorPosition === false) || ($context && $separatorPosition !== false && strncmp($id, $context, $separatorPosition) === 0)) {
                 if ($separatorPosition !== false) {
                     $id = substr($id, $separatorPosition + 1);
@@ -134,7 +134,7 @@ class GettextMoFile extends GettextFile
      * the message ID must be prefixed with the context with chr(4) as the separator.
      * @throws Exception if unable to save the MO file
      */
-    public function save($filePath, $messages)
+    public function save($filePath, $messages): void
     {
         if (false === ($fileHandle = @fopen($filePath, 'wb'))) {
             throw new Exception('Unable to write file "' . $filePath . '".');
@@ -269,7 +269,7 @@ class GettextMoFile extends GettextFile
      * @param string $string to be written
      * @return int how many bytes are written
      */
-    protected function writeString($fileHandle, $string)
+    protected function writeString($fileHandle, string $string)
     {
         return $this->writeBytes($fileHandle, $string . "\0");
     }

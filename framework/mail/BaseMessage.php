@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -10,7 +12,6 @@ namespace yii\mail;
 
 use Yii;
 use yii\base\BaseObject;
-use yii\base\ErrorHandler;
 
 /**
  * BaseMessage serves as a base class that implements the [[send()]] method required by [[MessageInterface]].
@@ -30,7 +31,6 @@ abstract class BaseMessage extends BaseObject implements MessageInterface
      * For independently created messages this is `null`.
      */
     public $mailer;
-
 
     /**
      * Sends this email message.
@@ -54,20 +54,8 @@ abstract class BaseMessage extends BaseObject implements MessageInterface
      * PHP magic method that returns the string representation of this object.
      * @return string the string representation of this object.
      */
-    public function __toString()
+    public function __toString(): string
     {
-        // __toString cannot throw exception
-        // use trigger_error to bypass this limitation
-        try {
-            return $this->toString();
-        } catch (\Throwable $e) {
-            if (PHP_VERSION_ID < 70400) {
-                trigger_error(ErrorHandler::convertExceptionToString($e), E_USER_ERROR);
-
-                return '';
-            }
-
-            throw $e;
-        }
+        return $this->toString();
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -95,11 +97,10 @@ class AccessControl extends ActionFilter
      */
     public $rules = [];
 
-
     /**
      * Initializes the [[rules]] array by instantiating rule objects from configurations.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->user !== false) {
@@ -115,7 +116,7 @@ class AccessControl extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         $user = $this->user;
         $request = Yii::$app->getRequest();
@@ -123,7 +124,8 @@ class AccessControl extends ActionFilter
         foreach ($this->rules as $rule) {
             if ($allow = $rule->allows($action, $user, $request)) {
                 return true;
-            } elseif ($allow === false) {
+            }
+            if ($allow === false) {
                 if (isset($rule->denyCallback)) {
                     call_user_func($rule->denyCallback, $rule, $action);
                 } elseif ($this->denyCallback !== null) {
@@ -131,7 +133,6 @@ class AccessControl extends ActionFilter
                 } else {
                     $this->denyAccess($user);
                 }
-
                 return false;
             }
         }

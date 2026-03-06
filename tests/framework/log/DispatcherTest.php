@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -18,12 +20,12 @@ namespace yii\log {
 }
 
 namespace yiiunit\framework\log {
-    use yiiunit\framework\log\mocks\TargetMock;
     use Yii;
     use yii\base\UserException;
     use yii\log\Dispatcher;
     use yii\log\Logger;
     use yii\log\Target;
+    use yiiunit\framework\log\mocks\TargetMock;
     use yiiunit\TestCase;
 
     /**
@@ -65,20 +67,17 @@ namespace yiiunit\framework\log {
             $dispatcher = new Dispatcher();
             $this->assertSame(Yii::getLogger(), $dispatcher->getLogger());
 
-
             $logger = new Logger();
             $dispatcher = new Dispatcher([
                 'logger' => $logger,
             ]);
             $this->assertSame($logger, $dispatcher->getLogger());
 
-
             $dispatcher = new Dispatcher([
                 'logger' => 'yii\log\Logger',
             ]);
             $this->assertInstanceOf('yii\log\Logger', $dispatcher->getLogger());
             $this->assertEquals(0, $dispatcher->getLogger()->traceLevel);
-
 
             $dispatcher = new Dispatcher([
                 'logger' => [
@@ -311,12 +310,12 @@ namespace yiiunit\framework\log {
                     }
                     require_once __DIR__ . DIRECTORY_SEPARATOR . 'mocks' . DIRECTORY_SEPARATOR . 'typed_error.php';
                     typed_error_test_mock([]);
-                }
+                },
             ]);
             $targetSecond = new TargetMock([
                 'collectOverride' => function ($message, $final) {
                     $this->targetThrowSecondOutputs[] = array_pop($message);
-                }
+                },
             ]);
             $dispatcher = new Dispatcher([
                 'logger' => new Logger(),

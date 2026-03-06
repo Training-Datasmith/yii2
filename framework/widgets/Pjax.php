@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -108,11 +110,10 @@ class Pjax extends Widget
      */
     public static $autoIdPrefix = 'p';
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (!isset($this->options['id'])) {
@@ -146,7 +147,7 @@ class Pjax extends Widget
     /**
      * {@inheritdoc}
      */
-    public function run()
+    public function run(): void
     {
         if (!$this->requiresPjax()) {
             echo Html::endTag(ArrayHelper::remove($this->options, 'tag', 'div'));
@@ -176,7 +177,7 @@ class Pjax extends Widget
     /**
      * @return bool whether the current request requires pjax response from this widget
      */
-    protected function requiresPjax()
+    protected function requiresPjax(): bool
     {
         $headers = Yii::$app->getRequest()->getHeaders();
 
@@ -186,7 +187,7 @@ class Pjax extends Widget
     /**
      * Registers the needed JavaScript.
      */
-    public function registerClientScript()
+    public function registerClientScript(): void
     {
         $id = $this->options['id'];
         $this->clientOptions['push'] = $this->enablePushState;
@@ -199,11 +200,11 @@ class Pjax extends Widget
         $options = Json::htmlEncode($this->clientOptions);
         $js = '';
         if ($this->linkSelector !== false) {
-            $linkSelector = Json::htmlEncode($this->linkSelector !== null ? $this->linkSelector : '#' . $id . ' a');
+            $linkSelector = Json::htmlEncode($this->linkSelector ?? '#' . $id . ' a');
             $js .= "jQuery(document).pjax($linkSelector, $options);";
         }
         if ($this->formSelector !== false) {
-            $formSelector = Json::htmlEncode($this->formSelector !== null ? $this->formSelector : '#' . $id . ' form[data-pjax]');
+            $formSelector = Json::htmlEncode($this->formSelector ?? '#' . $id . ' form[data-pjax]');
             $submitEvent = Json::htmlEncode($this->submitEvent);
             $js .= "\njQuery(document).off($submitEvent, $formSelector).on($submitEvent, $formSelector, function (event) {jQuery.pjax.submit(event, $options);});";
         }

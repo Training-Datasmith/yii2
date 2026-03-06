@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -72,8 +74,7 @@ class UploadedFile extends BaseObject
     /**
      * @var array[]|null
      */
-    private static $_files;
-
+    private static ?array $_files = null;
 
     /**
      * UploadedFile constructor.
@@ -92,7 +93,7 @@ class UploadedFile extends BaseObject
      * The implementation here returns the uploaded file's name.
      * @return string the string representation of the object
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->name;
     }
@@ -134,7 +135,7 @@ class UploadedFile extends BaseObject
      * @return UploadedFile|null the instance of the uploaded file.
      * Null is returned if no file is uploaded for the specified name.
      */
-    public static function getInstanceByName($name)
+    public static function getInstanceByName($name): ?self
     {
         $files = self::loadFiles();
         return isset($files[$name]) ? new static($files[$name]) : null;
@@ -149,7 +150,7 @@ class UploadedFile extends BaseObject
      * if no adequate upload was found. Please note that this array will contain
      * all files from all sub-arrays regardless how deeply nested they are.
      */
-    public static function getInstancesByName($name)
+    public static function getInstancesByName($name): array
     {
         $files = self::loadFiles();
         if (isset($files[$name])) {
@@ -169,7 +170,7 @@ class UploadedFile extends BaseObject
      * Cleans up the loaded UploadedFile instances.
      * This method is mainly used by test scripts to set up a fixture.
      */
-    public static function reset()
+    public static function reset(): void
     {
         self::$_files = null;
     }
@@ -183,7 +184,7 @@ class UploadedFile extends BaseObject
      * @return bool true whether the file is saved successfully
      * @see error
      */
-    public function saveAs($file, $deleteTempFile = true)
+    public function saveAs(string $file, $deleteTempFile = true)
     {
         if ($this->hasError) {
             return false;
@@ -221,7 +222,7 @@ class UploadedFile extends BaseObject
     /**
      * @return string original file base name
      */
-    public function getBaseName()
+    public function getBaseName(): string
     {
         // https://github.com/yiisoft/yii2/issues/11012
         $pathInfo = pathinfo('_' . $this->name, PATHINFO_FILENAME);
@@ -231,7 +232,7 @@ class UploadedFile extends BaseObject
     /**
      * @return string file extension
      */
-    public function getExtension()
+    public function getExtension(): string
     {
         return strtolower(pathinfo($this->name, PATHINFO_EXTENSION));
     }
@@ -240,7 +241,7 @@ class UploadedFile extends BaseObject
      * @return bool whether there is an error with the uploaded file.
      * Check [[error]] for detailed error code information.
      */
-    public function getHasError()
+    public function getHasError(): bool
     {
         return $this->error != UPLOAD_ERR_OK;
     }
@@ -263,8 +264,8 @@ class UploadedFile extends BaseObject
                         $info['type'],
                         $info['size'],
                         $info['error'],
-                        isset($info['full_path']) ? $info['full_path'] : [],
-                        isset($info['tmp_resource']) ? $info['tmp_resource'] : []
+                        $info['full_path'] ?? [],
+                        $info['tmp_resource'] ?? []
                     );
                 }
             }
@@ -285,7 +286,7 @@ class UploadedFile extends BaseObject
      * @param array|string|null $fullPaths the full path(s) as submitted by the browser/PHP
      * @param array|resource|null $tempResources the resource(s)
      */
-    private static function loadFilesRecursive($key, $names, $tempNames, $types, $sizes, $errors, $fullPaths, $tempResources)
+    private static function loadFilesRecursive(string $key, $names, $tempNames, $types, $sizes, $errors, $fullPaths, $tempResources): void
     {
         if (is_array($names)) {
             foreach ($names as $i => $name) {
@@ -296,8 +297,8 @@ class UploadedFile extends BaseObject
                     $types[$i],
                     $sizes[$i],
                     $errors[$i],
-                    isset($fullPaths[$i]) ? $fullPaths[$i] : null,
-                    isset($tempResources[$i]) ? $tempResources[$i] : null
+                    $fullPaths[$i] ?? null,
+                    $tempResources[$i] ?? null
                 );
             }
 

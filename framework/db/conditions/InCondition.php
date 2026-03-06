@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,7 +37,6 @@ class InCondition implements ConditionInterface
      * [[operator]] is `IN` and empty if operator is `NOT IN`.
      */
     private $values;
-
 
     /**
      * SimpleCondition constructor
@@ -80,7 +81,7 @@ class InCondition implements ConditionInterface
      * {@inheritdoc}
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition($operator, $operands): self
     {
         if (!isset($operands[0], $operands[1])) {
             throw new InvalidArgumentException("Operator '$operator' requires two operands.");

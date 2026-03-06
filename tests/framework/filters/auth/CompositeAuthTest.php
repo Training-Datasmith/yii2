@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,13 +10,13 @@
 
 namespace yiiunit\framework\filters\auth;
 
-use yiiunit\TestCase;
 use Yii;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\auth\HttpBearerAuth;
 use yii\filters\auth\HttpHeaderAuth;
 use yii\rest\Controller;
 use yiiunit\framework\web\UserIdentity;
+use yiiunit\TestCase;
 
 /**
  * @author Ezekiel Fernandez <ezekiel_p_fernandez@yahoo.com>
@@ -94,7 +96,7 @@ class TestController extends Controller
             'authenticator' => [
                 'class' => CompositeAuth::class,
                 'authMethods' => $this->authMethods ?: [TestAuth::class],
-                'optional' => $this->optional
+                'optional' => $this->optional,
             ],
         ];
     }
@@ -188,13 +190,13 @@ class CompositeAuthTest extends TestCase
                     TestAuth::class,
                 ],
                 'b',
-                true
+                true,
             ],
             //empty auth methods
             [
                 [],
                 'b',
-                true
+                true,
             ],
             //only "a", run "b"
             [
@@ -202,11 +204,11 @@ class CompositeAuthTest extends TestCase
                     HttpBearerAuth::class,
                     [
                         'class' => TestAuth::class,
-                        'only' => ['a']
+                        'only' => ['a'],
                     ],
                 ],
                 'b',
-                false
+                false,
             ],
             //only "a", run "a"
             [
@@ -214,11 +216,11 @@ class CompositeAuthTest extends TestCase
                     HttpBearerAuth::class,
                     [
                         'class' => TestAuth::class,
-                        'only' => ['a']
+                        'only' => ['a'],
                     ],
                 ],
                 'a',
-                true
+                true,
             ],
             //except "b", run "a"
             [
@@ -226,11 +228,11 @@ class CompositeAuthTest extends TestCase
                     HttpBearerAuth::class,
                     [
                         'class' => TestAuth::class,
-                        'except' => ['b']
+                        'except' => ['b'],
                     ],
                 ],
                 'a',
-                true
+                true,
             ],
             //except "b", run "b"
             [
@@ -238,12 +240,12 @@ class CompositeAuthTest extends TestCase
                     HttpBearerAuth::class,
                     [
                         'class' => TestAuth::class,
-                        'except' => ['b']
+                        'except' => ['b'],
                     ],
                 ],
                 'b',
-                false
-            ]
+                false,
+            ],
         ];
     }
 

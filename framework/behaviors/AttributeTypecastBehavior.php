@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -187,14 +189,13 @@ class AttributeTypecastBehavior extends Behavior
      * @var array internal static cache for auto detected [[attributeTypes]] values
      * in format: ownerClassName => attributeTypes
      */
-    private static $_autoDetectedAttributeTypes = [];
-
+    private static array $_autoDetectedAttributeTypes = [];
 
     /**
      * Clears internal static cache of auto detected [[attributeTypes]] values
      * over all affected owner classes.
      */
-    public static function clearAutoDetectedAttributeTypes()
+    public static function clearAutoDetectedAttributeTypes(): void
     {
         self::$_autoDetectedAttributeTypes = [];
     }
@@ -202,12 +203,12 @@ class AttributeTypecastBehavior extends Behavior
     /**
      * {@inheritdoc}
      */
-    public function attach($owner)
+    public function attach($owner): void
     {
         parent::attach($owner);
 
         if ($this->attributeTypes === null) {
-            $ownerClass = get_class($this->owner);
+            $ownerClass = $this->owner !== null ? get_class($this->owner) : self::class;
             if (!isset(self::$_autoDetectedAttributeTypes[$ownerClass])) {
                 self::$_autoDetectedAttributeTypes[$ownerClass] = $this->detectAttributeTypes();
             }
@@ -221,7 +222,7 @@ class AttributeTypecastBehavior extends Behavior
      * If this parameter is empty, it means any attribute listed in the [[attributeTypes]]
      * should be type-casted.
      */
-    public function typecastAttributes($attributeNames = null)
+    public function typecastAttributes($attributeNames = null): void
     {
         $attributeTypes = [];
 
@@ -289,7 +290,7 @@ class AttributeTypecastBehavior extends Behavior
      * Composes default value for [[attributeTypes]] from the owner validation rules.
      * @return array attribute type map.
      */
-    protected function detectAttributeTypes()
+    protected function detectAttributeTypes(): array
     {
         $attributeTypes = [];
         foreach ($this->owner->getValidators() as $validator) {
@@ -312,8 +313,9 @@ class AttributeTypecastBehavior extends Behavior
 
     /**
      * {@inheritdoc}
+     * @return 'afterFind'[]|'afterSave'[]|'afterValidate'[]|'beforeSave'[]
      */
-    public function events()
+    public function events(): array
     {
         $events = [];
 
@@ -339,7 +341,7 @@ class AttributeTypecastBehavior extends Behavior
      * Handles owner 'afterValidate' event, ensuring attribute typecasting.
      * @param \yii\base\Event $event event instance.
      */
-    public function afterValidate($event)
+    public function afterValidate($event): void
     {
         if (!$this->owner->hasErrors()) {
             $this->typecastAttributes();
@@ -350,7 +352,7 @@ class AttributeTypecastBehavior extends Behavior
      * Handles owner 'beforeInsert' and 'beforeUpdate' events, ensuring attribute typecasting.
      * @param \yii\base\Event $event event instance.
      */
-    public function beforeSave($event)
+    public function beforeSave($event): void
     {
         $this->typecastAttributes();
     }
@@ -360,7 +362,7 @@ class AttributeTypecastBehavior extends Behavior
      * @param \yii\base\Event $event event instance.
      * @since 2.0.14
      */
-    public function afterSave($event)
+    public function afterSave($event): void
     {
         $this->typecastAttributes();
     }
@@ -369,7 +371,7 @@ class AttributeTypecastBehavior extends Behavior
      * Handles owner 'afterFind' event, ensuring attribute typecasting.
      * @param \yii\base\Event $event event instance.
      */
-    public function afterFind($event)
+    public function afterFind($event): void
     {
         $this->typecastAttributes();
 

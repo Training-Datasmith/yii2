@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -273,12 +275,11 @@ class GridView extends BaseListView
      */
     public $layout = "{summary}\n{items}\n{pager}";
 
-
     /**
      * Initializes the grid view.
      * This method will initialize required property values and instantiate [[columns]] objects.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->formatter === null) {
@@ -299,7 +300,7 @@ class GridView extends BaseListView
     /**
      * Runs the widget.
      */
-    public function run()
+    public function run(): void
     {
         $view = $this->getView();
         GridViewAsset::register($view);
@@ -339,9 +340,9 @@ class GridView extends BaseListView
      * Returns the options for the grid view JS widget.
      * @return array the options
      */
-    protected function getClientOptions()
+    protected function getClientOptions(): array
     {
-        $filterUrl = isset($this->filterUrl) ? $this->filterUrl : Yii::$app->request->url;
+        $filterUrl = $this->filterUrl ?? Yii::$app->request->url;
         $id = $this->filterRowOptions['id'];
         $filterSelector = "#$id input, #$id select";
         if (isset($this->filterSelector)) {
@@ -434,7 +435,7 @@ class GridView extends BaseListView
      * Renders the table header.
      * @return string the rendering result.
      */
-    public function renderTableHeader()
+    public function renderTableHeader(): string
     {
         $cells = [];
         foreach ($this->columns as $column) {
@@ -455,7 +456,7 @@ class GridView extends BaseListView
      * Renders the table footer.
      * @return string the rendering result.
      */
-    public function renderTableFooter()
+    public function renderTableFooter(): string
     {
         $cells = [];
         foreach ($this->columns as $column) {
@@ -493,7 +494,7 @@ class GridView extends BaseListView
      * Renders the table body.
      * @return string the rendering result.
      */
-    public function renderTableBody()
+    public function renderTableBody(): string
     {
         $models = array_values($this->dataProvider->getModels());
         $keys = $this->dataProvider->getKeys();
@@ -591,8 +592,8 @@ class GridView extends BaseListView
             'class' => $this->dataColumnClass ?: DataColumn::className(),
             'grid' => $this,
             'attribute' => $matches[1],
-            'format' => isset($matches[3]) ? $matches[3] : 'text',
-            'label' => isset($matches[5]) ? $matches[5] : null,
+            'format' => $matches[3] ?? 'text',
+            'label' => $matches[5] ?? null,
         ]);
     }
 

@@ -1,15 +1,6 @@
 <?php
-/**
- * @link https://www.yiiframework.com/
- * @copyright Copyright (c) 2008 Yii Software LLC
- * @license https://www.yiiframework.com/license/
- */
 
-if (version_compare(PHP_VERSION, '4.3', '<')) {
-    echo 'At least PHP 4.3 is required to run this script!';
-    exit(1);
-}
-
+declare(strict_types=1);
 /**
  * YiiRequirementChecker allows checking, if current system meets the requirements for running the Yii application.
  * This class allows rendering of the check report for the web and console application interface.
@@ -68,7 +59,7 @@ class YiiRequirementChecker
      * If a string, it is treated as the path of the file, which contains the requirements;
      * @return $this self instance.
      */
-    public function check($requirements)
+    public function check($requirements): self
     {
         if (is_string($requirements)) {
             $requirements = require $requirements;
@@ -77,14 +68,14 @@ class YiiRequirementChecker
             $this->usageError('Requirements must be an array, "' . gettype($requirements) . '" has been given!');
         }
         if (!isset($this->result) || !is_array($this->result)) {
-            $this->result = array(
-                'summary' => array(
+            $this->result = [
+                'summary' => [
                     'total' => 0,
                     'errors' => 0,
                     'warnings' => 0,
-                ),
-                'requirements' => array(),
-            );
+                ],
+                'requirements' => [],
+            ];
         }
         foreach ($requirements as $key => $rawRequirement) {
             $requirement = $this->normalizeRequirement($rawRequirement, $key);
@@ -115,7 +106,7 @@ class YiiRequirementChecker
      */
     public function checkYii()
     {
-        return $this->check(dirname(__FILE__) . DIRECTORY_SEPARATOR . 'requirements.php');
+        return $this->check(__DIR__ . DIRECTORY_SEPARATOR . 'requirements.php');
     }
 
     /**
@@ -142,23 +133,19 @@ class YiiRequirementChecker
      */
     public function getResult()
     {
-        if (isset($this->result)) {
-            return $this->result;
-        } else {
-            return null;
-        }
+        return $this->result ?? null;
     }
 
     /**
      * Renders the requirements check result.
      * The output will vary depending is a script running from web or from console.
      */
-    public function render()
+    public function render(): void
     {
         if (!isset($this->result)) {
             $this->usageError('Nothing to render!');
         }
-        $baseViewFilePath = dirname(__FILE__) . DIRECTORY_SEPARATOR . 'views';
+        $baseViewFilePath = __DIR__ . DIRECTORY_SEPARATOR . 'views';
         if (!empty($_SERVER['argv'])) {
             $viewFileName = $baseViewFilePath . DIRECTORY_SEPARATOR . 'console' . DIRECTORY_SEPARATOR . 'index.php';
         } else {
@@ -228,7 +215,7 @@ class YiiRequirementChecker
      * @param string $compare comparison operator, by default '>='.
      * @return bool comparison result.
      */
-    public function compareByteSize($a, $b, $compare = '>=')
+    public function compareByteSize($a, $b, string $compare = '>=')
     {
         $compareExpression = '(' . $this->getByteSize($a) . $compare . $this->getByteSize($b) . ')';
 
@@ -275,7 +262,7 @@ class YiiRequirementChecker
      * @param string|null $max verbose file size maximum required value, pass null to skip maximum check.
      * @return bool success.
      */
-    public function checkUploadMaxFileSize($min = null, $max = null)
+    public function checkUploadMaxFileSize($min = null, $max = null): bool
     {
         $postMaxSize = ini_get('post_max_size');
         $uploadMaxFileSize = ini_get('upload_max_filesize');
@@ -316,9 +303,8 @@ class YiiRequirementChecker
             require $_viewFile_;
 
             return ob_get_clean();
-        } else {
-            require $_viewFile_;
         }
+        require $_viewFile_;
 
         return null;
     }
@@ -368,7 +354,7 @@ class YiiRequirementChecker
      * This method will then terminate the execution of the current application.
      * @param string $message the error message
      */
-    public function usageError($message)
+    public function usageError($message): void
     {
         echo "Error: $message\n\n";
         exit(1);
@@ -379,7 +365,7 @@ class YiiRequirementChecker
      * @param string $expression a PHP expression to be evaluated.
      * @return mixed the expression result.
      */
-    public function evaluateExpression($expression)
+    public function evaluateExpression(string $expression)
     {
         return eval('return ' . $expression . ';');
     }
@@ -390,14 +376,14 @@ class YiiRequirementChecker
      */
     public function getServerInfo()
     {
-        return isset($_SERVER['SERVER_SOFTWARE']) ? $_SERVER['SERVER_SOFTWARE'] : '';
+        return $_SERVER['SERVER_SOFTWARE'] ?? '';
     }
 
     /**
      * Returns the now date if possible in string representation.
      * @return string now date.
      */
-    public function getNowDate()
+    public function getNowDate(): string
     {
         return date('Y-m-d H:i');
     }

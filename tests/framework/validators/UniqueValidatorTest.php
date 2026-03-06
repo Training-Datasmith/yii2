@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -453,7 +455,7 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
     public function testFindModelWith(): void
     {
         $validator = new UniqueValidator([
-            'targetAttribute' => ['status', 'profile_id']
+            'targetAttribute' => ['status', 'profile_id'],
         ]);
         $model = WithCustomer::find()->one();
         try {
@@ -494,14 +496,14 @@ abstract class UniqueValidatorTest extends DatabaseTestCase
 
         $validator = new UniqueValidator([
             'forceMasterDb' => true,
-            'targetAttribute' => ['status', 'profile_id']
+            'targetAttribute' => ['status', 'profile_id'],
         ]);
         $validator->validateAttribute($model, 'email');
 
         $this->expectException('\yii\base\InvalidConfigException');
         $validator = new UniqueValidator([
             'forceMasterDb' => false,
-            'targetAttribute' => ['status', 'profile_id']
+            'targetAttribute' => ['status', 'profile_id'],
         ]);
         $validator->validateAttribute($model, 'email');
 

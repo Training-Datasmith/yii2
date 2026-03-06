@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -87,13 +89,12 @@ class DbCache extends Cache
 
     protected $isVarbinaryDataField;
 
-
     /**
      * Initializes the DbCache component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
      * @throws InvalidConfigException if [[db]] is invalid.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->db = Instance::ensure($this->db, Connection::className());
@@ -109,7 +110,7 @@ class DbCache extends Cache
      * a complex data structure consisting of factors representing the key.
      * @return bool true if a value exists in cache, false if the value is not in the cache or expired.
      */
-    public function exists($key)
+    public function exists($key): bool
     {
         $key = $this->buildKey($key);
 
@@ -158,7 +159,7 @@ class DbCache extends Cache
      * @param array $keys a list of keys identifying the cached values
      * @return array a list of cached values indexed by the keys
      */
-    protected function getValues($keys)
+    protected function getValues($keys): array
     {
         if (empty($keys)) {
             return [];
@@ -201,10 +202,10 @@ class DbCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function setValue($key, $value, $duration)
+    protected function setValue($key, $value, $duration): bool
     {
         try {
-            $this->db->noCache(function (Connection $db) use ($key, $value, $duration) {
+            $this->db->noCache(function (Connection $db) use ($key, $value, $duration): void {
                 $db->createCommand()->upsert($this->cacheTable, [
                     'id' => $key,
                     'expire' => $duration > 0 ? $duration + time() : 0,
@@ -231,12 +232,12 @@ class DbCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function addValue($key, $value, $duration)
+    protected function addValue($key, $value, $duration): bool
     {
         $this->gc();
 
         try {
-            $this->db->noCache(function (Connection $db) use ($key, $value, $duration) {
+            $this->db->noCache(function (Connection $db) use ($key, $value, $duration): void {
                 $db->createCommand()
                     ->insert($this->cacheTable, [
                         'id' => $key,
@@ -259,9 +260,9 @@ class DbCache extends Cache
      * @param string $key the key of the value to be deleted
      * @return bool if no error happens during deletion
      */
-    protected function deleteValue($key)
+    protected function deleteValue($key): bool
     {
-        $this->db->noCache(function (Connection $db) use ($key) {
+        $this->db->noCache(function (Connection $db) use ($key): void {
             $db->createCommand()
                 ->delete($this->cacheTable, ['id' => $key])
                 ->execute();
@@ -275,7 +276,7 @@ class DbCache extends Cache
      * @param bool $force whether to enforce the garbage collection regardless of [[gcProbability]].
      * Defaults to false, meaning the actual deletion happens with the probability as specified by [[gcProbability]].
      */
-    public function gc($force = false)
+    public function gc($force = false): void
     {
 
         if ($force || random_int(0, 1000000) < $this->gcProbability) {
@@ -290,7 +291,7 @@ class DbCache extends Cache
      * This is the implementation of the method declared in the parent class.
      * @return bool whether the flush operation was successful.
      */
-    protected function flushValues()
+    protected function flushValues(): bool
     {
         $this->db->createCommand()
             ->delete($this->cacheTable)
@@ -316,7 +317,7 @@ class DbCache extends Cache
      * @return string `data` field name converted for usage in MSSQL (if needed)
      * @since 2.0.42
      */
-    protected function getDataFieldName()
+    protected function getDataFieldName(): string
     {
         return $this->isVarbinaryDataField() ? 'CONVERT(VARCHAR(MAX), [[data]]) data' : 'data';
     }

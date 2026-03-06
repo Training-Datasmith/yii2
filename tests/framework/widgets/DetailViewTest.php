@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,11 +10,11 @@
 
 namespace yiiunit\framework\widgets;
 
-use yiiunit\TestCase;
 use yii\base\Arrayable;
 use yii\base\ArrayableTrait;
 use yii\base\Model;
 use yii\widgets\DetailView;
+use yiiunit\TestCase;
 
 /**
  * @group widgets
@@ -331,7 +333,7 @@ class DetailViewTest extends TestCase
             'model' => $model,
             'on init' => function () use (&$initTriggered) {
                 $initTriggered = true;
-            }
+            },
         ]);
 
         $this->assertTrue($initTriggered);

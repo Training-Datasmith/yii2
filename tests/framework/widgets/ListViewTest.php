@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,9 +11,9 @@
 namespace yiiunit\framework\widgets;
 
 use Yii;
-use yii\web\Request;
 use yii\data\ArrayDataProvider;
 use yii\data\DataProviderInterface;
+use yii\web\Request;
 use yii\widgets\ListView;
 use yiiunit\TestCase;
 
@@ -325,8 +327,8 @@ HTML,
                 'sort' => [
                     'attributes' => ['id'],
                     'route' => 'list/view',
-                ]
-            ])
+                ],
+            ]),
         ])->run();
         $out = ob_get_clean();
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -79,13 +81,12 @@ class ActiveDataProvider extends BaseDataProvider
      */
     public $db;
 
-
     /**
      * Initializes the DB connection component.
      * This method will initialize the [[db]] property (when set) to make sure it refers to a valid DB connection.
      * @throws InvalidConfigException if [[db]] is invalid.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->db !== null) {
@@ -118,8 +119,9 @@ class ActiveDataProvider extends BaseDataProvider
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    protected function prepareKeys($models)
+    protected function prepareKeys($models): array
     {
         $keys = [];
         if ($this->key !== null) {
@@ -130,9 +132,9 @@ class ActiveDataProvider extends BaseDataProvider
                     $keys[] = call_user_func($this->key, $model);
                 }
             }
-
             return $keys;
-        } elseif ($this->query instanceof ActiveQueryInterface) {
+        }
+        if ($this->query instanceof ActiveQueryInterface) {
             /** @var \yii\db\ActiveRecordInterface $class */
             $class = $this->query->modelClass;
             $pks = $class::primaryKey();
@@ -150,7 +152,6 @@ class ActiveDataProvider extends BaseDataProvider
                     $keys[] = $kk;
                 }
             }
-
             return $keys;
         }
 
@@ -160,7 +161,7 @@ class ActiveDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareTotalCount()
+    protected function prepareTotalCount(): int
     {
         if (!$this->query instanceof QueryInterface) {
             throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
@@ -172,7 +173,7 @@ class ActiveDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    public function setSort($value)
+    public function setSort($value): void
     {
         parent::setSort($value);
         if ($this->query instanceof ActiveQueryInterface && ($sort = $this->getSort()) !== false) {

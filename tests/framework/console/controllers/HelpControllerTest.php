@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -215,7 +217,6 @@ STRING
         $this->assertStringNotContainsString('    fake-no-default/index (default)', $result);
     }
 }
-
 
 class BufferedHelpController extends HelpController
 {

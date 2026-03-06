@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -92,13 +94,12 @@ class HttpBasicAuth extends AuthMethod
      */
     public $auth;
 
-
     /**
      * {@inheritdoc}
      */
     public function authenticate($user, $request, $response)
     {
-        list($username, $password) = $request->getAuthCredentials();
+        [$username, $password] = $request->getAuthCredentials();
 
         if ($this->auth) {
             if ($username !== null || $password !== null) {
@@ -127,7 +128,7 @@ class HttpBasicAuth extends AuthMethod
     /**
      * {@inheritdoc}
      */
-    public function challenge($response)
+    public function challenge($response): void
     {
         $response->getHeaders()->set('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
     }

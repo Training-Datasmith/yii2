@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -301,12 +303,11 @@ class Request extends \yii\base\Request
     /**
      * @var CookieCollection Collection of request cookies.
      */
-    private $_cookies;
+    private ?\yii\web\CookieCollection $_cookies = null;
     /**
      * @var HeaderCollection Collection of request headers.
      */
-    private $_headers;
-
+    private ?\yii\web\HeaderCollection $_headers = null;
 
     /**
      * Resolves the current request into a route and the associated parameters.
@@ -317,7 +318,7 @@ class Request extends \yii\base\Request
     {
         $result = Yii::$app->getUrlManager()->parseRequest($this);
         if ($result !== false) {
-            list($route, $params) = $result;
+            [$route, $params] = $result;
             if ($this->_queryParams === null) {
                 $_GET = $params + $_GET; // preserve numeric keys
             } else {
@@ -332,7 +333,6 @@ class Request extends \yii\base\Request
 
     /**
      * Filters headers according to the [[trustedHosts]].
-     * @param HeaderCollection $headerCollection
      * @since 2.0.13
      */
     protected function filterHeaders(HeaderCollection $headerCollection)
@@ -380,10 +380,9 @@ class Request extends \yii\base\Request
      * Creates instance of [[IpValidator]].
      * You can override this method to adjust validator or implement different matching strategy.
      *
-     * @return IpValidator
      * @since 2.0.13
      */
-    protected function getIpValidator()
+    protected function getIpValidator(): \yii\validators\IpValidator
     {
         return new IpValidator();
     }
@@ -432,7 +431,7 @@ class Request extends \yii\base\Request
      * @return string request method, such as GET, POST, HEAD, PUT, PATCH, DELETE.
      * The value returned is turned into upper case.
      */
-    public function getMethod()
+    public function getMethod(): string
     {
         if (
             isset($_POST[$this->methodParam])
@@ -458,7 +457,7 @@ class Request extends \yii\base\Request
      * Returns whether this is a GET request.
      * @return bool whether this is a GET request.
      */
-    public function getIsGet()
+    public function getIsGet(): bool
     {
         return $this->getMethod() === 'GET';
     }
@@ -467,7 +466,7 @@ class Request extends \yii\base\Request
      * Returns whether this is an OPTIONS request.
      * @return bool whether this is a OPTIONS request.
      */
-    public function getIsOptions()
+    public function getIsOptions(): bool
     {
         return $this->getMethod() === 'OPTIONS';
     }
@@ -476,7 +475,7 @@ class Request extends \yii\base\Request
      * Returns whether this is a HEAD request.
      * @return bool whether this is a HEAD request.
      */
-    public function getIsHead()
+    public function getIsHead(): bool
     {
         return $this->getMethod() === 'HEAD';
     }
@@ -485,7 +484,7 @@ class Request extends \yii\base\Request
      * Returns whether this is a POST request.
      * @return bool whether this is a POST request.
      */
-    public function getIsPost()
+    public function getIsPost(): bool
     {
         return $this->getMethod() === 'POST';
     }
@@ -494,7 +493,7 @@ class Request extends \yii\base\Request
      * Returns whether this is a DELETE request.
      * @return bool whether this is a DELETE request.
      */
-    public function getIsDelete()
+    public function getIsDelete(): bool
     {
         return $this->getMethod() === 'DELETE';
     }
@@ -503,7 +502,7 @@ class Request extends \yii\base\Request
      * Returns whether this is a PUT request.
      * @return bool whether this is a PUT request.
      */
-    public function getIsPut()
+    public function getIsPut(): bool
     {
         return $this->getMethod() === 'PUT';
     }
@@ -512,7 +511,7 @@ class Request extends \yii\base\Request
      * Returns whether this is a PATCH request.
      * @return bool whether this is a PATCH request.
      */
-    public function getIsPatch()
+    public function getIsPatch(): bool
     {
         return $this->getMethod() === 'PATCH';
     }
@@ -534,7 +533,7 @@ class Request extends \yii\base\Request
      *
      * @return bool whether this is an AJAX (XMLHttpRequest) request.
      */
-    public function getIsAjax()
+    public function getIsAjax(): bool
     {
         return $this->headers->get('X-Requested-With') === 'XMLHttpRequest';
     }
@@ -543,7 +542,7 @@ class Request extends \yii\base\Request
      * Returns whether this is a PJAX request.
      * @return bool whether this is a PJAX request
      */
-    public function getIsPjax()
+    public function getIsPjax(): bool
     {
         return $this->getIsAjax() && $this->headers->has('X-Pjax');
     }
@@ -552,7 +551,7 @@ class Request extends \yii\base\Request
      * Returns whether this is an Adobe Flash or Flex request.
      * @return bool whether this is an Adobe Flash or Adobe Flex request.
      */
-    public function getIsFlash()
+    public function getIsFlash(): bool
     {
         $userAgent = $this->headers->get('User-Agent', '');
         return stripos($userAgent, 'Shockwave') !== false
@@ -578,7 +577,7 @@ class Request extends \yii\base\Request
      * Sets the raw HTTP request body, this method is mainly used by test scripts to simulate raw HTTP requests.
      * @param string $rawBody the request body
      */
-    public function setRawBody($rawBody)
+    public function setRawBody($rawBody): void
     {
         $this->_rawBody = $rawBody;
     }
@@ -645,7 +644,7 @@ class Request extends \yii\base\Request
      * @param array|object $values the request body parameters (name-value pairs)
      * @see getBodyParams()
      */
-    public function setBodyParams($values)
+    public function setBodyParams($values): void
     {
         $this->_bodyParams = $values;
     }
@@ -668,13 +667,13 @@ class Request extends \yii\base\Request
         if (is_object($params)) {
             // unable to use `ArrayHelper::getValue()` due to different dots in key logic and lack of exception handling
             try {
-                return isset($params->{$name}) ? $params->{$name} : $defaultValue;
+                return $params->{$name} ?? $defaultValue;
             } catch (\Exception $e) {
                 return $defaultValue;
             }
         }
 
-        return isset($params[$name]) ? $params[$name] : $defaultValue;
+        return $params[$name] ?? $defaultValue;
     }
 
     /**
@@ -718,7 +717,7 @@ class Request extends \yii\base\Request
      * @see getQueryParam()
      * @see getQueryParams()
      */
-    public function setQueryParams($values)
+    public function setQueryParams($values): void
     {
         $this->_queryParams = $values;
     }
@@ -751,10 +750,10 @@ class Request extends \yii\base\Request
     {
         $params = $this->getQueryParams();
 
-        return isset($params[$name]) ? $params[$name] : $defaultValue;
+        return $params[$name] ?? $defaultValue;
     }
 
-    private $_hostInfo;
+    private ?string $_hostInfo = null;
     private $_hostName;
 
     /**
@@ -814,7 +813,7 @@ class Request extends \yii\base\Request
      * @param string|null $value the schema and host part of the application URL. The trailing slashes will be removed.
      * @see getHostInfo() for security related notes on this property.
      */
-    public function setHostInfo($value)
+    public function setHostInfo($value): void
     {
         $this->_hostName = null;
         $this->_hostInfo = $value === null ? null : rtrim($value, '/');
@@ -864,7 +863,7 @@ class Request extends \yii\base\Request
      * This setter is provided in case you want to change this behavior.
      * @param string $value the relative URL for the application
      */
-    public function setBaseUrl($value)
+    public function setBaseUrl($value): void
     {
         $this->_baseUrl = $value;
     }
@@ -890,7 +889,7 @@ class Request extends \yii\base\Request
                 $this->_scriptUrl = $_SERVER['ORIG_SCRIPT_NAME'];
             } elseif (isset($_SERVER['PHP_SELF']) && ($pos = strpos($_SERVER['PHP_SELF'], '/' . $scriptName)) !== false) {
                 $this->_scriptUrl = substr($_SERVER['SCRIPT_NAME'], 0, $pos) . '/' . $scriptName;
-            } elseif (!empty($_SERVER['DOCUMENT_ROOT']) && strpos($scriptFile, $_SERVER['DOCUMENT_ROOT']) === 0) {
+            } elseif (!empty($_SERVER['DOCUMENT_ROOT']) && strpos($scriptFile, (string) $_SERVER['DOCUMENT_ROOT']) === 0) {
                 $this->_scriptUrl = str_replace([$_SERVER['DOCUMENT_ROOT'], '\\'], ['', '/'], $scriptFile);
             } else {
                 throw new InvalidConfigException('Unable to determine the entry script URL.');
@@ -906,7 +905,7 @@ class Request extends \yii\base\Request
      * on certain Web servers.
      * @param string $value the relative URL for the application entry script.
      */
-    public function setScriptUrl($value)
+    public function setScriptUrl($value): void
     {
         $this->_scriptUrl = $value === null ? null : '/' . trim($value, '/');
     }
@@ -939,7 +938,7 @@ class Request extends \yii\base\Request
      * this property to make it right.
      * @param string $value the entry script file path.
      */
-    public function setScriptFile($value)
+    public function setScriptFile($value): void
     {
         $this->_scriptFile = $value;
     }
@@ -968,7 +967,7 @@ class Request extends \yii\base\Request
      * This method is mainly provided for testing purpose.
      * @param string $value the path info of the current request
      */
-    public function setPathInfo($value)
+    public function setPathInfo($value): void
     {
         $this->_pathInfo = $value === null ? null : ltrim($value, '/');
     }
@@ -981,7 +980,7 @@ class Request extends \yii\base\Request
      * Note, the returned path info is decoded.
      * @throws InvalidConfigException if the path info cannot be determined due to unexpected server configuration
      */
-    protected function resolvePathInfo()
+    protected function resolvePathInfo(): string
     {
         $pathInfo = $this->getUrl();
 
@@ -1021,29 +1020,33 @@ class Request extends \yii\base\Request
         }
 
         if (strncmp($pathInfo, '/', 1) === 0) {
-            $pathInfo = substr($pathInfo, 1);
+            return substr($pathInfo, 1);
         }
 
-        return (string) $pathInfo;
+        return $pathInfo;
     }
 
     /**
      * Encodes an ISO-8859-1 string to UTF-8
-     * @param string $s
      * @return string the UTF-8 translation of `s`.
      * @see https://github.com/symfony/polyfill-php72/blob/master/Php72.php#L24
      * @phpcs:disable Generic.Formatting.DisallowMultipleStatements.SameLine
      * @phpcs:disable Squiz.WhiteSpace.ScopeClosingBrace.ContentBefore
      */
-    private function utf8Encode($s)
+    private function utf8Encode(string $s): string
     {
         $s .= $s;
         $len = \strlen($s);
         for ($i = $len >> 1, $j = 0; $i < $len; ++$i, ++$j) {
             switch (true) {
-                case $s[$i] < "\x80": $s[$j] = $s[$i]; break;
-                case $s[$i] < "\xC0": $s[$j] = "\xC2"; $s[++$j] = $s[$i]; break;
-                default: $s[$j] = "\xC3"; $s[++$j] = \chr(\ord($s[$i]) - 64); break;
+                case $s[$i] < "\x80": $s[$j] = $s[$i];
+                    break;
+                case $s[$i] < "\xC0": $s[$j] = "\xC2";
+                    $s[++$j] = $s[$i];
+                    break;
+                default: $s[$j] = "\xC3";
+                    $s[++$j] = \chr(\ord($s[$i]) - 64);
+                    break;
             }
         }
         return substr($s, 0, $j);
@@ -1054,7 +1057,7 @@ class Request extends \yii\base\Request
      * This is a shortcut to the concatenation of [[hostInfo]] and [[url]].
      * @return string the currently requested absolute URL.
      */
-    public function getAbsoluteUrl()
+    public function getAbsoluteUrl(): string
     {
         return $this->getHostInfo() . $this->getUrl();
     }
@@ -1083,7 +1086,7 @@ class Request extends \yii\base\Request
      * Note that the URI should be URL-encoded.
      * @param string $value the request URI to be set
      */
-    public function setUrl($value)
+    public function setUrl($value): void
     {
         $this->_url = $value;
     }
@@ -1123,7 +1126,7 @@ class Request extends \yii\base\Request
      */
     public function getQueryString()
     {
-        return isset($_SERVER['QUERY_STRING']) ? $_SERVER['QUERY_STRING'] : '';
+        return $_SERVER['QUERY_STRING'] ?? '';
     }
 
     /**
@@ -1141,7 +1144,7 @@ class Request extends \yii\base\Request
         }
 
         foreach ($this->secureProtocolHeaders as $header => $values) {
-            if (($headerValue = $this->headers->get($header, null)) !== null) {
+            if (($headerValue = $this->headers->get($header)) !== null) {
                 foreach ($values as $value) {
                     if (strcasecmp($headerValue, $value) === 0) {
                         return true;
@@ -1159,7 +1162,7 @@ class Request extends \yii\base\Request
      */
     public function getServerName()
     {
-        return isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : null;
+        return $_SERVER['SERVER_NAME'] ?? null;
     }
 
     /**
@@ -1169,7 +1172,7 @@ class Request extends \yii\base\Request
      * @return int|null server port number, null if not available
      * @see portHeaders
      */
-    public function getServerPort()
+    public function getServerPort(): ?int
     {
         foreach ($this->portHeaders as $portHeader) {
             if ($this->headers->has($portHeader)) {
@@ -1243,7 +1246,6 @@ class Request extends \yii\base\Request
             }
         }
 
-
         foreach ($this->ipHeaders as $ipHeader) {
             if ($this->headers->has($ipHeader)) {
                 $ip = $this->getUserIpFromIpHeader($this->headers->get($ipHeader));
@@ -1255,7 +1257,7 @@ class Request extends \yii\base\Request
         return null;
     }
 
-    private $_ip = null;
+    private $_ip;
 
     /**
      * Returns the user IP address.
@@ -1340,7 +1342,7 @@ class Request extends \yii\base\Request
      */
     public function getRemoteIP()
     {
-        return isset($_SERVER['REMOTE_ADDR']) ? $_SERVER['REMOTE_ADDR'] : null;
+        return $_SERVER['REMOTE_ADDR'] ?? null;
     }
 
     /**
@@ -1353,7 +1355,7 @@ class Request extends \yii\base\Request
      */
     public function getRemoteHost()
     {
-        return isset($_SERVER['REMOTE_HOST']) ? $_SERVER['REMOTE_HOST'] : null;
+        return $_SERVER['REMOTE_HOST'] ?? null;
     }
 
     /**
@@ -1382,10 +1384,10 @@ class Request extends \yii\base\Request
      * @see getAuthPassword() to get only password
      * @since 2.0.13
      */
-    public function getAuthCredentials()
+    public function getAuthCredentials(): array
     {
-        $username = isset($_SERVER['PHP_AUTH_USER']) ? $_SERVER['PHP_AUTH_USER'] : null;
-        $password = isset($_SERVER['PHP_AUTH_PW']) ? $_SERVER['PHP_AUTH_PW'] : null;
+        $username = $_SERVER['PHP_AUTH_USER'] ?? null;
+        $password = $_SERVER['PHP_AUTH_PW'] ?? null;
         if ($username !== null || $password !== null) {
             return [$username, $password];
         }
@@ -1401,9 +1403,7 @@ class Request extends \yii\base\Request
         $auth_token = $this->getHeaders()->get('Authorization');
 
         if ($auth_token !== null && strncasecmp($auth_token, 'basic', 5) === 0) {
-            $parts = array_map(function ($value) {
-                return strlen($value) === 0 ? null : $value;
-            }, explode(':', base64_decode(mb_substr($auth_token, 6)), 2));
+            $parts = array_map(fn ($value) => strlen($value) === 0 ? null : $value, explode(':', base64_decode(mb_substr($auth_token, 6)), 2));
 
             if (count($parts) < 2) {
                 return [$parts[0], null];
@@ -1440,7 +1440,7 @@ class Request extends \yii\base\Request
      * server configurations.
      * @param int $value port number.
      */
-    public function setPort($value)
+    public function setPort($value): void
     {
         if ($value != $this->_port) {
             $this->_port = (int) $value;
@@ -1473,7 +1473,7 @@ class Request extends \yii\base\Request
      * server configurations.
      * @param int $value port number.
      */
-    public function setSecurePort($value)
+    public function setSecurePort($value): void
     {
         if ($value != $this->_securePort) {
             $this->_securePort = (int) $value;
@@ -1525,7 +1525,7 @@ class Request extends \yii\base\Request
      * @see getAcceptableContentTypes()
      * @see parseAcceptHeader()
      */
-    public function setAcceptableContentTypes($value)
+    public function setAcceptableContentTypes($value): void
     {
         $this->_contentTypes = $value;
     }
@@ -1542,12 +1542,8 @@ class Request extends \yii\base\Request
      */
     public function getContentType()
     {
-        if (isset($_SERVER['CONTENT_TYPE'])) {
-            return $_SERVER['CONTENT_TYPE'];
-        }
-
         //fix bug https://bugs.php.net/bug.php?id=66606
-        return $this->headers->get('Content-Type') ?: '';
+        return $_SERVER['CONTENT_TYPE'] ?? ($this->headers->get('Content-Type') ?: '');
     }
 
     private $_languages;
@@ -1575,7 +1571,7 @@ class Request extends \yii\base\Request
      * @param array $value the languages that are acceptable by the end user. They should
      * be ordered by the preference level.
      */
-    public function setAcceptableLanguages($value)
+    public function setAcceptableLanguages($value): void
     {
         $this->_languages = $value;
     }
@@ -1604,7 +1600,7 @@ class Request extends \yii\base\Request
      * @return array the acceptable values ordered by their quality score. The values with the highest scores
      * will be returned first.
      */
-    public function parseAcceptHeader($header)
+    public function parseAcceptHeader($header): array
     {
         $accepts = [];
         foreach (explode(',', $header) as $i => $part) {
@@ -1617,7 +1613,7 @@ class Request extends \yii\base\Request
             ];
             foreach ($params as $param) {
                 if (strpos($param, '=') !== false) {
-                    list($key, $value) = explode('=', $param, 2);
+                    [$key, $value] = explode('=', $param, 2);
                     if ($key === 'q') {
                         $values['q'][2] = (float) $value;
                     } else {
@@ -1630,7 +1626,7 @@ class Request extends \yii\base\Request
             $accepts[] = $values;
         }
 
-        usort($accepts, function ($a, $b) {
+        usort($accepts, function (array $a, array $b): int {
             $a = $a['q']; // index, name, q
             $b = $b['q'];
             if ($a[2] > $b[2]) {
@@ -1750,7 +1746,7 @@ class Request extends \yii\base\Request
      * @return array the cookies obtained from request
      * @throws InvalidConfigException if [[cookieValidationKey]] is not set when [[enableCookieValidation]] is true
      */
-    protected function loadCookies()
+    protected function loadCookies(): array
     {
         $cookies = [];
         if ($this->enableCookieValidation) {
@@ -1910,9 +1906,10 @@ class Request extends \yii\base\Request
         if ($clientSuppliedToken !== null) {
             return $this->validateCsrfTokenInternal($clientSuppliedToken, $trueToken);
         }
-
-        return $this->validateCsrfTokenInternal($this->getBodyParam($this->csrfParam), $trueToken)
-            || $this->validateCsrfTokenInternal($this->getCsrfTokenFromHeader(), $trueToken);
+        if ($this->validateCsrfTokenInternal($this->getBodyParam($this->csrfParam), $trueToken)) {
+            return true;
+        }
+        return $this->validateCsrfTokenInternal($this->getCsrfTokenFromHeader(), $trueToken);
     }
 
     /**
@@ -1955,7 +1952,7 @@ class Request extends \yii\base\Request
         return null;
     }
 
-    private $_secureForwardedHeaderTrustedParts;
+    private ?array $_secureForwardedHeaderTrustedParts = null;
 
     /**
      * Gets only trusted `Forwarded` header parts
@@ -1982,15 +1979,13 @@ class Request extends \yii\base\Request
 
         $this->_secureForwardedHeaderTrustedParts = array_filter(
             $this->getSecureForwardedHeaderParts(),
-            function ($headerPart) use ($validator) {
-                return isset($headerPart['for']) ? !$validator->validate($headerPart['for']) : true;
-            }
+            fn (array $headerPart) => isset($headerPart['for']) ? !$validator->validate($headerPart['for']) : true
         );
 
         return $this->_secureForwardedHeaderTrustedParts;
     }
 
-    private $_secureForwardedHeaderParts;
+    private ?array $_secureForwardedHeaderParts = null;
 
     /**
      * Returns decoded forwarded header
@@ -2026,7 +2021,7 @@ class Request extends \yii\base\Request
 
         foreach ($forwardedElements[0] as $forwardedPairs) {
             preg_match_all('/(?P<key>\w+)\s*=\s*(?:(?P<value>[^",;]*[^",;\s])|"(?P<value2>[^"]+)")/', $forwardedPairs, $matches, PREG_SET_ORDER);
-            $this->_secureForwardedHeaderParts[] = array_reduce($matches, function ($carry, $item) {
+            $this->_secureForwardedHeaderParts[] = array_reduce($matches, function (array $carry, array $item): array {
                 $value = $item['value'];
                 if (isset($item['value2']) && $item['value2'] !== '') {
                     $value = $item['value2'];

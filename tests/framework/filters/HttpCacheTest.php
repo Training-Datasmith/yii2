@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,10 +10,10 @@
 
 namespace yiiunit\framework\filters;
 
-use yiiunit\TestCase;
 use ReflectionMethod;
 use Yii;
 use yii\filters\HttpCache;
+use yiiunit\TestCase;
 
 /**
  * @group filters
@@ -111,7 +113,6 @@ class HttpCacheTest extends TestCase
         $etag = $response->getHeaders()->get('ETag');
         $this->assertStringStartsWith('"', $etag);
         $this->assertStringEndsWith('"', $etag);
-
 
         $httpCache->weakEtag = true;
         $httpCache->beforeAction(null);

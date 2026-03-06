@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -26,8 +28,7 @@ trait RetryAcquireTrait
      */
     public $retryDelay = 50;
 
-
-    private function retryAcquire($timeout, Closure $callback)
+    private function retryAcquire($timeout, Closure $callback): bool
     {
         $start = microtime(true);
         do {

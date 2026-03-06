@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,8 @@
 
 namespace yiiunit\framework\web\session\sqlite;
 
-use yiiunit\framework\web\session\AbstractDbSessionTest;
 use Yii;
+use yiiunit\framework\web\session\AbstractDbSessionTest;
 
 /**
  * Class DbSessionTest.

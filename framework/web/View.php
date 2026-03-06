@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -156,7 +158,6 @@ class View extends \yii\base\View
 
     private $_assetManager;
 
-
     /**
      * Whether [[endPage()]] has been called and all files have been registered
      * @var bool
@@ -167,7 +168,7 @@ class View extends \yii\base\View
     /**
      * Marks the position of an HTML head section.
      */
-    public function head()
+    public function head(): void
     {
         echo self::PH_HEAD;
     }
@@ -175,7 +176,7 @@ class View extends \yii\base\View
     /**
      * Marks the beginning of an HTML body section.
      */
-    public function beginBody()
+    public function beginBody(): void
     {
         echo self::PH_BODY_BEGIN;
         $this->trigger(self::EVENT_BEGIN_BODY);
@@ -184,7 +185,7 @@ class View extends \yii\base\View
     /**
      * Marks the ending of an HTML body section.
      */
-    public function endBody()
+    public function endBody(): void
     {
         $this->trigger(self::EVENT_END_BODY);
         echo self::PH_BODY_END;
@@ -200,7 +201,7 @@ class View extends \yii\base\View
      * If true, the JS scripts registered at [[POS_READY]] and [[POS_LOAD]] positions
      * will be rendered at the end of the view like normal scripts.
      */
-    public function endPage($ajaxMode = false)
+    public function endPage($ajaxMode = false): void
     {
         $this->trigger(self::EVENT_END_PAGE);
 
@@ -232,7 +233,7 @@ class View extends \yii\base\View
      * @return string the rendering result
      * @see render()
      */
-    public function renderAjax($view, $params = [], $context = null)
+    public function renderAjax(string $view, $params = [], $context = null)
     {
         $viewFile = $this->findViewFile($view, $context);
 
@@ -262,7 +263,7 @@ class View extends \yii\base\View
      * Sets the asset manager.
      * @param \yii\web\AssetManager $value the asset manager
      */
-    public function setAssetManager($value)
+    public function setAssetManager($value): void
     {
         $this->_assetManager = $value;
     }
@@ -270,7 +271,7 @@ class View extends \yii\base\View
     /**
      * Clears up the registered meta tags, link tags, css/js scripts and files.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->metaTags = [];
         $this->linkTags = [];
@@ -319,7 +320,7 @@ class View extends \yii\base\View
             $bundle = $am->getBundle($name);
             $this->assetBundles[$name] = false;
             // register dependencies
-            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
+            $pos = $bundle->jsOptions['position'] ?? null;
             foreach ($bundle->depends as $dep) {
                 $this->registerAssetBundle($dep, $pos);
             }
@@ -331,7 +332,7 @@ class View extends \yii\base\View
         }
 
         if ($position !== null) {
-            $pos = isset($bundle->jsOptions['position']) ? $bundle->jsOptions['position'] : null;
+            $pos = $bundle->jsOptions['position'] ?? null;
             if ($pos === null) {
                 $bundle->jsOptions['position'] = $pos = $position;
             } elseif ($pos > $position) {
@@ -365,7 +366,7 @@ class View extends \yii\base\View
      * with the same key, the latter will overwrite the former. If this is null, the new meta tag
      * will be appended to the existing ones.
      */
-    public function registerMetaTag($options, $key = null)
+    public function registerMetaTag($options, $key = null): void
     {
         if ($key === null) {
             $this->metaTags[] = Html::tag('meta', '', $options);
@@ -390,7 +391,7 @@ class View extends \yii\base\View
      *
      * @since 2.0.13
      */
-    public function registerCsrfMetaTags()
+    public function registerCsrfMetaTags(): void
     {
         $this->metaTags['csrf_meta_tags'] = $this->renderDynamic('return yii\helpers\Html::csrfMetaTags();');
     }
@@ -415,7 +416,7 @@ class View extends \yii\base\View
      * with the same key, the latter will overwrite the former. If this is null, the new link tag
      * will be appended to the existing ones.
      */
-    public function registerLinkTag($options, $key = null)
+    public function registerLinkTag($options, $key = null): void
     {
         if ($key === null) {
             $this->linkTags[] = Html::tag('link', '', $options);
@@ -432,7 +433,7 @@ class View extends \yii\base\View
      * $css as the key. If two CSS code blocks are registered with the same key, the latter
      * will overwrite the former.
      */
-    public function registerCss($css, $options = [], $key = null)
+    public function registerCss($css, $options = [], $key = null): void
     {
         $key = $key ?: md5($css);
         $this->css[$key] = Html::style($css, $options);
@@ -457,7 +458,7 @@ class View extends \yii\base\View
      * will overwrite the former.
      * @throws InvalidConfigException
      */
-    public function registerCssFile($url, $options = [], $key = null)
+    public function registerCssFile($url, $options = [], $key = null): void
     {
         $this->registerFile('css', $url, $options, $key);
     }
@@ -480,7 +481,7 @@ class View extends \yii\base\View
      * $js as the key. If two JS code blocks are registered with the same key, the latter
      * will overwrite the former.
      */
-    public function registerJs($js, $position = self::POS_READY, $key = null)
+    public function registerJs($js, $position = self::POS_READY, $key = null): void
     {
         $key = $key ?: md5($js);
         $this->js[$position][$key] = $js;
@@ -506,7 +507,7 @@ class View extends \yii\base\View
      * but different position option will not override each other.
      * @throws InvalidConfigException
      */
-    private function registerFile($type, $url, $options = [], $key = null)
+    private function registerFile(string $type, $url, $options = [], $key = null): void
     {
         $url = Yii::getAlias($url);
         $key = $key ?: $url;
@@ -547,7 +548,7 @@ class View extends \yii\base\View
                 'class' => AssetBundle::className(),
                 'baseUrl' => '',
                 'basePath' => '@webroot',
-                (string)$type => [ArrayHelper::merge([!Url::isRelative($url) ? $url : ltrim($url, '/')], $originalOptions)],
+                $type => [ArrayHelper::merge([!Url::isRelative($url) ? $url : ltrim($url, '/')], $originalOptions)],
                 "{$type}Options" => $options,
                 'depends' => (array)$depends,
             ]);
@@ -581,7 +582,7 @@ class View extends \yii\base\View
      * but different position option will not override each other.
      * @throws InvalidConfigException
      */
-    public function registerJsFile($url, $options = [], $key = null)
+    public function registerJsFile($url, $options = [], $key = null): void
     {
         $this->registerFile('js', $url, $options, $key);
     }
@@ -605,7 +606,7 @@ class View extends \yii\base\View
      *
      * @since 2.0.14
      */
-    public function registerJsVar($name, $value, $position = self::POS_HEAD)
+    public function registerJsVar(string $name, $value, $position = self::POS_HEAD): void
     {
         $js = sprintf('var %s = %s;', $name, \yii\helpers\Json::htmlEncode($value));
         $this->registerJs($js, $position, $name);
@@ -616,7 +617,7 @@ class View extends \yii\base\View
      * The content is rendered using the registered meta tags, link tags, CSS/JS code blocks and files.
      * @return string the rendered content
      */
-    protected function renderHeadHtml()
+    protected function renderHeadHtml(): string
     {
         $lines = [];
         if (!empty($this->metaTags)) {
@@ -647,7 +648,7 @@ class View extends \yii\base\View
      * The content is rendered using the registered JS code blocks and files.
      * @return string the rendered content
      */
-    protected function renderBodyBeginHtml()
+    protected function renderBodyBeginHtml(): string
     {
         $lines = [];
         if (!empty($this->jsFiles[self::POS_BEGIN])) {
@@ -668,7 +669,7 @@ class View extends \yii\base\View
      * will be rendered at the end of the view like normal scripts.
      * @return string the rendered content
      */
-    protected function renderBodyEndHtml($ajaxMode)
+    protected function renderBodyEndHtml($ajaxMode): string
     {
         $lines = [];
 

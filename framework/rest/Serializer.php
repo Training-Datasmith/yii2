@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -120,11 +122,10 @@ class Serializer extends Component
      */
     public $preserveKeys = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         if ($this->request === null) {
             $this->request = Yii::$app->getRequest();
@@ -147,13 +148,17 @@ class Serializer extends Component
     {
         if ($data instanceof Model && $data->hasErrors()) {
             return $this->serializeModelErrors($data);
-        } elseif ($data instanceof Arrayable) {
+        }
+        if ($data instanceof Arrayable) {
             return $this->serializeModel($data);
-        } elseif ($data instanceof \JsonSerializable) {
+        }
+        if ($data instanceof \JsonSerializable) {
             return $data->jsonSerialize();
-        } elseif ($data instanceof DataProviderInterface) {
+        }
+        if ($data instanceof DataProviderInterface) {
             return $this->serializeDataProvider($data);
-        } elseif (is_array($data)) {
+        }
+        if (is_array($data)) {
             $serializedArray = [];
             foreach ($data as $key => $value) {
                 $serializedArray[$key] = $this->serialize($value);
@@ -171,7 +176,7 @@ class Serializer extends Component
      * @see Model::fields()
      * @see Model::extraFields()
      */
-    protected function getRequestedFields()
+    protected function getRequestedFields(): array
     {
         $fields = $this->request->get($this->fieldsParam);
         $expand = $this->request->get($this->expandParam);
@@ -199,10 +204,11 @@ class Serializer extends Component
         if (($pagination = $dataProvider->getPagination()) !== false) {
             $this->addPaginationHeaders($pagination);
         }
-
         if ($this->request->getIsHead()) {
             return null;
-        } elseif ($this->collectionEnvelope === null) {
+        }
+
+        if ($this->collectionEnvelope === null) {
             return $models;
         }
 
@@ -222,7 +228,7 @@ class Serializer extends Component
      * @return array the array representation of the pagination
      * @see addPaginationHeaders()
      */
-    protected function serializePagination($pagination)
+    protected function serializePagination($pagination): array
     {
         return [
             $this->linksEnvelope => Link::serialize($pagination->getLinks(true)),
@@ -265,7 +271,7 @@ class Serializer extends Component
             return null;
         }
 
-        list($fields, $expand) = $this->getRequestedFields();
+        [$fields, $expand] = $this->getRequestedFields();
         return $model->toArray($fields, $expand);
     }
 
@@ -274,7 +280,7 @@ class Serializer extends Component
      * @param Model $model
      * @return array the array representation of the errors
      */
-    protected function serializeModelErrors($model)
+    protected function serializeModelErrors($model): array
     {
         $this->response->setStatusCode(422, 'Data Validation Failed.');
         $result = [];
@@ -290,10 +296,9 @@ class Serializer extends Component
 
     /**
      * Serializes a set of models.
-     * @param array $models
      * @return array the array representation of the models
      */
-    protected function serializeModels(array $models)
+    protected function serializeModels(array $models): array
     {
         foreach ($models as $i => $model) {
             if ($model instanceof Arrayable) {

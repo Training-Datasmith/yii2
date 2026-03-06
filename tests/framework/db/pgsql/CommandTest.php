@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -128,14 +130,14 @@ class CommandTest extends \yiiunit\framework\db\CommandTest
             ['json_col'],
             [[new JsonExpression(['username' => 'silverfire', 'is_active' => true, 'langs' => ['Ukrainian', 'Russian', 'English']])]],
             'expected' => 'INSERT INTO "type" ("json_col") VALUES (:qp0)',
-            'expectedParams' => [':qp0' => '{"username":"silverfire","is_active":true,"langs":["Ukrainian","Russian","English"]}']
+            'expectedParams' => [':qp0' => '{"username":"silverfire","is_active":true,"langs":["Ukrainian","Russian","English"]}'],
         ];
         $data['batchInsert binds params from arrayExpression'] = [
             '{{%type}}',
             ['intarray_col'],
             [[new ArrayExpression([1,null,3], 'int')]],
             'expected' => 'INSERT INTO "type" ("intarray_col") VALUES (ARRAY[:qp0, :qp1, :qp2]::int[])',
-            'expectedParams' => [':qp0' => 1, ':qp1' => null, ':qp2' => 3]
+            'expectedParams' => [':qp0' => 1, ':qp1' => null, ':qp2' => 3],
         ];
         $data['batchInsert casts string to int according to the table schema'] = [
             '{{%type}}',
@@ -148,7 +150,7 @@ class CommandTest extends \yiiunit\framework\db\CommandTest
             ['jsonb_col'],
             [[['a' => true]]],
             'expected' => 'INSERT INTO "type" ("jsonb_col") VALUES (:qp0::jsonb)',
-            'expectedParams' => [':qp0' => '{"a":true}']
+            'expectedParams' => [':qp0' => '{"a":true}'],
         ];
 
         return $data;
@@ -162,10 +164,9 @@ class CommandTest extends \yiiunit\framework\db\CommandTest
         $db = $this->getConnection();
 
         $inserted = $db->createCommand()->insert('array_and_json_types', [
-            'jsonb_col' => new JsonExpression(['Solution date' => '13.01.2011'])
+            'jsonb_col' => new JsonExpression(['Solution date' => '13.01.2011']),
         ])->execute();
         $this->assertSame(1, $inserted);
-
 
         $found = $db->createCommand(
             <<<PGSQL
@@ -184,7 +185,6 @@ PGSQL
 PGSQL
         )->execute();
         $this->assertSame(1, $found);
-
 
         $this->assertSame(1, $db->createCommand()->delete('array_and_json_types')->execute());
     }

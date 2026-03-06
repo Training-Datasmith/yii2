@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,8 @@
 
 namespace yiiunit\framework\filters\auth;
 
-use stdClass;
 use ReflectionClass;
+use stdClass;
 use Yii;
 use yii\base\Action;
 use yii\filters\auth\AuthMethod;
@@ -41,7 +43,6 @@ class AuthMethodTest extends TestCase
     {
         $filter = $this->createPartialMock(AuthMethod::class, ['authenticate']);
         $filter->method('authenticate')->willReturnCallback($authenticateCallback);
-
 
         return $filter;
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -156,11 +158,10 @@ class MessageController extends Controller
      */
     protected $config;
 
-
     /**
      * {@inheritdoc}
      */
-    public function options($actionID)
+    public function options($actionID): array
     {
         return array_merge(parent::options($actionID), [
             'sourcePath',
@@ -188,7 +189,7 @@ class MessageController extends Controller
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function optionAliases()
+    public function optionAliases(): array
     {
         return array_merge(parent::optionAliases(), [
             'c' => 'catalog',
@@ -219,7 +220,7 @@ class MessageController extends Controller
      * @return int CLI exit code
      * @throws Exception on failure.
      */
-    public function actionConfig($filePath)
+    public function actionConfig($filePath): int
     {
         $filePath = Yii::getAlias($filePath);
         $dir = dirname($filePath);
@@ -267,7 +268,7 @@ EOD;
      * @return int CLI exit code
      * @throws Exception on failure.
      */
-    public function actionConfigTemplate($filePath)
+    public function actionConfigTemplate($filePath): int
     {
         $filePath = Yii::getAlias($filePath);
 
@@ -297,7 +298,7 @@ EOD;
      * this file and then customize it for your needs.
      * @throws Exception on failure.
      */
-    public function actionExtract($configFile = null)
+    public function actionExtract($configFile = null): void
     {
         $this->initConfig($configFile);
 
@@ -308,7 +309,7 @@ EOD;
             $messages = array_merge_recursive($messages, $this->extractMessages($file, $this->config['translator'], $this->config['ignoreCategories']));
         }
 
-        $catalog = isset($this->config['catalog']) ? $this->config['catalog'] : 'messages';
+        $catalog = $this->config['catalog'] ?? 'messages';
 
         if (in_array($this->config['format'], ['php', 'po'])) {
             foreach ($this->config['languages'] as $language) {
@@ -325,8 +326,8 @@ EOD;
         } elseif ($this->config['format'] === 'db') {
             /** @var Connection $db */
             $db = Instance::ensure($this->config['db'], Connection::className());
-            $sourceMessageTable = isset($this->config['sourceMessageTable']) ? $this->config['sourceMessageTable'] : '{{%source_message}}';
-            $messageTable = isset($this->config['messageTable']) ? $this->config['messageTable'] : '{{%message}}';
+            $sourceMessageTable = $this->config['sourceMessageTable'] ?? '{{%source_message}}';
+            $messageTable = $this->config['messageTable'] ?? '{{%message}}';
             $this->saveMessagesToDb(
                 $messages,
                 $db,
@@ -501,9 +502,8 @@ EOD;
      * @param string $translator name of the function used to translate messages
      * @param array $ignoreCategories message categories to ignore.
      * This parameter is available since version 2.0.4.
-     * @return array
      */
-    protected function extractMessages($fileName, $translator, $ignoreCategories = [])
+    protected function extractMessages($fileName, $translator, array $ignoreCategories = []): array
     {
         $this->stdout('Extracting messages from ');
         $this->stdout($fileName, Console::FG_CYAN);
@@ -530,7 +530,7 @@ EOD;
      * @param array $ignoreCategories message categories to ignore.
      * @return array messages.
      */
-    protected function extractMessagesFromTokens(array $tokens, array $translatorTokens, array $ignoreCategories)
+    protected function extractMessagesFromTokens(array $tokens, array $translatorTokens, array $ignoreCategories): array
     {
         $messages = [];
         $translatorTokensCount = count($translatorTokens);
@@ -631,10 +631,9 @@ EOD;
      *
      * @param string $category category that is checked
      * @param array $ignoreCategories message categories to ignore.
-     * @return bool
      * @since 2.0.7
      */
-    protected function isCategoryIgnored($category, array $ignoreCategories)
+    protected function isCategoryIgnored($category, array $ignoreCategories): bool
     {
         if (!empty($ignoreCategories)) {
             if (in_array($category, $ignoreCategories, true)) {
@@ -727,7 +726,7 @@ EOD;
      * @param bool $markUnused if obsolete translations should be marked
      * @return int exit code
      */
-    protected function saveMessagesCategoryToPHP($messages, $fileName, $overwrite, $removeUnused, $sort, $category, $markUnused)
+    protected function saveMessagesCategoryToPHP($messages, string $fileName, $overwrite, $removeUnused, $sort, $category, $markUnused): int
     {
         if (is_file($fileName)) {
             $rawExistingMessages = require $fileName;
@@ -931,7 +930,7 @@ EOD;
         }
     }
 
-    private function deleteUnusedPhpMessageFiles($existingCategories, $dirName)
+    private function deleteUnusedPhpMessageFiles(array $existingCategories, $dirName): void
     {
         $messageFiles = FileHelper::findFiles($dirName);
         foreach ($messageFiles as $messageFile) {

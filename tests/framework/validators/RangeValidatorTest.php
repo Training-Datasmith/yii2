@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -138,7 +140,6 @@ class RangeValidatorTest extends TestCase
             'allowArray' => true,
         ]);
         $this->assertTrue($val->validate(new ArrayObject(['a', 'b'])));
-
 
         // Test range as ArrayObject.
         $val = new RangeValidator([

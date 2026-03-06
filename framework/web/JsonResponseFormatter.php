@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -90,12 +92,11 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      */
     public $keepObjectType;
 
-
     /**
      * Formats the specified response.
      * @param Response $response the response to be formatted.
      */
-    public function format($response)
+    public function format($response): void
     {
         if ($this->contentType === null) {
             $this->contentType = $this->useJsonp

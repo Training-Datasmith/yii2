@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -49,11 +51,10 @@ class CacheSession extends Session
      */
     public $cache = 'cache';
 
-
     /**
      * Initializes the application component.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->cache = Instance::ensure($this->cache, 'yii\caching\CacheInterface');
@@ -64,7 +65,7 @@ class CacheSession extends Session
      * This method overrides the parent implementation and always returns true.
      * @return bool whether to use custom storage.
      */
-    public function getUseCustomStorage()
+    public function getUseCustomStorage(): bool
     {
         return true;
     }
@@ -140,8 +141,8 @@ class CacheSession extends Session
      * @param string $id session variable name
      * @return mixed a safe cache key associated with the session variable name
      */
-    protected function calculateKey($id)
+    protected function calculateKey($id): array
     {
-        return [__CLASS__, $id];
+        return [self::class, $id];
     }
 }

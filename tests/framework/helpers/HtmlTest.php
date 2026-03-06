@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,11 +11,11 @@
 namespace yiiunit\framework\helpers;
 
 use ArrayObject;
-use yii\base\InvalidArgumentException;
 use Closure;
-use yii\base\Model;
 use Yii;
 use yii\base\DynamicModel;
+use yii\base\InvalidArgumentException;
+use yii\base\Model;
 use yii\db\ArrayExpression;
 use yii\helpers\Html;
 use yii\helpers\Url;
@@ -475,12 +477,12 @@ class HtmlTest extends TestCase
         $this->assertEquals('<input type="hidden" name="test" value="0"><input type="radio" class="a" name="test" value="2" checked>', Html::radio('test', true, [
             'class' => 'a',
             'uncheck' => '0',
-            'value' => 2
+            'value' => 2,
         ]));
         $this->assertEquals('<input type="hidden" name="test" value="0" disabled><input type="radio" name="test" value="2" disabled>', Html::radio('test', false, [
             'disabled' => true,
             'uncheck' => '0',
-            'value' => 2
+            'value' => 2,
         ]));
 
         $this->assertEquals('<label class="bbb"><input type="radio" class="a" name="test" checked> ccc</label>', Html::radio('test', true, [
@@ -504,12 +506,12 @@ class HtmlTest extends TestCase
         $this->assertEquals('<input type="hidden" name="test" value="0"><input type="checkbox" class="a" name="test" value="2" checked>', Html::checkbox('test', true, [
             'class' => 'a',
             'uncheck' => '0',
-            'value' => 2
+            'value' => 2,
         ]));
         $this->assertEquals('<input type="hidden" name="test" value="0" disabled><input type="checkbox" name="test" value="2" disabled>', Html::checkbox('test', false, [
             'disabled' => true,
             'uncheck' => '0',
-            'value' => 2
+            'value' => 2,
         ]));
 
         $this->assertEquals('<label class="bbb"><input type="checkbox" class="a" name="test" checked> ccc</label>', Html::checkbox('test', true, [
@@ -854,7 +856,6 @@ EOD;
             'tag' => false,
         ]));
 
-
         $this->assertEqualsWithoutLE($expected, Html::checkboxList('test', new ArrayObject(['value2']), $this->getDataItems(), [
             'item' => function ($index, $label, $name, $checked, $value) {
                 return $index . Html::label($label . ' ' . Html::checkbox($name, $checked, ['value' => $value]));
@@ -885,8 +886,8 @@ EOD;
         $this->assertEqualsWithoutLE($expected, Html::checkboxList('test', null, $this->getDataItems(), [
             'itemOptions' => [
                 'value' => 0,
-                'label' => 'Test Label'
-            ]
+                'label' => 'Test Label',
+            ],
         ]));
 
         $expected = <<<'EOD'
@@ -914,7 +915,7 @@ EOD;
             $selection,
             [
                 'first' => 'first',
-                'second' => 'second'
+                'second' => 'second',
             ]
         );
 
@@ -931,7 +932,7 @@ EOD;
             $selection,
             [
                 'first' => 'first',
-                'second' => 'second'
+                'second' => 'second',
             ]
         );
 
@@ -947,7 +948,7 @@ EOD;
             $selection,
             [
                 'first' => 'first',
-                'second' => 'second'
+                'second' => 'second',
             ]
         );
 
@@ -1041,8 +1042,8 @@ EOD;
         $this->assertEqualsWithoutLE($expected, Html::radioList('test', null, $this->getDataItems(), [
             'itemOptions' => [
                 'value' => 0,
-                'label' => 'Test Label'
-            ]
+                'label' => 'Test Label',
+            ],
         ]));
 
         $expected = <<<'EOD'
@@ -1276,7 +1277,6 @@ EOD;
             ],
         ];
         $this->assertEquals('', Html::renderTagAttributes($attributes));
-
 
         $attributes = [
             'data' => [

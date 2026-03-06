@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -56,13 +58,13 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection->setQueryBuilder([
             'expressionBuilders' => [
                 // Just a dumb mapping to make sure it's applied
-                'yii\db\conditions\OrCondition' => 'yii\db\conditions\ExistsConditionBuilder'
+                'yii\db\conditions\OrCondition' => 'yii\db\conditions\ExistsConditionBuilder',
             ],
         ]);
         // Second call to make sure that consecutive calls are handled correctly
         $connection->setQueryBuilder([
             'expressionBuilders' => [
-                'yii\db\conditions\AndCondition' => 'yii\db\conditions\InConditionBuilder'
+                'yii\db\conditions\AndCondition' => 'yii\db\conditions\InConditionBuilder',
             ],
         ]);
 
@@ -376,7 +378,6 @@ abstract class ConnectionTest extends DatabaseTestCase
         $connection->enableLogging = true;
         $connection->enableProfiling = true;
         $this->runExceptionTest($connection);
-
 
         // profiling only
         $connection->enableLogging = false;

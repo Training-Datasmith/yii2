@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -11,8 +13,8 @@ namespace yii\db\pgsql;
 use yii\base\InvalidArgumentException;
 use yii\db\Expression;
 use yii\db\ExpressionInterface;
-use yii\db\Query;
 use yii\db\PdoValue;
+use yii\db\Query;
 use yii\helpers\StringHelper;
 
 /**
@@ -75,7 +77,6 @@ class QueryBuilder extends \yii\db\QueryBuilder
         Schema::TYPE_MONEY => 'numeric(19,4)',
         Schema::TYPE_JSON => 'jsonb',
     ];
-
 
     /**
      * {@inheritdoc}

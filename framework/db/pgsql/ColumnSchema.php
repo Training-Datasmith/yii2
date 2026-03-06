@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -56,7 +58,6 @@ class ColumnSchema extends \yii\db\ColumnSchema
      */
     public $sequenceName;
 
-
     /**
      * {@inheritdoc}
      */
@@ -95,7 +96,7 @@ class ColumnSchema extends \yii\db\ColumnSchema
                 $value = $this->getArrayParser()->parse($value);
             }
             if (is_array($value)) {
-                array_walk_recursive($value, function (&$val, $key) {
+                array_walk_recursive($value, function (&$val, $key): void {
                     $val = $this->phpTypecastValue($val);
                 });
             } elseif ($value === null) {

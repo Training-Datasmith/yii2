@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -64,7 +66,6 @@ class ReplaceArrayValue
      */
     public $value;
 
-
     /**
      * Constructor.
      * @param mixed $value value used as replacement.
@@ -77,13 +78,12 @@ class ReplaceArrayValue
     /**
      * Restores class state after using `var_export()`.
      *
-     * @param array $state
      * @return ReplaceArrayValue
      * @throws InvalidConfigException when $state property does not contain `value` parameter
      * @see https://www.php.net/manual/en/function.var-export.php
      * @since 2.0.16
      */
-    public static function __set_state($state)
+    public static function __set_state(array $state)
     {
         if (!isset($state['value'])) {
             throw new InvalidConfigException('Failed to instantiate class "ReplaceArrayValue". Required parameter "value" is missing');

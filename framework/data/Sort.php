@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -199,11 +201,10 @@ class Sort extends BaseObject
      */
     public $modelClass;
 
-
     /**
      * Normalizes the [[attributes]] property.
      */
-    public function init()
+    public function init(): void
     {
         $attributes = [];
         foreach ($this->attributes as $name => $attribute) {
@@ -230,14 +231,14 @@ class Sort extends BaseObject
      * @return array the columns (keys) and their corresponding sort directions (values).
      * This can be passed to [[\yii\db\Query::orderBy()]] to construct a DB query.
      */
-    public function getOrders($recalculate = false)
+    public function getOrders($recalculate = false): array
     {
         $attributeOrders = $this->getAttributeOrders($recalculate);
         $orders = [];
         foreach ($attributeOrders as $attribute => $direction) {
             $definition = $this->attributes[$attribute];
             $columns = $definition[$direction === SORT_ASC ? 'asc' : 'desc'];
-            if (is_array($columns) || $columns instanceof \Traversable) {
+            if (is_iterable($columns)) {
                 foreach ($columns as $name => $dir) {
                     $orders[$name] = $dir;
                 }
@@ -331,7 +332,7 @@ class Sort extends BaseObject
      * If validation is enabled incorrect entries will be removed.
      * @since 2.0.10
      */
-    public function setAttributeOrders($attributeOrders, $validate = true)
+    public function setAttributeOrders($attributeOrders, $validate = true): void
     {
         if ($attributeOrders === null || !$validate) {
             $this->_attributeOrders = $attributeOrders;
@@ -359,7 +360,7 @@ class Sort extends BaseObject
     {
         $orders = $this->getAttributeOrders();
 
-        return isset($orders[$attribute]) ? $orders[$attribute] : null;
+        return $orders[$attribute] ?? null;
     }
 
     /**
@@ -376,7 +377,7 @@ class Sort extends BaseObject
      * @return string the generated hyperlink
      * @throws InvalidConfigException if the attribute is unknown
      */
-    public function link($attribute, $options = [])
+    public function link($attribute, array $options = [])
     {
         if (($direction = $this->getAttributeOrder($attribute)) !== null) {
             $class = $direction === SORT_DESC ? 'desc' : 'asc';
@@ -428,8 +429,8 @@ class Sort extends BaseObject
             $params = $request instanceof Request ? $request->getQueryParams() : [];
         }
         $params[$this->sortParam] = $this->createSortParam($attribute);
-        $params[0] = $this->route === null ? Yii::$app->controller->getRoute() : $this->route;
-        $urlManager = $this->urlManager === null ? Yii::$app->getUrlManager() : $this->urlManager;
+        $params[0] = $this->route ?? Yii::$app->controller->getRoute();
+        $urlManager = $this->urlManager ?? Yii::$app->getUrlManager();
         if ($absolute) {
             return $urlManager->createAbsoluteUrl($params);
         }
@@ -445,7 +446,7 @@ class Sort extends BaseObject
      * @return string the value of the sort variable
      * @throws InvalidConfigException if the specified attribute is not defined in [[attributes]]
      */
-    public function createSortParam($attribute)
+    public function createSortParam(string $attribute): string
     {
         if (!isset($this->attributes[$attribute])) {
             throw new InvalidConfigException("Unknown attribute: $attribute");
@@ -465,7 +466,7 @@ class Sort extends BaseObject
 
             unset($directions[$attribute]);
         } else {
-            $direction = isset($definition['default']) ? $definition['default'] : SORT_ASC;
+            $direction = $definition['default'] ?? SORT_ASC;
         }
 
         if ($this->enableMultiSort) {
@@ -489,7 +490,7 @@ class Sort extends BaseObject
      * @param string $name the attribute name
      * @return bool whether the sort definition supports sorting by the named attribute.
      */
-    public function hasAttribute($name)
+    public function hasAttribute($name): bool
     {
         return isset($this->attributes[$name]);
     }

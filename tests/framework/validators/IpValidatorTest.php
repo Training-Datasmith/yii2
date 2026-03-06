@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -95,14 +97,12 @@ class IpValidatorTest extends TestCase
         $this->assertEquals('attr_ip must be a valid IP address.', $model->getFirstError('attr_ip'));
         $model->clearErrors();
 
-
         $validator->ipv4 = false;
 
         $model->attr_ip = $badIp;
         $validator->validateAttribute($model, 'attr_ip');
         $this->assertEquals('attr_ip must be a valid IP address.', $model->getFirstError('attr_ip'));
         $model->clearErrors();
-
 
         $validator->ipv4 = true;
         $validator->ipv6 = false;

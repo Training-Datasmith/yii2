@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -103,7 +105,6 @@ class BaseHtml
      */
     public static $normalizeClassAttribute = false;
 
-
     /**
      * Encodes special characters into HTML entities.
      * The [[\yii\base\Application::charset|application charset]] will be used for encoding.
@@ -114,7 +115,7 @@ class BaseHtml
      * @see decode()
      * @see https://www.php.net/manual/en/function.htmlspecialchars.php
      */
-    public static function encode($content, $doubleEncode = true)
+    public static function encode($content, $doubleEncode = true): string
     {
         return htmlspecialchars((string)$content, ENT_QUOTES | ENT_SUBSTITUTE, Yii::$app ? Yii::$app->charset : 'UTF-8', $doubleEncode);
     }
@@ -127,7 +128,7 @@ class BaseHtml
      * @see encode()
      * @see https://www.php.net/manual/en/function.htmlspecialchars-decode.php
      */
-    public static function decode($content)
+    public static function decode($content): string
     {
         return htmlspecialchars_decode($content, ENT_QUOTES);
     }
@@ -170,7 +171,7 @@ class BaseHtml
      * @see endTag()
      * @see tag()
      */
-    public static function beginTag($name, $options = [])
+    public static function beginTag($name, $options = []): string
     {
         if ($name === null || $name === false) {
             return '';
@@ -186,7 +187,7 @@ class BaseHtml
      * @see beginTag()
      * @see tag()
      */
-    public static function endTag($name)
+    public static function endTag($name): string
     {
         if ($name === null || $name === false) {
             return '';
@@ -249,18 +250,19 @@ class BaseHtml
      * @return string the generated link tag
      * @see Url::to()
      */
-    public static function cssFile($url, $options = [])
+    public static function cssFile($url, array $options = [])
     {
         if (!isset($options['rel'])) {
             $options['rel'] = 'stylesheet';
         }
         $options['href'] = Url::to($url);
-
         if (isset($options['condition'])) {
             $condition = $options['condition'];
             unset($options['condition']);
             return self::wrapIntoCondition(static::tag('link', '', $options), $condition);
-        } elseif (isset($options['noscript']) && $options['noscript'] === true) {
+        }
+
+        if (isset($options['noscript']) && $options['noscript'] === true) {
             unset($options['noscript']);
             return '<noscript>' . static::tag('link', '', $options) . '</noscript>';
         }
@@ -283,7 +285,7 @@ class BaseHtml
      * @return string the generated script tag
      * @see Url::to()
      */
-    public static function jsFile($url, $options = [])
+    public static function jsFile($url, array $options = [])
     {
         $options['src'] = Url::to($url);
         if (isset($options['condition'])) {
@@ -301,7 +303,7 @@ class BaseHtml
      * @param string $condition condition string.
      * @return string generated HTML.
      */
-    private static function wrapIntoCondition($content, $condition)
+    private static function wrapIntoCondition(string $content, $condition): string
     {
         if (strpos($condition, '!IE') !== false) {
             return "<!--[if $condition]><!-->\n" . $content . "\n<!--<![endif]-->";
@@ -315,7 +317,7 @@ class BaseHtml
      * @return string the generated meta tags
      * @see Request::enableCsrfValidation
      */
-    public static function csrfMetaTags()
+    public static function csrfMetaTags(): string
     {
         $request = Yii::$app->getRequest();
         if ($request instanceof Request && $request->enableCsrfValidation) {
@@ -345,7 +347,7 @@ class BaseHtml
      * @return string the generated form start tag.
      * @see endForm()
      */
-    public static function beginForm($action = '', $method = 'post', $options = [])
+    public static function beginForm($action = '', $method = 'post', array $options = [])
     {
         $action = Url::to($action);
 
@@ -396,7 +398,7 @@ class BaseHtml
      * @return string the generated tag
      * @see beginForm()
      */
-    public static function endForm()
+    public static function endForm(): string
     {
         return '</form>';
     }
@@ -424,7 +426,7 @@ class BaseHtml
      * @return string the generated hyperlink
      * @see \yii\helpers\Url::to()
      */
-    public static function a($text, $url = null, $options = [])
+    public static function a($text, $url = null, array $options = [])
     {
         if ($url !== null) {
             $options['href'] = Url::to($url);
@@ -446,9 +448,9 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated mailto link
      */
-    public static function mailto($text, $email = null, $options = [])
+    public static function mailto($text, $email = null, array $options = [])
     {
-        $options['href'] = 'mailto:' . ($email === null ? $text : $email);
+        $options['href'] = 'mailto:' . ($email ?? $text);
         return static::tag('a', $text, $options);
     }
 
@@ -464,7 +466,7 @@ class BaseHtml
      * descriptors and values are URLs. All URLs will be processed by [[Url::to()]].
      * @return string the generated image tag.
      */
-    public static function img($src, $options = [])
+    public static function img($src, array $options = [])
     {
         $options['src'] = Url::to($src);
 
@@ -496,7 +498,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated label tag
      */
-    public static function label($content, $for = null, $options = [])
+    public static function label($content, $for = null, array $options = [])
     {
         $options['for'] = $for;
         return static::tag('label', $content, $options);
@@ -513,7 +515,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated button tag
      */
-    public static function button($content = 'Button', $options = [])
+    public static function button($content = 'Button', array $options = [])
     {
         if (!isset($options['type'])) {
             $options['type'] = 'button';
@@ -537,7 +539,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated submit button tag
      */
-    public static function submitButton($content = 'Submit', $options = [])
+    public static function submitButton($content = 'Submit', array $options = [])
     {
         $options['type'] = 'submit';
         return static::button($content, $options);
@@ -554,7 +556,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated reset button tag
      */
-    public static function resetButton($content = 'Reset', $options = [])
+    public static function resetButton($content = 'Reset', array $options = [])
     {
         $options['type'] = 'reset';
         return static::button($content, $options);
@@ -571,7 +573,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated input tag
      */
-    public static function input($type, $name = null, $value = null, $options = [])
+    public static function input($type, $name = null, $value = null, array $options = [])
     {
         if (!isset($options['type'])) {
             $options['type'] = $type;
@@ -590,7 +592,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated button tag
      */
-    public static function buttonInput($label = 'Button', $options = [])
+    public static function buttonInput($label = 'Button', array $options = [])
     {
         $options['type'] = 'button';
         $options['value'] = $label;
@@ -610,7 +612,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated button tag
      */
-    public static function submitInput($label = 'Submit', $options = [])
+    public static function submitInput($label = 'Submit', array $options = [])
     {
         $options['type'] = 'submit';
         $options['value'] = $label;
@@ -625,7 +627,7 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated button tag
      */
-    public static function resetInput($label = 'Reset', $options = [])
+    public static function resetInput($label = 'Reset', array $options = [])
     {
         $options['type'] = 'reset';
         $options['value'] = $label;
@@ -710,7 +712,7 @@ class BaseHtml
      *
      * @return string the generated text area tag
      */
-    public static function textarea($name, $value = '', $options = [])
+    public static function textarea($name, $value = '', array $options = [])
     {
         $options['name'] = $name;
         $doubleEncode = ArrayHelper::remove($options, 'doubleEncode', true);
@@ -767,7 +769,7 @@ class BaseHtml
      * @return string the generated checkbox tag
      * @since 2.0.9
      */
-    protected static function booleanInput($type, $name, $checked = false, $options = [])
+    protected static function booleanInput($type, $name, $checked = false, array $options = []): string
     {
         // 'checked' option has priority over $checked argument
         if (!isset($options['checked'])) {
@@ -791,7 +793,7 @@ class BaseHtml
         }
         if (isset($options['label'])) {
             $label = $options['label'];
-            $labelOptions = isset($options['labelOptions']) ? $options['labelOptions'] : [];
+            $labelOptions = $options['labelOptions'] ?? [];
             unset($options['label'], $options['labelOptions']);
             $content = static::label(static::input($type, $name, $value, $options) . ' ' . $label, null, $labelOptions);
             return $hidden . $content;
@@ -847,7 +849,7 @@ class BaseHtml
      *
      * @return string the generated drop-down list tag
      */
-    public static function dropDownList($name, $selection = null, $items = [], $options = [])
+    public static function dropDownList($name, $selection = null, $items = [], array $options = [])
     {
         if (!empty($options['multiple'])) {
             return static::listBox($name, $selection, $items, $options);
@@ -908,7 +910,7 @@ class BaseHtml
      *
      * @return string the generated list box tag
      */
-    public static function listBox($name, $selection = null, $items = [], $options = [])
+    public static function listBox($name, $selection = null, $items = [], array $options = []): string
     {
         if (!array_key_exists('size', $options)) {
             $options['size'] = 4;
@@ -974,7 +976,7 @@ class BaseHtml
      *
      * @return string the generated checkbox list
      */
-    public static function checkboxList($name, $selection = null, $items = [], $options = [])
+    public static function checkboxList(string $name, $selection = null, $items = [], array $options = []): string
     {
         if (substr($name, -2) !== '[]') {
             $name .= '[]';
@@ -1067,7 +1069,7 @@ class BaseHtml
      *
      * @return string the generated radio button list
      */
-    public static function radioList($name, $selection = null, $items = [], $options = [])
+    public static function radioList($name, $selection = null, $items = [], array $options = []): string
     {
         if (ArrayHelper::isTraversable($selection)) {
             $selection = array_map('strval', ArrayHelper::toArray($selection));
@@ -1193,7 +1195,7 @@ class BaseHtml
      *
      * @return string the generated ordered list. An empty string is returned if `$items` is empty.
      */
-    public static function ol($items, $options = [])
+    public static function ol($items, array $options = [])
     {
         $options['tag'] = 'ol';
         return static::ul($items, $options);
@@ -1247,10 +1249,10 @@ class BaseHtml
      * @return string the generated hint tag
      * @since 2.0.4
      */
-    public static function activeHint($model, $attribute, $options = [])
+    public static function activeHint($model, $attribute, array $options = [])
     {
         $attribute = static::getAttributeName($attribute);
-        $hint = isset($options['hint']) ? $options['hint'] : $model->getAttributeHint($attribute);
+        $hint = $options['hint'] ?? $model->getAttributeHint($attribute);
         if (empty($hint)) {
             return '';
         }
@@ -1277,13 +1279,13 @@ class BaseHtml
      *
      * @return string the generated error summary
      */
-    public static function errorSummary($models, $options = [])
+    public static function errorSummary($models, array $options = [])
     {
-        $header = isset($options['header']) ? $options['header'] : '<p>' . Yii::t('yii', 'Please fix the following errors:') . '</p>';
+        $header = $options['header'] ?? '<p>' . Yii::t('yii', 'Please fix the following errors:') . '</p>';
         $footer = ArrayHelper::remove($options, 'footer', '');
         $encode = ArrayHelper::remove($options, 'encode', true);
         $showAllErrors = ArrayHelper::remove($options, 'showAllErrors', false);
-        $emptyClass = ArrayHelper::remove($options, 'emptyClass', null);
+        $emptyClass = ArrayHelper::remove($options, 'emptyClass');
         unset($options['header']);
         $lines = self::collectErrors($models, $encode, $showAllErrors);
         if (empty($lines)) {
@@ -1310,7 +1312,7 @@ class BaseHtml
      * @return array of the validation errors
      * @since 2.0.14
      */
-    private static function collectErrors($models, $encode, $showAllErrors)
+    private static function collectErrors($models, $encode, $showAllErrors): array
     {
         $lines = [];
         if (!is_array($models)) {
@@ -1383,10 +1385,10 @@ class BaseHtml
      * See [[renderTagAttributes()]] for details on how attributes are being rendered.
      * @return string the generated input tag
      */
-    public static function activeInput($type, $model, $attribute, $options = [])
+    public static function activeInput($type, $model, $attribute, array $options = [])
     {
-        $name = isset($options['name']) ? $options['name'] : static::getInputName($model, $attribute);
-        $value = isset($options['value']) ? $options['value'] : static::getAttributeValue($model, $attribute);
+        $name = $options['name'] ?? static::getInputName($model, $attribute);
+        $value = $options['value'] ?? static::getAttributeValue($model, $attribute);
         if (!array_key_exists('id', $options)) {
             $options['id'] = static::getInputId($model, $attribute);
         }
@@ -1405,7 +1407,7 @@ class BaseHtml
      * @param string $attribute the attribute name or expression.
      * @param array $options the tag options in terms of name-value pairs.
      */
-    private static function normalizeMaxLength($model, $attribute, &$options)
+    private static function normalizeMaxLength($model, $attribute, array &$options): void
     {
         if (isset($options['maxlength']) && $options['maxlength'] === true) {
             unset($options['maxlength']);
@@ -1455,7 +1457,7 @@ class BaseHtml
      * the attributes of the resulting tag. The values will be HTML-encoded using [[encode()]].
      * @since 2.0.14
      */
-    protected static function setActivePlaceholder($model, $attribute, &$options = [])
+    protected static function setActivePlaceholder($model, $attribute, array &$options = [])
     {
         if (isset($options['placeholder']) && $options['placeholder'] === true) {
             $attribute = static::getAttributeName($attribute);
@@ -1522,7 +1524,7 @@ class BaseHtml
      * from `$options` to be used for the hidden input.
      * @return string the generated input tag
      */
-    public static function activeFileInput($model, $attribute, $options = [])
+    public static function activeFileInput($model, $attribute, array $options = []): string
     {
         $hiddenOptions = ['id' => null, 'value' => ''];
         if (isset($options['name'])) {
@@ -1563,9 +1565,9 @@ class BaseHtml
      *
      * @return string the generated textarea tag
      */
-    public static function activeTextarea($model, $attribute, $options = [])
+    public static function activeTextarea($model, $attribute, array $options = [])
     {
-        $name = isset($options['name']) ? $options['name'] : static::getInputName($model, $attribute);
+        $name = $options['name'] ?? static::getInputName($model, $attribute);
         if (isset($options['value'])) {
             $value = $options['value'];
             unset($options['value']);
@@ -1624,9 +1626,9 @@ class BaseHtml
      * @return string the generated input element
      * @since 2.0.9
      */
-    protected static function activeBooleanInput($type, $model, $attribute, $options = [])
+    protected static function activeBooleanInput($type, $model, $attribute, array $options = [])
     {
-        $name = isset($options['name']) ? $options['name'] : static::getInputName($model, $attribute);
+        $name = $options['name'] ?? static::getInputName($model, $attribute);
         $value = static::getAttributeValue($model, $attribute);
 
         if (!array_key_exists('value', $options)) {
@@ -1698,7 +1700,7 @@ class BaseHtml
      *
      * @return string the generated drop-down list tag
      */
-    public static function activeDropDownList($model, $attribute, $items, $options = [])
+    public static function activeDropDownList($model, $attribute, $items, array $options = [])
     {
         if (empty($options['multiple'])) {
             return static::activeListInput('dropDownList', $model, $attribute, $items, $options);
@@ -1857,7 +1859,7 @@ class BaseHtml
      * depend on the input type specified by `$type`.
      * @return string the generated input list
      */
-    protected static function activeListInput($type, $model, $attribute, $items, $options = [])
+    protected static function activeListInput($type, $model, $attribute, $items, array $options = [])
     {
         $name = ArrayHelper::remove($options, 'name', static::getInputName($model, $attribute));
         $selection = ArrayHelper::remove($options, 'value', static::getAttributeValue($model, $attribute));
@@ -1889,7 +1891,7 @@ class BaseHtml
      *
      * @return string the generated list options
      */
-    public static function renderSelectOptions($selection, $items, &$tagOptions = [])
+    public static function renderSelectOptions($selection, $items, array &$tagOptions = []): string
     {
         if (ArrayHelper::isTraversable($selection)) {
             $normalizedSelection = [];
@@ -1924,15 +1926,15 @@ class BaseHtml
             $lines[] = static::tag('option', $promptText, $promptOptions);
         }
 
-        $options = isset($tagOptions['options']) ? $tagOptions['options'] : [];
-        $groups = isset($tagOptions['groups']) ? $tagOptions['groups'] : [];
+        $options = $tagOptions['options'] ?? [];
+        $groups = $tagOptions['groups'] ?? [];
         unset($tagOptions['prompt'], $tagOptions['options'], $tagOptions['groups']);
         $options['encodeSpaces'] = ArrayHelper::getValue($options, 'encodeSpaces', $encodeSpaces);
         $options['encode'] = ArrayHelper::getValue($options, 'encode', $encode);
 
         foreach ($items as $key => $value) {
             if (is_array($value)) {
-                $groupAttrs = isset($groups[$key]) ? $groups[$key] : [];
+                $groupAttrs = $groups[$key] ?? [];
                 if (!isset($groupAttrs['label'])) {
                     $groupAttrs['label'] = $key;
                 }
@@ -1940,7 +1942,7 @@ class BaseHtml
                 $content = static::renderSelectOptions($selection, $value, $attrs);
                 $lines[] = static::tag('optgroup', "\n" . $content . "\n", $groupAttrs);
             } else {
-                $attrs = isset($options[$key]) ? $options[$key] : [];
+                $attrs = $options[$key] ?? [];
                 $attrs['value'] = (string) $key;
                 if (!array_key_exists('selected', $attrs)) {
                     $selected = false;
@@ -1994,7 +1996,7 @@ class BaseHtml
      * in a tag). If there is no attribute, an empty string will be returned.
      * @see addCssClass()
      */
-    public static function renderTagAttributes($attributes)
+    public static function renderTagAttributes($attributes): string
     {
         if (count($attributes) > 1) {
             $sorted = [];
@@ -2068,7 +2070,7 @@ class BaseHtml
      * @param string|array $class the CSS class(es) to be added
      * @see removeCssClass()
      */
-    public static function addCssClass(&$options, $class)
+    public static function addCssClass(array &$options, $class): void
     {
         if (isset($options['class'])) {
             if (is_array($options['class'])) {
@@ -2090,7 +2092,7 @@ class BaseHtml
      * @return array merge result.
      * @see addCssClass()
      */
-    private static function mergeCssClasses(array $existingClasses, array $additionalClasses)
+    private static function mergeCssClasses(array $existingClasses, array $additionalClasses): array
     {
         foreach ($additionalClasses as $key => $class) {
             if (is_int($key) && !in_array($class, $existingClasses)) {
@@ -2109,7 +2111,7 @@ class BaseHtml
      * @param string|array $class the CSS class(es) to be removed
      * @see addCssClass()
      */
-    public static function removeCssClass(&$options, $class)
+    public static function removeCssClass(array &$options, $class): void
     {
         if (isset($options['class'])) {
             if (is_array($options['class'])) {
@@ -2153,7 +2155,7 @@ class BaseHtml
      * @see cssStyleFromArray()
      * @see cssStyleToArray()
      */
-    public static function addCssStyle(&$options, $style, $overwrite = true)
+    public static function addCssStyle(array &$options, $style, $overwrite = true): void
     {
         if (!empty($options['style'])) {
             $oldStyle = is_array($options['style']) ? $options['style'] : static::cssStyleToArray($options['style']);
@@ -2184,7 +2186,7 @@ class BaseHtml
      * if you are removing a single property.
      * @see addCssStyle()
      */
-    public static function removeCssStyle(&$options, $properties)
+    public static function removeCssStyle(array &$options, $properties): void
     {
         if (!empty($options['style'])) {
             $style = is_array($options['style']) ? $options['style'] : static::cssStyleToArray($options['style']);
@@ -2209,7 +2211,7 @@ class BaseHtml
      * and the array values are the corresponding CSS property values.
      * @return string the CSS style string. If the CSS style is empty, a null will be returned.
      */
-    public static function cssStyleFromArray(array $style)
+    public static function cssStyleFromArray(array $style): ?string
     {
         $result = '';
         foreach ($style as $name => $value) {
@@ -2235,7 +2237,7 @@ class BaseHtml
      * @param string $style the CSS style string
      * @return array the array representation of the CSS style
      */
-    public static function cssStyleToArray($style)
+    public static function cssStyleToArray($style): array
     {
         $result = [];
         foreach (explode(';', $style) as $property) {
@@ -2265,7 +2267,7 @@ class BaseHtml
      * @return string the attribute name without prefix and suffix.
      * @throws InvalidArgumentException if the attribute name contains non-word characters.
      */
-    public static function getAttributeName($attribute)
+    public static function getAttributeName($attribute): string
     {
         if (preg_match(static::$attributeRegex, $attribute, $matches)) {
             return $matches[2];
@@ -2337,7 +2339,7 @@ class BaseHtml
      * @return string the generated input name
      * @throws InvalidArgumentException if the attribute name contains non-word characters.
      */
-    public static function getInputName($model, $attribute)
+    public static function getInputName($model, $attribute): string
     {
         $formName = $model->formName();
         if (!preg_match(static::$attributeRegex, $attribute, $matches)) {
@@ -2348,7 +2350,8 @@ class BaseHtml
         $suffix = $matches[3];
         if ($formName === '' && $prefix === '') {
             return $attribute . $suffix;
-        } elseif ($formName !== '') {
+        }
+        if ($formName !== '') {
             return $formName . $prefix . "[$attribute]" . $suffix;
         }
 
@@ -2364,7 +2367,7 @@ class BaseHtml
      * @return string the generated input ID
      * @since 2.0.43
      */
-    public static function getInputIdByName($name)
+    public static function getInputIdByName($name): string
     {
         $charset = Yii::$app ? Yii::$app->charset : 'UTF-8';
         $name = mb_strtolower($name, $charset);

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -47,7 +49,6 @@ class QueryBuilder extends \yii\db\QueryBuilder
         Schema::TYPE_BOOLEAN => 'smallint',
         Schema::TYPE_MONEY => 'decimal(19,4)',
     ];
-
 
     /**
      * {@inheritdoc}
@@ -255,7 +256,6 @@ class QueryBuilder extends \yii\db\QueryBuilder
     {
         return $this->addCommentOnTable($table, '');
     }
-
 
     /**
      * Gets column definition.

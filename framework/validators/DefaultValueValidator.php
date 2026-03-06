@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -38,11 +40,10 @@ class DefaultValueValidator extends Validator
      */
     public $skipOnEmpty = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         if ($this->isEmpty($model->$attribute)) {
             if ($this->value instanceof \Closure) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -31,15 +33,12 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         return $authManager;
     }
 
-    /**
-     * @return bool
-     */
-    protected function isMSSQL()
+    protected function isMSSQL(): bool
     {
         return $this->db->driverName === 'mssql' || $this->db->driverName === 'sqlsrv' || $this->db->driverName === 'dblib';
     }
 
-    protected function isOracle()
+    protected function isOracle(): bool
     {
         return $this->db->driverName === 'oci' || $this->db->driverName === 'oci8';
     }
@@ -47,7 +46,7 @@ class m140506_102106_rbac_init extends \yii\db\Migration
     /**
      * {@inheritdoc}
      */
-    public function up()
+    public function up(): ?bool
     {
         $authManager = $this->getAuthManager();
         $this->db = $authManager->db;
@@ -141,7 +140,7 @@ class m140506_102106_rbac_init extends \yii\db\Migration
     /**
      * {@inheritdoc}
      */
-    public function down()
+    public function down(): ?bool
     {
         $authManager = $this->getAuthManager();
         $this->db = $authManager->db;
@@ -157,7 +156,7 @@ class m140506_102106_rbac_init extends \yii\db\Migration
         $this->dropTable($authManager->ruleTable);
     }
 
-    protected function buildFkClause($delete = '', $update = '')
+    protected function buildFkClause(string $delete = '', $update = ''): string
     {
         if ($this->isMSSQL()) {
             return '';

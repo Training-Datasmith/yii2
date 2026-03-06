@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -31,15 +33,15 @@ class TableTest extends TestCase
                 [
                     ['testcontent1', 'testcontent2', 'testcontent3'],
                     ['testcontent21', 'testcontent22', 'testcontent23'],
-                ]
+                ],
             ],
             [
                 ['key1' => 'test1', 'key2' => 'test2', 'key3' => 'test3'],
                 [
                     ['key1' => 'testcontent1', 'key2' => 'testcontent2', 'key3' => 'testcontent3'],
                     ['key1' => 'testcontent21', 'key2' => 'testcontent22', 'key3' => 'testcontent23'],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -82,9 +84,9 @@ EXPECTED;
                             . 'loooooooooooooooooooooooooooooooooooong' . PHP_EOL
                             . 'content',
                         'testcontent23' . PHP_EOL
-                            . 'loooooooooooooooooooooooooooooooooooong content'
+                            . 'loooooooooooooooooooooooooooooooooooong content',
                     ],
-                ]
+                ],
             ],
             [
                 ['key1' => 'test1', 'key2' => 'test2', 'key3' => 'test3' . PHP_EOL . 'multiline'],
@@ -92,7 +94,7 @@ EXPECTED;
                     [
                         'key1' => 'test' . PHP_EOL . 'content1',
                         'key2' => 'testcontent2',
-                        'key3' => 'test' . PHP_EOL . 'content3'
+                        'key3' => 'test' . PHP_EOL . 'content3',
                     ],
                     [
                         'key1' => 'testcontent21',
@@ -100,10 +102,10 @@ EXPECTED;
                             . 'loooooooooooooooooooooooooooooooooooong' . PHP_EOL
                             . 'content',
                         'key3' => 'testcontent23' . PHP_EOL
-                            . 'loooooooooooooooooooooooooooooooooooong content'
+                            . 'loooooooooooooooooooooooooooooooooooong content',
                     ],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -146,15 +148,15 @@ EXPECTED;
                 [
                     [1, 1.2, -1.3],
                     [-2, 2.2, 2.3],
-                ]
+                ],
             ],
             [
                 ['key1' => 1, 'key2' => 2, 'key3' => 3],
                 [
                     ['key1' => 1, 'key2' => 1.2, 'key3' => -1.3],
                     ['key1' => -2, 'key2' => 2.2, 'key3' => 2.3],
-                ]
-            ]
+                ],
+            ],
         ];
     }
 
@@ -289,7 +291,7 @@ EXPECTED;
                     [
                         'testcontent21 with loooooooooooooooooooooooong content',
                         'testcontent22 with loooooooooooooooooooooooong content',
-                        ['col1 with loooooooooooooooooooooooong content', 'col2 with long content']
+                        ['col1 with loooooooooooooooooooooooong content', 'col2 with long content'],
                     ],
                 ])->setScreenWidth(100)->setListPrefix('-- ')->run()
         );
@@ -438,7 +440,7 @@ EXPECTED;
             $expected,
             $table->setRows([
                 ['testcontent1', 'testcontent2'],
-                ['testcontent21', 'testcontent22']
+                ['testcontent21', 'testcontent22'],
             ])->setScreenWidth(200)->run()
         );
     }
@@ -549,7 +551,7 @@ EXPECTED;
 
         $table = Table::widget([
             'headers' => ['XX', 'XXXX'],
-            'rows' => $rows
+            'rows' => $rows,
         ]);
         $this->assertEqualsWithoutLE($table, $table);
     }
@@ -665,7 +667,7 @@ EXPECTED;
             [''],
             [['X', 'X', 'X']],
             [[]],
-            [['']]
+            [['']],
         ];
     }
 

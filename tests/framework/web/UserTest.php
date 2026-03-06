@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -244,7 +246,6 @@ class UserTest extends TestCase
         $this->assertTrue(Yii::$app->response->getIsRedirection());
         $this->assertSame($id, Yii::$app->session->id);
 
-
         $this->reset();
         Yii::$app->request->setUrl('ajax');
         $_SERVER['HTTP_X_REQUESTED_WITH'] = 'XMLHttpRequest';
@@ -372,8 +373,8 @@ class UserTest extends TestCase
             'components' => [
                 'user' => [
                     'identityClass' => UserIdentity::class,
-                    'accessChecker' => AccessChecker::class
-                ]
+                    'accessChecker' => AccessChecker::class,
+                ],
             ],
         ]);
         $this->assertInstanceOf(AccessChecker::class, Yii::$app->user->accessChecker);
@@ -398,7 +399,7 @@ class UserTest extends TestCase
                 ],
                 'accessChecker' => [
                     'class' => AccessChecker::class,
-                ]
+                ],
             ],
         ]);
         $this->assertInstanceOf(AccessChecker::class, Yii::$app->user->accessChecker);

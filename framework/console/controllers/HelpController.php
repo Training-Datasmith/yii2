@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -11,12 +13,12 @@ namespace yii\console\controllers;
 use Yii;
 use yii\base\Application;
 use yii\base\Module;
+use yii\console\Application as ConsoleApplication;
 use yii\console\Controller;
 use yii\console\Exception;
 use yii\console\ExitCode;
 use yii\helpers\Console;
 use yii\helpers\Inflector;
-use yii\console\Application as ConsoleApplication;
 
 /**
  * Provides help information about console commands.
@@ -53,7 +55,7 @@ class HelpController extends Controller
      * @return int the exit status
      * @throws Exception if the command for help is unknown
      */
-    public function actionIndex($command = null)
+    public function actionIndex($command = null): int
     {
         if ($command !== null) {
             $result = Yii::$app->createController($command);
@@ -62,7 +64,7 @@ class HelpController extends Controller
                 throw new Exception("No help for unknown command \"$name\".");
             }
 
-            list($controller, $actionID) = $result;
+            [$controller, $actionID] = $result;
 
             $actions = $this->getActions($controller);
             if ($actionID !== '' || count($actions) === 1 && $actions[0] === $controller->defaultAction) {
@@ -82,12 +84,12 @@ class HelpController extends Controller
      * This is used for shell completion.
      * @since 2.0.11
      */
-    public function actionList()
+    public function actionList(): void
     {
         foreach ($this->getCommandDescriptions() as $command => $description) {
             $result = Yii::$app->createController($command);
             /** @var Controller<Application> $controller */
-            list($controller, $actionID) = $result;
+            [$controller, $actionID] = $result;
             $actions = $this->getActions($controller);
             $prefix = $controller->getUniqueId();
             if ($controller->createAction($controller->defaultAction) !== null) {
@@ -106,7 +108,7 @@ class HelpController extends Controller
      * @param string $action route to action
      * @since 2.0.11
      */
-    public function actionListActionOptions($action)
+    public function actionListActionOptions($action): void
     {
         $result = Yii::$app->createController($action);
 
@@ -115,7 +117,7 @@ class HelpController extends Controller
         }
 
         /** @var Controller<Application> $controller */
-        list($controller, $actionID) = $result;
+        [$controller, $actionID] = $result;
         $action = $controller->createAction($actionID);
         if ($action === null) {
             return;
@@ -139,7 +141,7 @@ class HelpController extends Controller
      * @param string $action route to action
      * @since 2.0.11
      */
-    public function actionUsage($action)
+    public function actionUsage($action): void
     {
         $result = Yii::$app->createController($action);
 
@@ -148,7 +150,7 @@ class HelpController extends Controller
         }
 
         /** @var Controller<Application> $controller */
-        list($controller, $actionID) = $result;
+        [$controller, $actionID] = $result;
         $action = $controller->createAction($actionID);
         if ($action === null) {
             return;
@@ -176,17 +178,17 @@ class HelpController extends Controller
      * Returns all available command names.
      * @return array all available command names
      */
-    public function getCommands()
+    public function getCommands(): array
     {
         $commands = $this->getModuleCommands(Yii::$app);
         sort($commands);
-        return array_filter(array_unique($commands), function ($command) {
+        return array_filter(array_unique($commands), function ($command): bool {
             $result = Yii::$app->createController($command);
             if ($result === false || !$result[0] instanceof Controller) {
                 return false;
             }
             /** @var Controller<Application> $controller */
-            list($controller, $actionID) = $result;
+            [$controller, $actionID] = $result;
             $actions = $this->getActions($controller);
             return $actions !== [];
         });
@@ -196,13 +198,13 @@ class HelpController extends Controller
      * Returns an array of commands an their descriptions.
      * @return array all available commands as keys and their description as values.
      */
-    protected function getCommandDescriptions()
+    protected function getCommandDescriptions(): array
     {
         $descriptions = [];
         foreach ($this->getCommands() as $command) {
             $result = Yii::$app->createController($command);
             /** @var Controller<Application> $controller */
-            list($controller, $actionID) = $result;
+            [$controller, $actionID] = $result;
             $descriptions[$command] = $controller->getHelpSummary();
         }
 
@@ -214,7 +216,7 @@ class HelpController extends Controller
      * @param Controller $controller the controller instance
      * @return array all available action IDs.
      */
-    public function getActions($controller)
+    public function getActions($controller): array
     {
         $actions = array_keys($controller->actions());
         $class = new \ReflectionClass($controller);
@@ -234,7 +236,7 @@ class HelpController extends Controller
      * @param Module $module the module instance
      * @return array the available command names
      */
-    protected function getModuleCommands($module)
+    protected function getModuleCommands($module): array
     {
         $prefix = $module instanceof Application ? '' : $module->getUniqueId() . '/';
 
@@ -311,7 +313,7 @@ class HelpController extends Controller
         foreach ($commands as $command => $description) {
             $result = Yii::$app->createController($command);
             /** @var Controller<Application> $controller */
-            list($controller, $actionID) = $result;
+            [$controller, $actionID] = $result;
             $actions = $this->getActions($controller);
             $prefix = $controller->getUniqueId();
             foreach ($actions as $action) {
@@ -325,7 +327,7 @@ class HelpController extends Controller
         foreach ($commands as $command => $description) {
             $result = Yii::$app->createController($command);
             /** @var Controller<Application> $controller */
-            list($controller, $actionID) = $result;
+            [$controller, $actionID] = $result;
             $actions = $this->getActions($controller);
             $this->stdout('- ' . $this->ansiFormat($command, Console::FG_YELLOW));
             $this->stdout(str_repeat(' ', $maxLength + 4 - strlen($command)));
@@ -404,7 +406,7 @@ class HelpController extends Controller
      * @param string $actionID action ID
      * @throws Exception if the action does not exist
      */
-    protected function getSubCommandHelp($controller, $actionID)
+    protected function getSubCommandHelp($controller, string $actionID)
     {
         $action = $controller->createAction($actionID);
         if ($action === null) {
@@ -526,7 +528,7 @@ class HelpController extends Controller
      * @return string the formatted string for the alias argument or option
      * @since 2.0.8
      */
-    protected function formatOptionAliases($controller, $option)
+    protected function formatOptionAliases($controller, $option): string
     {
         foreach ($controller->optionAliases() as $name => $value) {
             if (Inflector::camel2id($value, '-', true) === $option) {
@@ -540,7 +542,7 @@ class HelpController extends Controller
     /**
      * @return string the name of the cli script currently running.
      */
-    protected function getScriptName()
+    protected function getScriptName(): string
     {
         return basename(Yii::$app->request->scriptFile);
     }
@@ -550,7 +552,7 @@ class HelpController extends Controller
      * @return string default help header.
      * @since 2.0.11
      */
-    protected function getDefaultHelpHeader()
+    protected function getDefaultHelpHeader(): string
     {
         return "\nThis is Yii version " . \Yii::getVersion() . ".\n";
     }
@@ -562,7 +564,7 @@ class HelpController extends Controller
      * @param string $name the string to be converted
      * @return string the resulting ID
      */
-    private function camel2id($name)
+    private function camel2id($name): string
     {
         return mb_strtolower(trim(preg_replace('/\p{Lu}/u', '-\0', $name), '-'), 'UTF-8');
     }

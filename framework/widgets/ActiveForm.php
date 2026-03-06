@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -194,12 +196,11 @@ class ActiveForm extends Widget
      */
     private $_fields = [];
 
-
     /**
      * Initializes the widget.
      * This renders the form open tag.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (!isset($this->options['id'])) {
@@ -214,7 +215,7 @@ class ActiveForm extends Widget
      * This registers the necessary JavaScript code and renders the form open and close tags.
      * @throws InvalidCallException if `beginField()` and `endField()` calls are not matching.
      */
-    public function run()
+    public function run(): string
     {
         if (!empty($this->_fields)) {
             throw new InvalidCallException('Each beginField() should have a matching endField() call.');
@@ -227,16 +228,14 @@ class ActiveForm extends Widget
         if ($this->enableClientScript) {
             $this->registerClientScript();
         }
-
-        $html .= Html::endForm();
-        return $html;
+        return $html . Html::endForm();
     }
 
     /**
      * This registers the necessary JavaScript code.
      * @since 2.0.12
      */
-    public function registerClientScript()
+    public function registerClientScript(): void
     {
         $id = $this->options['id'];
         $options = Json::htmlEncode($this->getClientOptions());
@@ -250,7 +249,7 @@ class ActiveForm extends Widget
      * Returns the options for the form JS widget.
      * @return array the options.
      */
-    protected function getClientOptions()
+    protected function getClientOptions(): array
     {
         $options = [
             'encodeErrorSummary' => $this->encodeErrorSummary,
@@ -299,7 +298,7 @@ class ActiveForm extends Widget
      * @return string the generated error summary.
      * @see errorSummaryCssClass
      */
-    public function errorSummary($models, $options = [])
+    public function errorSummary($models, array $options = [])
     {
         Html::addCssClass($options, $this->errorSummaryCssClass);
         $options['encode'] = $this->encodeErrorSummary;
@@ -404,7 +403,7 @@ class ActiveForm extends Widget
      *
      * @return array<string, array<string>> the error message array indexed by the attribute IDs.
      */
-    public static function validate($model, $attributes = null)
+    public static function validate($model, $attributes = null): array
     {
         $result = [];
         if ($attributes instanceof Model) {
@@ -447,7 +446,7 @@ class ActiveForm extends Widget
      * validation rules should be validated.
      * @return array the error message array indexed by the attribute IDs.
      */
-    public static function validateMultiple($models, $attributes = null)
+    public static function validateMultiple($models, $attributes = null): array
     {
         $result = [];
         /** @var Model $model */

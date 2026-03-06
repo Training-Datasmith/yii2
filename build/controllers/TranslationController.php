@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -33,7 +35,7 @@ class TranslationController extends Controller
      * @param string $translationPath the directory where the translated documentation files are
      * @param string $title custom title to use for report
      */
-    public function actionReport($sourcePath, $translationPath, $title = 'Translation report')
+    public function actionReport($sourcePath, $translationPath, $title = 'Translation report'): void
     {
         $sourcePath = trim($sourcePath, '/\\');
         $translationPath = trim($translationPath, '/\\');
@@ -91,7 +93,7 @@ class TranslationController extends Controller
      * @param string $sourceFilePath
      * @return array errors
      */
-    protected function checkFiles($translatedFilePath = null, $sourceFilePath = null)
+    protected function checkFiles($translatedFilePath = null, $sourceFilePath = null): array
     {
         $errors = [];
         if ($translatedFilePath !== null && !file_exists($translatedFilePath)) {
@@ -112,7 +114,7 @@ class TranslationController extends Controller
      * @param string $sourceFilePath path pointing to original file
      * @return string DIFF
      */
-    protected function getDiff($translatedFilePath, $sourceFilePath)
+    protected function getDiff(string $translatedFilePath, string $sourceFilePath)
     {
         $lastTranslationHash = shell_exec('git log -1 --format=format:"%H" -- ' . $translatedFilePath);
         return shell_exec('git diff ' . $lastTranslationHash . '..HEAD -- ' . $sourceFilePath);
@@ -124,7 +126,7 @@ class TranslationController extends Controller
      * @param string $diff DIFF
      * @return string highlighted DIFF
      */
-    public function highlightDiff($diff)
+    public function highlightDiff($diff): string
     {
         $lines = explode("\n", $diff);
         foreach ($lines as $key => $val) {

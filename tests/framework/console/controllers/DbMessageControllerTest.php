@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,16 +10,16 @@
 
 namespace yiiunit\framework\console\controllers;
 
+use Yii;
+use yii\base\InvalidConfigException;
+use yii\base\InvalidParamException;
 use yii\console\Application;
 use yii\console\Controller;
-use yii\helpers\ArrayHelper;
-use yii\db\Query;
-use yii\db\Expression;
-use yii\base\InvalidParamException;
-use yii\db\Exception;
-use yii\base\InvalidConfigException;
-use Yii;
 use yii\db\Connection;
+use yii\db\Exception;
+use yii\db\Expression;
+use yii\db\Query;
+use yii\helpers\ArrayHelper;
 
 /**
  * Tests that [[\yii\console\controllers\MessageController]] works as expected with DB message format.

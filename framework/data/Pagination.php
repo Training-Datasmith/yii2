@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -144,11 +146,10 @@ class Pagination extends BaseObject implements Linkable
      */
     private $_pageSize;
 
-
     /**
      * @return int number of pages
      */
-    public function getPageCount()
+    public function getPageCount(): int
     {
         $pageSize = $this->getPageSize();
         if ($pageSize < 1) {
@@ -183,7 +184,7 @@ class Pagination extends BaseObject implements Linkable
      * @param bool $validatePage whether to validate the page number. Note that in order
      * to validate the page number, both [[validatePage]] and this parameter must be true.
      */
-    public function setPage($value, $validatePage = false)
+    public function setPage($value, $validatePage = false): void
     {
         if ($value === null) {
             $this->_page = null;
@@ -229,7 +230,7 @@ class Pagination extends BaseObject implements Linkable
      * @param int $value the number of items per page.
      * @param bool $validatePageSize whether to validate page size.
      */
-    public function setPageSize($value, $validatePageSize = false)
+    public function setPageSize($value, $validatePageSize = false): void
     {
         if ($value === null) {
             $this->_pageSize = null;
@@ -277,8 +278,8 @@ class Pagination extends BaseObject implements Linkable
         } else {
             unset($params[$this->pageSizeParam]);
         }
-        $params[0] = $this->route === null ? Yii::$app->controller->getRoute() : $this->route;
-        $urlManager = $this->urlManager === null ? Yii::$app->getUrlManager() : $this->urlManager;
+        $params[0] = $this->route ?? Yii::$app->controller->getRoute();
+        $urlManager = $this->urlManager ?? Yii::$app->getUrlManager();
         if ($absolute) {
             return $urlManager->createAbsoluteUrl($params);
         }
@@ -315,7 +316,7 @@ class Pagination extends BaseObject implements Linkable
      * @return array the links for navigational purpose. The array keys specify the purpose of the links (e.g. [[LINK_FIRST]]),
      * and the array values are the corresponding URLs.
      */
-    public function getLinks($absolute = false)
+    public function getLinks($absolute = false): array
     {
         $currentPage = $this->getPage();
         $pageCount = $this->getPageCount();

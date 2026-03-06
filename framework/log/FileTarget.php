@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -78,12 +80,11 @@ class FileTarget extends Target
      */
     public $rotateByCopy = true;
 
-
     /**
      * Initializes the route.
      * This method is invoked after the route is created by the route manager.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->logFile === null) {
@@ -105,7 +106,7 @@ class FileTarget extends Target
      * @throws InvalidConfigException if unable to open the log file for writing
      * @throws LogRuntimeException if unable to write complete log to file
      */
-    public function export()
+    public function export(): void
     {
         $text = implode("\n", array_map([$this, 'formatMessage'], $this->messages)) . "\n";
 
@@ -179,7 +180,7 @@ class FileTarget extends Target
      * Clear log file without closing any other process open handles
      * @param string $rotateFile
      */
-    private function clearLogFile($rotateFile)
+    private function clearLogFile(string $rotateFile): void
     {
         if ($filePointer = @fopen($rotateFile, 'a')) {
             @ftruncate($filePointer, 0);
@@ -192,7 +193,7 @@ class FileTarget extends Target
      * @param string $rotateFile
      * @param string $newFile
      */
-    private function rotateByCopy($rotateFile, $newFile)
+    private function rotateByCopy(string $rotateFile, string $newFile): void
     {
         @copy($rotateFile, $newFile);
         if ($this->fileMode !== null) {

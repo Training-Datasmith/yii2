@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -85,14 +87,13 @@ class DbMessageSource extends MessageSource
      */
     public $enableCaching = false;
 
-
     /**
      * Initializes the DbMessageSource component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
      * Configured [[cache]] component would also be initialized.
      * @throws InvalidConfigException if [[db]] is invalid or [[cache]] is invalid.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->db = Instance::ensure($this->db, Connection::className());
@@ -115,7 +116,7 @@ class DbMessageSource extends MessageSource
     {
         if ($this->enableCaching) {
             $key = [
-                __CLASS__,
+                self::class,
                 $category,
                 $language,
             ];

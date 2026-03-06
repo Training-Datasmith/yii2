@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -31,7 +33,6 @@ class ArrayFixture extends Fixture implements \IteratorAggregate, \ArrayAccess, 
      * @var array<string, array<string, mixed>> the data rows. Each array element represents one row of data (column name => column value).
      */
     public $data = [];
-
 
     /**
      * Loads the fixture.

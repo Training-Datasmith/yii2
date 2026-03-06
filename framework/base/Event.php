@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -56,13 +58,12 @@ class Event extends BaseObject
     /**
      * @var array contains all globally registered event handlers.
      */
-    private static $_events = [];
+    private static array $_events = [];
     /**
      * @var array the globally registered event handlers attached for wildcard patterns (event name wildcard => handlers)
      * @since 2.0.14
      */
-    private static $_eventWildcards = [];
-
+    private static array $_eventWildcards = [];
 
     /**
      * Attaches an event handler to a class-level event.
@@ -101,7 +102,7 @@ class Event extends BaseObject
      * handler list.
      * @see off()
      */
-    public static function on($class, $name, $handler, $data = null, $append = true)
+    public static function on($class, $name, $handler, $data = null, $append = true): void
     {
         $class = ltrim($class, '\\');
 
@@ -193,7 +194,7 @@ class Event extends BaseObject
      * @see off()
      * @since 2.0.10
      */
-    public static function offAll()
+    public static function offAll(): void
     {
         self::$_events = [];
         self::$_eventWildcards = [];
@@ -207,7 +208,7 @@ class Event extends BaseObject
      * @param string $name the event name.
      * @return bool whether there is any handler attached to the event.
      */
-    public static function hasHandlers($class, $name)
+    public static function hasHandlers($class, $name): bool
     {
         if (empty(self::$_eventWildcards) && empty(self::$_events[$name])) {
             return false;
@@ -260,7 +261,7 @@ class Event extends BaseObject
      * @param string $name the event name.
      * @param Event|null $event the event parameter. If not set, a default [[Event]] object will be created.
      */
-    public static function trigger($class, $name, $event = null)
+    public static function trigger($class, $name, $event = null): void
     {
         $wildcardEventHandlers = [];
         foreach (self::$_eventWildcards as $nameWildcard => $classHandlers) {

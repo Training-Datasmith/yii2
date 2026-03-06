@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -31,7 +33,6 @@ class UrlNormalizerRedirectException extends \yii\base\Exception
      * @var int the HTTP status code
      */
     public $statusCode;
-
 
     /**
      * @param array|string $url the parameter to be used to generate a valid URL for redirection.

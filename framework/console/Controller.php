@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -10,12 +12,12 @@ namespace yii\console;
 
 use Yii;
 use yii\base\Action;
+use yii\base\Controller as BaseController;
 use yii\base\InlineAction;
 use yii\base\InvalidRouteException;
+use yii\base\Module;
 use yii\helpers\Console;
 use yii\helpers\Inflector;
-use yii\base\Controller as BaseController;
-use yii\base\Module;
 
 /**
  * Controller is the base class of console command classes.
@@ -82,13 +84,12 @@ class Controller extends BaseController
      */
     private $_passedOptions = [];
 
-
     /**
      * {@inheritdoc}
      */
     public function beforeAction($action)
     {
-        $silentExit = $this->silentExitOnException !== null ? $this->silentExitOnException : YII_ENV_TEST;
+        $silentExit = $this->silentExitOnException ?? YII_ENV_TEST;
         Yii::$app->errorHandler->silentExitOnException = $silentExit;
 
         return parent::beforeAction($action);
@@ -105,7 +106,7 @@ class Controller extends BaseController
      */
     public function isColorEnabled($stream = \STDOUT)
     {
-        return $this->color === null ? Console::streamSupportsAnsiColors($stream) : $this->color;
+        return $this->color ?? Console::streamSupportsAnsiColors($stream);
     }
 
     /**
@@ -118,7 +119,7 @@ class Controller extends BaseController
      * @throws Exception if there are unknown options or missing arguments
      * @see createAction
      */
-    public function runAction($id, $params = [])
+    public function runAction(string $id, $params = [])
     {
         if (!empty($params)) {
             // populate options here so that they are available in beforeAction().
@@ -137,7 +138,7 @@ class Controller extends BaseController
                             }
 
                             $message .= '. ' . Yii::t('yii', 'Aliases available: {aliases}', [
-                                'aliases' => implode(', ', $aliasesAvailable)
+                                'aliases' => implode(', ', $aliasesAvailable),
                             ]);
                         }
                         throw new Exception($message);
@@ -201,7 +202,7 @@ class Controller extends BaseController
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function bindActionParams($action, $params)
+    public function bindActionParams($action, $params): array
     {
         if ($action instanceof InlineAction) {
             $method = new \ReflectionMethod($this, $action->actionMethod);
@@ -381,13 +382,13 @@ class Controller extends BaseController
      *
      * @return string the user input
      */
-    public function prompt($text, $options = [])
+    public function prompt($text, array $options = [])
     {
         if ($this->interactive) {
             return Console::prompt($text, $options);
         }
 
-        return isset($options['default']) ? $options['default'] : '';
+        return $options['default'] ?? '';
     }
 
     /**
@@ -450,7 +451,7 @@ class Controller extends BaseController
      * @param string $actionID the action id of the current request
      * @return string[] the names of the options valid for the action
      */
-    public function options($actionID)
+    public function options($actionID): array
     {
         // $actionId might be used in subclasses to provide options specific to action id
         return ['color', 'interactive', 'help', 'silentExitOnException'];
@@ -466,7 +467,7 @@ class Controller extends BaseController
      * @since 2.0.8
      * @see options()
      */
-    public function optionAliases()
+    public function optionAliases(): array
     {
         return [
             'h' => 'help',
@@ -480,7 +481,7 @@ class Controller extends BaseController
      * @param string $actionID the action id of the current request
      * @return array properties corresponding to the options for the action
      */
-    public function getOptionValues($actionID)
+    public function getOptionValues($actionID): array
     {
         // $actionId might be used in subclasses to provide properties specific to action id
         $properties = [];
@@ -506,7 +507,7 @@ class Controller extends BaseController
      *
      * @return array the properties corresponding to the passed options
      */
-    public function getPassedOptionValues()
+    public function getPassedOptionValues(): array
     {
         $properties = [];
         foreach ($this->_passedOptions as $property) {
@@ -591,7 +592,7 @@ class Controller extends BaseController
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function getActionArgsHelp($action)
+    public function getActionArgsHelp($action): array
     {
         $method = $this->getActionMethodReflection($action);
 
@@ -614,15 +615,11 @@ class Controller extends BaseController
             $comment = '';
             if (PHP_MAJOR_VERSION > 5 && $parameter->hasType()) {
                 $reflectionType = $parameter->getType();
-                if (PHP_VERSION_ID >= 70100) {
-                    $types = method_exists($reflectionType, 'getTypes') ? $reflectionType->getTypes() : [$reflectionType];
-                    foreach ($types as $key => $reflectionType) {
-                        $types[$key] = $reflectionType->getName();
-                    }
-                    $type = implode('|', $types);
-                } else {
-                    $type = (string) $reflectionType;
+                $types = method_exists($reflectionType, 'getTypes') ? $reflectionType->getTypes() : [$reflectionType];
+                foreach ($types as $key => $reflectionType) {
+                    $types[$key] = $reflectionType->getName();
                 }
+                $type = implode('|', $types);
             }
             // find PhpDoc tag by property name or position
             $key = isset($phpDocParams[$parameter->name]) ? $parameter->name : (isset($phpDocParams[$i]) ? $i : null);
@@ -667,7 +664,7 @@ class Controller extends BaseController
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function getActionOptionsHelp($action)
+    public function getActionOptionsHelp($action): array
     {
         $optionNames = $this->options($action->id);
         if (empty($optionNames)) {
@@ -688,7 +685,7 @@ class Controller extends BaseController
             $name = Inflector::camel2id($name, '-', true);
 
             if (isset($tags['var']) || isset($tags['property'])) {
-                $doc = isset($tags['var']) ? $tags['var'] : $tags['property'];
+                $doc = $tags['var'] ?? $tags['property'];
                 if (is_array($doc)) {
                     $doc = reset($doc);
                 }
@@ -743,7 +740,7 @@ class Controller extends BaseController
      * @param \ReflectionClass<object>|\ReflectionProperty|\ReflectionFunctionAbstract $reflection the comment block
      * @return array the parsed tags
      */
-    protected function parseDocCommentTags($reflection)
+    protected function parseDocCommentTags($reflection): array
     {
         $comment = $reflection->getDocComment();
         $comment = "@description \n" . strtr(trim(preg_replace('/^\s*\**([ \t])?/m', '', trim($comment, '/'))), "\r", '');
@@ -769,12 +766,11 @@ class Controller extends BaseController
      * Returns the first line of docblock.
      *
      * @param \ReflectionClass<static>|\ReflectionProperty|\ReflectionFunctionAbstract $reflection
-     * @return string
      *
      * @phpstan-param \ReflectionClass<static>|\ReflectionProperty|\ReflectionFunctionAbstract $reflection
      * @psalm-param \ReflectionClass<self>|\ReflectionProperty|\ReflectionFunctionAbstract $reflection
      */
-    protected function parseDocCommentSummary($reflection)
+    protected function parseDocCommentSummary($reflection): string
     {
         $docLines = preg_split('~\R~u', $reflection->getDocComment());
         if (isset($docLines[1])) {
@@ -788,12 +784,11 @@ class Controller extends BaseController
      * Returns full description from the docblock.
      *
      * @param \ReflectionClass<static>|\ReflectionProperty|\ReflectionFunctionAbstract $reflection
-     * @return string
      *
      * @phpstan-param \ReflectionClass<static>|\ReflectionProperty|\ReflectionFunctionAbstract $reflection
      * @psalm-param \ReflectionClass<self>|\ReflectionProperty|\ReflectionFunctionAbstract $reflection
      */
-    protected function parseDocCommentDetail($reflection)
+    protected function parseDocCommentDetail($reflection): string
     {
         $comment = strtr(trim(preg_replace('/^\s*\**([ \t])?/m', '', trim($reflection->getDocComment(), '/'))), "\r", '');
         if (preg_match('/^\s*@\w+/m', $comment, $matches, PREG_OFFSET_CAPTURE)) {

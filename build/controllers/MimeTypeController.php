@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -33,7 +35,7 @@ class MimeTypeController extends Controller
     /**
      * @var array MIME type aliases
      */
-    private $_aliases = [
+    private array $_aliases = [
         'text/rtf' => 'application/rtf',
         'text/xml' => 'application/xml',
         'image/svg' => 'image/svg+xml',
@@ -52,7 +54,7 @@ class MimeTypeController extends Controller
     /**
      * @var array MIME types to add to the ones parsed from Apache files
      */
-    private $_additionalMimeTypes = [
+    private array $_additionalMimeTypes = [
         'apng' => 'image/apng',
         'avif' => 'image/avif',
         'jfif' => 'image/jpeg',
@@ -65,7 +67,7 @@ class MimeTypeController extends Controller
      * @param string $outFile the mime file to update. Defaults to @yii/helpers/mimeTypes.php
      * @param string $aliasesOutFile the aliases file to update. Defaults to @yii/helpers/mimeAliases.php
      */
-    public function actionIndex($outFile = null, $aliasesOutFile = null, $extensionsOutFile = null)
+    public function actionIndex($outFile = null, $aliasesOutFile = null, $extensionsOutFile = null): void
     {
         if ($outFile === null) {
             $outFile = Yii::getAlias('@yii/helpers/mimeTypes.php');
@@ -92,15 +94,19 @@ class MimeTypeController extends Controller
 
     /**
      * @param string $outFile
-     * @param string $content
      */
-    private function generateMimeTypesFile($outFile, $content)
+    private function generateMimeTypesFile($outFile, string $content): void
     {
         $this->stdout("Generating file $outFile...");
         $mimeMap = [];
         foreach (explode("\n", $content) as $line) {
             $line = trim($line);
-            if (empty($line) || strpos($line, '#') === 0) { // skip comments and empty lines
+            if (empty($line)) {
+                // skip comments and empty lines
+                continue;
+            }
+            if (strpos($line, '#') === 0) {
+                // skip comments and empty lines
                 continue;
             }
             $parts = preg_split('/\s+/', $line);
@@ -146,7 +152,7 @@ EOD;
     /**
      * @param string $outFile
      */
-    private function generateMimeAliasesFile($outFile)
+    private function generateMimeAliasesFile($outFile): void
     {
         $this->stdout("generating file $outFile...");
         $array = VarDumper::export($this->_aliases);
@@ -169,16 +175,20 @@ EOD;
 
     /**
      * @param string $outFile
-     * @param string $content
      */
-    private function generateMimeExtensionsFile($outFile, $content)
+    private function generateMimeExtensionsFile($outFile, string $content): void
     {
         $this->stdout("Generating file $outFile...");
 
         $extensionMap = [];
         foreach (explode("\n", $content) as $line) {
             $line = trim($line);
-            if (empty($line) || strpos($line, '#') === 0) { // skip comments and empty lines
+            if (empty($line)) {
+                // skip comments and empty lines
+                continue;
+            }
+            if (strpos($line, '#') === 0) {
+                // skip comments and empty lines
                 continue;
             }
             $parts = preg_split('/\s+/', $line);

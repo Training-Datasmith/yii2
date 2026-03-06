@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -112,12 +114,11 @@ class DbManager extends BaseManager
      */
     protected $checkAccessAssignments = [];
 
-
     /**
      * Initializes the application component.
      * This method overrides the parent implementation by establishing the database connection.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->db = Instance::ensure($this->db, Connection::className());
@@ -163,7 +164,7 @@ class DbManager extends BaseManager
      * @return bool whether the operations can be performed by the user.
      * @since 2.0.3
      */
-    protected function checkAccessFromCache($user, $itemName, $params, $assignments)
+    protected function checkAccessFromCache($user, $itemName, $params, array $assignments): bool
     {
         if (!isset($this->items[$itemName])) {
             return false;
@@ -204,7 +205,7 @@ class DbManager extends BaseManager
      * @param Assignment[] $assignments the assignments to the specified user
      * @return bool whether the operations can be performed by the user.
      */
-    protected function checkAccessRecursive($user, $itemName, $params, $assignments)
+    protected function checkAccessRecursive($user, $itemName, $params, array $assignments): bool
     {
         if (($item = $this->getItem($itemName)) === null) {
             return false;
@@ -263,7 +264,7 @@ class DbManager extends BaseManager
      * The default implementation will return false for SQLite database and true for all other databases.
      * @return bool whether the database supports cascading update and delete.
      */
-    protected function supportsCascadeUpdate()
+    protected function supportsCascadeUpdate(): bool
     {
         return strncmp($this->db->getDriverName(), 'sqlite', 6) !== 0;
     }
@@ -271,7 +272,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function addItem($item)
+    protected function addItem($item): bool
     {
         $time = time();
         if ($item->createdAt === null) {
@@ -299,7 +300,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function removeItem($item)
+    protected function removeItem($item): bool
     {
         if (!$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -322,7 +323,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function updateItem($name, $item)
+    protected function updateItem($name, $item): bool
     {
         if ($item->name !== $name && !$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -357,7 +358,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function addRule($rule)
+    protected function addRule($rule): bool
     {
         $time = time();
         if ($rule->createdAt === null) {
@@ -382,7 +383,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function updateRule($name, $rule)
+    protected function updateRule($name, $rule): bool
     {
         if ($rule->name !== $name && !$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -409,7 +410,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    protected function removeRule($rule)
+    protected function removeRule($rule): bool
     {
         if (!$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -428,8 +429,9 @@ class DbManager extends BaseManager
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    protected function getItems($type)
+    protected function getItems($type): array
     {
         $query = (new Query())
             ->from($this->itemTable)
@@ -450,7 +452,7 @@ class DbManager extends BaseManager
      * @param array $row the data from the auth item table
      * @return Item the populated auth item instance (either Role or Permission)
      */
-    protected function populateItem($row)
+    protected function populateItem(array $row)
     {
         $class = $row['type'] == Item::TYPE_PERMISSION ? Permission::className() : Role::className();
 
@@ -523,17 +525,14 @@ class DbManager extends BaseManager
 
         $roles = [$roleName => $role];
 
-        $roles += array_filter($this->getRoles(), function (Role $roleItem) use ($result) {
-            return array_key_exists($roleItem->name, $result);
-        });
-
-        return $roles;
+        return $roles + array_filter($this->getRoles(), fn (Role $roleItem) => array_key_exists($roleItem->name, $result));
     }
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    public function getPermissionsByRole($roleName)
+    public function getPermissionsByRole($roleName): array
     {
         $childrenList = $this->getChildrenList();
         $result = [];
@@ -558,7 +557,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getPermissionsByUser($userId)
+    public function getPermissionsByUser($userId): array
     {
         if ($this->isEmptyUserId($userId)) {
             return [];
@@ -576,7 +575,7 @@ class DbManager extends BaseManager
      * @return Permission[] all direct permissions that the user has. The array is indexed by the permission names.
      * @since 2.0.7
      */
-    protected function getDirectPermissionsByUser($userId)
+    protected function getDirectPermissionsByUser($userId): array
     {
         $query = (new Query())->select('b.*')
             ->from(['a' => $this->assignmentTable, 'b' => $this->itemTable])
@@ -600,7 +599,7 @@ class DbManager extends BaseManager
      * @return Permission[] all inherited permissions that the user has. The array is indexed by the permission names.
      * @since 2.0.7
      */
-    protected function getInheritedPermissionsByUser($userId)
+    protected function getInheritedPermissionsByUser($userId): array
     {
         $query = (new Query())->select('item_name')
             ->from($this->assignmentTable)
@@ -635,7 +634,7 @@ class DbManager extends BaseManager
      * @return array the children list. Each array key is a parent item name,
      * and the corresponding array value is a list of child item names.
      */
-    protected function getChildrenList()
+    protected function getChildrenList(): array
     {
         $query = (new Query())->from($this->itemChildTable);
         $parents = [];
@@ -652,7 +651,7 @@ class DbManager extends BaseManager
      * @param array $childrenList the child list built via [[getChildrenList()]]
      * @param array $result the children and grand children (in array keys)
      */
-    protected function getChildrenRecursive($name, $childrenList, &$result)
+    protected function getChildrenRecursive($name, array $childrenList, array &$result)
     {
         if (isset($childrenList[$name])) {
             foreach ($childrenList[$name] as $child) {
@@ -668,7 +667,7 @@ class DbManager extends BaseManager
     public function getRule($name)
     {
         if ($this->rules !== null) {
-            return isset($this->rules[$name]) ? $this->rules[$name] : null;
+            return $this->rules[$name] ?? null;
         }
 
         $row = (new Query())->select(['data'])
@@ -716,7 +715,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function getAssignment($roleName, $userId)
+    public function getAssignment($roleName, $userId): ?\yii\rbac\Assignment
     {
         if ($this->isEmptyUserId($userId)) {
             return null;
@@ -739,8 +738,9 @@ class DbManager extends BaseManager
 
     /**
      * {@inheritdoc}
+     * @return \yii\rbac\Assignment[]
      */
-    public function getAssignments($userId)
+    public function getAssignments($userId): array
     {
         if ($this->isEmptyUserId($userId)) {
             return [];
@@ -766,7 +766,7 @@ class DbManager extends BaseManager
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function canAddChild($parent, $child)
+    public function canAddChild($parent, $child): bool
     {
         return !$this->detectLoop($parent, $child);
     }
@@ -774,7 +774,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function addChild($parent, $child)
+    public function addChild($parent, $child): bool
     {
         if ($parent->name === $child->name) {
             throw new InvalidArgumentException("Cannot add '{$parent->name}' as a child of itself.");
@@ -828,7 +828,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function hasChild($parent, $child)
+    public function hasChild($parent, $child): bool
     {
         return (new Query())
             ->from($this->itemChildTable)
@@ -838,8 +838,9 @@ class DbManager extends BaseManager
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    public function getChildren($name)
+    public function getChildren($name): array
     {
         $query = (new Query())
             ->select(['name', 'type', 'description', 'rule_name', 'data', 'created_at', 'updated_at'])
@@ -860,7 +861,7 @@ class DbManager extends BaseManager
      * @param Item $child the child item to be added to the hierarchy
      * @return bool whether a loop exists
      */
-    protected function detectLoop($parent, $child)
+    protected function detectLoop($parent, $child): bool
     {
         if ($child->name === $parent->name) {
             return true;
@@ -877,7 +878,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function assign($role, $userId)
+    public function assign($role, $userId): \yii\rbac\Assignment
     {
         $assignment = new Assignment([
             'userId' => $userId,
@@ -940,7 +941,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAll()
+    public function removeAll(): void
     {
         $this->removeAllAssignments();
         $this->db->createCommand()->delete($this->itemChildTable)->execute();
@@ -952,7 +953,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAllPermissions()
+    public function removeAllPermissions(): void
     {
         $this->removeAllItems(Item::TYPE_PERMISSION);
     }
@@ -960,7 +961,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAllRoles()
+    public function removeAllRoles(): void
     {
         $this->removeAllItems(Item::TYPE_ROLE);
     }
@@ -998,7 +999,7 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAllRules()
+    public function removeAllRules(): void
     {
         if (!$this->supportsCascadeUpdate()) {
             $this->db->createCommand()
@@ -1014,13 +1015,13 @@ class DbManager extends BaseManager
     /**
      * {@inheritdoc}
      */
-    public function removeAllAssignments()
+    public function removeAllAssignments(): void
     {
         $this->checkAccessAssignments = [];
         $this->db->createCommand()->delete($this->assignmentTable)->execute();
     }
 
-    public function invalidateCache()
+    public function invalidateCache(): void
     {
         if ($this->cache !== null) {
             $this->cache->delete($this->cacheKey);
@@ -1041,7 +1042,7 @@ class DbManager extends BaseManager
         $this->checkAccessAssignments = [];
     }
 
-    public function loadFromCache()
+    public function loadFromCache(): void
     {
         if ($this->items !== null || !$this->cache instanceof CacheInterface) {
             return;
@@ -1049,7 +1050,7 @@ class DbManager extends BaseManager
 
         $data = $this->cache->get($this->cacheKey);
         if (is_array($data) && isset($data[0], $data[1], $data[2])) {
-            list($this->items, $this->rules, $this->parents) = $data;
+            [$this->items, $this->rules, $this->parents] = $data;
             return;
         }
 
@@ -1103,25 +1104,24 @@ class DbManager extends BaseManager
     /**
      * Check whether $userId is empty.
      * @param mixed $userId
-     * @return bool
      * @since 2.0.26
      */
-    protected function isEmptyUserId($userId)
+    protected function isEmptyUserId($userId): bool
     {
         return !isset($userId) || $userId === '';
     }
 
-    private function getUserRolesCacheKey($userId)
+    private function getUserRolesCacheKey(string $userId): string
     {
         return $this->cacheKey . $this->rolesCacheSuffix . $userId;
     }
 
-    private function getUserRolesCachedSetKey()
+    private function getUserRolesCachedSetKey(): string
     {
         return $this->cacheKey . $this->rolesCacheSuffix;
     }
 
-    private function cacheUserRolesData($userId, $roles)
+    private function cacheUserRolesData($userId, $roles): void
     {
         $cachedUserIds = $this->cache->get($this->getUserRolesCachedSetKey());
 

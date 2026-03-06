@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -673,7 +675,6 @@ abstract class BaseMessageControllerTest extends TestCase
 
         $keys = array_keys($this->loadMessages($category));
         $this->assertEquals([$key1, $key2], $keys, "The order of messages should be '{$key1}, {$key2}' when sort equals true");
-
 
         $this->saveMessages([$key2 => 'already translated'], $category);
         $this->saveConfigFile($this->getConfig([

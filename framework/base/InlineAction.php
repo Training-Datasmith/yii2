@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -30,7 +32,6 @@ class InlineAction extends Action
      * @var string the controller method that this inline action is associated with
      */
     public $actionMethod;
-
 
     /**
      * @param string $id the ID of this action

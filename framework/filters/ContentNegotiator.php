@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -133,11 +135,10 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      */
     public $response;
 
-
     /**
      * {@inheritdoc}
      */
-    public function bootstrap($app)
+    public function bootstrap($app): void
     {
         $this->negotiate();
     }
@@ -145,7 +146,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         $this->negotiate();
         return true;
@@ -154,7 +155,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
     /**
      * Negotiates the response format and application language.
      */
-    public function negotiate()
+    public function negotiate(): void
     {
         $request = $this->request ?: Yii::$app->getRequest();
         $response = $this->response ?: Yii::$app->getResponse();
@@ -268,7 +269,7 @@ class ContentNegotiator extends ActionFilter implements BootstrapInterface
      * @param string $supported the supported language code
      * @return bool whether the requested language is supported
      */
-    protected function isLanguageSupported($requested, $supported)
+    protected function isLanguageSupported($requested, $supported): bool
     {
         $supported = str_replace('_', '-', strtolower($supported));
         $requested = str_replace('_', '-', strtolower($requested));

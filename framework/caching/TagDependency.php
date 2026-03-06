@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -34,7 +36,6 @@ class TagDependency extends Dependency
      */
     public $tags = [];
 
-
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method does nothing in this class.
@@ -52,7 +53,7 @@ class TagDependency extends Dependency
             }
         }
         if (!empty($newKeys)) {
-            $timestamps = array_merge($timestamps, static::touchKeys($cache, $newKeys));
+            return array_merge($timestamps, static::touchKeys($cache, $newKeys));
         }
 
         return $timestamps;
@@ -61,7 +62,7 @@ class TagDependency extends Dependency
     /**
      * {@inheritdoc}
      */
-    public function isChanged($cache)
+    public function isChanged($cache): bool
     {
         $timestamps = $this->getTimestamps($cache, (array) $this->tags);
         return $timestamps !== $this->data;
@@ -72,11 +73,11 @@ class TagDependency extends Dependency
      * @param CacheInterface $cache the cache component that caches the data items
      * @param string|array $tags
      */
-    public static function invalidate($cache, $tags)
+    public static function invalidate($cache, $tags): void
     {
         $keys = [];
         foreach ((array) $tags as $tag) {
-            $keys[] = $cache->buildKey([__CLASS__, $tag]);
+            $keys[] = $cache->buildKey([self::class, $tag]);
         }
         static::touchKeys($cache, $keys);
     }
@@ -87,7 +88,7 @@ class TagDependency extends Dependency
      * @param string[] $keys
      * @return array the timestamp indexed by cache keys
      */
-    protected static function touchKeys($cache, $keys)
+    protected static function touchKeys($cache, $keys): array
     {
         $items = [];
         $time = microtime();
@@ -112,7 +113,7 @@ class TagDependency extends Dependency
 
         $keys = [];
         foreach ($tags as $tag) {
-            $keys[] = $cache->buildKey([__CLASS__, $tag]);
+            $keys[] = $cache->buildKey([self::class, $tag]);
         }
 
         return $cache->multiGet($keys);

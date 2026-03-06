@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -73,7 +75,7 @@ class SqlDataProviderTest extends DatabaseTestCase
             'db' => $this->getConnection(),
             'sort' => [
                 'attributes' => ['email'],
-                'params' => ['sort' => '-email']
+                'params' => ['sort' => '-email'],
             ],
         ]);
         $modelsSorted = $dataProvider->getModels();

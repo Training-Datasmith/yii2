@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -79,7 +81,6 @@ class ColumnSchemaBuilder extends BaseObject
      */
     protected $isFirst;
 
-
     /**
      * @var array mapping of abstract column types (keys) to type categories (values).
      * @since 2.0.43
@@ -139,7 +140,7 @@ class ColumnSchemaBuilder extends BaseObject
      * Adds a `NOT NULL` constraint to the column.
      * @return $this
      */
-    public function notNull()
+    public function notNull(): self
     {
         $this->isNotNull = true;
         return $this;
@@ -150,7 +151,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return $this
      * @since 2.0.9
      */
-    public function null()
+    public function null(): self
     {
         $this->isNotNull = false;
         return $this;
@@ -160,7 +161,7 @@ class ColumnSchemaBuilder extends BaseObject
      * Adds a `UNIQUE` constraint to the column.
      * @return $this
      */
-    public function unique()
+    public function unique(): self
     {
         $this->isUnique = true;
         return $this;
@@ -171,7 +172,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @param string $check the SQL of the `CHECK` constraint to be added.
      * @return $this
      */
-    public function check($check)
+    public function check($check): self
     {
         $this->check = $check;
         return $this;
@@ -182,7 +183,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @param mixed $default the default value.
      * @return $this
      */
-    public function defaultValue($default)
+    public function defaultValue($default): self
     {
         if ($default === null) {
             $this->null();
@@ -198,7 +199,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return $this
      * @since 2.0.8
      */
-    public function comment($comment)
+    public function comment($comment): self
     {
         $this->comment = $comment;
         return $this;
@@ -209,7 +210,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return $this
      * @since 2.0.7
      */
-    public function unsigned()
+    public function unsigned(): self
     {
         switch ($this->type) {
             case Schema::TYPE_PK:
@@ -230,7 +231,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return $this
      * @since 2.0.8
      */
-    public function after($after)
+    public function after($after): self
     {
         $this->after = $after;
         return $this;
@@ -242,7 +243,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return $this
      * @since 2.0.8
      */
-    public function first()
+    public function first(): self
     {
         $this->isFirst = true;
         return $this;
@@ -254,7 +255,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return $this
      * @since 2.0.7
      */
-    public function defaultExpression($default)
+    public function defaultExpression($default): self
     {
         $this->default = new Expression($default);
         return $this;
@@ -267,7 +268,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return $this
      * @since 2.0.9
      */
-    public function append($sql)
+    public function append($sql): self
     {
         $this->append = $sql;
         return $this;
@@ -275,9 +276,8 @@ class ColumnSchemaBuilder extends BaseObject
 
     /**
      * Builds the full string for the column's schema.
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         switch ($this->getTypeCategory()) {
             case self::CATEGORY_PK:
@@ -303,16 +303,15 @@ class ColumnSchemaBuilder extends BaseObject
      * @param array $categoryMap mapping of abstract column types (keys) to type categories (values).
      * @since 2.0.43
      */
-    public function setCategoryMap($categoryMap)
+    public function setCategoryMap($categoryMap): void
     {
         static::$typeCategoryMap = $categoryMap;
     }
 
     /**
      * Builds the length/precision part of the column.
-     * @return string
      */
-    protected function buildLengthString()
+    protected function buildLengthString(): string
     {
         if ($this->length === null || $this->length === []) {
             return '';
@@ -329,11 +328,12 @@ class ColumnSchemaBuilder extends BaseObject
      * @return string returns 'NOT NULL' if [[isNotNull]] is true,
      * 'NULL' if [[isNotNull]] is false or an empty string otherwise.
      */
-    protected function buildNotNullString()
+    protected function buildNotNullString(): string
     {
         if ($this->isNotNull === true) {
             return ' NOT NULL';
-        } elseif ($this->isNotNull === false) {
+        }
+        if ($this->isNotNull === false) {
             return ' NULL';
         }
 
@@ -344,7 +344,7 @@ class ColumnSchemaBuilder extends BaseObject
      * Builds the unique constraint for the column.
      * @return string returns string 'UNIQUE' if [[isUnique]] is true, otherwise it returns an empty string.
      */
-    protected function buildUniqueString()
+    protected function buildUniqueString(): string
     {
         return $this->isUnique ? ' UNIQUE' : '';
     }
@@ -382,7 +382,7 @@ class ColumnSchemaBuilder extends BaseObject
      * Builds the default value specification for the column.
      * @return string string with default value of column.
      */
-    protected function buildDefaultString()
+    protected function buildDefaultString(): string
     {
         $defaultValue = $this->buildDefaultValue();
         if ($defaultValue === null) {
@@ -396,7 +396,7 @@ class ColumnSchemaBuilder extends BaseObject
      * Builds the check constraint for the column.
      * @return string a string containing the CHECK constraint.
      */
-    protected function buildCheckString()
+    protected function buildCheckString(): string
     {
         return $this->check !== null ? " CHECK ({$this->check})" : '';
     }
@@ -406,7 +406,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return string a string containing UNSIGNED keyword.
      * @since 2.0.7
      */
-    protected function buildUnsignedString()
+    protected function buildUnsignedString(): string
     {
         return '';
     }
@@ -416,7 +416,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return string a string containing the AFTER constraint.
      * @since 2.0.8
      */
-    protected function buildAfterString()
+    protected function buildAfterString(): string
     {
         return '';
     }
@@ -426,7 +426,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return string a string containing the FIRST constraint.
      * @since 2.0.8
      */
-    protected function buildFirstString()
+    protected function buildFirstString(): string
     {
         return '';
     }
@@ -436,7 +436,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return string custom string to append.
      * @since 2.0.9
      */
-    protected function buildAppendString()
+    protected function buildAppendString(): string
     {
         return $this->append !== null ? ' ' . $this->append : '';
     }
@@ -448,7 +448,7 @@ class ColumnSchemaBuilder extends BaseObject
      */
     protected function getTypeCategory()
     {
-        return isset($this->categoryMap[$this->type]) ? $this->categoryMap[$this->type] : null;
+        return $this->categoryMap[$this->type] ?? null;
     }
 
     /**
@@ -456,7 +456,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return string a string containing the COMMENT keyword and the comment itself
      * @since 2.0.8
      */
-    protected function buildCommentString()
+    protected function buildCommentString(): string
     {
         return '';
     }
@@ -467,7 +467,7 @@ class ColumnSchemaBuilder extends BaseObject
      * @return string a string containing the complete column definition.
      * @since 2.0.8
      */
-    protected function buildCompleteString($format)
+    protected function buildCompleteString($format): string
     {
         $placeholderValues = [
             '{type}' => $this->type,

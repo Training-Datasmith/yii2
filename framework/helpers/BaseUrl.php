@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -26,7 +28,6 @@ class BaseUrl
      * @since 2.0.8
      */
     public static $urlManager;
-
 
     /**
      * Creates a URL for the given route.
@@ -296,7 +297,7 @@ class BaseUrl
      * @see previous()
      * @see \yii\web\User::setReturnUrl()
      */
-    public static function remember($url = '', $name = null)
+    public static function remember($url = '', $name = null): void
     {
         $url = static::to($url);
 
@@ -377,7 +378,7 @@ class BaseUrl
      * @param string $url the URL to be checked
      * @return bool whether the URL is relative
      */
-    public static function isRelative($url)
+    public static function isRelative($url): bool
     {
         return preg_match('~^[[:alpha:]][[:alnum:]+-.]*://|^//~', $url) === 0;
     }

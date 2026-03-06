@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,11 +10,11 @@
 
 namespace yiiunit\framework\db\oci;
 
-use yii\db\ActiveRecordInterface;
 use yii\db\ActiveQuery;
+use yii\db\ActiveRecordInterface;
 use yiiunit\data\ar\BitValues;
-use yiiunit\data\ar\DefaultPk;
 use yiiunit\data\ar\DefaultMultiplePk;
+use yiiunit\data\ar\DefaultPk;
 use yiiunit\data\ar\Order;
 use yiiunit\data\ar\Type;
 

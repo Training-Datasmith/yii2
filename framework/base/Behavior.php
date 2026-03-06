@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,7 +37,6 @@ class Behavior extends BaseObject
      */
     private $_attachedEvents = [];
 
-
     /**
      * Declares event handlers for the [[owner]]'s events.
      *
@@ -64,7 +65,7 @@ class Behavior extends BaseObject
      *
      * @return array events (array keys) and the corresponding event handler methods (array values).
      */
-    public function events()
+    public function events(): array
     {
         return [];
     }
@@ -76,7 +77,7 @@ class Behavior extends BaseObject
      * Make sure you call the parent implementation if you override this method.
      * @param T $owner the component that this behavior is to be attached to.
      */
-    public function attach($owner)
+    public function attach($owner): void
     {
         $this->owner = $owner;
         foreach ($this->events() as $event => $handler) {
@@ -91,7 +92,7 @@ class Behavior extends BaseObject
      * and detach event handlers declared in [[events]].
      * Make sure you call the parent implementation if you override this method.
      */
-    public function detach()
+    public function detach(): void
     {
         if ($this->owner) {
             foreach ($this->_attachedEvents as $event => $handler) {

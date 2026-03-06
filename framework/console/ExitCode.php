@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -145,7 +147,6 @@ class ExitCode
         self::CONFIG => 'Configuration error',
     ];
 
-
     /**
      * Returns a short reason text for the given exit code.
      *
@@ -155,6 +156,6 @@ class ExitCode
      */
     public static function getReason($exitCode)
     {
-        return isset(static::$reasons[$exitCode]) ? static::$reasons[$exitCode] : 'Unknown exit code';
+        return static::$reasons[$exitCode] ?? 'Unknown exit code';
     }
 }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -80,15 +82,14 @@ class Transaction extends \yii\base\BaseObject
     /**
      * @var int the nesting level of the transaction. 0 means the outermost level.
      */
-    private $_level = 0;
-
+    private int $_level = 0;
 
     /**
      * Returns a value indicating whether this transaction is active.
      * @return bool whether this transaction is active. Only an active transaction
      * can [[commit()]] or [[rollBack()]].
      */
-    public function getIsActive()
+    public function getIsActive(): bool
     {
         return $this->_level > 0 && $this->db && $this->db->isActive;
     }
@@ -116,7 +117,7 @@ class Transaction extends \yii\base\BaseObject
      * @throws NotSupportedException if the DBMS does not support nested transactions
      * @throws Exception if DB connection fails
      */
-    public function begin($isolationLevel = null)
+    public function begin($isolationLevel = null): void
     {
         if ($this->db === null) {
             throw new InvalidConfigException('Transaction::db must be set.');
@@ -154,7 +155,7 @@ class Transaction extends \yii\base\BaseObject
      * Commits a transaction.
      * @throws Exception if the transaction is not active
      */
-    public function commit()
+    public function commit(): void
     {
         if (!$this->getIsActive()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
@@ -186,7 +187,7 @@ class Transaction extends \yii\base\BaseObject
     /**
      * Rolls back a transaction.
      */
-    public function rollBack()
+    public function rollBack(): void
     {
         if (!$this->getIsActive()) {
             // do nothing if transaction is not active: this could be the transaction is committed
@@ -229,7 +230,7 @@ class Transaction extends \yii\base\BaseObject
      * @throws Exception if the transaction is not active
      * @see https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
-    public function setIsolationLevel($level)
+    public function setIsolationLevel(string $level): void
     {
         if (!$this->getIsActive()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');

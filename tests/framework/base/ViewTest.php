@@ -101,8 +101,8 @@ PHP
 
         $view->theme = new Theme([
             'pathMap' => [
-                '@testviews' => '@theme'
-            ]
+                '@testviews' => '@theme',
+            ],
         ]);
 
         $this->assertSame($subViewContent, $view->render('@testviews/base'));

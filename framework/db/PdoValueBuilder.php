@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -20,7 +22,7 @@ class PdoValueBuilder implements ExpressionBuilderInterface
     /**
      * {@inheritdoc}
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $placeholder = static::PARAM_PREFIX . count($params);
         $params[$placeholder] = $expression;

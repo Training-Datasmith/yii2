@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -125,11 +127,10 @@ class DataColumn extends Column
      */
     public $filterAttribute;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->filterAttribute === null) {
@@ -221,7 +222,8 @@ class DataColumn extends Column
             if (is_array($this->filter)) {
                 $options = array_merge(['prompt' => '', 'strict' => true], $this->filterInputOptions);
                 return Html::activeDropDownList($model, $this->filterAttribute, $this->filter, $options) . $error;
-            } elseif ($this->format === 'boolean') {
+            }
+            if ($this->format === 'boolean') {
                 $options = array_merge(['prompt' => '', 'strict' => true], $this->filterInputOptions);
                 return Html::activeDropDownList($model, $this->filterAttribute, [
                     1 => $this->grid->formatter->booleanFormat[1],
@@ -249,9 +251,9 @@ class DataColumn extends Column
             if (is_string($this->value)) {
                 return ArrayHelper::getValue($model, $this->value);
             }
-
             return call_user_func($this->value, $model, $key, $index, $this);
-        } elseif ($this->attribute !== null) {
+        }
+        if ($this->attribute !== null) {
             return ArrayHelper::getValue($model, $this->attribute);
         }
 

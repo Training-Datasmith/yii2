@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,7 +37,7 @@ class Command extends \yii\db\Command
 
         $result = null;
         foreach ($statements as $statement) {
-            list($statementSql, $statementParams) = $statement;
+            [$statementSql, $statementParams] = $statement;
             $this->setSql($statementSql)->bindValues($statementParams);
             $result = parent::execute();
         }
@@ -55,9 +57,9 @@ class Command extends \yii\db\Command
             return parent::queryInternal($method, $fetchMode);
         }
 
-        list($lastStatementSql, $lastStatementParams) = array_pop($statements);
+        [$lastStatementSql, $lastStatementParams] = array_pop($statements);
         foreach ($statements as $statement) {
-            list($statementSql, $statementParams) = $statement;
+            [$statementSql, $statementParams] = $statement;
             $this->setSql($statementSql)->bindValues($statementParams);
             parent::execute();
         }
@@ -96,11 +98,8 @@ class Command extends \yii\db\Command
 
     /**
      * Returns named bindings used in the specified statement token.
-     * @param SqlToken $statement
-     * @param array $params
-     * @return array
      */
-    private function extractUsedParams(SqlToken $statement, $params)
+    private function extractUsedParams(SqlToken $statement, array $params): array
     {
         preg_match_all('/(?P<placeholder>:\w+)/', $statement->getSql(), $matches, PREG_SET_ORDER);
         $result = [];

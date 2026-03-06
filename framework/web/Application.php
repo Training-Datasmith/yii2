@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -59,7 +61,6 @@ class Application extends \yii\base\Application
      */
     public $controller;
 
-
     /**
      * {@inheritdoc}
      */
@@ -82,7 +83,7 @@ class Application extends \yii\base\Application
     {
         if (empty($this->catchAll)) {
             try {
-                list($route, $params) = $request->resolve();
+                [$route, $params] = $request->resolve();
             } catch (UrlNormalizerRedirectException $e) {
                 $url = $e->url;
                 if (is_array($url)) {
@@ -140,7 +141,7 @@ class Application extends \yii\base\Application
     /**
      * @param string $value the homepage URL
      */
-    public function setHomeUrl($value)
+    public function setHomeUrl($value): void
     {
         $this->_homeUrl = $value;
     }
@@ -193,7 +194,7 @@ class Application extends \yii\base\Application
     /**
      * {@inheritdoc}
      */
-    public function coreComponents()
+    public function coreComponents(): array
     {
         return array_merge(parent::coreComponents(), [
             'request' => ['class' => 'yii\web\Request'],

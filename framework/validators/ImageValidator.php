@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -89,11 +91,10 @@ class ImageValidator extends FileValidator
      */
     public $overHeight;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -130,13 +131,13 @@ class ImageValidator extends FileValidator
      * @return array|null the error message and the parameters to be inserted into the error message.
      * Null should be returned if the data is valid.
      */
-    protected function validateImage($image)
+    protected function validateImage($image): ?array
     {
         if (false === ($imageInfo = getimagesize($image->tempName))) {
             return [$this->notImage, ['file' => $image->name]];
         }
 
-        list($width, $height) = $imageInfo;
+        [$width, $height] = $imageInfo;
 
         if ($width == 0 || $height == 0) {
             return [$this->notImage, ['file' => $image->name]];
@@ -164,7 +165,7 @@ class ImageValidator extends FileValidator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);

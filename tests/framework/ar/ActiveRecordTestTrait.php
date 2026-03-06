@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,7 +10,6 @@
 
 namespace yiiunit\framework\ar;
 
-use yiiunit\extensions\redis\ActiveRecordTest;
 use Exception;
 use yii\base\Event;
 use yii\db\ActiveRecordInterface;
@@ -16,6 +17,7 @@ use yii\db\BaseActiveRecord;
 use yii\db\Expression;
 use yiiunit\data\ar\Customer;
 use yiiunit\data\ar\Order;
+use yiiunit\extensions\redis\ActiveRecordTest;
 use yiiunit\TestCase;
 
 /**
@@ -805,7 +807,6 @@ trait ActiveRecordTestTrait
         $this->assertNull($orderClass::findOne(2));
         $this->assertNull($orderClass::findOne(3));
 
-
         // has many without delete
         $customer = $customerClass::findOne(2);
         $this->assertCount(2, $customer->ordersWithNullFK);
@@ -815,7 +816,6 @@ trait ActiveRecordTestTrait
         $this->assertCount(0, $customer->ordersWithNullFK);
         $this->assertEquals(3, $orderWithNullFKClass::find()->count());
         $this->assertEquals(2, $orderWithNullFKClass::find()->where(['AND', ['id' => [2, 3]], ['customer_id' => null]])->count());
-
 
         // via model with delete
         /** @var Order $order */
@@ -1250,7 +1250,6 @@ trait ActiveRecordTestTrait
         // @see https://github.com/yiisoft/yii2-gii/issues/190
         $baseModel = new $customerClass();
         $this->assertFalse($baseModel->hasProperty('unExistingColumn'));
-
 
         /** @var ActiveRecord $customer */
         $customer = new $customerClass();

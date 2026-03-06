@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -105,11 +107,10 @@ class CompareValidator extends Validator
      */
     public $message;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message === null) {
@@ -143,7 +144,7 @@ class CompareValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
         if (is_array($value)) {
@@ -157,7 +158,7 @@ class CompareValidator extends Validator
             }
             $compareLabel = $compareValue = $compareValueOrAttribute = $this->compareValue;
         } else {
-            $compareAttribute = $this->compareAttribute === null ? $attribute . '_repeat' : $this->compareAttribute;
+            $compareAttribute = $this->compareAttribute ?? $attribute . '_repeat';
             $compareValue = $model->$compareAttribute;
             $compareLabel = $compareValueOrAttribute = $model->getAttributeLabel($compareAttribute);
 
@@ -185,7 +186,7 @@ class CompareValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         if ($this->compareValue === null) {
             throw new InvalidConfigException('CompareValidator::compareValue must be set.');
@@ -246,7 +247,7 @@ class CompareValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         if ($this->compareValue != null && $this->compareValue instanceof \Closure) {
             $this->compareValue = call_user_func($this->compareValue);
@@ -260,8 +261,9 @@ class CompareValidator extends Validator
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $options = [
             'operator' => $this->operator,
@@ -272,7 +274,7 @@ class CompareValidator extends Validator
             $options['compareValue'] = $this->compareValue;
             $compareLabel = $compareValue = $compareValueOrAttribute = $this->compareValue;
         } else {
-            $compareAttribute = $this->compareAttribute === null ? $attribute . '_repeat' : $this->compareAttribute;
+            $compareAttribute = $this->compareAttribute ?? $attribute . '_repeat';
             $compareValue = $model->getAttributeLabel($compareAttribute);
             $options['compareAttribute'] = Html::getInputId($model, $compareAttribute);
             $options['compareAttributeName'] = Html::getInputName($model, $compareAttribute);

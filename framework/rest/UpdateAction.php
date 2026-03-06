@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -30,7 +32,6 @@ class UpdateAction extends Action
      * @var string the scenario to be assigned to the model before it is validated and updated.
      */
     public $scenario = Model::SCENARIO_DEFAULT;
-
 
     /**
      * Updates an existing model.

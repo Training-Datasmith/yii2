@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -102,7 +104,6 @@ abstract class BaseListView extends Widget
      */
     public $layout = "{summary}\n{items}\n{pager}";
 
-
     /**
      * Renders the data models.
      * @return string the rendering result.
@@ -112,7 +113,7 @@ abstract class BaseListView extends Widget
     /**
      * Initializes the view.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->dataProvider === null) {
@@ -129,10 +130,10 @@ abstract class BaseListView extends Widget
     /**
      * Runs the widget.
      */
-    public function run()
+    public function run(): void
     {
         if ($this->showOnEmpty || $this->dataProvider->getCount() > 0) {
-            $content = preg_replace_callback('/{\\w+}/', function ($matches) {
+            $content = preg_replace_callback('/{\\w+}/', function (array $matches) {
                 $content = $this->renderSection($matches[0]);
 
                 return $content === false ? $matches[0] : $content;

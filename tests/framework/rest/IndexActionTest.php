@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\framework\rest;
 
 use Yii;
@@ -86,7 +88,7 @@ class IndexActionTest extends TestCase
     ): void {
         Yii::$app->getRequest()->setBodyParams([
             'per-page' => 11,
-            'sort' => '-test-sort'
+            'sort' => '-test-sort',
         ]);
 
         $controller = new RestController(
@@ -138,7 +140,7 @@ class IndexActionTest extends TestCase
                 11, // page size set as param in test
                 (new Pagination())->defaultPageSize,
                 [],
-                null
+                null,
             ],
             [ // Default config
                 [],
@@ -148,7 +150,7 @@ class IndexActionTest extends TestCase
                 11, // page size set as param in test
                 (new Pagination())->defaultPageSize,
                 ['test-sort' => SORT_DESC], // test sort set as param in test
-                null
+                null,
             ],
             [ // Config via array
                 [
@@ -164,7 +166,7 @@ class IndexActionTest extends TestCase
                 12,
                 991,
                 ['test-sort' => SORT_DESC], // test sort set as param in test
-                ['created_at_1' => SORT_DESC]
+                ['created_at_1' => SORT_DESC],
             ],
             [ // Config via objects
                 new Pagination([
@@ -179,12 +181,12 @@ class IndexActionTest extends TestCase
                 11, // page size set as param in test
                 992,
                 [], // sort param is set so no default sorting anymore
-                ['created_at_2' => SORT_DESC]
+                ['created_at_2' => SORT_DESC],
             ],
             [ // Disable pagination and sort
                 false,
                 false,
-            ]
+            ],
         ];
     }
 }

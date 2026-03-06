@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -62,11 +64,10 @@ class NumberValidator extends Validator
      */
     public $numberPattern = '/^[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?$/';
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message === null) {
@@ -84,7 +85,7 @@ class NumberValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
         if (is_array($value) && !$this->allowArray) {
@@ -114,7 +115,7 @@ class NumberValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         if (is_array($value) && !$this->allowArray) {
             return [$this->message, []];
@@ -127,9 +128,11 @@ class NumberValidator extends Validator
             $pattern = $this->integerOnly ? $this->integerPattern : $this->numberPattern;
             if (!preg_match($pattern, StringHelper::normalizeNumber($sample))) {
                 return [$this->message, []];
-            } elseif ($this->min !== null && $sample < $this->min) {
+            }
+            if ($this->min !== null && $sample < $this->min) {
                 return [$this->tooSmall, ['min' => $this->min]];
-            } elseif ($this->max !== null && $sample > $this->max) {
+            }
+            if ($this->max !== null && $sample > $this->max) {
                 return [$this->tooBig, ['max' => $this->max]];
             }
         }
@@ -140,7 +143,7 @@ class NumberValidator extends Validator
     /**
      * @param mixed $value the data value to be checked.
      */
-    private function isNotNumber($value)
+    private function isNotNumber($value): bool
     {
         return is_array($value)
             || is_bool($value)
@@ -151,7 +154,7 @@ class NumberValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
@@ -161,8 +164,9 @@ class NumberValidator extends Validator
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $label = $model->getAttributeLabel($attribute);
 

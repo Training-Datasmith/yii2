@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -76,12 +78,11 @@ class CheckboxColumn extends Column
      */
     public $cssClass;
 
-
     /**
      * {@inheritdoc}
      * @throws \yii\base\InvalidConfigException if [[name]] is not set.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (empty($this->name)) {
@@ -140,7 +141,7 @@ class CheckboxColumn extends Column
      * @return string header checkbox name
      * @since 2.0.8
      */
-    protected function getHeaderCheckBoxName()
+    protected function getHeaderCheckBoxName(): string
     {
         $name = $this->name;
         if (substr_compare($name, '[]', -2, 2) === 0) {
@@ -159,7 +160,7 @@ class CheckboxColumn extends Column
      * Registers the needed JavaScript.
      * @since 2.0.8
      */
-    public function registerClientScript()
+    public function registerClientScript(): void
     {
         $id = $this->grid->options['id'];
         $options = Json::encode([

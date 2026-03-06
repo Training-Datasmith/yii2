@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -107,7 +109,6 @@ class QueryBuilder extends \yii\base\BaseObject
      */
     protected $expressionBuilders = [];
 
-
     /**
      * Constructor.
      * @param Connection $connection the database connection.
@@ -122,7 +123,7 @@ class QueryBuilder extends \yii\base\BaseObject
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -134,11 +135,10 @@ class QueryBuilder extends \yii\base\BaseObject
      * Contains array of default condition classes. Extend this method, if you want to change
      * default condition classes for the query builder. See [[conditionClasses]] docs for details.
      *
-     * @return array
      * @see conditionClasses
      * @since 2.0.14
      */
-    protected function defaultConditionClasses()
+    protected function defaultConditionClasses(): array
     {
         return [
             'NOT' => 'yii\db\conditions\NotCondition',
@@ -161,11 +161,10 @@ class QueryBuilder extends \yii\base\BaseObject
      * Contains array of default expression builders. Extend this method and override it, if you want to change
      * default expression builders for this query builder. See [[expressionBuilders]] docs for details.
      *
-     * @return array
      * @see expressionBuilders
      * @since 2.0.14
      */
-    protected function defaultExpressionBuilders()
+    protected function defaultExpressionBuilders(): array
     {
         return [
             'yii\db\Query' => 'yii\db\QueryExpressionBuilder',
@@ -193,7 +192,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @since 2.0.14
      * @see expressionBuilders
      */
-    public function setExpressionBuilders($builders)
+    public function setExpressionBuilders($builders): void
     {
         $this->expressionBuilders = array_merge($this->expressionBuilders, $builders);
     }
@@ -210,7 +209,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @since 2.0.14.2
      * @see conditionClasses
      */
-    public function setConditionClasses($classes)
+    public function setConditionClasses($classes): void
     {
         $this->conditionClasses = array_merge($this->conditionClasses, $classes);
     }
@@ -225,7 +224,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * parameters to be bound to the SQL statement (the second array element). The parameters returned
      * include those provided in `$params`.
      */
-    public function build($query, $params = [])
+    public function build($query, $params = []): array
     {
         $query = $query->prepare($this);
 
@@ -284,7 +283,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @since 2.0.14
      * @see ExpressionInterface
      */
-    public function buildExpression(ExpressionInterface $expression, &$params = [])
+    public function buildExpression(ExpressionInterface $expression, array &$params = [])
     {
         $builder = $this->getExpressionBuilder($expression);
 
@@ -295,7 +294,6 @@ class QueryBuilder extends \yii\base\BaseObject
      * Gets object of [[ExpressionBuilderInterface]] that is suitable for $expression.
      * Uses [[expressionBuilders]] array to find a suitable builder class.
      *
-     * @param ExpressionInterface $expression
      * @return ExpressionBuilderInterface
      * @throws InvalidArgumentException when $expression building is not supported by this QueryBuilder.
      * @since 2.0.14
@@ -318,7 +316,7 @@ class QueryBuilder extends \yii\base\BaseObject
             }
         }
 
-        if ($this->expressionBuilders[$className] === __CLASS__) {
+        if ($this->expressionBuilders[$className] === self::class) {
             /** @var $this&ExpressionBuilderInterface $result */
             $result = $this;
             return $result;
@@ -350,9 +348,9 @@ class QueryBuilder extends \yii\base\BaseObject
      * They should be bound to the DB command later.
      * @return string the INSERT SQL
      */
-    public function insert($table, $columns, &$params)
+    public function insert($table, $columns, &$params): string
     {
-        list($names, $placeholders, $values, $params) = $this->prepareInsertValues($table, $columns, $params);
+        [$names, $placeholders, $values, $params] = $this->prepareInsertValues($table, $columns, $params);
         return 'INSERT INTO ' . $this->db->quoteTableName($table)
             . (!empty($names) ? ' (' . implode(', ', $names) . ')' : '')
             . (!empty($placeholders) ? ' VALUES (' . implode(', ', $placeholders) . ')' : $values);
@@ -369,7 +367,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return array array of column names, placeholders, values and params.
      * @since 2.0.14
      */
-    protected function prepareInsertValues($table, $columns, $params = [])
+    protected function prepareInsertValues($table, $columns, $params = []): array
     {
         $schema = $this->db->getSchema();
         $tableSchema = $schema->getTableSchema($table);
@@ -378,7 +376,7 @@ class QueryBuilder extends \yii\base\BaseObject
         $placeholders = [];
         $values = ' DEFAULT VALUES';
         if ($columns instanceof Query) {
-            list($names, $values, $params) = $this->prepareInsertSelectSubQuery($columns, $schema, $params);
+            [$names, $values, $params] = $this->prepareInsertSelectSubQuery($columns, $schema, $params);
         } else {
             foreach ($columns as $name => $value) {
                 $names[] = $schema->quoteColumnName($name);
@@ -387,7 +385,7 @@ class QueryBuilder extends \yii\base\BaseObject
                 if ($value instanceof ExpressionInterface) {
                     $placeholders[] = $this->buildExpression($value, $params);
                 } elseif ($value instanceof \yii\db\Query) {
-                    list($sql, $params) = $this->build($value, $params);
+                    [$sql, $params] = $this->build($value, $params);
                     $placeholders[] = "($sql)";
                 } else {
                     $placeholders[] = $this->bindParam($value, $params);
@@ -408,13 +406,13 @@ class QueryBuilder extends \yii\base\BaseObject
      * @throws InvalidArgumentException if query's select does not contain named parameters only.
      * @since 2.0.11
      */
-    protected function prepareInsertSelectSubQuery($columns, $schema, $params = [])
+    protected function prepareInsertSelectSubQuery($columns, $schema, $params = []): array
     {
         if (!is_array($columns->select) || empty($columns->select) || in_array('*', $columns->select)) {
             throw new InvalidArgumentException('Expected select query object with enumerated (named) parameters');
         }
 
-        list($values, $params) = $this->build($columns, $params);
+        [$values, $params] = $this->build($columns, $params);
         $names = [];
         $values = ' ' . $values;
         foreach ($columns->select as $title => $field) {
@@ -453,7 +451,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array $params the binding parameters. This parameter exists since 2.0.14
      * @return string the batch INSERT SQL statement
      */
-    public function batchInsert($table, $columns, $rows, &$params = [])
+    public function batchInsert($table, array $columns, $rows, &$params = []): string
     {
         if (empty($rows)) {
             return '';
@@ -543,13 +541,12 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array|bool $updateColumns
      * @param Constraint[] $constraints this parameter recieves a matched constraint list.
      * The constraints will be unique by their column names.
-     * @return array
      * @since 2.0.14
      */
-    protected function prepareUpsertColumns($table, $insertColumns, $updateColumns, &$constraints = [])
+    protected function prepareUpsertColumns($table, $insertColumns, $updateColumns, &$constraints = []): array
     {
         if ($insertColumns instanceof Query) {
-            list($insertNames) = $this->prepareInsertSelectSubQuery($insertColumns, $this->db->getSchema());
+            [$insertNames] = $this->prepareInsertSelectSubQuery($insertColumns, $this->db->getSchema());
         } else {
             $insertNames = array_map([$this->db, 'quoteColumnName'], array_keys($insertColumns));
         }
@@ -573,7 +570,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * The constraints will be unique by their column names.
      * @return string[] column list.
      */
-    private function getTableUniqueColumnNames($name, $columns, &$constraints = [])
+    private function getTableUniqueColumnNames($name, array $columns, &$constraints = []): array
     {
         $schema = $this->db->getSchema();
         if (!$schema instanceof ConstraintFinderInterface) {
@@ -599,7 +596,7 @@ class QueryBuilder extends \yii\base\BaseObject
         }, $constraints), $constraints);
         $columnNames = [];
         // Remove all constraints which do not cover the specified column list
-        $constraints = array_values(array_filter($constraints, function (Constraint $constraint) use ($schema, $columns, &$columnNames) {
+        $constraints = array_values(array_filter($constraints, function (Constraint $constraint) use ($schema, $columns, &$columnNames): bool {
             $constraintColumnNames = array_map([$schema, 'quoteColumnName'], $constraint->columnNames);
             $result = !array_diff($constraintColumnNames, $columns);
             if ($result) {
@@ -630,9 +627,9 @@ class QueryBuilder extends \yii\base\BaseObject
      * so that they can be bound to the DB command later.
      * @return string the UPDATE SQL
      */
-    public function update($table, $columns, $condition, &$params)
+    public function update($table, $columns, $condition, &$params): string
     {
-        list($lines, $params) = $this->prepareUpdateSets($table, $columns, $params);
+        [$lines, $params] = $this->prepareUpdateSets($table, $columns, $params);
         $sql = 'UPDATE ' . $this->db->quoteTableName($table) . ' SET ' . implode(', ', $lines);
         $where = $this->buildWhere($condition, $params);
         return $where === '' ? $sql : $sql . ' ' . $where;
@@ -647,7 +644,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return array an array `SET` parts for an `UPDATE` SQL statement (the first array element) and params (the second array element).
      * @since 2.0.14
      */
-    protected function prepareUpdateSets($table, $columns, $params = [])
+    protected function prepareUpdateSets($table, $columns, $params = []): array
     {
         $tableSchema = $this->db->getTableSchema($table);
         $columnSchemas = $tableSchema !== null ? $tableSchema->columns : [];
@@ -683,7 +680,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * so that they can be bound to the DB command later.
      * @return string the DELETE SQL
      */
-    public function delete($table, $condition, &$params)
+    public function delete($table, $condition, &$params): string
     {
         $sql = 'DELETE FROM ' . $this->db->quoteTableName($table);
         $where = $this->buildWhere($condition, $params);
@@ -718,7 +715,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string|null $options additional SQL fragment that will be appended to the generated SQL.
      * @return string the SQL statement for creating a new DB table.
      */
-    public function createTable($table, $columns, $options = null)
+    public function createTable($table, $columns, $options = null): string
     {
         $cols = [];
         foreach ($columns as $name => $type) {
@@ -739,7 +736,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $newName the new table name. The name will be properly quoted by the method.
      * @return string the SQL statement for renaming a DB table.
      */
-    public function renameTable($oldName, $newName)
+    public function renameTable($oldName, $newName): string
     {
         return 'RENAME TABLE ' . $this->db->quoteTableName($oldName) . ' TO ' . $this->db->quoteTableName($newName);
     }
@@ -749,7 +746,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $table the table to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping a DB table.
      */
-    public function dropTable($table)
+    public function dropTable($table): string
     {
         return 'DROP TABLE ' . $this->db->quoteTableName($table);
     }
@@ -761,7 +758,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
      * @return string the SQL statement for adding a primary key constraint to an existing table.
      */
-    public function addPrimaryKey($name, $table, $columns)
+    public function addPrimaryKey($name, $table, $columns): string
     {
         if (is_string($columns)) {
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
@@ -782,7 +779,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $table the table that the primary key constraint will be removed from.
      * @return string the SQL statement for removing a primary key constraint from an existing table.
      */
-    public function dropPrimaryKey($name, $table)
+    public function dropPrimaryKey($name, $table): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
@@ -793,7 +790,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $table the table to be truncated. The name will be properly quoted by the method.
      * @return string the SQL statement for truncating a DB table.
      */
-    public function truncateTable($table)
+    public function truncateTable($table): string
     {
         return 'TRUNCATE TABLE ' . $this->db->quoteTableName($table);
     }
@@ -807,7 +804,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
      * @return string the SQL statement for adding a new column.
      */
-    public function addColumn($table, $column, $type)
+    public function addColumn($table, $column, $type): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' ADD ' . $this->db->quoteColumnName($column) . ' '
@@ -820,7 +817,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $column the name of the column to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping a DB column.
      */
-    public function dropColumn($table, $column)
+    public function dropColumn($table, $column): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' DROP COLUMN ' . $this->db->quoteColumnName($column);
@@ -833,7 +830,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $newName the new name of the column. The name will be properly quoted by the method.
      * @return string the SQL statement for renaming a DB column.
      */
-    public function renameColumn($table, $oldName, $newName)
+    public function renameColumn($table, $oldName, $newName): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' RENAME COLUMN ' . $this->db->quoteColumnName($oldName)
@@ -850,7 +847,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * will become 'varchar(255) not null'.
      * @return string the SQL statement for changing the definition of a column.
      */
-    public function alterColumn($table, $column, $type)
+    public function alterColumn($table, $column, $type): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' CHANGE '
             . $this->db->quoteColumnName($column) . ' '
@@ -872,7 +869,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string|null $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
      * @return string the SQL statement for adding a foreign key constraint to an existing table.
      */
-    public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
+    public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null): string
     {
         $sql = 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' ADD CONSTRAINT ' . $this->db->quoteColumnName($name)
@@ -895,7 +892,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $table the table whose foreign is to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping a foreign key constraint.
      */
-    public function dropForeignKey($name, $table)
+    public function dropForeignKey($name, $table): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
@@ -911,7 +908,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param bool $unique whether to add UNIQUE constraint on the created index.
      * @return string the SQL statement for creating a new index.
      */
-    public function createIndex($name, $table, $columns, $unique = false)
+    public function createIndex($name, $table, $columns, $unique = false): string
     {
         return ($unique ? 'CREATE UNIQUE INDEX ' : 'CREATE INDEX ')
             . $this->db->quoteTableName($name) . ' ON '
@@ -925,7 +922,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string $table the table whose index is to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping an index.
      */
-    public function dropIndex($name, $table)
+    public function dropIndex($name, $table): string
     {
         return 'DROP INDEX ' . $this->db->quoteTableName($name) . ' ON ' . $this->db->quoteTableName($table);
     }
@@ -942,7 +939,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for adding an unique constraint to an existing table.
      * @since 2.0.13
      */
-    public function addUnique($name, $table, $columns)
+    public function addUnique($name, $table, $columns): string
     {
         if (is_string($columns)) {
             $columns = preg_split('/\s*,\s*/', $columns, -1, PREG_SPLIT_NO_EMPTY);
@@ -965,7 +962,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for dropping an unique constraint.
      * @since 2.0.13
      */
-    public function dropUnique($name, $table)
+    public function dropUnique($name, $table): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
@@ -981,7 +978,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for adding a check constraint to an existing table.
      * @since 2.0.13
      */
-    public function addCheck($name, $table, $expression)
+    public function addCheck($name, $table, $expression): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' ADD CONSTRAINT '
             . $this->db->quoteColumnName($name) . ' CHECK (' . $this->db->quoteSql($expression) . ')';
@@ -996,7 +993,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for dropping a check constraint.
      * @since 2.0.13
      */
-    public function dropCheck($name, $table)
+    public function dropCheck($name, $table): string
     {
         return 'ALTER TABLE ' . $this->db->quoteTableName($table)
             . ' DROP CONSTRAINT ' . $this->db->quoteColumnName($name);
@@ -1061,7 +1058,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @throws NotSupportedException if this is not supported by the underlying DBMS
      * @since 2.0.16
      */
-    public function executeResetSequence($table, $value = null)
+    public function executeResetSequence($table, $value = null): void
     {
         $this->db->createCommand()->resetSequence($table, $value)->execute();
     }
@@ -1088,7 +1085,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for adding comment on column
      * @since 2.0.8
      */
-    public function addCommentOnColumn($table, $column, $comment)
+    public function addCommentOnColumn($table, $column, $comment): string
     {
         return 'COMMENT ON COLUMN ' . $this->db->quoteTableName($table) . '.' . $this->db->quoteColumnName($column) . ' IS ' . $this->db->quoteValue($comment);
     }
@@ -1101,7 +1098,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for adding comment on table
      * @since 2.0.8
      */
-    public function addCommentOnTable($table, $comment)
+    public function addCommentOnTable($table, $comment): string
     {
         return 'COMMENT ON TABLE ' . $this->db->quoteTableName($table) . ' IS ' . $this->db->quoteValue($comment);
     }
@@ -1114,7 +1111,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for adding comment on column
      * @since 2.0.8
      */
-    public function dropCommentFromColumn($table, $column)
+    public function dropCommentFromColumn($table, $column): string
     {
         return 'COMMENT ON COLUMN ' . $this->db->quoteTableName($table) . '.' . $this->db->quoteColumnName($column) . ' IS NULL';
     }
@@ -1126,7 +1123,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SQL statement for adding comment on column
      * @since 2.0.8
      */
-    public function dropCommentFromTable($table)
+    public function dropCommentFromTable($table): string
     {
         return 'COMMENT ON TABLE ' . $this->db->quoteTableName($table) . ' IS NULL';
     }
@@ -1140,13 +1137,13 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the `CREATE VIEW` SQL statement.
      * @since 2.0.14
      */
-    public function createView($viewName, $subQuery)
+    public function createView($viewName, $subQuery): string
     {
         if ($subQuery instanceof Query) {
-            list($rawQuery, $params) = $this->build($subQuery);
+            [$rawQuery, $params] = $this->build($subQuery);
             array_walk(
                 $params,
-                function (&$param) {
+                function (&$param): void {
                     $param = $this->db->quoteValue($param);
                 }
             );
@@ -1163,7 +1160,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the `DROP VIEW` SQL statement.
      * @since 2.0.14
      */
-    public function dropView($viewName)
+    public function dropView($viewName): string
     {
         return 'DROP VIEW ' . $this->db->quoteTableName($viewName);
     }
@@ -1213,10 +1210,11 @@ class QueryBuilder extends \yii\base\BaseObject
         if ($type instanceof ColumnSchemaBuilder) {
             $type = $type->__toString();
         }
-
         if (isset($this->typeMap[$type])) {
             return $this->typeMap[$type];
-        } elseif (preg_match('/^(\w+)\((.+?)\)(.*)$/', $type, $matches)) {
+        }
+
+        if (preg_match('/^(\w+)\((.+?)\)(.*)$/', $type, $matches)) {
             if (isset($this->typeMap[$matches[1]])) {
                 return preg_replace('/\(.+\)/', '(' . $matches[2] . ')', $this->typeMap[$matches[1]]) . $matches[3];
             }
@@ -1236,7 +1234,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string|null $selectOption
      * @return string the SELECT clause built from [[Query::$select]].
      */
-    public function buildSelect($columns, &$params, $distinct = false, $selectOption = null)
+    public function buildSelect($columns, &$params, $distinct = false, $selectOption = null): string
     {
         $select = $distinct ? 'SELECT DISTINCT' : 'SELECT';
         if ($selectOption !== null) {
@@ -1255,7 +1253,7 @@ class QueryBuilder extends \yii\base\BaseObject
                     $columns[$i] = $this->buildExpression($column, $params) . ' AS ' . $this->db->quoteColumnName($i);
                 }
             } elseif ($column instanceof Query) {
-                list($sql, $params) = $this->build($column, $params);
+                [$sql, $params] = $this->build($column, $params);
                 $columns[$i] = "($sql) AS " . $this->db->quoteColumnName($i);
             } elseif (is_string($i) && $i !== $column) {
                 if (strpos($column, '(') === false) {
@@ -1279,7 +1277,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array $params the binding parameters to be populated
      * @return string the FROM clause built from [[Query::$from]].
      */
-    public function buildFrom($tables, &$params)
+    public function buildFrom($tables, &$params): string
     {
         if (empty($tables)) {
             return '';
@@ -1296,7 +1294,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the JOIN clause built from [[Query::$join]].
      * @throws Exception if the $joins parameter is not in proper format
      */
-    public function buildJoin($joins, &$params)
+    public function buildJoin($joins, &$params): string
     {
         if (empty($joins)) {
             return '';
@@ -1307,7 +1305,7 @@ class QueryBuilder extends \yii\base\BaseObject
                 throw new Exception('A join clause must be specified as an array of join type, join table, and optionally join condition.');
             }
             // 0:join type, 1:join table, 2:on-condition (optional)
-            list($joinType, $table) = $join;
+            [$joinType, $table] = $join;
             $tables = $this->quoteTableNames((array)$table, $params);
             $table = reset($tables);
             $joins[$i] = "$joinType $table";
@@ -1325,15 +1323,13 @@ class QueryBuilder extends \yii\base\BaseObject
     /**
      * Quotes table names passed.
      *
-     * @param array $tables
      * @param array $params
-     * @return array
      */
-    private function quoteTableNames($tables, &$params)
+    private function quoteTableNames(array $tables, &$params): array
     {
         foreach ($tables as $i => $table) {
             if ($table instanceof Query) {
-                list($sql, $params) = $this->build($table, $params);
+                [$sql, $params] = $this->build($table, $params);
                 $tables[$i] = "($sql) " . $this->db->quoteTableName($i);
             } elseif (is_string($i)) {
                 if (strpos($table, '(') === false) {
@@ -1357,7 +1353,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array $params the binding parameters to be populated
      * @return string the WHERE clause built from [[Query::$where]].
      */
-    public function buildWhere($condition, &$params)
+    public function buildWhere($condition, &$params): string
     {
         $where = $this->buildCondition($condition, $params);
 
@@ -1368,7 +1364,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array $columns
      * @return string the GROUP BY clause
      */
-    public function buildGroupBy($columns)
+    public function buildGroupBy($columns): string
     {
         if (empty($columns)) {
             return '';
@@ -1389,7 +1385,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array $params the binding parameters to be populated
      * @return string the HAVING clause built from [[Query::$having]].
      */
-    public function buildHaving($condition, &$params)
+    public function buildHaving($condition, &$params): string
     {
         $having = $this->buildCondition($condition, $params);
 
@@ -1404,7 +1400,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param int $offset the offset number. See [[Query::offset]] for more details.
      * @return string the SQL completed with ORDER BY/LIMIT/OFFSET (if any)
      */
-    public function buildOrderByAndLimit($sql, $orderBy, $limit, $offset)
+    public function buildOrderByAndLimit(string $sql, $orderBy, $limit, $offset): string
     {
         $orderBy = $this->buildOrderBy($orderBy);
         if ($orderBy !== '') {
@@ -1422,7 +1418,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array $columns
      * @return string the ORDER BY clause built from [[Query::$orderBy]].
      */
-    public function buildOrderBy($columns)
+    public function buildOrderBy($columns): string
     {
         if (empty($columns)) {
             return '';
@@ -1444,7 +1440,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param int $offset
      * @return string the LIMIT and OFFSET clauses
      */
-    public function buildLimit($limit, $offset)
+    public function buildLimit($limit, $offset): string
     {
         $sql = '';
         if ($this->hasLimit($limit)) {
@@ -1462,7 +1458,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param mixed $limit the given limit
      * @return bool whether the limit is effective
      */
-    protected function hasLimit($limit)
+    protected function hasLimit($limit): bool
     {
         return ($limit instanceof ExpressionInterface) || ctype_digit((string)$limit);
     }
@@ -1472,7 +1468,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param mixed $offset the given offset
      * @return bool whether the offset is effective
      */
-    protected function hasOffset($offset)
+    protected function hasOffset($offset): bool
     {
         return ($offset instanceof ExpressionInterface) || ctype_digit((string)$offset) && (string)$offset !== '0';
     }
@@ -1482,7 +1478,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param array $params the binding parameters to be populated
      * @return string the UNION clause built from [[Query::$union]].
      */
-    public function buildUnion($unions, &$params)
+    public function buildUnion($unions, &$params): string
     {
         if (empty($unions)) {
             return '';
@@ -1493,7 +1489,7 @@ class QueryBuilder extends \yii\base\BaseObject
         foreach ($unions as $i => $union) {
             $query = $union['query'];
             if ($query instanceof Query) {
-                list($unions[$i]['query'], $params) = $this->build($query, $params);
+                [$unions[$i]['query'], $params] = $this->build($query, $params);
             }
 
             $result .= 'UNION ' . ($union['all'] ? 'ALL ' : '') . '( ' . $unions[$i]['query'] . ' ) ';
@@ -1509,7 +1505,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @see Query::withQuery()
      * @since 2.0.35
      */
-    public function buildWithQueries($withs, &$params)
+    public function buildWithQueries($withs, &$params): string
     {
         if (empty($withs)) {
             return '';
@@ -1518,14 +1514,14 @@ class QueryBuilder extends \yii\base\BaseObject
         $recursive = false;
         $result = [];
 
-        foreach ($withs as $i => $with) {
+        foreach ($withs as $with) {
             if ($with['recursive']) {
                 $recursive = true;
             }
 
             $query = $with['query'];
             if ($query instanceof Query) {
-                list($with['query'], $params) = $this->build($query, $params);
+                [$with['query'], $params] = $this->build($query, $params);
             }
 
             $result[] = $with['alias'] . ' AS (' . $with['query'] . ')';
@@ -1540,7 +1536,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @param string|array $columns the columns to be processed
      * @return string the processing result
      */
-    public function buildColumns($columns)
+    public function buildColumns($columns): string
     {
         if (!is_array($columns)) {
             if (strpos($columns, '(') !== false) {
@@ -1754,7 +1750,7 @@ class QueryBuilder extends \yii\base\BaseObject
      * @return string the SELECT EXISTS() SQL statement.
      * @since 2.0.8
      */
-    public function selectExists($rawSql)
+    public function selectExists(string $rawSql): string
     {
         return 'SELECT EXISTS(' . $rawSql . ')';
     }
@@ -1768,7 +1764,7 @@ class QueryBuilder extends \yii\base\BaseObject
      *
      * @since 2.0.14
      */
-    public function bindParam($value, &$params)
+    public function bindParam($value, array &$params): string
     {
         $phName = self::PARAM_PREFIX . count($params);
         $params[$phName] = $value;

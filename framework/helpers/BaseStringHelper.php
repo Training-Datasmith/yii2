@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -28,7 +30,7 @@ class BaseStringHelper
      * @param string $string the string being measured for length
      * @return int the number of bytes in the given string.
      */
-    public static function byteLength($string)
+    public static function byteLength($string): int
     {
         return mb_strlen((string)$string, '8bit');
     }
@@ -44,7 +46,7 @@ class BaseStringHelper
      * @return string the extracted part of string, or FALSE on failure or an empty string.
      * @see https://www.php.net/manual/en/function.substr.php
      */
-    public static function byteSubstr($string, $start, $length = null)
+    public static function byteSubstr($string, $start, $length = null): string
     {
         if ($length === null) {
             $length = static::byteLength($string);
@@ -60,7 +62,7 @@ class BaseStringHelper
      * @return int the number of bytes equivalent to the specified string.
      * @since 2.0.54
      */
-    public static function convertIniSizeToBytes($string)
+    public static function convertIniSizeToBytes($string): int
     {
         switch (substr($string, -1)) {
             case 'M':
@@ -90,7 +92,7 @@ class BaseStringHelper
      * @return string the trailing name component of the given path.
      * @see https://www.php.net/manual/en/function.basename.php
      */
-    public static function basename($path, $suffix = '')
+    public static function basename($path, $suffix = ''): string
     {
         $path = (string)$path;
 
@@ -117,7 +119,7 @@ class BaseStringHelper
      * @return string the parent directory's path.
      * @see https://www.php.net/manual/en/function.basename.php
      */
-    public static function dirname($path)
+    public static function dirname($path): string
     {
         $normalizedPath = rtrim(
             str_replace('\\', '/', (string)$path),
@@ -147,7 +149,7 @@ class BaseStringHelper
      * This parameter is available since version 2.0.1.
      * @return string the truncated string.
      */
-    public static function truncate($string, $length, $suffix = '...', $encoding = null, $asHtml = false)
+    public static function truncate($string, $length, string $suffix = '...', $encoding = null, $asHtml = false)
     {
         $string = (string)$string;
 
@@ -175,7 +177,7 @@ class BaseStringHelper
      * This parameter is available since version 2.0.1.
      * @return string the truncated string.
      */
-    public static function truncateWords($string, $count, $suffix = '...', $asHtml = false)
+    public static function truncateWords($string, $count, string $suffix = '...', $asHtml = false)
     {
         if ($asHtml) {
             return static::truncateHtml($string, $count, $suffix);
@@ -196,10 +198,9 @@ class BaseStringHelper
      * @param int $count The counter
      * @param string $suffix String to append to the end of the truncated string.
      * @param string|bool $encoding Encoding flag or charset.
-     * @return string
      * @since 2.0.1
      */
-    protected static function truncateHtml($string, $count, $suffix, $encoding = false)
+    protected static function truncateHtml($string, $count, $suffix, $encoding = false): string
     {
         $config = \HTMLPurifier_Config::create(null);
         if (Yii::$app !== null) {
@@ -320,30 +321,25 @@ class BaseStringHelper
      *   - string - custom characters to trim. Will be passed as a second argument to `trim()` function.
      *   - callable - will be called for each value instead of trim. Takes the only argument - value.
      * @param bool $skipEmpty Whether to skip empty strings between delimiters. Default is false.
-     * @return array
      * @since 2.0.4
      */
-    public static function explode($string, $delimiter = ',', $trim = true, $skipEmpty = false)
+    public static function explode($string, $delimiter = ',', $trim = true, $skipEmpty = false): array
     {
         $result = explode($delimiter, $string);
         if ($trim !== false) {
             if ($trim === true) {
                 $trim = 'trim';
             } elseif (!is_callable($trim)) {
-                $trim = function ($v) use ($trim) {
-                    return trim($v, $trim);
-                };
+                $trim = (fn ($v) => trim($v, $trim));
             }
             $result = array_map($trim, $result);
         }
         if ($skipEmpty) {
             // Wrapped with array_values to make array keys sequential after empty values removing
-            $result = array_values(
+            return array_values(
                 array_filter(
                     $result,
-                    function ($value) {
-                        return $value !== '';
-                    }
+                    fn ($value) => $value !== ''
                 )
             );
         }
@@ -355,10 +351,9 @@ class BaseStringHelper
      * Counts words in a string.
      *
      * @param string $string the text to calculate
-     * @return int
      * @since 2.0.8
      */
-    public static function countWords($string)
+    public static function countWords($string): int
     {
         return count(preg_split('/\s+/u', $string, 0, PREG_SPLIT_NO_EMPTY));
     }
@@ -368,18 +363,17 @@ class BaseStringHelper
      * of current locale is comma.
      *
      * @param int|float|string $value the value to normalize.
-     * @return string
      * @since 2.0.11
      */
-    public static function normalizeNumber($value)
+    public static function normalizeNumber($value): string
     {
         $value = (string)$value;
 
         $localeInfo = localeconv();
-        $decimalSeparator = isset($localeInfo['decimal_point']) ? $localeInfo['decimal_point'] : null;
+        $decimalSeparator = $localeInfo['decimal_point'] ?? null;
 
         if ($decimalSeparator !== null && $decimalSeparator !== '.') {
-            $value = str_replace($decimalSeparator, '.', $value);
+            return str_replace($decimalSeparator, '.', $value);
         }
 
         return $value;
@@ -396,7 +390,7 @@ class BaseStringHelper
      * @see https://tools.ietf.org/html/rfc4648#page-7
      * @since 2.0.12
      */
-    public static function base64UrlEncode($input)
+    public static function base64UrlEncode($input): string
     {
         return strtr(base64_encode($input), '+/', '-_');
     }
@@ -409,7 +403,7 @@ class BaseStringHelper
      * @see https://tools.ietf.org/html/rfc4648#page-7
      * @since 2.0.12
      */
-    public static function base64UrlDecode($input)
+    public static function base64UrlDecode($input): string
     {
         return base64_decode(strtr($input, '-_', '+/'));
     }
@@ -422,7 +416,7 @@ class BaseStringHelper
      * @return string the string representation of the number.
      * @since 2.0.13
      */
-    public static function floatToString($number)
+    public static function floatToString($number): string
     {
         // . and , are the only decimal separators known in ICU data,
         // so its safe to call str_replace here
@@ -444,7 +438,7 @@ class BaseStringHelper
      * @return bool whether the string matches pattern or not.
      * @since 2.0.14
      */
-    public static function matchWildcard($pattern, $string, $options = [])
+    public static function matchWildcard($pattern, $string, array $options = [])
     {
         if ($pattern === '*' && empty($options['filePath'])) {
             return true;
@@ -488,12 +482,11 @@ class BaseStringHelper
      *
      * @param string $string the string to be proceeded
      * @param string $encoding Optional, defaults to "UTF-8"
-     * @return string
      * @see https://www.php.net/manual/en/function.ucfirst.php
      * @since 2.0.16
      * @phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
      */
-    public static function mb_ucfirst($string, $encoding = 'UTF-8')
+    public static function mb_ucfirst($string, $encoding = 'UTF-8'): string
     {
         $firstChar = mb_substr((string)$string, 0, 1, $encoding);
         $rest = mb_substr((string)$string, 1, null, $encoding);
@@ -506,12 +499,11 @@ class BaseStringHelper
      *
      * @param string $string the string to be proceeded
      * @param string $encoding Optional, defaults to "UTF-8"
-     * @return string
      * @see https://www.php.net/manual/en/function.ucwords
      * @since 2.0.16
      * @phpcs:disable PSR1.Methods.CamelCapsMethodName.NotCamelCaps
      */
-    public static function mb_ucwords($string, $encoding = 'UTF-8')
+    public static function mb_ucwords($string, $encoding = 'UTF-8'): string
     {
         $string = (string)$string;
         if (empty($string)) {
@@ -556,9 +548,8 @@ class BaseStringHelper
 
         $masked = mb_substr($string, 0, $start, 'UTF-8');
         $masked .= str_repeat($mask, abs($length));
-        $masked .= mb_substr($string, $start + abs($length), null, 'UTF-8');
 
-        return $masked;
+        return $masked . mb_substr($string, $start + abs($length), null, 'UTF-8');
     }
 
     /**
@@ -571,7 +562,7 @@ class BaseStringHelper
      * @return string|null The portion of the string between the first occurrence of
      * start and the last occurrence of end, or null if either start or end cannot be found.
      */
-    public static function findBetween($string, $start, $end)
+    public static function findBetween($string, $start, $end): ?string
     {
         $startPos = mb_strpos($string, $start);
 

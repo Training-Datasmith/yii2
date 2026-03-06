@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -82,11 +84,10 @@ class BlameableBehavior extends AttributeBehavior
      */
     public $defaultValue;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -110,9 +111,9 @@ class BlameableBehavior extends AttributeBehavior
             if ($userId === null) {
                 return $this->getDefaultValue($event);
             }
-
             return $userId;
-        } elseif ($this->value === null) {
+        }
+        if ($this->value === null) {
             return $this->getDefaultValue($event);
         }
 

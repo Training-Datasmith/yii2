@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -71,15 +73,14 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      */
     protected $dom;
 
-
     /**
      * Formats the specified response.
      *
      * @param Response $response the response to be formatted.
      */
-    public function format($response)
+    public function format($response): void
     {
-        $charset = $this->encoding === null ? $response->charset : $this->encoding;
+        $charset = $this->encoding ?? $response->charset;
         if (stripos($this->contentType, 'charset') === false) {
             $this->contentType .= '; charset=' . $charset;
         }
@@ -158,7 +159,7 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * @return string string representation of the value.
      * @since 2.0.11
      */
-    protected function formatScalarValue($value)
+    protected function formatScalarValue($value): string
     {
         if ($value === true) {
             return 'true';
@@ -195,11 +196,10 @@ class XmlResponseFormatter extends Component implements ResponseFormatterInterfa
      * Checks if name is valid to be used in XML.
      *
      * @param mixed $name the name to test
-     * @return bool
      * @see https://stackoverflow.com/questions/2519845/how-to-check-if-string-is-a-valid-xml-element-name/2519943#2519943
      * @since 2.0.12
      */
-    protected function isValidXmlName($name)
+    protected function isValidXmlName($name): bool
     {
         try {
             return $this->dom->createElement($name) !== false;

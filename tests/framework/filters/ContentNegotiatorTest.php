@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,10 +10,10 @@
 
 namespace yiiunit\framework\filters;
 
-use yii\web\BadRequestHttpException;
 use Yii;
 use yii\base\Action;
 use yii\filters\ContentNegotiator;
+use yii\web\BadRequestHttpException;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\Response;

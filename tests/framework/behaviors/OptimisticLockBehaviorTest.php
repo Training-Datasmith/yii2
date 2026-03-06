@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace yiiunit\framework\behaviors;
 
-use yii\db\StaleObjectException;
 use Yii;
 use yii\behaviors\OptimisticLockBehavior;
-use yii\web\Request;
 use yii\db\ActiveRecord;
 use yii\db\Connection;
+use yii\db\StaleObjectException;
+use yii\web\Request;
 use yiiunit\TestCase;
 
 /**

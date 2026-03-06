@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -87,7 +89,6 @@ class Controller extends Component implements ViewContextInterface
      */
     private $_viewPath;
 
-
     /**
      * @param string $id the ID of this controller.
      * @param T $module the module that this controller belongs to.
@@ -104,7 +105,7 @@ class Controller extends Component implements ViewContextInterface
      * {@inheritdoc}
      * @since 2.0.36
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->request = Instance::ensure($this->request, Request::className());
@@ -133,7 +134,7 @@ class Controller extends Component implements ViewContextInterface
      * using the configuration provided here.
      * @return array<array-key, class-string|array{class: class-string, ...}>
      */
-    public function actions()
+    public function actions(): array
     {
         return [];
     }
@@ -147,7 +148,7 @@ class Controller extends Component implements ViewContextInterface
      * @throws InvalidRouteException if the requested action ID cannot be resolved into an action successfully.
      * @see createAction()
      */
-    public function runAction($id, $params = [])
+    public function runAction(string $id, $params = [])
     {
         $action = $this->createAction($id);
         if ($action === null) {
@@ -213,7 +214,8 @@ class Controller extends Component implements ViewContextInterface
         $pos = strpos($route, '/');
         if ($pos === false) {
             return $this->runAction($route, $params);
-        } elseif ($pos > 0) {
+        }
+        if ($pos > 0) {
             return $this->module->runAction($route, $params);
         }
 
@@ -230,7 +232,7 @@ class Controller extends Component implements ViewContextInterface
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function bindActionParams($action, $params)
+    public function bindActionParams($action, $params): array
     {
         return [];
     }
@@ -350,7 +352,7 @@ class Controller extends Component implements ViewContextInterface
      * while the last is the innermost one.
      * @return Module[] all ancestor modules that this controller is located within.
      */
-    public function getModules()
+    public function getModules(): array
     {
         $modules = [$this->module];
         $module = $this->module;
@@ -487,7 +489,7 @@ class Controller extends Component implements ViewContextInterface
      * Sets the view object to be used by this controller.
      * @param View|\yii\web\View $view the view object that can be used to render views or view files.
      */
-    public function setView($view)
+    public function setView($view): void
     {
         $this->_view = $view;
     }
@@ -513,7 +515,7 @@ class Controller extends Component implements ViewContextInterface
      * @throws InvalidArgumentException if the directory is invalid
      * @since 2.0.7
      */
-    public function setViewPath($path)
+    public function setViewPath($path): void
     {
         $this->_viewPath = Yii::getAlias($path);
     }
@@ -557,7 +559,7 @@ class Controller extends Component implements ViewContextInterface
         }
         $path = $file . '.' . $view->defaultExtension;
         if ($view->defaultExtension !== 'php' && !is_file($path)) {
-            $path = $file . '.php';
+            return $file . '.php';
         }
 
         return $path;
@@ -575,7 +577,7 @@ class Controller extends Component implements ViewContextInterface
      * (for example an interface type hint) without a proper definition in the container.
      * @since 2.0.36
      */
-    final protected function bindInjectedParams(\ReflectionNamedType $type, $name, &$args, &$requestedParams)
+    final protected function bindInjectedParams(\ReflectionNamedType $type, string $name, &$args, array &$requestedParams)
     {
         // Since it is not a builtin type it must be DI injection.
         $typeName = $type->getName();

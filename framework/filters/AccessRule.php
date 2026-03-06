@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -161,7 +163,6 @@ class AccessRule extends Component
      */
     public $denyCallback;
 
-
     /**
      * Checks whether the Web user is allowed to perform the specified action.
      * @param Action $action the action to be performed
@@ -169,7 +170,7 @@ class AccessRule extends Component
      * @param Request $request
      * @return bool|null `true` if the user is allowed, `false` if the user is denied, `null` if the rule does not apply to the user
      */
-    public function allows($action, $user, $request)
+    public function allows($action, $user, $request): ?bool
     {
         if (
             $this->matchAction($action)
@@ -189,7 +190,7 @@ class AccessRule extends Component
      * @param Action $action the action
      * @return bool whether the rule applies to the action
      */
-    protected function matchAction($action)
+    protected function matchAction($action): bool
     {
         return empty($this->actions) || in_array($action->id, $this->actions, true);
     }
@@ -198,7 +199,7 @@ class AccessRule extends Component
      * @param Controller $controller the controller
      * @return bool whether the rule applies to the controller
      */
-    protected function matchController($controller)
+    protected function matchController($controller): bool
     {
         if (empty($this->controllers)) {
             return true;
@@ -219,7 +220,7 @@ class AccessRule extends Component
      * @return bool whether the rule applies to the role
      * @throws InvalidConfigException if User component is detached
      */
-    protected function matchRole($user)
+    protected function matchRole($user): bool
     {
         $items = empty($this->roles) ? [] : $this->roles;
 
@@ -261,7 +262,7 @@ class AccessRule extends Component
      * @param string|null $ip the IP address
      * @return bool whether the rule applies to the IP address
      */
-    protected function matchIP($ip)
+    protected function matchIP($ip): bool
     {
         if (empty($this->ips)) {
             return true;
@@ -291,7 +292,7 @@ class AccessRule extends Component
      * @param string $verb the request method.
      * @return bool whether the rule applies to the request
      */
-    protected function matchVerb($verb)
+    protected function matchVerb($verb): bool
     {
         return empty($this->verbs) || in_array(strtoupper($verb), array_map('strtoupper', $this->verbs), true);
     }
@@ -300,7 +301,7 @@ class AccessRule extends Component
      * @param Action $action the action to be performed
      * @return bool whether the rule should be applied
      */
-    protected function matchCustom($action)
+    protected function matchCustom($action): bool
     {
         return empty($this->matchCallback) || call_user_func($this->matchCallback, $this, $action);
     }

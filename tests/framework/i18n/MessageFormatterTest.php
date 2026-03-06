@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -58,7 +60,6 @@ class MessageFormatterTest extends TestCase
                     self::F => self::F_VALUE,
                 ],
             ],
-
 
             [
                 'Here is a big number: {' . self::F . ', number, integer}', // pattern
@@ -270,7 +271,7 @@ _MSG_
                 'Уважаемый Vadim,',
                 [
                     'gender' => null,
-                    'firstname' => 'Vadim'
+                    'firstname' => 'Vadim',
                 ],
             ],
         ];

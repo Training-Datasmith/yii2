@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -24,12 +26,10 @@ class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
 {
     protected $format = '{type}{length}{notnull}{unique}{default}{check}{append}';
 
-
     /**
      * Builds the full string for the column's schema.
-     * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         if ($this->getTypeCategory() === self::CATEGORY_PK) {
             $format = '{type}{check}{comment}{append}';
@@ -43,7 +43,7 @@ class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
     /**
      * Changes default format string to MSSQL ALTER COMMAND.
      */
-    public function setAlterColumnFormat()
+    public function setAlterColumnFormat(): void
     {
         $this->format = '{type}{length}{notnull}{append}';
     }
@@ -65,7 +65,7 @@ class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
      * Get the `Check` value for constraint
      * @return string|null the `CHECK` constraint for the column.
      */
-    public function getCheckValue()
+    public function getCheckValue(): ?string
     {
         return $this->check !== null ? (string) $this->check : null;
     }

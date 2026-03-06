@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -213,12 +215,11 @@ class AssetManager extends Component
      */
     private $_dummyBundles = [];
 
-
     /**
      * Initializes the component.
      * @throws InvalidConfigException if [[basePath]] does not exist.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->basePath = Yii::getAlias($this->basePath);
@@ -227,17 +228,14 @@ class AssetManager extends Component
         $this->baseUrl = rtrim(Yii::getAlias($this->baseUrl), '/');
     }
 
-    /**
-     * @var bool|null
-     */
-    private $_isBasePathPermissionChecked;
+    private ?bool $_isBasePathPermissionChecked = null;
 
     /**
      * Check whether the basePath exists and is writeable.
      *
      * @since 2.0.40
      */
-    public function checkBasePathPermission()
+    public function checkBasePathPermission(): void
     {
         // if the check is been done already, skip further checks
         if ($this->_isBasePathPermissionChecked) {
@@ -271,13 +269,17 @@ class AssetManager extends Component
     {
         if ($this->bundles === false) {
             return $this->loadDummyBundle($name);
-        } elseif (!isset($this->bundles[$name])) {
+        }
+        if (!isset($this->bundles[$name])) {
             return $this->bundles[$name] = $this->loadBundle($name, [], $publish);
-        } elseif ($this->bundles[$name] instanceof AssetBundle) {
+        }
+        if ($this->bundles[$name] instanceof AssetBundle) {
             return $this->bundles[$name];
-        } elseif (is_array($this->bundles[$name])) {
+        }
+        if (is_array($this->bundles[$name])) {
             return $this->bundles[$name] = $this->loadBundle($name, $this->bundles[$name], $publish);
-        } elseif ($this->bundles[$name] === false) {
+        }
+        if ($this->bundles[$name] === false) {
             return $this->loadDummyBundle($name);
         }
 
@@ -293,7 +295,7 @@ class AssetManager extends Component
      * @return AssetBundle
      * @throws InvalidConfigException if configuration isn't valid
      */
-    protected function loadBundle($name, $config = [], $publish = true)
+    protected function loadBundle($name, array $config = [], $publish = true)
     {
         if (!isset($config['class'])) {
             $config['class'] = $name;
@@ -358,7 +360,7 @@ class AssetManager extends Component
      * @param string $asset the asset path. This should be one of the assets listed in [[AssetBundle::$js]] or [[AssetBundle::$css]].
      * @return string|false the actual file path, or `false` if the asset is specified as an absolute URL
      */
-    public function getAssetPath($bundle, $asset)
+    public function getAssetPath($bundle, string $asset)
     {
         if (($actualAsset = $this->resolveAsset($bundle, $asset)) !== false) {
             return Url::isRelative($actualAsset) ? $this->basePath . '/' . $actualAsset : false;
@@ -421,7 +423,7 @@ class AssetManager extends Component
      * an object implementing the [[AssetConverterInterface]], or a configuration
      * array that can be used to create the asset converter object, or a class name.
      */
-    public function setConverter($value)
+    public function setConverter($value): void
     {
         $this->_converter = $value;
     }
@@ -429,7 +431,7 @@ class AssetManager extends Component
     /**
      * @var array published assets
      */
-    private $_published = [];
+    private array $_published = [];
 
     /**
      * Publishes a file or a directory.
@@ -503,7 +505,7 @@ class AssetManager extends Component
      * @return string[] the path and the URL that the asset is published as.
      * @throws InvalidArgumentException if the asset to be published does not exist.
      */
-    protected function publishFile($src)
+    protected function publishFile($src): array
     {
         $this->checkBasePathPermission();
 
@@ -560,7 +562,7 @@ class AssetManager extends Component
      * @return string[] the path directory and the URL that the asset is published as.
      * @throws InvalidArgumentException if the asset to be published does not exist.
      */
-    protected function publishDirectory($src, $options)
+    protected function publishDirectory($src, array $options): array
     {
         $this->checkBasePathPermission();
 
@@ -590,9 +592,7 @@ class AssetManager extends Component
                 if ($this->beforeCopy !== null) {
                     $opts['beforeCopy'] = $this->beforeCopy;
                 } else {
-                    $opts['beforeCopy'] = function ($from, $to) {
-                        return strncmp(basename($from), '.', 1) !== 0;
-                    };
+                    $opts['beforeCopy'] = (fn ($from, $to) => strncmp(basename($from), '.', 1) !== 0);
                 }
             }
             if (!isset($opts['afterCopy']) && $this->afterCopy !== null) {

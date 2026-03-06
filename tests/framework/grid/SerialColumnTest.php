@@ -10,12 +10,12 @@ declare(strict_types=1);
 
 namespace yiiunit\framework\grid;
 
-use yiiunit\TestCase;
 use Yii;
 use yii\data\ArrayDataProvider;
 use yii\data\Pagination;
 use yii\grid\GridView;
 use yii\grid\SerialColumn;
+use yiiunit\TestCase;
 
 /**
  * @group grid

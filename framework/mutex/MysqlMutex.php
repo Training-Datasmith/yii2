@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -41,14 +43,13 @@ class MysqlMutex extends DbMutex
      * @var Expression|string|null prefix value. If null (by default) then connection's current database name is used.
      * @since 2.0.47
      */
-    public $keyPrefix = null;
-
+    public $keyPrefix;
 
     /**
      * Initializes MySQL specific mutex component implementation.
      * @throws InvalidConfigException if [[db]] is not MySQL connection.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->db->driverName !== 'mysql') {
@@ -68,7 +69,7 @@ class MysqlMutex extends DbMutex
      */
     protected function acquireLock($name, $timeout = 0)
     {
-        return $this->db->useMaster(function ($db) use ($name, $timeout) {
+        return $this->db->useMaster(function ($db) use ($name, $timeout): bool {
             /** @var \yii\db\Connection $db */
             $nameData = $this->prepareName();
             return (bool)$db->createCommand(
@@ -89,7 +90,7 @@ class MysqlMutex extends DbMutex
      */
     protected function releaseLock($name)
     {
-        return $this->db->useMaster(function ($db) use ($name) {
+        return $this->db->useMaster(function ($db) use ($name): bool {
             /** @var \yii\db\Connection $db */
             $nameData = $this->prepareName();
             return (bool)$db->createCommand(
@@ -107,7 +108,7 @@ class MysqlMutex extends DbMutex
      * @return array expression and params
      * @since 2.0.48
      */
-    protected function prepareName()
+    protected function prepareName(): array
     {
         $params = [];
         $expression = 'SUBSTRING(CONCAT(:prefix, :name), 1, 64)';
@@ -122,11 +123,10 @@ class MysqlMutex extends DbMutex
      * Generate hash for lock name to avoid exceeding lock name length limit.
      *
      * @param string $name
-     * @return string
      * @since 2.0.16
      * @see https://github.com/yiisoft/yii2/pull/16836
      */
-    protected function hashLockName($name)
+    protected function hashLockName($name): string
     {
         return sha1($name);
     }

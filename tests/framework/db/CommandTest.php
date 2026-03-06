@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,13 +10,10 @@
 
 namespace yiiunit\framework\db;
 
+use ArrayObject;
 use PDO;
 use Throwable;
 use yii\base\InvalidArgumentException;
-use yiiunit\framework\db\enums\Status;
-use yiiunit\framework\db\enums\StatusTypeString;
-use yiiunit\framework\db\enums\StatusTypeInt;
-use ArrayObject;
 use yii\caching\ArrayCache;
 use yii\db\Connection;
 use yii\db\DataReader;
@@ -22,6 +21,9 @@ use yii\db\Exception;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\db\Schema;
+use yiiunit\framework\db\enums\Status;
+use yiiunit\framework\db\enums\StatusTypeInt;
+use yiiunit\framework\db\enums\StatusTypeString;
 
 abstract class CommandTest extends DatabaseTestCase
 {
@@ -409,7 +411,7 @@ SQL;
                 ['int_col'],
                 [[new Expression(':qp1', [':qp1' => 42])]], // This example is completely useless. This feature of batchInsert is intended to be used with complex expression objects, such as JsonExpression.
                 'expected' => 'INSERT INTO `type` (`int_col`) VALUES (:qp1)',
-                'expectedParams' => [':qp1' => 42]
+                'expectedParams' => [':qp1' => 42],
             ],
             'batchIsert empty rows represented by ArrayObject' => [
                 '{{%type}}',
@@ -812,8 +814,8 @@ SQL;
                             'email' => 'foo@example.com',
                             'address' => 'Earth',
                             'status' => 3,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
                 [
                     'params' => [
@@ -822,8 +824,8 @@ SQL;
                             'email' => 'foo@example.com',
                             'address' => 'Universe',
                             'status' => 1,
-                        ]
-                    ]
+                        ],
+                    ],
                 ],
             ],
             'regular values with update part' => [
@@ -871,7 +873,7 @@ SQL;
                             'status' => 3,
                         ],
                         false,
-                    ]
+                    ],
                 ],
                 [
                     'params' => [
@@ -902,7 +904,7 @@ SQL;
                             ])
                             ->from('customer')
                             ->where(['name' => 'user1'])
-                            ->limit(1)
+                            ->limit(1),
                     ],
                     'expected' => [
                         'email' => 'user1@example.com',
@@ -921,7 +923,7 @@ SQL;
                             ])
                             ->from('customer')
                             ->where(['name' => 'user1'])
-                            ->limit(1)
+                            ->limit(1),
                     ],
                     'expected' => [
                         'email' => 'user1@example.com',

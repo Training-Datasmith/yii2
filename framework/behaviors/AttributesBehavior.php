@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -125,16 +127,13 @@ class AttributesBehavior extends Behavior
      */
     public $preserveNonEmptyValues = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function events()
+    public function events(): array
     {
         return array_fill_keys(
-            array_reduce($this->attributes, function ($carry, $item) {
-                return array_merge($carry, array_keys($item));
-            }, []),
+            array_reduce($this->attributes, fn (array $carry, $item) => array_merge($carry, array_keys($item)), []),
             'evaluateAttributes'
         );
     }
@@ -143,7 +142,7 @@ class AttributesBehavior extends Behavior
      * Evaluates the attributes values and assigns it to the current attributes.
      * @param Event $event
      */
-    public function evaluateAttributes($event)
+    public function evaluateAttributes($event): void
     {
         if (
             $this->skipUpdateOnClean
@@ -152,9 +151,7 @@ class AttributesBehavior extends Behavior
         ) {
             return;
         }
-        $attributes = array_keys(array_filter($this->attributes, function ($carry) use ($event) {
-            return array_key_exists($event->name, $carry);
-        }));
+        $attributes = array_keys(array_filter($this->attributes, fn ($carry) => array_key_exists($event->name, $carry)));
         if (!empty($this->order[$event->name])) {
             $attributes = array_merge(
                 array_intersect((array) $this->order[$event->name], $attributes),

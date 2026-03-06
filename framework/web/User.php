@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -160,11 +162,10 @@ class User extends Component
 
     private $_access = [];
 
-
     /**
      * Initializes the application component.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -199,10 +200,7 @@ class User extends Component
                 try {
                     $this->_identity = null;
                     $this->renewAuthStatus();
-                } catch (\Exception $e) {
-                    $this->_identity = false;
-                    throw $e;
-                } catch (\Throwable $e) {
+                } catch (\Exception|\Throwable $e) {
                     $this->_identity = false;
                     throw $e;
                 }
@@ -224,7 +222,7 @@ class User extends Component
      * If null, it means the current user will be a guest without any associated identity.
      * @throws InvalidValueException if `$identity` object does not implement [[IdentityInterface]].
      */
-    public function setIdentity($identity)
+    public function setIdentity($identity): void
     {
         if ($identity instanceof IdentityInterface) {
             $this->_identity = $identity;
@@ -255,7 +253,7 @@ class User extends Component
      * @param int $duration number of seconds that the user can remain in logged-in status, defaults to `0`
      * @return bool whether the user is logged in
      */
-    public function login(IdentityInterface $identity, $duration = 0)
+    public function login(IdentityInterface $identity, $duration = 0): bool
     {
         if ($this->beforeLogin($identity, false, $duration)) {
             $this->switchIdentity($identity, $duration);
@@ -363,7 +361,7 @@ class User extends Component
      * @return bool whether the current user is a guest.
      * @see getIdentity()
      */
-    public function getIsGuest()
+    public function getIsGuest(): bool
     {
         return $this->getIdentity() === null;
     }
@@ -403,7 +401,7 @@ class User extends Component
             $url = null;
         }
 
-        return $url === null ? Yii::$app->getHomeUrl() : $url;
+        return $url ?? Yii::$app->getHomeUrl();
     }
 
     /**
@@ -417,7 +415,7 @@ class User extends Component
      * ['admin/index', 'ref' => 1]
      * ```
      */
-    public function setReturnUrl($url)
+    public function setReturnUrl($url): void
     {
         Yii::$app->getSession()->set($this->returnUrlParam, $url);
     }
@@ -590,7 +588,7 @@ class User extends Component
      * @see loginByCookie()
      * @since 2.0.9
      */
-    protected function getIdentityAndDurationFromCookie()
+    protected function getIdentityAndDurationFromCookie(): ?array
     {
         $value = Yii::$app->getRequest()->getCookies()->getValue($this->identityCookie['name']);
         if ($value === null) {
@@ -598,13 +596,14 @@ class User extends Component
         }
         $data = json_decode($value, true);
         if (is_array($data) && count($data) == 3) {
-            list($id, $authKey, $duration) = $data;
+            [$id, $authKey, $duration] = $data;
             $class = $this->identityClass;
             $identity = $class::findIdentity($id);
             if ($identity !== null) {
                 if (!$identity instanceof IdentityInterface) {
                     throw new InvalidValueException("$class::findIdentity() must return an object implementing IdentityInterface.");
-                } elseif (!$identity->validateAuthKey($authKey)) {
+                }
+                if (!$identity->validateAuthKey($authKey)) {
                     $ip = Yii::$app->getRequest()->getUserIP();
                     Yii::warning("Invalid cookie auth key attempted for user '$id' from $ip: $authKey", __METHOD__);
                 } else {
@@ -642,7 +641,7 @@ class User extends Component
      * @param int $duration number of seconds that the user can remain in logged-in status.
      * This parameter is used only when `$identity` is not null.
      */
-    public function switchIdentity($identity, $duration = 0)
+    public function switchIdentity($identity, $duration = 0): void
     {
         $this->setIdentity($identity);
 
@@ -773,7 +772,7 @@ class User extends Component
      * @see acceptableRedirectTypes
      * @since 2.0.8
      */
-    public function checkRedirectAcceptable()
+    public function checkRedirectAcceptable(): bool
     {
         $acceptableTypes = Yii::$app->getRequest()->getAcceptableContentTypes();
         if (empty($acceptableTypes) || (count($acceptableTypes) === 1 && array_keys($acceptableTypes)[0] === '*/*')) {
@@ -810,6 +809,6 @@ class User extends Component
      */
     protected function getAccessChecker()
     {
-        return $this->accessChecker !== null ? $this->accessChecker : $this->getAuthManager();
+        return $this->accessChecker ?? $this->getAuthManager();
     }
 }

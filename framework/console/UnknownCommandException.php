@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -28,7 +30,6 @@ class UnknownCommandException extends Exception
      */
     protected $application;
 
-
     /**
      * Construct the exception.
      *
@@ -47,7 +48,7 @@ class UnknownCommandException extends Exception
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
+    public function getName(): string
     {
         return 'Unknown command';
     }
@@ -72,13 +73,13 @@ class UnknownCommandException extends Exception
             return [];
         }
         /** @var HelpController<Application> $helpController */
-        list($helpController, $actionID) = $help;
+        [$helpController, $actionID] = $help;
 
         $availableActions = [];
         foreach ($helpController->getCommands() as $command) {
             $result = $this->application->createController($command);
             /** @var Controller<Application> $controller */
-            list($controller, $actionID) = $result;
+            [$controller, $actionID] = $result;
             if ($controller->createAction($controller->defaultAction) !== null) {
                 // add the command itself (default action)
                 $availableActions[] = $command;
@@ -110,7 +111,7 @@ class UnknownCommandException extends Exception
      * @param string $command the command to compare to.
      * @return array a list of suggested alternatives sorted by similarity.
      */
-    private function filterBySimilarity($actions, $command)
+    private function filterBySimilarity(array $actions, $command): array
     {
         $alternatives = [];
 
@@ -122,16 +123,14 @@ class UnknownCommandException extends Exception
         }
 
         // calculate the Levenshtein distance between the unknown command and all available commands.
-        $distances = array_map(function ($action) use ($command) {
+        $distances = array_map(function ($action) use ($command): int {
             $action = strlen($action) > 255 ? substr($action, 0, 255) : $action;
             $command = strlen($command) > 255 ? substr($command, 0, 255) : $command;
             return levenshtein($action, $command);
         }, array_combine($actions, $actions));
 
         // we assume a typo if the levensthein distance is no more than 3, i.e. 3 replacements needed
-        $relevantTypos = array_filter($distances, function ($distance) {
-            return $distance <= 3;
-        });
+        $relevantTypos = array_filter($distances, fn (int $distance) => $distance <= 3);
         asort($relevantTypos);
         $alternatives = array_merge($alternatives, array_flip($relevantTypos));
 

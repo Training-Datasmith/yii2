@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -68,12 +70,11 @@ class SqlToken extends BaseObject implements \ArrayAccess
      */
     private $_children = [];
 
-
     /**
      * Returns the SQL code representing the token.
      * @return string SQL code.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->getSql();
     }
@@ -102,7 +103,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
     public function offsetGet($offset)
     {
         $offset = $this->calculateOffset($offset);
-        return isset($this->_children[$offset]) ? $this->_children[$offset] : null;
+        return $this->_children[$offset] ?? null;
     }
 
     /**
@@ -113,7 +114,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * @param SqlToken $token token to be added.
      */
     #[\ReturnTypeWillChange]
-    public function offsetSet($offset, $token)
+    public function offsetSet($offset, $token): void
     {
         $token->parent = $this;
         if ($offset === null) {
@@ -131,7 +132,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * @param int $offset child token offset.
      */
     #[\ReturnTypeWillChange]
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $offset = $this->calculateOffset($offset);
         if (isset($this->_children[$offset])) {
@@ -153,7 +154,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * Sets a list of child tokens.
      * @param SqlToken[] $children child tokens.
      */
-    public function setChildren($children)
+    public function setChildren($children): void
     {
         $this->_children = [];
         foreach ($children as $child) {
@@ -167,7 +168,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * Returns whether the token represents a collection of tokens.
      * @return bool whether the token represents a collection of tokens.
      */
-    public function getIsCollection()
+    public function getIsCollection(): bool
     {
         return in_array($this->type, [
             self::TYPE_CODE,
@@ -180,7 +181,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * Returns whether the token represents a collection of tokens and has non-zero number of children.
      * @return bool whether the token has children.
      */
-    public function getHasChildren()
+    public function getHasChildren(): bool
     {
         return $this->getIsCollection() && !empty($this->_children);
     }
@@ -189,7 +190,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * Returns the SQL code representing the token.
      * @return string SQL code.
      */
-    public function getSql()
+    public function getSql(): string
     {
         $code = $this;
         while ($code->parent !== null) {
@@ -230,14 +231,11 @@ class SqlToken extends BaseObject implements \ArrayAccess
 
     /**
      * Tests the given token to match the specified pattern token.
-     * @param SqlToken $patternToken
-     * @param SqlToken $token
      * @param int $offset
      * @param int|null $firstMatchIndex
      * @param int|null $lastMatchIndex
-     * @return bool
      */
-    private function tokensMatch(SqlToken $patternToken, SqlToken $token, $offset = 0, &$firstMatchIndex = null, &$lastMatchIndex = null)
+    private function tokensMatch(SqlToken $patternToken, SqlToken $token, $offset = 0, &$firstMatchIndex = null, &$lastMatchIndex = null): bool
     {
         if (
             $patternToken->getIsCollection() !== $token->getIsCollection()
@@ -302,7 +300,7 @@ class SqlToken extends BaseObject implements \ArrayAccess
     /**
      * Updates token SQL code start and end offsets based on its children.
      */
-    private function updateCollectionOffsets()
+    private function updateCollectionOffsets(): void
     {
         if (!empty($this->_children)) {
             $this->startOffset = reset($this->_children)->startOffset;

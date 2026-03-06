@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -183,7 +185,6 @@ abstract class Application extends Module
      */
     public $loadedModules = [];
 
-
     /**
      * Constructor.
      * @param array<array-key, mixed> $config name-value pairs that will be used to initialize the object properties.
@@ -212,7 +213,7 @@ abstract class Application extends Module
      * @param array $config the application configuration
      * @throws InvalidConfigException if either [[id]] or [[basePath]] configuration is missing.
      */
-    public function preInit(&$config)
+    public function preInit(array &$config): void
     {
         if (!isset($config['id'])) {
             throw new InvalidConfigException('The "id" configuration for the Application is required.');
@@ -265,7 +266,7 @@ abstract class Application extends Module
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         $this->state = self::STATE_INIT;
         $this->bootstrap();
@@ -333,7 +334,7 @@ abstract class Application extends Module
      * Registers the errorHandler component as a PHP error handler.
      * @param array $config application config
      */
-    protected function registerErrorHandler(&$config)
+    protected function registerErrorHandler(array &$config)
     {
         if (YII_ENABLE_ERROR_HANDLER) {
             if (!isset($config['components']['errorHandler']['class'])) {
@@ -362,7 +363,7 @@ abstract class Application extends Module
      * @param string $path the root directory of the application.
      * @throws InvalidArgumentException if the directory does not exist.
      */
-    public function setBasePath($path)
+    public function setBasePath($path): void
     {
         parent::setBasePath($path);
         Yii::setAlias('@app', $this->getBasePath());
@@ -392,7 +393,7 @@ abstract class Application extends Module
 
             return $response->exitStatus;
         } catch (ExitException $e) {
-            $this->end($e->statusCode, isset($response) ? $response : null);
+            $this->end($e->statusCode, $response ?? null);
             return $e->statusCode;
         }
     }
@@ -428,7 +429,7 @@ abstract class Application extends Module
      * Sets the directory that stores runtime files.
      * @param string $path the directory that stores runtime files.
      */
-    public function setRuntimePath($path)
+    public function setRuntimePath($path): void
     {
         $this->_runtimePath = Yii::getAlias($path);
         Yii::setAlias('@runtime', $this->_runtimePath);
@@ -454,7 +455,7 @@ abstract class Application extends Module
      * Sets the directory that stores vendor files.
      * @param string $path the directory that stores vendor files.
      */
-    public function setVendorPath($path)
+    public function setVendorPath($path): void
     {
         $this->_vendorPath = Yii::getAlias($path);
         Yii::setAlias('@vendor', $this->_vendorPath);
@@ -482,7 +483,7 @@ abstract class Application extends Module
      * @param string $value the time zone used by this application.
      * @see https://www.php.net/manual/en/function.date-default-timezone-set.php
      */
-    public function setTimeZone($value)
+    public function setTimeZone($value): void
     {
         date_default_timezone_set($value);
     }
@@ -645,7 +646,7 @@ abstract class Application extends Module
      * @param Response|null $response the response to be sent. If not set, the default application [[response]] component will be used.
      * @throws ExitException if the application is in testing mode
      */
-    public function end($status = 0, $response = null)
+    public function end($status = 0, $response = null): void
     {
         if ($this->state === self::STATE_BEFORE_REQUEST || $this->state === self::STATE_HANDLING_REQUEST) {
             $this->state = self::STATE_AFTER_REQUEST;
@@ -657,12 +658,7 @@ abstract class Application extends Module
             $response = $response ?: $this->getResponse();
             $response->send();
         }
-
-        if (YII_ENV_TEST) {
-            throw new ExitException($status);
-        }
-
-        exit($status);
+        throw new ExitException($status);
     }
 
     /**
@@ -671,7 +667,7 @@ abstract class Application extends Module
      * @param array $config values given in terms of name-value pairs
      * @since 2.0.11
      */
-    public function setContainer($config)
+    public function setContainer($config): void
     {
         Yii::configure(Yii::$container, $config);
     }

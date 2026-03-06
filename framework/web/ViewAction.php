@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -61,7 +63,6 @@ class ViewAction extends Action
      */
     public $layout;
 
-
     /**
      * Runs the action.
      * This method displays the view requested by the user.
@@ -88,14 +89,7 @@ class ViewAction extends Action
             if ($controllerLayout) {
                 $this->controller->layout = $controllerLayout;
             }
-
-            if (YII_DEBUG) {
-                throw new NotFoundHttpException($e->getMessage());
-            }
-
-            throw new NotFoundHttpException(
-                Yii::t('yii', 'The requested view "{name}" was not found.', ['name' => $viewName])
-            );
+            throw new NotFoundHttpException($e->getMessage());
         }
 
         return $output;
@@ -118,16 +112,12 @@ class ViewAction extends Action
      * @return string the resolved view name
      * @throws NotFoundHttpException if the specified view name is invalid
      */
-    protected function resolveViewName()
+    protected function resolveViewName(): string
     {
         $viewName = Yii::$app->request->get($this->viewParam, $this->defaultView);
 
         if (!is_string($viewName) || !preg_match('~^\w(?:(?!\/\.{0,2}\/)[\w\/\-\.])*$~', $viewName)) {
-            if (YII_DEBUG) {
-                throw new NotFoundHttpException("The requested view \"$viewName\" must start with a word character, must not contain /../ or /./, can contain only word characters, forward slashes, dots and dashes.");
-            }
-
-            throw new NotFoundHttpException(Yii::t('yii', 'The requested view "{name}" was not found.', ['name' => $viewName]));
+            throw new NotFoundHttpException("The requested view \"$viewName\" must start with a word character, must not contain /../ or /./, can contain only word characters, forward slashes, dots and dashes.");
         }
 
         return empty($this->viewPrefix) ? $viewName : $this->viewPrefix . '/' . $viewName;

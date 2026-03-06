@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -100,8 +102,8 @@ class TargetTest extends TestCase
             ],
             'maskVars' => [
                 'C.C_b',
-                'D.D_a'
-            ]
+                'D.D_a',
+            ],
         ]);
         $GLOBALS['A'] = [
             'A_a' => 1,
@@ -233,7 +235,7 @@ class TargetTest extends TestCase
         static::$messages = [];
 
         $messages = [
-            ['test', 1, 'application', 1560428356.212978, [], 1888416]
+            ['test', 1, 'application', 1560428356.212978, [], 1888416],
         ];
 
         $target->collect($messages, false);
@@ -277,14 +279,14 @@ class TargetTest extends TestCase
             ->willReturnCallback(
                 function (...$parameters) use ($matcher): void {
                     if ($matcher->getInvocationCount() === 1) {
-                        $callback = fn($messages): bool => count($messages) === 1 && $messages[0][0] === 'info';
+                        $callback = fn ($messages): bool => count($messages) === 1 && $messages[0][0] === 'info';
 
                         $this->assertTrue($callback($parameters[0]));
                         $this->assertFalse($parameters[1]);
                     }
 
                     if ($matcher->getInvocationCount() === 2) {
-                        $callback = fn($messages): bool => count($messages) === 2
+                        $callback = fn ($messages): bool => count($messages) === 2
                             && $messages[0][0] === 'token.a'
                             && $messages[0][1] === Logger::LEVEL_PROFILE_BEGIN
                             && $messages[1][0] === 'token.a'
@@ -321,7 +323,7 @@ class TargetTest extends TestCase
             ->willReturnCallback(
                 function (...$parameters) use ($matcher): void {
                     if ($matcher->getInvocationCount() === 1) {
-                        $callback = fn($messages): bool => count($messages) === 2
+                        $callback = fn ($messages): bool => count($messages) === 2
                             && $messages[0][0] === 'token.a'
                             && $messages[0][1] === Logger::LEVEL_PROFILE_BEGIN
                             && $messages[1][0] === 'token.b'
@@ -332,7 +334,7 @@ class TargetTest extends TestCase
                     }
 
                     if ($matcher->getInvocationCount() === 2) {
-                        $callback = fn($messages): bool => count($messages) === 1
+                        $callback = fn ($messages): bool => count($messages) === 1
                             && $messages[0][0] === 'Number of dangling profiling block messages reached flushInterval value and therefore these were flushed. Please consider setting higher flushInterval value or making profiling blocks shorter.';
 
                         $this->assertTrue($callback($parameters[0]));
@@ -340,7 +342,7 @@ class TargetTest extends TestCase
                     }
 
                     if ($matcher->getInvocationCount() === 3) {
-                        $callback = fn($messages): bool => count($messages) === 2
+                        $callback = fn ($messages): bool => count($messages) === 2
                             && $messages[0][0] === 'token.b'
                             && $messages[0][1] === Logger::LEVEL_PROFILE_END
                             && $messages[1][0] === 'token.a'
@@ -394,7 +396,7 @@ class TargetTest extends TestCase
                 '_SERVER.DOCUMENT_ROOT',
                 // option 2: pattern(s)
                 '_TEST.*password*',
-            ]
+            ],
         ]);
 
         $message = $target->getContextMessage();

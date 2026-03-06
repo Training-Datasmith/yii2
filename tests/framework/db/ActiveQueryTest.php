@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -149,12 +151,12 @@ abstract class ActiveQueryTest extends DatabaseTestCase
             [
                 'INNER JOIN',
                 'order',
-                '{{customer}}.[[id]] = {{order}}.[[customer_id]]'
+                '{{customer}}.[[id]] = {{order}}.[[customer_id]]',
             ],
             [
                 'LEFT JOIN',
                 'order_item',
-                '{{order}}.[[id]] = {{order_item}}.[[order_id]]'
+                '{{order}}.[[id]] = {{order_item}}.[[order_id]]',
             ],
         ], $query->join);
     }

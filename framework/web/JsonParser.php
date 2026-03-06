@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -38,7 +40,6 @@ class JsonParser implements RequestParserInterface
      */
     public $throwException = true;
 
-
     /**
      * Parses a HTTP request body.
      * @param string $rawBody the raw HTTP request body.
@@ -55,7 +56,7 @@ class JsonParser implements RequestParserInterface
 
         try {
             $parameters = Json::decode($rawBody, $this->asArray);
-            return $parameters === null ? [] : $parameters;
+            return $parameters ?? [];
         } catch (InvalidArgumentException $e) {
             if ($this->throwException) {
                 throw new BadRequestHttpException('Invalid JSON data in request body: ' . $e->getMessage());

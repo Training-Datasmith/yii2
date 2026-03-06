@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -59,7 +61,6 @@ class DbQueryDependency extends Dependency
      */
     public $method;
 
-
     /**
      * Generates the data needed to determine if dependency is changed.
      *
@@ -98,7 +99,7 @@ class DbQueryDependency extends Dependency
      * @param mixed $db connection.
      * @return mixed query result.
      */
-    private function executeQuery($query, $db)
+    private function executeQuery(\yii\db\QueryInterface $query, $db)
     {
         if ($this->method === null) {
             return $query->one($db);

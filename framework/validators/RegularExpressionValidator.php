@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -34,11 +36,10 @@ class RegularExpressionValidator extends Validator
      */
     public $not = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->pattern === null) {
@@ -52,7 +53,7 @@ class RegularExpressionValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         $valid = !is_array($value) &&
             (!$this->not && preg_match($this->pattern, $value)
@@ -64,7 +65,7 @@ class RegularExpressionValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
@@ -75,7 +76,7 @@ class RegularExpressionValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $pattern = Html::escapeJsRegularExpression($this->pattern);
 

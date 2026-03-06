@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * MIME types.
  *
@@ -1020,7 +1022,7 @@ $mimeTypes = [
 
 # fix for bundled libmagic bug, see also https://github.com/yiisoft/yii2/issues/19925
 if ((PHP_VERSION_ID >= 80100 && PHP_VERSION_ID < 80122) || (PHP_VERSION_ID >= 80200 && PHP_VERSION_ID < 80209)) {
-    $mimeTypes = array_replace($mimeTypes, ['xz' => 'application/octet-stream']);
+    return array_replace($mimeTypes, ['xz' => 'application/octet-stream']);
 }
 
 return $mimeTypes;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -30,10 +32,10 @@ class Utf8Controller extends Controller
      * @param string $directory the directory to check. If not specified, the default
      * guide directory will be checked.
      */
-    public function actionCheckGuide($directory = null)
+    public function actionCheckGuide($directory = null): void
     {
         if ($directory === null) {
-            $directory = \dirname(\dirname(__DIR__)) . '/docs';
+            $directory = \dirname(__DIR__, 2) . '/docs';
         }
         if (is_file($directory)) {
             $files = [$directory];
@@ -89,7 +91,7 @@ class Utf8Controller extends Controller
 
     private $_foundFiles = [];
 
-    private function found($what, $char, $line, $pos, $file)
+    private function found(string $what, $char, int $line, int $pos, $file): void
     {
         if (!isset($this->_foundFiles[$file])) {
             $this->stdout("$file: \n", Console::BOLD);
@@ -115,14 +117,18 @@ class Utf8Controller extends Controller
         $h = \ord($c[0]);
         if ($h <= 0x7F) {
             return $h;
-        } elseif ($h < 0xC2) {
+        }
+        if ($h < 0xC2) {
             return false;
-        } elseif ($h <= 0xDF) {
+        }
+        if ($h <= 0xDF) {
             return ($h & 0x1F) << 6 | (\ord($c[1]) & 0x3F);
-        } elseif ($h <= 0xEF) {
+        }
+        if ($h <= 0xEF) {
             return ($h & 0x0F) << 12 | (\ord($c[1]) & 0x3F) << 6
                 | (\ord($c[2]) & 0x3F);
-        } elseif ($h <= 0xF4) {
+        }
+        if ($h <= 0xF4) {
             return ($h & 0x0F) << 18 | (\ord($c[1]) & 0x3F) << 12
                 | (\ord($c[2]) & 0x3F) << 6
                 | (\ord($c[3]) & 0x3F);

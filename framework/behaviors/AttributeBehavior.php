@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -96,11 +98,10 @@ class AttributeBehavior extends Behavior
      */
     public $preserveNonEmptyValues = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function events()
+    public function events(): array
     {
         return array_fill_keys(
             array_keys($this->attributes),
@@ -112,7 +113,7 @@ class AttributeBehavior extends Behavior
      * Evaluates the attribute value and assigns it to the current attributes.
      * @param Event $event
      */
-    public function evaluateAttributes($event)
+    public function evaluateAttributes($event): void
     {
         if (
             $this->skipUpdateOnClean

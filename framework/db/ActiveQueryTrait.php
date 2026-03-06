@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -30,7 +32,6 @@ trait ActiveQueryTrait
      * of [[modelClass]] will be created to represent each record.
      */
     public $asArray;
-
 
     /**
      * Sets the [[asArray]] property.
@@ -114,18 +115,17 @@ trait ActiveQueryTrait
     {
         if ($this->asArray) {
             return $rows;
-        } else {
-            $models = [];
-            /** @var ActiveRecord $class */
-            $class = $this->modelClass;
-            foreach ($rows as $row) {
-                $model = $class::instantiate($row);
-                $modelClass = get_class($model);
-                $modelClass::populateRecord($model, $row);
-                $models[] = $model;
-            }
-            return $models;
         }
+        $models = [];
+        /** @var ActiveRecord $class */
+        $class = $this->modelClass;
+        foreach ($rows as $row) {
+            $model = $class::instantiate($row);
+            $modelClass = get_class($model);
+            $modelClass::populateRecord($model, $row);
+            $models[] = $model;
+        }
+        return $models;
     }
 
     /**
@@ -134,7 +134,7 @@ trait ActiveQueryTrait
      * refer to [[with()]] for details about specifying this parameter.
      * @param array|ActiveRecord[] $models the primary models (can be either AR instances or arrays)
      */
-    public function findWith($with, &$models)
+    public function findWith($with, &$models): void
     {
         if (empty($models)) {
             return;
@@ -162,7 +162,7 @@ trait ActiveQueryTrait
      * @param array $with
      * @return ActiveQueryInterface[]
      */
-    private function normalizeRelations($model, $with)
+    private function normalizeRelations($model, $with): array
     {
         $relations = [];
         foreach ($with as $name => $callback) {

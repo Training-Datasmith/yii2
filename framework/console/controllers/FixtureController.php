@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -68,11 +70,10 @@ class FixtureController extends Controller
         'yii\test\InitDbFixture',
     ];
 
-
     /**
      * {@inheritdoc}
      */
-    public function options($actionID)
+    public function options($actionID): array
     {
         return array_merge(parent::options($actionID), [
             'namespace', 'globalFixtures',
@@ -83,7 +84,7 @@ class FixtureController extends Controller
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function optionAliases()
+    public function optionAliases(): array
     {
         return array_merge(parent::optionAliases(), [
             'g' => 'globalFixtures',
@@ -108,11 +109,10 @@ class FixtureController extends Controller
      * yii fixture/load "*, -User, -UserProfile"
      * ```
      *
-     * @param array $fixturesInput
      * @return int return code
      * @throws Exception if the specified fixture does not exist.
      */
-    public function actionLoad(array $fixturesInput = [])
+    public function actionLoad(array $fixturesInput = []): int
     {
         if ($fixturesInput === []) {
             $this->printHelpMessage();
@@ -184,11 +184,10 @@ class FixtureController extends Controller
      * yii fixture/unload "*, -User, -UserProfile"
      * ```
      *
-     * @param array $fixturesInput
      * @return int return code
      * @throws Exception if the specified fixture does not exist.
      */
-    public function actionUnload(array $fixturesInput = [])
+    public function actionUnload(array $fixturesInput = []): int
     {
         if ($fixturesInput === []) {
             $this->printHelpMessage();
@@ -244,7 +243,7 @@ class FixtureController extends Controller
     /**
      * Show help message.
      */
-    private function printHelpMessage()
+    private function printHelpMessage(): void
     {
         $this->stdout($this->getHelpSummary() . "\n");
 
@@ -256,7 +255,7 @@ class FixtureController extends Controller
      * Notifies user that fixtures were successfully loaded.
      * @param Fixture[] $fixtures array of loaded fixtures
      */
-    private function notifyLoaded($fixtures)
+    private function notifyLoaded($fixtures): void
     {
         $this->stdout("Fixtures were successfully loaded from namespace:\n", Console::FG_YELLOW);
         $this->stdout("\t\"" . Yii::getAlias($this->namespace) . "\"\n\n", Console::FG_GREEN);
@@ -275,7 +274,7 @@ class FixtureController extends Controller
      * @param array $foundFixtures array of found fixtures
      * @param array $except array of names of fixtures that should not be loaded
      */
-    public function notifyNothingToLoad($foundFixtures, $except)
+    public function notifyNothingToLoad($foundFixtures, $except): void
     {
         $this->stdout("Fixtures to load could not be found according given conditions:\n\n", Console::FG_RED);
         $this->stdout("Fixtures namespace is: \n", Console::FG_YELLOW);
@@ -297,7 +296,7 @@ class FixtureController extends Controller
      * @param array $foundFixtures array of found fixtures
      * @param array $except array of names of fixtures that should not be loaded
      */
-    public function notifyNothingToUnload($foundFixtures, $except)
+    public function notifyNothingToUnload($foundFixtures, $except): void
     {
         $this->stdout("Fixtures to unload could not be found according to given conditions:\n\n", Console::FG_RED);
         $this->stdout("Fixtures namespace is: \n", Console::FG_YELLOW);
@@ -318,7 +317,7 @@ class FixtureController extends Controller
      * Notifies user that fixtures were successfully unloaded.
      * @param array $fixtures
      */
-    private function notifyUnloaded($fixtures)
+    private function notifyUnloaded($fixtures): void
     {
         $this->stdout("\nFixtures were successfully unloaded from namespace: ", Console::FG_YELLOW);
         $this->stdout(Yii::getAlias($this->namespace) . "\"\n\n", Console::FG_GREEN);
@@ -327,9 +326,8 @@ class FixtureController extends Controller
 
     /**
      * Notifies user that fixtures were not found under fixtures path.
-     * @param array $fixtures
      */
-    private function notifyNotFound($fixtures)
+    private function notifyNotFound(array $fixtures): void
     {
         $this->stdout("Some fixtures were not found under path:\n", Console::BG_RED);
         $this->stdout("\t" . $this->getFixturePath() . "\n\n", Console::FG_GREEN);
@@ -340,11 +338,10 @@ class FixtureController extends Controller
 
     /**
      * Prompts user with confirmation if fixtures should be loaded.
-     * @param array $fixtures
      * @param array $except
      * @return bool
      */
-    private function confirmLoad($fixtures, $except)
+    private function confirmLoad(array $fixtures, $except)
     {
         $this->stdout("Fixtures namespace is: \n", Console::FG_YELLOW);
         $this->stdout("\t" . $this->namespace . "\n\n", Console::FG_GREEN);
@@ -372,11 +369,10 @@ class FixtureController extends Controller
 
     /**
      * Prompts user with confirmation for fixtures that should be unloaded.
-     * @param array $fixtures
      * @param array $except
      * @return bool
      */
-    private function confirmUnload($fixtures, $except)
+    private function confirmUnload(array $fixtures, $except)
     {
         $this->stdout("Fixtures namespace is: \n", Console::FG_YELLOW);
         $this->stdout("\t" . $this->namespace . "\n\n", Console::FG_GREEN);
@@ -403,7 +399,7 @@ class FixtureController extends Controller
      * Outputs data to the console as a list.
      * @param array $data
      */
-    private function outputList($data)
+    private function outputList($data): void
     {
         foreach ($data as $index => $item) {
             $this->stdout("\t" . ($index + 1) . ". {$item}\n", Console::FG_GREEN);
@@ -413,9 +409,8 @@ class FixtureController extends Controller
     /**
      * Checks if needed to apply all fixtures.
      * @param string $fixture
-     * @return bool
      */
-    public function needToApplyAll($fixture)
+    public function needToApplyAll($fixture): bool
     {
         return $fixture === '*';
     }
@@ -426,7 +421,7 @@ class FixtureController extends Controller
      * @param array $fixtures fixtures to be loaded
      * @return array Array of found fixtures. These may differ from input parameter as not all fixtures may exists.
      */
-    private function findFixtures(array $fixtures = [])
+    private function findFixtures(array $fixtures = []): array
     {
         $fixturesPath = $this->getFixturePath();
 
@@ -458,7 +453,7 @@ class FixtureController extends Controller
      * @param string $fullFixturePath Full fixture path
      * @return string Relative fixture name
      */
-    private function getFixtureRelativeName($fullFixturePath)
+    private function getFixtureRelativeName($fullFixturePath): string
     {
         $fixturesPath = FileHelper::normalizePath($this->getFixturePath());
         $fullFixturePath = FileHelper::normalizePath($fullFixturePath);
@@ -472,9 +467,8 @@ class FixtureController extends Controller
     /**
      * Returns valid fixtures config that can be used to load them.
      * @param array $fixtures fixtures to configure
-     * @return array
      */
-    private function getFixturesConfig($fixtures)
+    private function getFixturesConfig(array $fixtures): array
     {
         $config = [];
 
@@ -514,10 +508,9 @@ class FixtureController extends Controller
      *     ],
      * ]
      * ```
-     * @param array $fixtures
      * @return array fixtures array with 'apply' and 'except' elements.
      */
-    private function filterFixtures($fixtures)
+    private function filterFixtures(array $fixtures): array
     {
         $filtered = [
             'apply' => [],

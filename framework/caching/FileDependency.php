@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -29,7 +31,6 @@ class FileDependency extends Dependency
      * check if the dependency has been changed.
      */
     public $fileName;
-
 
     /**
      * Generates the data needed to determine if dependency has been changed.

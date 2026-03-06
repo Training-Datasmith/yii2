@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -23,9 +25,8 @@ use Yii;
  */
 abstract class Request extends Component
 {
-    private $_scriptFile;
+    private ?string $_scriptFile = null;
     private $_isConsoleRequest;
-
 
     /**
      * Resolves the current request into a route and the associated parameters.
@@ -39,14 +40,14 @@ abstract class Request extends Component
      */
     public function getIsConsoleRequest()
     {
-        return $this->_isConsoleRequest !== null ? $this->_isConsoleRequest : PHP_SAPI === 'cli';
+        return $this->_isConsoleRequest ?? PHP_SAPI === 'cli';
     }
 
     /**
      * Sets the value indicating whether the current request is made via command line.
      * @param bool $value the value indicating whether the current request is made via command line
      */
-    public function setIsConsoleRequest($value)
+    public function setIsConsoleRequest($value): void
     {
         $this->_isConsoleRequest = $value;
     }
@@ -77,7 +78,7 @@ abstract class Request extends Component
      * @param string $value the entry script file path. This can be either a file path or a [path alias](guide:concept-aliases).
      * @throws InvalidConfigException if the provided entry script file path is invalid.
      */
-    public function setScriptFile($value)
+    public function setScriptFile($value): void
     {
         $scriptFile = realpath(Yii::getAlias($value));
         if ($scriptFile !== false && is_file($scriptFile)) {

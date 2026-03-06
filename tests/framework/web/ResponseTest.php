@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,7 +10,6 @@
 
 namespace yiiunit\framework\web;
 
-use yiiunit\TestCase;
 use DateTime;
 use DateTimeImmutable;
 use Error;
@@ -20,6 +21,7 @@ use yii\web\Cookie;
 use yii\web\HttpException;
 use yii\web\Response;
 use yiiunit\framework\web\mocks\TestRequestComponent;
+use yiiunit\TestCase;
 
 /**
  * @group web
@@ -220,19 +222,19 @@ class ResponseTest extends TestCase
             ['Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko', [301 => 200, 302 => 200]], // IE 11
             [ // IE 11
                 'Mozilla/5.0 (Windows NT 6.3; Trident/7.0; .NET4.0E; .NET4.0C; rv:11.0) like Gecko',
-                [301 => 200, 302 => 200]
+                [301 => 200, 302 => 200],
             ],
             [ // Chrome
                 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
-                [301 => 301, 302 => 302]
+                [301 => 301, 302 => 302],
             ],
             [ // Edge
                 'Mozilla/5.0 (Windows NT 10.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/42.0.2311.135 Safari/537.36 Edge/12.10136',
-                [301 => 301, 302 => 302]
+                [301 => 301, 302 => 302],
             ],
             [ // special windows versions (for tablets or IoT devices)
                 'Mozilla/4.0 (compatible; MSIE 7.0; Windows NT 6.2; WOW64; Trident/7.0; .NET4.0C; .NET4.0E; Tablet PC 2.0)',
-                [301 => 200, 302 => 200]
+                [301 => 200, 302 => 200],
             ],
         ];
     }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -51,11 +53,10 @@ abstract class AuthMethod extends ActionFilter implements AuthInterface
      */
     public $optional = [];
 
-
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         $response = $this->response ?: Yii::$app->getResponse();
 

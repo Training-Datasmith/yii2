@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,10 +10,10 @@
 
 namespace yii\rest;
 
+use yii\base\Action as BaseAction;
 use yii\base\InvalidConfigException;
 use yii\db\ActiveRecordInterface;
 use yii\web\NotFoundHttpException;
-use yii\base\Action as BaseAction;
 
 /**
  * Action is the base class for action classes that implement RESTful API.
@@ -62,11 +64,10 @@ class Action extends BaseAction
      */
     public $checkAccess;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         if ($this->modelClass === null) {
             throw new InvalidConfigException(get_class($this) . '::$modelClass must be set.');

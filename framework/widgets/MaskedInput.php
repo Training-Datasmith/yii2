@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -120,16 +122,15 @@ class MaskedInput extends InputWidget
         'preValidation',
         'postValidation',
         // @deprecated removed in 4.0:
-        'canClearPosition'
+        'canClearPosition',
     ];
-
 
     /**
      * Initializes the widget.
      *
      * @throws InvalidConfigException if the "mask" property is not set.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (empty($this->mask) && empty($this->clientOptions['regex']) && empty($this->clientOptions['alias'])) {
@@ -140,7 +141,7 @@ class MaskedInput extends InputWidget
     /**
      * {@inheritdoc}
      */
-    public function run()
+    public function run(): void
     {
         $this->registerClientScript();
         echo $this->renderInputHtml($this->type);
@@ -187,7 +188,7 @@ class MaskedInput extends InputWidget
     /**
      * Registers the needed client script and options.
      */
-    public function registerClientScript()
+    public function registerClientScript(): void
     {
         $js = '';
         $view = $this->getView();

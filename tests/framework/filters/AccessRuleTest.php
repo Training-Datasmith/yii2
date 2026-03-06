@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,19 +10,19 @@
 
 namespace yiiunit\framework\filters;
 
-use yiiunit\TestCase;
-use yii\rbac\BaseManager;
 use Closure;
 use PHPUnit\Framework\MockObject\MockObject;
 use Yii;
 use yii\base\Action;
 use yii\filters\AccessRule;
+use yii\rbac\BaseManager;
 use yii\web\Controller;
 use yii\web\Request;
 use yii\web\User;
 use yiiunit\framework\filters\stubs\MockAuthManager;
 use yiiunit\framework\filters\stubs\UserIdentity;
 use yiiunit\framework\rbac\AuthorRule;
+use yiiunit\TestCase;
 
 /**
  * @group filters

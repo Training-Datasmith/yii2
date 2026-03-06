@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,8 @@
 
 namespace yiiunit\framework\widgets;
 
-use yiiunit\TestCase;
 use yii\widgets\Menu;
+use yiiunit\TestCase;
 
 /**
  * @group widgets
@@ -229,7 +231,7 @@ HTML;
                     'label' => 'another item',
                     'url' => 'test/another',
                     'template' => 'label: {label}; url: {url}',
-                ]
+                ],
             ],
         ]);
 
@@ -275,7 +277,7 @@ HTML;
                             'label' => 'another item',
                             'url' => 'test/another',
                             'template' => 'label: {label}; url: {url}',
-                        ]
+                        ],
                     ],
                 ],
             ],
@@ -463,12 +465,12 @@ HTML;
             'items' => [
                 [
                     'label' => 'item1',
-                    'url' => ['/test/item1']
+                    'url' => ['/test/item1'],
                 ],
                 [
                     'label' => 'item2',
                     // use non relative route to avoid error in BaseUrl::normalizeRoute (missing controller)
-                    'url' => ['/test/item2','page' => '5']
+                    'url' => ['/test/item2','page' => '5'],
                 ],
 
             ],

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -30,7 +32,7 @@ class ClassmapController extends Controller
      * @param string $root    the root path of Yii framework. Defaults to YII2_PATH.
      * @param string $mapFile the file to contain the class map. Defaults to YII2_PATH . '/classes.php'.
      */
-    public function actionCreate($root = null, $mapFile = null)
+    public function actionCreate($root = null, $mapFile = null): void
     {
         if ($root === null) {
             $root = YII2_PATH;
@@ -40,7 +42,7 @@ class ClassmapController extends Controller
             $mapFile = YII2_PATH . '/classes.php';
         }
         $options = [
-            'filter' => function ($path) {
+            'filter' => function ($path): ?bool {
                 if (is_file($path)) {
                     $file = basename($path);
                     if ($file[0] < 'A' || $file[0] > 'Z') {

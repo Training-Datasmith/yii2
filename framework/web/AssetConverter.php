@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -57,7 +59,6 @@ class AssetConverter extends Component implements AssetConverterInterface
      */
     public $forceConvert = false;
 
-
     /**
      * Converts a given asset file into a CSS or JS file.
      * @param string $asset the asset file path, relative to $basePath
@@ -70,7 +71,7 @@ class AssetConverter extends Component implements AssetConverterInterface
         if ($pos !== false) {
             $ext = substr($asset, $pos + 1);
             if (isset($this->commands[$ext])) {
-                list($ext, $command) = $this->commands[$ext];
+                [$ext, $command] = $this->commands[$ext];
                 $result = substr($asset, 0, $pos + 1) . $ext;
                 if ($this->forceConvert || @filemtime("$basePath/$result") < @filemtime("$basePath/$asset")) {
                     $this->runCommand($command, $basePath, $asset, $result);
@@ -93,7 +94,7 @@ class AssetConverter extends Component implements AssetConverterInterface
      * @throws \yii\base\Exception when the command fails and YII_DEBUG is true.
      * In production mode the error will be logged.
      */
-    protected function runCommand($command, $basePath, $asset, $result)
+    protected function runCommand($command, $basePath, $asset, $result): bool
     {
         $command = Yii::getAlias($command);
 

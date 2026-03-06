@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -140,11 +142,10 @@ class UrlRule extends CompositeUrlRule
      */
     public $pluralize = true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         if (empty($this->controller)) {
             throw new InvalidConfigException('"controller" must be set.');
@@ -166,8 +167,9 @@ class UrlRule extends CompositeUrlRule
 
     /**
      * {@inheritdoc}
+     * @return non-empty-list[]
      */
-    protected function createRules()
+    protected function createRules(): array
     {
         $only = array_flip($this->only);
         $except = array_flip($this->except);
@@ -188,16 +190,15 @@ class UrlRule extends CompositeUrlRule
     /**
      * Creates a URL rule using the given pattern and action.
      * @param string $pattern
-     * @param string $prefix
      * @param string $action
      * @return UrlRuleInterface
      */
-    protected function createRule($pattern, $prefix, $action)
+    protected function createRule($pattern, string $prefix, $action)
     {
         $verbs = 'GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS';
         if (preg_match("/^((?:($verbs),)*($verbs))(?:\\s+(.*))?$/", $pattern, $matches)) {
             $verbs = explode(',', $matches[1]);
-            $pattern = isset($matches[4]) ? $matches[4] : '';
+            $pattern = $matches[4] ?? '';
         } else {
             $verbs = [];
         }
@@ -226,17 +227,15 @@ class UrlRule extends CompositeUrlRule
         }
 
         foreach ($this->rules as $urlName => $rules) {
-            if (strpos($pathInfo, $urlName) !== false) {
+            if (strpos($pathInfo, (string) $urlName) !== false) {
                 foreach ($rules as $rule) {
                     /** @var WebUrlRule $rule */
                     $result = $rule->parseRequest($manager, $request);
-                    if (YII_DEBUG) {
-                        Yii::debug([
-                            'rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule),
-                            'match' => $result !== false,
-                            'parent' => self::className(),
-                        ], __METHOD__);
-                    }
+                    Yii::debug([
+                        'rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule),
+                        'match' => $result !== false,
+                        'parent' => self::className(),
+                    ], __METHOD__);
                     if ($result !== false) {
                         return $result;
                     }
@@ -254,7 +253,7 @@ class UrlRule extends CompositeUrlRule
     {
         $this->createStatus = WebUrlRule::CREATE_STATUS_SUCCESS;
         foreach ($this->controller as $urlName => $controller) {
-            if (strpos($route, $controller) !== false) {
+            if (strpos($route, (string) $controller) !== false) {
                 /** @var UrlRuleInterface[] $rules */
                 $rules = $this->rules[$urlName];
                 $url = $this->iterateRules($rules, $manager, $route, $params);

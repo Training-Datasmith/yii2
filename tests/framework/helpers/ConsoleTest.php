@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,9 +11,9 @@
 namespace yiiunit\framework\helpers;
 
 use Yii;
+use yii\base\DynamicModel;
 use yii\helpers\Console;
 use yiiunit\TestCase;
-use yii\base\DynamicModel;
 
 /**
  * @group helpers
@@ -453,7 +455,7 @@ class TestConsoleModel extends DynamicModel
     {
         return [
             ['name', 'required'],
-            ['name', 'string', 'max' => 100]
+            ['name', 'string', 'max' => 100],
         ];
     }
 

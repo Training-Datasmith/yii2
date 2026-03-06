@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -77,11 +79,10 @@ class RateLimiter extends ActionFilter
      */
     public $response;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         if ($this->request === null) {
             $this->request = Yii::$app->getRequest();
@@ -94,7 +95,7 @@ class RateLimiter extends ActionFilter
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         if ($this->user === null && Yii::$app->getUser()) {
             $this->user = Yii::$app->getUser()->getIdentity(false);
@@ -124,10 +125,10 @@ class RateLimiter extends ActionFilter
      * @param Action $action the action to be executed
      * @throws TooManyRequestsHttpException if rate limit exceeds
      */
-    public function checkRateLimit($user, $request, $response, $action)
+    public function checkRateLimit($user, $request, $response, $action): void
     {
-        list($limit, $window) = $user->getRateLimit($request, $action);
-        list($allowance, $timestamp) = $user->loadAllowance($request, $action);
+        [$limit, $window] = $user->getRateLimit($request, $action);
+        [$allowance, $timestamp] = $user->loadAllowance($request, $action);
 
         $current = time();
 
@@ -153,7 +154,7 @@ class RateLimiter extends ActionFilter
      * @param int $remaining the remaining number of allowed requests within the current period
      * @param int $reset the number of seconds to wait before having maximum number of allowed requests again
      */
-    public function addRateLimitHeaders($response, $limit, $remaining, $reset)
+    public function addRateLimitHeaders($response, $limit, $remaining, $reset): void
     {
         if ($this->enableRateLimitHeaders) {
             $response->getHeaders()

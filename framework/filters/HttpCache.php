@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -110,11 +112,10 @@ class HttpCache extends ActionFilter
      */
     public $enabled = true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         if (!$this->enabled) {
             return true;
@@ -170,7 +171,8 @@ class HttpCache extends ActionFilter
             // HTTP_IF_NONE_MATCH takes precedence over HTTP_IF_MODIFIED_SINCE
             // https://datatracker.ietf.org/doc/html/rfc7232#section-3.3
             return $etag !== null && in_array($etag, Yii::$app->request->getETags(), true);
-        } elseif (Yii::$app->request->headers->has('If-Modified-Since')) {
+        }
+        if (Yii::$app->request->headers->has('If-Modified-Since')) {
             return $lastModified !== null && @strtotime(Yii::$app->request->headers->get('If-Modified-Since')) >= $lastModified;
         }
 
@@ -206,7 +208,7 @@ class HttpCache extends ActionFilter
      * @param string $seed Seed for the ETag
      * @return string the generated ETag
      */
-    protected function generateEtag($seed)
+    protected function generateEtag($seed): string
     {
         $etag = '"' . rtrim(base64_encode(sha1($seed, true)), '=') . '"';
         return $this->weakEtag ? 'W/' . $etag : $etag;

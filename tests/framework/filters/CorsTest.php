@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -73,7 +75,7 @@ class CorsTest extends TestCase
         $cors = new Cors([
             'cors' => [
                 'Origin' => ['*',],
-                'Access-Control-Allow-Headers' => ['authorization','X-Requested-With','content-type', 'custom_header']
+                'Access-Control-Allow-Headers' => ['authorization','X-Requested-With','content-type', 'custom_header'],
             ],
         ]);
         $cors->request = $request;

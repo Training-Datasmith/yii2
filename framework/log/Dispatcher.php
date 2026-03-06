@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -74,7 +76,6 @@ class Dispatcher extends Component
      */
     private $_logger;
 
-
     /**
      * {@inheritdoc}
      */
@@ -94,7 +95,7 @@ class Dispatcher extends Component
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -126,7 +127,7 @@ class Dispatcher extends Component
      * If you are providing custom logger configuration and would like it to be used for the whole application
      * and not just for the dispatcher you should use [[Yii::setLogger()]] instead.
      */
-    public function setLogger($value)
+    public function setLogger($value): void
     {
         if (is_string($value) || is_array($value)) {
             $value = Yii::createObject($value);
@@ -151,7 +152,7 @@ class Dispatcher extends Component
      * at most that number of call stacks will be logged. Note that only application call stacks are counted.
      * Defaults to 0.
      */
-    public function setTraceLevel($value)
+    public function setTraceLevel($value): void
     {
         $this->getLogger()->traceLevel = $value;
     }
@@ -173,7 +174,7 @@ class Dispatcher extends Component
      * This property mainly affects how much memory will be taken by the logged messages.
      * A smaller value means less memory, but will increase the execution time due to the overhead of [[Logger::flush()]].
      */
-    public function setFlushInterval($value)
+    public function setFlushInterval($value): void
     {
         $this->getLogger()->flushInterval = $value;
     }
@@ -183,7 +184,7 @@ class Dispatcher extends Component
      * @param array $messages the logged messages
      * @param bool $final whether this method is called at the end of the current application
      */
-    public function dispatch($messages, $final)
+    public function dispatch($messages, $final): void
     {
         $targetErrors = [];
         foreach ($this->targets as $target) {
@@ -215,7 +216,7 @@ class Dispatcher extends Component
      * @return array generated error message data
      * @since 2.0.32
      */
-    protected function generateTargetFailErrorMessage($target, $throwable, $method)
+    protected function generateTargetFailErrorMessage($target, $throwable, $method): array
     {
         return [
             'Unable to send log via ' . get_class($target) . ': ' . ErrorHandler::convertExceptionToVerboseString($throwable),

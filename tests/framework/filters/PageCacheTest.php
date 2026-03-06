@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -479,9 +481,9 @@ class PageCacheTest extends TestCase
         $keys = $this->invokeMethod(new PageCache([
             'variations' => function () {
                 return [
-                    'foobar'
+                    'foobar',
                 ];
-            }
+            },
         ]), 'calculateCacheKey');
         $this->assertEquals(['yii\filters\PageCache', 'test', 'foobar'], $keys);
 
@@ -489,7 +491,7 @@ class PageCacheTest extends TestCase
         $keys = $this->invokeMethod(new PageCache([
             'variations' => function () {
                 return 'foobarstring';
-            }
+            },
         ]), 'calculateCacheKey');
         $this->assertEquals(['yii\filters\PageCache', 'test', 'foobarstring'], $keys);
     }

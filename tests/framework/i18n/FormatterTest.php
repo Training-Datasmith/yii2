@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -10,9 +12,9 @@ namespace yiiunit\framework\i18n;
 
 use DateTime;
 use DateTimeZone;
+use IntlException;
 use NumberFormatter;
 use ResourceBundle;
-use IntlException;
 use yii\i18n\Formatter;
 use yiiunit\TestCase;
 

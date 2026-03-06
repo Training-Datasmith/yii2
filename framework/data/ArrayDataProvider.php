@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -74,7 +76,6 @@ class ArrayDataProvider extends BaseDataProvider
      */
     public $modelClass;
 
-
     /**
      * {@inheritdoc}
      */
@@ -114,7 +115,7 @@ class ArrayDataProvider extends BaseDataProvider
     /**
      * {@inheritdoc}
      */
-    protected function prepareTotalCount()
+    protected function prepareTotalCount(): int
     {
         return is_array($this->allModels) ? count($this->allModels) : 0;
     }

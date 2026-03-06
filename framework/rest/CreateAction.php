@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -34,7 +36,6 @@ class CreateAction extends Action
      * @var string the name of the view action. This property is needed to create the URL when the model is successfully created.
      */
     public $viewAction = 'view';
-
 
     /**
      * Creates a new model.

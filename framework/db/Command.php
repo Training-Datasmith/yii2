@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -114,7 +116,6 @@ class Command extends Component
      */
     private $_retryHandler;
 
-
     /**
      * Enables query cache for this command.
      * @param int|null $duration the number of seconds that query result of this command can remain valid in the cache.
@@ -123,9 +124,9 @@ class Command extends Component
      * @param \yii\caching\Dependency|null $dependency the cache dependency associated with the cached query result.
      * @return $this the command object itself
      */
-    public function cache($duration = null, $dependency = null)
+    public function cache($duration = null, $dependency = null): self
     {
-        $this->queryCacheDuration = $duration === null ? $this->db->queryCacheDuration : $duration;
+        $this->queryCacheDuration = $duration ?? $this->db->queryCacheDuration;
         $this->queryCacheDependency = $dependency;
         return $this;
     }
@@ -134,7 +135,7 @@ class Command extends Component
      * Disables query cache for this command.
      * @return $this the command object itself
      */
-    public function noCache()
+    public function noCache(): self
     {
         $this->queryCacheDuration = -1;
         return $this;
@@ -159,7 +160,7 @@ class Command extends Component
      * @see reset()
      * @see cancel()
      */
-    public function setSql($sql)
+    public function setSql($sql): self
     {
         if ($sql !== $this->_sql) {
             $this->cancel();
@@ -181,7 +182,7 @@ class Command extends Component
      * @see reset()
      * @see cancel()
      */
-    public function setRawSql($sql)
+    public function setRawSql($sql): self
     {
         if ($sql !== $this->_sql) {
             $this->cancel();
@@ -219,14 +220,14 @@ class Command extends Component
             }
         }
         if (!isset($params[1])) {
-            return preg_replace_callback('#(:\w+)#', function ($matches) use ($params) {
+            return preg_replace_callback('#(:\w+)#', function (array $matches) use ($params) {
                 $m = $matches[1];
-                return isset($params[$m]) ? $params[$m] : $m;
+                return $params[$m] ?? $m;
             }, $this->_sql);
         }
         $sql = '';
         foreach (explode('?', $this->_sql) as $i => $part) {
-            $sql .= (isset($params[$i]) ? $params[$i] : '') . $part;
+            $sql .= ($params[$i] ?? '') . $part;
         }
 
         return $sql;
@@ -242,7 +243,7 @@ class Command extends Component
      * the SQL statement should be used to determine whether it is for read or write.
      * @throws Exception if there is any DB error
      */
-    public function prepare($forRead = null)
+    public function prepare($forRead = null): void
     {
         if ($this->pdoStatement) {
             $this->bindPendingParams();
@@ -281,7 +282,7 @@ class Command extends Component
      * Cancels the execution of the SQL statement.
      * This method mainly sets [[pdoStatement]] to be null.
      */
-    public function cancel()
+    public function cancel(): void
     {
         $this->pdoStatement = null;
     }
@@ -299,7 +300,7 @@ class Command extends Component
      * @return $this the current command being executed
      * @see https://www.php.net/manual/en/function.PDOStatement-bindParam.php
      */
-    public function bindParam($name, &$value, $dataType = null, $length = null, $driverOptions = null)
+    public function bindParam($name, &$value, $dataType = null, $length = null, $driverOptions = null): self
     {
         $this->prepare();
 
@@ -341,7 +342,7 @@ class Command extends Component
      * @return $this the current command being executed
      * @see https://www.php.net/manual/en/function.PDOStatement-bindValue.php
      */
-    public function bindValue($name, $value, $dataType = null)
+    public function bindValue($name, $value, $dataType = null): self
     {
         if ($dataType === null) {
             $dataType = $this->db->getSchema()->getPdoType($value);
@@ -363,7 +364,7 @@ class Command extends Component
      * e.g. `[':name' => 'John', ':profile' => new PdoValue($profile, \PDO::PARAM_LOB)]`.
      * @return $this the current command being executed
      */
-    public function bindValues($values)
+    public function bindValues($values): self
     {
         if (empty($values)) {
             return $this;
@@ -515,12 +516,10 @@ class Command extends Component
      * @param array|\Generator $rows the rows to be batch inserted into the table
      * @return $this the command object itself
      */
-    public function batchInsert($table, $columns, $rows)
+    public function batchInsert($table, $columns, $rows): self
     {
         $table = $this->db->quoteSql($table);
-        $columns = array_map(function ($column) {
-            return $this->db->quoteSql($column);
-        }, $columns);
+        $columns = array_map(fn ($column) => $this->db->quoteSql($column), $columns);
 
         $params = [];
         $sql = $this->db->getQueryBuilder()->batchInsert($table, $columns, $rows, $params);
@@ -1107,7 +1106,7 @@ class Command extends Component
     public function execute()
     {
         $sql = $this->getSql();
-        list($profile, $rawSql) = $this->logQuery(__METHOD__);
+        [$profile, $rawSql] = $this->logQuery(__METHOD__);
 
         if ($sql == '') {
             return 0;
@@ -1139,17 +1138,17 @@ class Command extends Component
      * @return array array of two elements, the first is boolean of whether profiling is enabled or not.
      * The second is the rawSql if it has been created.
      */
-    protected function logQuery($category)
+    protected function logQuery($category): array
     {
         if ($this->db->enableLogging) {
             $rawSql = $this->getRawSql();
             Yii::info($rawSql, $category);
         }
         if (!$this->db->enableProfiling) {
-            return [false, isset($rawSql) ? $rawSql : null];
+            return [false, $rawSql ?? null];
         }
 
-        return [true, isset($rawSql) ? $rawSql : $this->getRawSql()];
+        return [true, $rawSql ?? $this->getRawSql()];
     }
 
     /**
@@ -1163,7 +1162,7 @@ class Command extends Component
      */
     protected function queryInternal($method, $fetchMode = null)
     {
-        list($profile, $rawSql) = $this->logQuery('yii\db\Command::query');
+        [$profile, $rawSql] = $this->logQuery('yii\db\Command::query');
 
         if ($method !== '') {
             $info = $this->db->getQueryCacheInfo($this->queryCacheDuration, $this->queryCacheDependency);
@@ -1219,12 +1218,12 @@ class Command extends Component
      * @return array the cache key
      * @since 2.0.16
      */
-    protected function getCacheKey($method, $fetchMode, $rawSql)
+    protected function getCacheKey($method, $fetchMode, $rawSql): array
     {
         $params = $this->params;
         ksort($params);
         return [
-            __CLASS__,
+            self::class,
             $method,
             $fetchMode,
             $this->db->dsn,
@@ -1240,7 +1239,7 @@ class Command extends Component
      * @return $this this command instance
      * @since 2.0.6
      */
-    protected function requireTableSchemaRefresh($name)
+    protected function requireTableSchemaRefresh($name): self
     {
         $this->_refreshTableName = $name;
         return $this;
@@ -1264,7 +1263,7 @@ class Command extends Component
      * @return $this this command instance.
      * @since 2.0.14
      */
-    protected function requireTransaction($isolationLevel = null)
+    protected function requireTransaction($isolationLevel = null): self
     {
         $this->_isolationLevel = $isolationLevel;
         return $this;
@@ -1288,7 +1287,7 @@ class Command extends Component
      * @return $this this command instance.
      * @since 2.0.14
      */
-    protected function setRetryHandler(callable $handler)
+    protected function setRetryHandler(callable $handler): self
     {
         $this->_retryHandler = $handler;
         return $this;
@@ -1314,7 +1313,7 @@ class Command extends Component
                     && $this->_isolationLevel !== false
                     && $this->db->getTransaction() === null
                 ) {
-                    $this->db->transaction(function () use ($rawSql) {
+                    $this->db->transaction(function () use ($rawSql): void {
                         $this->internalExecute($rawSql);
                     }, $this->_isolationLevel);
                 } else {

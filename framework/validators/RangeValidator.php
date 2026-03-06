@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -51,11 +53,10 @@ class RangeValidator extends Validator
      */
     public $allowArray = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (
@@ -73,13 +74,13 @@ class RangeValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         $in = false;
 
         if (
             $this->allowArray
-            && ($value instanceof \Traversable || is_array($value))
+            && (is_iterable($value))
             && ArrayHelper::isSubset($value, $this->range, $this->strict)
         ) {
             $in = true;
@@ -95,7 +96,7 @@ class RangeValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         if ($this->range instanceof \Closure) {
             $this->range = call_user_func($this->range, $model, $attribute);
@@ -106,7 +107,7 @@ class RangeValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         if ($this->range instanceof \Closure) {
             $this->range = call_user_func($this->range, $model, $attribute);
@@ -121,7 +122,7 @@ class RangeValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $range = [];
         foreach ($this->range as $value) {

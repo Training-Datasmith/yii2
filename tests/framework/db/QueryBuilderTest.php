@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,14 +10,14 @@
 
 namespace yiiunit\framework\db;
 
-use Yii;
-use Exception;
 use Closure;
+use Exception;
+use Yii;
 use yii\base\NotSupportedException;
 use yii\db\ColumnSchemaBuilder;
 use yii\db\conditions\BetweenColumnsCondition;
-use yii\db\conditions\LikeCondition;
 use yii\db\conditions\InCondition;
+use yii\db\conditions\LikeCondition;
 use yii\db\cubrid\QueryBuilder as CubridQueryBuilder;
 use yii\db\Expression;
 use yii\db\mssql\QueryBuilder as MssqlQueryBuilder;
@@ -663,7 +665,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                     'mysql' => 'tinyint(3) UNSIGNED',
                     'sqlite' => 'tinyint UNSIGNED',
                     'cubrid' => 'smallint UNSIGNED',
-                ]
+                ],
             ],
             [
                 Schema::TYPE_TINYINT,
@@ -970,7 +972,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 ],
                 [
                     'sqlsrv' => 'integer',
-                ]
+                ],
             ],
             [
                 Schema::TYPE_PK . " COMMENT 'test comment'",
@@ -982,7 +984,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 ],
                 [
                     'sqlsrv' => 'pk',
-                ]
+                ],
             ],
             [
                 Schema::TYPE_PK . ' FIRST',
@@ -995,7 +997,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 [
                     'oci' => 'NUMBER(10) NOT NULL PRIMARY KEY',
                     'sqlsrv' => 'pk',
-                ]
+                ],
             ],
             [
                 Schema::TYPE_INTEGER . ' FIRST',
@@ -1009,7 +1011,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                     'oci' => 'NUMBER(10)',
                     'pgsql' => 'integer',
                     'sqlsrv' => 'integer',
-                ]
+                ],
             ],
             [
                 Schema::TYPE_STRING . ' FIRST',
@@ -1022,7 +1024,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 [
                     'oci' => 'VARCHAR2(255)',
                     'sqlsrv' => 'string',
-                ]
+                ],
             ],
             [
                 Schema::TYPE_INTEGER . ' NOT NULL FIRST',
@@ -1035,7 +1037,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 [
                     'oci' => 'NUMBER(10) NOT NULL',
                     'sqlsrv' => 'integer NOT NULL',
-                ]
+                ],
             ],
             [
                 Schema::TYPE_STRING . ' NOT NULL FIRST',
@@ -1048,7 +1050,7 @@ abstract class QueryBuilderTest extends DatabaseTestCase
                 [
                     'oci' => 'VARCHAR2(255) NOT NULL',
                     'sqlsrv' => 'string NOT NULL',
-                ]
+                ],
             ],
         ];
 
@@ -1265,7 +1267,6 @@ abstract class QueryBuilderTest extends DatabaseTestCase
             // or
             [['or', 'id=1', ''], 'id=1', []],
             [['or', 'type=1', ['or', '', 'id=2']], '(type=1) OR (id=2)', []],
-
 
             // between
             [['between', 'id', 1, null], '', []],

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -58,7 +60,6 @@ trait QueryTrait
      * @since 2.0.11
      */
     public $emulateExecution = false;
-
 
     /**
      * Sets the [[indexBy]] property.
@@ -299,7 +300,7 @@ trait QueryTrait
      * @param mixed $value
      * @return bool if the value is empty
      */
-    protected function isEmpty($value)
+    protected function isEmpty($value): bool
     {
         return $value === '' || $value === [] || $value === null || is_string($value) && trim($value) === '';
     }
@@ -360,15 +361,16 @@ trait QueryTrait
      * Normalizes format of ORDER BY data.
      *
      * @param array|string|ExpressionInterface|null $columns the columns value to normalize. See [[orderBy]] and [[addOrderBy]].
-     * @return array
      */
-    protected function normalizeOrderBy($columns)
+    protected function normalizeOrderBy($columns): array
     {
         if (empty($columns)) {
             return [];
-        } elseif ($columns instanceof ExpressionInterface) {
+        }
+        if ($columns instanceof ExpressionInterface) {
             return [$columns];
-        } elseif (is_array($columns)) {
+        }
+        if (is_array($columns)) {
             return $columns;
         }
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -64,12 +66,11 @@ class InputWidget extends Widget
      */
     public $options = [];
 
-
     /**
      * Initializes the widget.
      * If you override this method, make sure you call the parent implementation first.
      */
-    public function init()
+    public function init(): void
     {
         if ($this->name === null && !$this->hasModel()) {
             throw new InvalidConfigException("Either 'name', or 'model' and 'attribute' properties must be specified.");
@@ -83,7 +84,7 @@ class InputWidget extends Widget
     /**
      * @return bool whether this widget is associated with a data model.
      */
-    protected function hasModel()
+    protected function hasModel(): bool
     {
         return $this->model instanceof Model && $this->attribute !== null;
     }

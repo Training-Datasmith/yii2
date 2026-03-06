@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,7 +37,7 @@ class m150909_153426_cache_init extends Migration
     /**
      * {@inheritdoc}
      */
-    public function up()
+    public function up(): void
     {
         $cache = $this->getCache();
         $this->db = $cache->db;
@@ -57,7 +59,7 @@ class m150909_153426_cache_init extends Migration
     /**
      * {@inheritdoc}
      */
-    public function down()
+    public function down(): void
     {
         $cache = $this->getCache();
         $this->db = $cache->db;

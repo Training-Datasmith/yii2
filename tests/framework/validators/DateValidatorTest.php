@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -365,7 +367,7 @@ class DateValidatorTest extends TestCase
         $val = new DateValidator([
             'format' => 'yyyy-MM-dd HH:mm:ss',
             'timestampAttribute' => 'attr_timestamp',
-            'timeZone' => 'UTC'
+            'timeZone' => 'UTC',
         ]);
         $model = new FakedValidationModel();
         $model->attr_date = '2013-09-13 14:23:15';

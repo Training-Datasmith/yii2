@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -60,7 +62,6 @@ class TableSchema extends BaseObject
      */
     public $columns = [];
 
-
     /**
      * Gets the named column metadata.
      * This is a convenient method for retrieving a named column even if it does not exist.
@@ -69,14 +70,14 @@ class TableSchema extends BaseObject
      */
     public function getColumn($name)
     {
-        return isset($this->columns[$name]) ? $this->columns[$name] : null;
+        return $this->columns[$name] ?? null;
     }
 
     /**
      * Returns the names of all columns in this table.
      * @return array list of column names
      */
-    public function getColumnNames()
+    public function getColumnNames(): array
     {
         return array_keys($this->columns);
     }
@@ -86,7 +87,7 @@ class TableSchema extends BaseObject
      * @param string|array $keys the primary key (can be composite)
      * @throws InvalidArgumentException if the specified key cannot be found in the table.
      */
-    public function fixPrimaryKey($keys)
+    public function fixPrimaryKey($keys): void
     {
         $keys = (array) $keys;
         $this->primaryKey = $keys;

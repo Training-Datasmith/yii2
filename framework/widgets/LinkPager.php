@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -133,11 +135,10 @@ class LinkPager extends Widget
      */
     public $disableCurrentPageButton = false;
 
-
     /**
      * Initializes the pager.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -150,7 +151,7 @@ class LinkPager extends Widget
      * Executes the widget.
      * This overrides the parent implementation by displaying the generated page buttons.
      */
-    public function run()
+    public function run(): void
     {
         if ($this->registerLinkTags) {
             $this->registerLinkTags();
@@ -200,7 +201,7 @@ class LinkPager extends Widget
         }
 
         // internal pages
-        list($beginPage, $endPage) = $this->getPageRange();
+        [$beginPage, $endPage] = $this->getPageRange();
         for ($i = $beginPage; $i <= $endPage; ++$i) {
             $buttons[] = $this->renderPageButton($i + 1, $i, null, $this->disableCurrentPageButton && $i == $currentPage, $i == $currentPage);
         }
@@ -259,7 +260,7 @@ class LinkPager extends Widget
     /**
      * @return array the begin and end pages that need to be displayed.
      */
-    protected function getPageRange()
+    protected function getPageRange(): array
     {
         $currentPage = $this->pagination->getPage();
         $pageCount = $this->pagination->getPageCount();

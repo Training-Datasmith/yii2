@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,13 +11,13 @@
 namespace yii\rest;
 
 use Yii;
+use yii\base\Module;
 use yii\filters\auth\CompositeAuth;
 use yii\filters\ContentNegotiator;
 use yii\filters\RateLimiter;
 use yii\filters\VerbFilter;
-use yii\web\Response;
 use yii\web\Controller as WebController;
-use yii\base\Module;
+use yii\web\Response;
 
 /**
  * Controller is the base class for RESTful API controller classes.
@@ -47,11 +49,10 @@ class Controller extends WebController
      */
     public $enableCsrfValidation = false;
 
-
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [
             'contentNegotiator' => [
@@ -88,7 +89,7 @@ class Controller extends WebController
      * Please refer to [[VerbFilter::actions]] on how to declare the allowed verbs.
      * @return array the allowed HTTP verbs.
      */
-    protected function verbs()
+    protected function verbs(): array
     {
         return [];
     }

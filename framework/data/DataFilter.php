@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -13,10 +15,10 @@ use yii\base\InvalidConfigException;
 use yii\base\Model;
 use yii\helpers\ArrayHelper;
 use yii\validators\BooleanValidator;
+use yii\validators\DateValidator;
 use yii\validators\EachValidator;
 use yii\validators\NumberValidator;
 use yii\validators\StringValidator;
-use yii\validators\DateValidator;
 use yii\validators\Validator;
 
 /**
@@ -262,7 +264,6 @@ class DataFilter extends Model
      */
     private $_searchAttributeTypes;
 
-
     /**
      * @return mixed raw filter value.
      */
@@ -274,7 +275,7 @@ class DataFilter extends Model
     /**
      * @param mixed $filter raw filter value.
      */
-    public function setFilter($filter)
+    public function setFilter($filter): void
     {
         $this->_filter = $filter;
     }
@@ -299,7 +300,7 @@ class DataFilter extends Model
      * @param Model|array|string|callable $model model instance or its DI compatible configuration.
      * @throws InvalidConfigException on invalid configuration.
      */
-    public function setSearchModel($model)
+    public function setSearchModel($model): void
     {
         if (is_object($model) && !$model instanceof Model && !$model instanceof \Closure) {
             throw new InvalidConfigException('`' . get_class($this) . '::$searchModel` should be an instance of `' . Model::className() . '` or its DI compatible configuration.');
@@ -321,7 +322,7 @@ class DataFilter extends Model
     /**
      * @param array|null $searchAttributeTypes search attribute type map.
      */
-    public function setSearchAttributeTypes($searchAttributeTypes)
+    public function setSearchAttributeTypes($searchAttributeTypes): void
     {
         $this->_searchAttributeTypes = $searchAttributeTypes;
     }
@@ -330,7 +331,7 @@ class DataFilter extends Model
      * Composes default value for [[searchAttributeTypes]] from the [[searchModel]] validation rules.
      * @return array attribute type map.
      */
-    protected function detectSearchAttributeTypes()
+    protected function detectSearchAttributeTypes(): array
     {
         $model = $this->getSearchModel();
 
@@ -359,7 +360,7 @@ class DataFilter extends Model
      * @return string|null detected attribute type.
      * @since 2.0.14
      */
-    protected function detectSearchAttributeType(Validator $validator)
+    protected function detectSearchAttributeType(Validator $validator): ?string
     {
         if ($validator instanceof BooleanValidator) {
             return self::TYPE_BOOLEAN;
@@ -415,7 +416,7 @@ class DataFilter extends Model
      * For each message a `{filter}` placeholder is available referring to the label for [[filterAttributeName]] attribute.
      * @param array|\Closure $errorMessages error messages in `[errorKey => message]` format, or a PHP callback returning them.
      */
-    public function setErrorMessages($errorMessages)
+    public function setErrorMessages($errorMessages): void
     {
         if (is_array($errorMessages)) {
             $errorMessages = array_merge($this->defaultErrorMessages(), $errorMessages);
@@ -427,7 +428,7 @@ class DataFilter extends Model
      * Returns default values for [[errorMessages]].
      * @return array default error messages in `[errorKey => message]` format.
      */
-    protected function defaultErrorMessages()
+    protected function defaultErrorMessages(): array
     {
         return [
             'invalidFilter' => Yii::t('yii', 'The format of {filter} is invalid.'),
@@ -469,7 +470,7 @@ class DataFilter extends Model
     /**
      * {@inheritdoc}
      */
-    public function attributes()
+    public function attributes(): array
     {
         return [
             $this->filterAttributeName,
@@ -479,7 +480,7 @@ class DataFilter extends Model
     /**
      * {@inheritdoc}
      */
-    public function formName()
+    public function formName(): string
     {
         return '';
     }
@@ -487,7 +488,7 @@ class DataFilter extends Model
     /**
      * {@inheritdoc}
      */
-    public function rules()
+    public function rules(): array
     {
         return [
             [$this->filterAttributeName, 'validateFilter', 'skipOnEmpty' => false],
@@ -497,7 +498,7 @@ class DataFilter extends Model
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
+    public function attributeLabels(): array
     {
         return [
             $this->filterAttributeName => $this->filterAttributeLabel,
@@ -509,7 +510,7 @@ class DataFilter extends Model
     /**
      * Validates filter attribute value to match filer condition specification.
      */
-    public function validateFilter()
+    public function validateFilter(): void
     {
         $value = $this->getFilter();
         if ($value !== null) {
@@ -525,10 +526,6 @@ class DataFilter extends Model
     {
         if (!is_array($condition)) {
             $this->addError($this->filterAttributeName, $this->parseErrorMessage('invalidFilter'));
-            return;
-        }
-
-        if (empty($condition)) {
             return;
         }
 
@@ -749,7 +746,7 @@ class DataFilter extends Model
      * @param array $filter raw filter.
      * @return array normalized filter.
      */
-    private function normalizeComplexFilter(array $filter)
+    private function normalizeComplexFilter(array $filter): array
     {
         $result = [];
         foreach ($filter as $key => $value) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -55,7 +57,6 @@ class CacheControllerTest extends TestCase
             $this->markTestSkipped('pdo and ' . $pdoDriver . ' extensions are required.');
         }
 
-
         $this->mockApplication([
             'components' => [
                 'firstCache' => 'yii\caching\ArrayCache',
@@ -78,7 +79,7 @@ class CacheControllerTest extends TestCase
                     'yii\caching\CacheInterface' => [
                         'class' => 'yii\caching\ArrayCache',
                     ],
-                ]
+                ],
             ],
         ]);
 

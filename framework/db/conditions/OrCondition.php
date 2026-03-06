@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -18,10 +20,8 @@ class OrCondition extends ConjunctionCondition
 {
     /**
      * Returns the operator that is represented by this condition class, e.g. `AND`, `OR`.
-     *
-     * @return string
      */
-    public function getOperator()
+    public function getOperator(): string
     {
         return 'OR';
     }

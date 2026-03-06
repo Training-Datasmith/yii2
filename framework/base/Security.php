@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -95,8 +97,7 @@ class Security extends Component
      * @var boolean if LibreSSL should be used.
      * The recent (> 2.1.5) LibreSSL RNGs are faster and likely better than /dev/urandom.
      */
-    private $_useLibreSSL;
-
+    private ?bool $_useLibreSSL = null;
 
     /**
      * @return bool if LibreSSL should be used
@@ -195,7 +196,7 @@ class Security extends Component
      * @throws Exception on OpenSSL error
      * @see decrypt()
      */
-    protected function encrypt($data, $passwordBased, $secret, $info)
+    protected function encrypt($data, $passwordBased, $secret, $info): string
     {
         if (!extension_loaded('openssl')) {
             throw new InvalidConfigException('Encryption requires the OpenSSL PHP extension');
@@ -204,7 +205,7 @@ class Security extends Component
             throw new InvalidConfigException($this->cipher . ' is not an allowed cipher');
         }
 
-        list($blockSize, $keySize) = $this->allowedCiphers[$this->cipher];
+        [$blockSize, $keySize] = $this->allowedCiphers[$this->cipher];
 
         $keySalt = $this->generateRandomKey($keySize);
         if ($passwordBased) {
@@ -254,7 +255,7 @@ class Security extends Component
             throw new InvalidConfigException($this->cipher . ' is not an allowed cipher');
         }
 
-        list($blockSize, $keySize) = $this->allowedCiphers[$this->cipher];
+        [$blockSize, $keySize] = $this->allowedCiphers[$this->cipher];
 
         $keySalt = StringHelper::byteSubstr($data, 0, $keySize);
         if ($passwordBased) {
@@ -264,13 +265,13 @@ class Security extends Component
         }
 
         $authKey = $this->hkdf($this->kdfHash, $key, null, $this->authKeyInfo, $keySize);
-        $data = $this->validateData(StringHelper::byteSubstr($data, $keySize, null), $authKey);
+        $data = $this->validateData(StringHelper::byteSubstr($data, $keySize), $authKey);
         if ($data === false) {
             return false;
         }
 
         $iv = StringHelper::byteSubstr($data, 0, $blockSize);
-        $encrypted = StringHelper::byteSubstr($data, $blockSize, null);
+        $encrypted = StringHelper::byteSubstr($data, $blockSize);
 
         $decrypted = openssl_decrypt($encrypted, $this->cipher, $key, OPENSSL_RAW_DATA, $iv);
         if ($decrypted === false) {
@@ -295,10 +296,10 @@ class Security extends Component
      * @throws InvalidArgumentException when HMAC generation fails.
      * @return string the derived key
      */
-    public function hkdf($algo, $inputKey, $salt = null, $info = null, $length = 0)
+    public function hkdf(string $algo, $inputKey, $salt = null, $info = null, $length = 0)
     {
         if (function_exists('hash_hkdf')) {
-            $outputKey = hash_hkdf((string)$algo, (string)$inputKey, $length, (string)$info, (string)$salt);
+            $outputKey = hash_hkdf($algo, (string)$inputKey, $length, (string)$info, (string)$salt);
             if ($outputKey === false) {
                 throw new InvalidArgumentException('Invalid parameters to hash_hkdf()');
             }
@@ -332,7 +333,7 @@ class Security extends Component
         }
 
         if ($length !== 0) {
-            $outputKey = StringHelper::byteSubstr($outputKey, 0, $length);
+            return StringHelper::byteSubstr($outputKey, 0, $length);
         }
 
         return $outputKey;
@@ -352,7 +353,7 @@ class Security extends Component
      * @return string the derived key
      * @throws InvalidArgumentException when hash generation fails due to invalid params given.
      */
-    public function pbkdf2($algo, $password, $salt, $iterations, $length = 0)
+    public function pbkdf2(string $algo, $password, string $salt, $iterations, $length = 0)
     {
         if (function_exists('hash_pbkdf2') && PHP_VERSION_ID >= 50500) {
             $outputKey = hash_pbkdf2($algo, $password, $salt, $iterations, $length, true);
@@ -395,7 +396,7 @@ class Security extends Component
         }
 
         if ($length !== 0) {
-            $outputKey = StringHelper::byteSubstr($outputKey, 0, $length);
+            return StringHelper::byteSubstr($outputKey, 0, $length);
         }
 
         return $outputKey;
@@ -417,7 +418,7 @@ class Security extends Component
      * @see hkdf()
      * @see pbkdf2()
      */
-    public function hashData($data, $key, $rawHash = false)
+    public function hashData(string $data, $key, $rawHash = false): string
     {
         $hash = hash_hmac($this->macHash, $data, $key, $rawHash);
         if (!$hash) {
@@ -451,7 +452,7 @@ class Security extends Component
         $hashLength = StringHelper::byteLength($test);
         if (StringHelper::byteLength($data) >= $hashLength) {
             $hash = StringHelper::byteSubstr($data, 0, $hashLength);
-            $pureData = StringHelper::byteSubstr($data, $hashLength, null);
+            $pureData = StringHelper::byteSubstr($data, $hashLength);
 
             $calculatedHash = hash_hmac($this->macHash, $pureData, $key, $rawHash);
 
@@ -473,7 +474,7 @@ class Security extends Component
      * @throws InvalidArgumentException if wrong length is specified
      * @throws Exception on failure.
      */
-    public function generateRandomKey($length = 32)
+    public function generateRandomKey($length = 32): string
     {
         if (!is_int($length)) {
             throw new InvalidArgumentException('First parameter ($length) must be an integer');
@@ -494,7 +495,7 @@ class Security extends Component
      * @return string the generated random key
      * @throws Exception on failure.
      */
-    public function generateRandomString($length = 32)
+    public function generateRandomString($length = 32): string
     {
         if (!is_int($length)) {
             throw new InvalidArgumentException('First parameter ($length) must be an integer');
@@ -541,7 +542,7 @@ class Security extends Component
      * @throws Exception on bad password parameter or cost parameter.
      * @see validatePassword()
      */
-    public function generatePasswordHash($password, $cost = null)
+    public function generatePasswordHash($password, $cost = null): string
     {
         if ($cost === null) {
             $cost = $this->passwordHashCost;
@@ -555,7 +556,7 @@ class Security extends Component
         $salt = $this->generateSalt($cost);
         $hash = crypt($password, $salt);
         // strlen() is safe since crypt() returns only ascii
-        if (!is_string($hash) || strlen($hash) !== 60) {
+        if (strlen($hash) !== 60) {
             throw new Exception('Unknown error occurred while generating hash.');
         }
 
@@ -633,7 +634,7 @@ class Security extends Component
      * @param string $actual user-supplied string.
      * @return bool whether strings are equal.
      */
-    public function compareString($expected, $actual)
+    public function compareString($expected, $actual): bool
     {
         if (!is_string($expected)) {
             throw new InvalidArgumentException('Expected expected value to be a string, ' . gettype($expected) . ' given.');

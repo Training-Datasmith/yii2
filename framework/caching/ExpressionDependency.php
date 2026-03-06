@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -36,7 +38,6 @@ class ExpressionDependency extends Dependency
      * of this property in [[expression]] using `$this->params`.
      */
     public $params;
-
 
     /**
      * Generates the data needed to determine if dependency has been changed.

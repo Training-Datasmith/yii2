@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -191,7 +193,6 @@ class Validator extends Component
      */
     public $whenClient;
 
-
     /**
      * Creates a validator object.
      * @param string|\Closure $type the validator type. This can be either:
@@ -234,7 +235,7 @@ class Validator extends Component
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->attributes = (array) $this->attributes;
@@ -249,7 +250,7 @@ class Validator extends Component
      * Note that if an attribute is not associated with the validator - it will be
      * ignored. If this parameter is null, every attribute listed in [[attributes]] will be validated.
      */
-    public function validateAttributes($model, $attributes = null)
+    public function validateAttributes($model, $attributes = null): void
     {
         $attributes = $this->getValidationAttributes($attributes);
 
@@ -302,7 +303,7 @@ class Validator extends Component
      * @param \yii\base\Model $model the data model to be validated
      * @param string $attribute the name of the attribute to be validated.
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $result = $this->validateValue($model->$attribute);
         if (!empty($result)) {
@@ -317,14 +318,14 @@ class Validator extends Component
      * @param string|null $error the error message to be returned, if the validation fails.
      * @return bool whether the data is valid.
      */
-    public function validate($value, &$error = null)
+    public function validate($value, &$error = null): bool
     {
         $result = $this->validateValue($value);
         if (empty($result)) {
             return true;
         }
 
-        list($message, $params) = $result;
+        [$message, $params] = $result;
         $params['attribute'] = Yii::t('yii', 'the input value');
         if (is_array($value)) {
             $params['value'] = 'array()';
@@ -412,7 +413,7 @@ class Validator extends Component
      * @return array the client-side validation options
      * @since 2.0.11
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         return [];
     }
@@ -428,7 +429,7 @@ class Validator extends Component
      * @param string $scenario scenario name
      * @return bool whether the validator applies to the specified scenario.
      */
-    public function isActive($scenario)
+    public function isActive($scenario): bool
     {
         return !in_array($scenario, $this->except, true) && (empty($this->on) || in_array($scenario, $this->on, true));
     }
@@ -441,7 +442,7 @@ class Validator extends Component
      * @param string $message the error message
      * @param array $params values for the placeholders in the error message
      */
-    public function addError($model, $attribute, $message, $params = [])
+    public function addError($model, $attribute, $message, array $params = []): void
     {
         $params['attribute'] = $model->getAttributeLabel($attribute);
         if (!isset($params['value'])) {
@@ -499,10 +500,8 @@ class Validator extends Component
      * @return array attribute names.
      * @since 2.0.12
      */
-    public function getAttributeNames()
+    public function getAttributeNames(): array
     {
-        return array_map(function ($attribute) {
-            return ltrim($attribute, '!');
-        }, $this->attributes);
+        return array_map(fn ($attribute) => ltrim($attribute, '!'), $this->attributes);
     }
 }

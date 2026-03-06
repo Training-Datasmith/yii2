@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -90,12 +92,11 @@ class BaseYii
      */
     public static $container;
 
-
     /**
      * Returns a string representing the current version of the Yii framework.
      * @return string the version of Yii framework
      */
-    public static function getVersion()
+    public static function getVersion(): string
     {
         return '2.0.55-dev';
     }
@@ -132,9 +133,9 @@ class BaseYii
      * @throws InvalidArgumentException if the alias is invalid while $throwException is true.
      * @see setAlias()
      */
-    public static function getAlias($alias, $throwException = true)
+    public static function getAlias(string $alias, $throwException = true)
     {
-        if (strncmp((string)$alias, '@', 1) !== 0) {
+        if (strncmp($alias, '@', 1) !== 0) {
             // not an alias
             return $alias;
         }
@@ -168,7 +169,7 @@ class BaseYii
      * @param string $alias the alias
      * @return string|false the root alias, or false if no root alias is found
      */
-    public static function getRootAlias($alias)
+    public static function getRootAlias(string $alias)
     {
         $pos = strpos($alias, '/');
         $root = $pos === false ? $alias : substr($alias, 0, $pos);
@@ -218,7 +219,7 @@ class BaseYii
      * @throws InvalidArgumentException if $path is an invalid alias.
      * @see getAlias()
      */
-    public static function setAlias($alias, $path)
+    public static function setAlias($alias, $path): void
     {
         if (strncmp($alias, '@', 1)) {
             $alias = '@' . $alias;
@@ -278,7 +279,7 @@ class BaseYii
      * @param string $className the fully qualified class name without a leading backslash "\"
      * @throws UnknownClassException if the class does not exist in the class file
      */
-    public static function autoload($className)
+    public static function autoload($className): void
     {
         if (isset(static::$classMap[$className])) {
             $classFile = static::$classMap[$className];
@@ -392,7 +393,7 @@ class BaseYii
      * Sets the logger object.
      * @param Logger|null $logger the logger object.
      */
-    public static function setLogger($logger)
+    public static function setLogger($logger): void
     {
         self::$_logger = $logger;
     }
@@ -407,7 +408,7 @@ class BaseYii
      * @param string $category the category of the message.
      * @since 2.0.14
      */
-    public static function debug($message, $category = 'application')
+    public static function debug($message, $category = 'application'): void
     {
         if (YII_DEBUG) {
             static::getLogger()->log($message, Logger::LEVEL_TRACE, $category);
@@ -421,7 +422,7 @@ class BaseYii
      * @param string $category the category of the message.
      * @deprecated since 2.0.14. Use [[debug()]] instead.
      */
-    public static function trace($message, $category = 'application')
+    public static function trace($message, $category = 'application'): void
     {
         static::debug($message, $category);
     }
@@ -434,7 +435,7 @@ class BaseYii
      * complex data structure, such as an array.
      * @param string $category the category of the message.
      */
-    public static function error($message, $category = 'application')
+    public static function error($message, $category = 'application'): void
     {
         static::getLogger()->log($message, Logger::LEVEL_ERROR, $category);
     }
@@ -447,7 +448,7 @@ class BaseYii
      * complex data structure, such as an array.
      * @param string $category the category of the message.
      */
-    public static function warning($message, $category = 'application')
+    public static function warning($message, $category = 'application'): void
     {
         static::getLogger()->log($message, Logger::LEVEL_WARNING, $category);
     }
@@ -460,7 +461,7 @@ class BaseYii
      * complex data structure, such as an array.
      * @param string $category the category of the message.
      */
-    public static function info($message, $category = 'application')
+    public static function info($message, $category = 'application'): void
     {
         static::getLogger()->log($message, Logger::LEVEL_INFO, $category);
     }
@@ -483,7 +484,7 @@ class BaseYii
      * @param string $category the category of this log message
      * @see endProfile()
      */
-    public static function beginProfile($token, $category = 'application')
+    public static function beginProfile($token, $category = 'application'): void
     {
         static::getLogger()->log($token, Logger::LEVEL_PROFILE_BEGIN, $category);
     }
@@ -495,7 +496,7 @@ class BaseYii
      * @param string $category the category of this log message
      * @see beginProfile()
      */
-    public static function endProfile($token, $category = 'application')
+    public static function endProfile($token, $category = 'application'): void
     {
         static::getLogger()->log($token, Logger::LEVEL_PROFILE_END, $category);
     }
@@ -574,7 +575,7 @@ class BaseYii
      * @param object $object the object to be handled
      * @return array the public member variables of the object
      */
-    public static function getObjectVars($object)
+    public static function getObjectVars($object): array
     {
         return get_object_vars($object);
     }

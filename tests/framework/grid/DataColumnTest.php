@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,6 @@
 
 namespace yiiunit\framework\grid;
 
-use yiiunit\TestCase;
-use yiiunit\data\base\RulesModel;
 use Yii;
 use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
@@ -17,7 +17,9 @@ use yii\grid\DataColumn;
 use yii\grid\GridView;
 use yiiunit\data\ar\ActiveRecord;
 use yiiunit\data\ar\Order;
+use yiiunit\data\base\RulesModel;
 use yiiunit\data\base\Singer;
+use yiiunit\TestCase;
 
 /**
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
@@ -112,7 +114,7 @@ class DataColumnTest extends TestCase
         ActiveRecord::$db = Yii::$app->getDb();
         Yii::$app->getDb()->createCommand()->createTable(Singer::tableName(), [
             'firstName' => 'string',
-            'lastName' => 'string'
+            'lastName' => 'string',
         ])->execute();
 
         $filterInput = '<input type="text" class="form-control" name="Singer[lastName]" maxlength="25">';
@@ -120,7 +122,7 @@ class DataColumnTest extends TestCase
             'dataProvider' => new ActiveDataProvider(),
             'filterModel' => new Singer(),
             'columns' => [
-                0 => 'lastName'
+                0 => 'lastName',
             ],
         ]);
 

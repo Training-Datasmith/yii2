@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,9 +10,9 @@
 
 namespace yiiunit\framework\grid;
 
-use yiiunit\TestCase;
 use yii\grid\ActionColumn;
 use yii\helpers\Html;
+use yiiunit\TestCase;
 
 /**
  * @author Vitaly S. <fornit1917@gmail.com>
@@ -58,7 +60,7 @@ class ActionColumnTest extends TestCase
 
         //test custom icon
         $column->icons = [
-            'pencil' => Html::tag('span', '', ['class' => ['glyphicon', 'glyphicon-pencil']])
+            'pencil' => Html::tag('span', '', ['class' => ['glyphicon', 'glyphicon-pencil']]),
         ];
         $columnContents = $column->renderDataCell(['id' => 1], 1, 0);
         $expectedHtml = '<td><a href="http://test.com" title="Update" aria-label="Update" data-pjax="0"><span class="glyphicon glyphicon-pencil"></span></a></td>';

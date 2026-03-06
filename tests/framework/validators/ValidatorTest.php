@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,18 +11,18 @@
 namespace yiiunit\framework\validators;
 
 use stdClass;
-use yii\base\View;
 use yii\base\DynamicModel;
+use yii\base\View;
 use yii\validators\BooleanValidator;
 use yii\validators\InlineValidator;
 use yii\validators\NumberValidator;
 use yii\validators\RequiredValidator;
+use yii\validators\SafeValidator;
 use yii\validators\Validator;
 use yiiunit\data\validators\models\FakedValidationModel;
 use yiiunit\data\validators\models\ValidatorTestFunctionModel;
 use yiiunit\data\validators\TestValidator;
 use yiiunit\TestCase;
-use yii\validators\SafeValidator;
 
 /**
  * @group validators
@@ -166,7 +168,6 @@ class ValidatorTest extends TestCase
         $this->assertTrue($validator->isAttributeValidated('attr_runMe2'));
         $this->assertTrue($validator->isAttributeValidated('attr_empty1'));
         $this->assertTrue($validator->isAttributeValidated('attr_empty2'));
-
 
         $validator = new TestValidator(['attributes' => $attributes, 'skipOnEmpty' => true]);
         $validator->validateAttributes($model);

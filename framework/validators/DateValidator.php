@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -214,18 +216,17 @@ class DateValidator extends Validator
     /**
      * @var array map of short format names to IntlDateFormatter constant values.
      */
-    private $_dateFormats = [
+    private array $_dateFormats = [
         'short' => 3, // IntlDateFormatter::SHORT,
         'medium' => 2, // IntlDateFormatter::MEDIUM,
         'long' => 1, // IntlDateFormatter::LONG,
         'full' => 0, // IntlDateFormatter::FULL,
     ];
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message === null) {
@@ -279,7 +280,7 @@ class DateValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
         if ($this->isEmpty($value)) {
@@ -317,14 +318,16 @@ class DateValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         $timestamp = $this->parseDateValue($value);
         if ($timestamp === false) {
             return [$this->message, []];
-        } elseif ($this->min !== null && $timestamp < $this->min) {
+        }
+        if ($this->min !== null && $timestamp < $this->min) {
             return [$this->tooSmall, ['min' => $this->minString]];
-        } elseif ($this->max !== null && $timestamp > $this->max) {
+        }
+        if ($this->max !== null && $timestamp > $this->max) {
             return [$this->tooBig, ['max' => $this->maxString]];
         }
 
@@ -399,10 +402,9 @@ class DateValidator extends Validator
      * Creates IntlDateFormatter
      *
      * @param $format string date format
-     * @return IntlDateFormatter
      * @throws InvalidConfigException
      */
-    private function getIntlDateFormatter($format)
+    private function getIntlDateFormatter($format): \IntlDateFormatter
     {
         if (!isset($this->_dateFormats[$format])) {
             // if no time was provided in the format string set timezone to default one to match yii\i18n\Formatter::formatDateTimeValue()
@@ -458,10 +460,9 @@ class DateValidator extends Validator
      * Formats a timestamp using the specified format.
      * @param int $timestamp
      * @param string $format
-     * @return string
      * @throws Exception
      */
-    private function formatTimestamp($timestamp, $format)
+    private function formatTimestamp($timestamp, $format): string
     {
         if (strncmp($format, 'php:', 4) === 0) {
             $format = substr($format, 4);

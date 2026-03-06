@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -87,7 +89,6 @@ class PhpDocController extends ConsoleController
      * @var bool whether to add copyright header to php files. This should be skipped in application code.
      */
     public $skipFrameworkRequirements = false;
-
 
     /**
      * Generates `@property` annotations in class files from getters and setters.

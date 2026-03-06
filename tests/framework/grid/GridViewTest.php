@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,17 +10,17 @@
 
 namespace yiiunit\framework\grid;
 
-use yiiunit\TestCase;
-use yii\db\Connection;
-use yii\web\UrlManager;
-use yii\data\ActiveDataProvider;
 use Exception;
 use Yii;
+use yii\data\ActiveDataProvider;
 use yii\data\ArrayDataProvider;
+use yii\db\Connection;
 use yii\grid\DataColumn;
 use yii\grid\GridView;
+use yii\web\UrlManager;
 use yii\web\View;
 use yiiunit\data\ar\NoAutoLabels;
+use yiiunit\TestCase;
 
 /**
  * @author Evgeniy Tkachenko <et.coder@gmail.com>
@@ -244,7 +246,7 @@ class GridViewTest extends TestCase
                     'dataProvider'   => new ArrayDataProvider(['allModels' => []]),
                     'id'             => 'test_grid_view',
                     'filterSelector' => 'foobar',
-                ]
+                ],
             ]
         );
         $this->assertStringContainsString(
@@ -258,8 +260,8 @@ class GridViewTest extends TestCase
                     'dataProvider'           => new ArrayDataProvider(['allModels' => []]),
                     'id'                     => 'test_grid_view',
                     'filterSelector'         => 'foobar',
-                    'overrideFilterSelector' => true
-                ]
+                    'overrideFilterSelector' => true,
+                ],
             ]
         );
         $this->assertStringNotContainsString(
@@ -276,8 +278,8 @@ class GridViewTest extends TestCase
                 'options' => [
                     'dataProvider'   => new ArrayDataProvider(['allModels' => []]),
                     'id'             => 'test_grid_view',
-                    'filterSelector' => static fn($widgetId, $filterId) => "$widgetId foo $filterId bar",
-                ]
+                    'filterSelector' => static fn ($widgetId, $filterId) => "$widgetId foo $filterId bar",
+                ],
             ]
         );
         $this->assertStringContainsString(
@@ -290,9 +292,9 @@ class GridViewTest extends TestCase
                 'options' => [
                     'dataProvider'           => new ArrayDataProvider(['allModels' => []]),
                     'id'                     => 'test_grid_view',
-                    'filterSelector'         => static fn($widgetId, $filterId) => "$widgetId foo $filterId bar",
-                    'overrideFilterSelector' => true
-                ]
+                    'filterSelector'         => static fn ($widgetId, $filterId) => "$widgetId foo $filterId bar",
+                    'overrideFilterSelector' => true,
+                ],
             ]
         );
         $this->assertStringNotContainsString(

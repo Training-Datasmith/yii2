@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -22,7 +24,6 @@ class HashCondition implements ConditionInterface
      */
     private $hash;
 
-
     /**
      * HashCondition constructor.
      *
@@ -44,7 +45,7 @@ class HashCondition implements ConditionInterface
     /**
      * {@inheritdoc}
      */
-    public static function fromArrayDefinition($operator, $operands)
+    public static function fromArrayDefinition($operator, $operands): self
     {
         return new static($operands);
     }

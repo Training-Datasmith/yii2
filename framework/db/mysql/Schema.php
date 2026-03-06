@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -19,9 +21,9 @@ use yii\db\Exception;
 use yii\db\Expression;
 use yii\db\ForeignKeyConstraint;
 use yii\db\IndexConstraint;
+use yii\db\Schema as BaseSchema;
 use yii\db\TableSchema;
 use yii\helpers\ArrayHelper;
-use yii\db\Schema as BaseSchema;
 
 /**
  * Schema is the class for retrieving metadata from a MySQL database (version 4.1.x and 5.x).
@@ -43,8 +45,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * @var bool whether MySQL used is older than 5.1.
      */
-    private $_oldMysql;
-
+    private ?bool $_oldMysql = null;
 
     /**
      * @var array mapping from physical column types (keys) to abstract column types (values)
@@ -100,7 +101,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    protected function resolveTableName($name)
+    protected function resolveTableName($name): \yii\db\TableSchema
     {
         $resolvedName = new TableSchema();
         $parts = explode('.', str_replace('`', '', $name));
@@ -131,7 +132,7 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
     /**
      * {@inheritdoc}
      */
-    protected function loadTableSchema($name)
+    protected function loadTableSchema($name): ?\yii\db\TableSchema
     {
         $table = new TableSchema();
         $this->resolveTableNames($table, $name);
@@ -162,8 +163,9 @@ class Schema extends BaseSchema implements ConstraintFinderInterface
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\IndexConstraint[]
      */
-    protected function loadTableIndexes($tableName)
+    protected function loadTableIndexes($tableName): array
     {
         static $sql = <<<'SQL'
 SELECT
@@ -206,8 +208,9 @@ SQL;
 
     /**
      * {@inheritdoc}
+     * @return \yii\db\CheckConstraint[]
      */
-    protected function loadTableChecks($tableName)
+    protected function loadTableChecks($tableName): array
     {
         $version = $this->db->getServerVersion();
 
@@ -288,7 +291,7 @@ SQL;
      * @param array $info column information
      * @return T the column schema object
      */
-    protected function loadColumnSchema($info)
+    protected function loadColumnSchema(array $info)
     {
         $column = $this->createColumnSchema();
 
@@ -349,7 +352,7 @@ SQL;
             ) {
                 $column->defaultValue = new Expression('CURRENT_TIMESTAMP' . (!empty($matches[1]) ? '(' . $matches[1] . ')' : ''));
             } elseif (isset($type) && $type === 'bit') {
-                $column->defaultValue = bindec(trim(isset($info['default']) ? $info['default'] : '', 'b\''));
+                $column->defaultValue = bindec(trim($info['default'] ?? '', 'b\''));
             } else {
                 $column->defaultValue = $column->phpTypecast($info['default']);
             }
@@ -364,7 +367,7 @@ SQL;
      * @return bool whether the table exists in the database
      * @throws \Exception if DB query fails
      */
-    protected function findColumns($table)
+    protected function findColumns(\yii\db\TableSchema $table): bool
     {
         $sql = 'SHOW FULL COLUMNS FROM ' . $this->quoteTableName($table->fullName);
         try {
@@ -378,7 +381,6 @@ SQL;
             }
             throw $e;
         }
-
 
         $jsonColumns = $this->getJsonColumns($table);
 
@@ -413,13 +415,11 @@ SQL;
     {
         $row = $this->db->createCommand('SHOW CREATE TABLE ' . $this->quoteTableName($table->fullName))->queryOne();
         if (isset($row['Create Table'])) {
-            $sql = $row['Create Table'];
-        } else {
-            $row = array_values($row);
-            $sql = $row[1];
+            return $row['Create Table'];
         }
+        $row = array_values($row);
 
-        return $sql;
+        return $row[1];
     }
 
     /**
@@ -502,7 +502,7 @@ SQL;
      * @param TableSchema $table the table metadata
      * @return array all unique indexes for the given table.
      */
-    public function findUniqueIndexes($table)
+    public function findUniqueIndexes($table): array
     {
         $sql = $this->getCreateTableSql($table);
         $uniqueIndexes = [];
@@ -552,7 +552,7 @@ SQL;
      * - uniques
      * @return mixed constraints.
      */
-    private function loadTableConstraints($tableName, $returnType)
+    private function loadTableConstraints($tableName, string $returnType)
     {
         static $sql = <<<'SQL'
 SELECT
@@ -605,7 +605,7 @@ SQL;
             ':tableName1' => $resolvedName->name,
             ':tableName2' => $resolvedName->name,
             ':tableName3' => $resolvedName->name,
-            ':tableName4' => $resolvedName->name
+            ':tableName4' => $resolvedName->name,
         ])->queryAll();
         $constraints = $this->normalizePdoRowKeyCase($constraints, true);
         $constraints = ArrayHelper::index($constraints, null, ['type', 'name']);

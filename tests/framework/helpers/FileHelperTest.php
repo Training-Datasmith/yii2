@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -938,7 +940,7 @@ class FileHelperTest extends TestCase
         $dirName = $basePath . DIRECTORY_SEPARATOR . $dirName;
         $expectedFiles = [
             $dirName . DIRECTORY_SEPARATOR . 'test_sub_dir',
-            $dirName . DIRECTORY_SEPARATOR . 'second_sub_dir'
+            $dirName . DIRECTORY_SEPARATOR . 'second_sub_dir',
         ];
 
         $foundFiles = FileHelper::findDirectories($dirName);
@@ -948,7 +950,7 @@ class FileHelperTest extends TestCase
 
         // filter
         $expectedFiles = [
-            $dirName . DIRECTORY_SEPARATOR . 'second_sub_dir'
+            $dirName . DIRECTORY_SEPARATOR . 'second_sub_dir',
         ];
         $options = [
             'filter' => function ($path) {
@@ -962,7 +964,7 @@ class FileHelperTest extends TestCase
 
         // except
         $expectedFiles = [
-            $dirName . DIRECTORY_SEPARATOR . 'second_sub_dir'
+            $dirName . DIRECTORY_SEPARATOR . 'second_sub_dir',
         ];
         $options = [
             'except' => ['test_sub_dir'],
@@ -1010,7 +1012,6 @@ class FileHelperTest extends TestCase
         $this->assertEquals($currentUserId, fileowner($testFile), 'Expected created test file owner to be current user.');
         $this->assertEquals($currentGroupId, filegroup($testFile), 'Expected created test file group to be current group.');
         $this->assertEquals('0' . decoct($fileMode), substr(decoct(fileperms($testFile)), -4), 'Expected file mode to be changed.');
-
 
         /////////////////
         /// File Mode ///

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -38,13 +40,12 @@ class MessageSource extends Component
      */
     public $sourceLanguage;
 
-    private $_messages = [];
-
+    private array $_messages = [];
 
     /**
      * Initializes this component.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->sourceLanguage === null) {
@@ -62,7 +63,7 @@ class MessageSource extends Component
      * @return array the loaded messages. The keys are original messages, and the values
      * are translated messages.
      */
-    protected function loadMessages($category, $language)
+    protected function loadMessages($category, $language): array
     {
         return [];
     }
@@ -100,7 +101,7 @@ class MessageSource extends Component
      * @param string $language the target language.
      * @return string|bool the translated message or false if translation wasn't found.
      */
-    protected function translateMessage($category, $message, $language)
+    protected function translateMessage(string $category, $message, string $language)
     {
         $key = $language . '/' . $category;
         if (!isset($this->_messages[$key])) {
@@ -108,7 +109,8 @@ class MessageSource extends Component
         }
         if (isset($this->_messages[$key][$message]) && $this->_messages[$key][$message] !== '') {
             return $this->_messages[$key][$message];
-        } elseif ($this->hasEventHandlers(self::EVENT_MISSING_TRANSLATION)) {
+        }
+        if ($this->hasEventHandlers(self::EVENT_MISSING_TRANSLATION)) {
             $event = new MissingTranslationEvent([
                 'category' => $category,
                 'message' => $message,

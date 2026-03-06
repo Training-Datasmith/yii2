@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -48,7 +50,7 @@ abstract class SqlTokenizer extends Component
     /**
      * @var \SplStack<SqlToken> stack of active tokens.
      */
-    private $_tokenStack;
+    private ?\SplStack $_tokenStack = null;
     /**
      * @var SqlToken active token. It's usually a top of the token stack.
      */
@@ -56,16 +58,15 @@ abstract class SqlTokenizer extends Component
     /**
      * @var string[] cached substrings.
      */
-    private $_substrings;
+    private ?array $_substrings = null;
     /**
      * @var string current buffer value.
      */
-    private $_buffer = '';
+    private string $_buffer = '';
     /**
      * @var SqlToken resulting token of a last [[tokenize()]] call.
      */
     private $_token;
-
 
     /**
      * Constructor.
@@ -191,9 +192,7 @@ abstract class SqlTokenizer extends Component
         }
 
         if (!is_array(reset($with))) {
-            usort($with, function ($string1, $string2) {
-                return mb_strlen($string2, 'UTF-8') - mb_strlen($string1, 'UTF-8');
-            });
+            usort($with, fn ($string1, $string2) => mb_strlen($string2, 'UTF-8') - mb_strlen($string1, 'UTF-8'));
             $map = [];
             /** @var string $string */
             foreach ($with as $string) {
@@ -266,10 +265,8 @@ abstract class SqlTokenizer extends Component
 
     /**
      * Determines whether there is a delimited string at the current offset and adds it to the token children.
-     * @param int $length
-     * @return bool
      */
-    private function tokenizeDelimitedString(&$length)
+    private function tokenizeDelimitedString(int &$length): bool
     {
         $isIdentifier = $this->isIdentifier($length, $content);
         $isStringLiteral = !$isIdentifier && $this->isStringLiteral($length, $content);
@@ -289,10 +286,8 @@ abstract class SqlTokenizer extends Component
 
     /**
      * Determines whether there is an operator at the current offset and adds it to the token children.
-     * @param int $length
-     * @return bool
      */
-    private function tokenizeOperator(&$length)
+    private function tokenizeOperator(int &$length): bool
     {
         if (!$this->isOperator($length, $content)) {
             return false;
@@ -354,7 +349,7 @@ abstract class SqlTokenizer extends Component
     /**
      * Determines a type of text in the buffer, tokenizes it and adds it to the token children.
      */
-    private function addTokenFromBuffer()
+    private function addTokenFromBuffer(): void
     {
         if ($this->_buffer === '') {
             return;
@@ -372,10 +367,9 @@ abstract class SqlTokenizer extends Component
 
     /**
      * Adds the specified length to the current offset.
-     * @param int $length
      * @throws InvalidArgumentException
      */
-    private function advance($length)
+    private function advance(int $length): void
     {
         if ($length <= 0) {
             throw new InvalidArgumentException('Length must be greater than 0.');
@@ -387,9 +381,8 @@ abstract class SqlTokenizer extends Component
 
     /**
      * Returns whether the SQL code is completely traversed.
-     * @return bool
      */
-    private function isEof()
+    private function isEof(): bool
     {
         return $this->offset >= $this->length;
     }

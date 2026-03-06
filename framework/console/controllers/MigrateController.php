@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -144,11 +146,10 @@ class MigrateController extends BaseMigrateController
      */
     public $comment = '';
 
-
     /**
      * {@inheritdoc}
      */
-    public function options($actionID)
+    public function options($actionID): array
     {
         return array_merge(
             parent::options($actionID),
@@ -163,7 +164,7 @@ class MigrateController extends BaseMigrateController
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function optionAliases()
+    public function optionAliases(): array
     {
         return array_merge(parent::optionAliases(), [
             'C' => 'comment',
@@ -185,7 +186,7 @@ class MigrateController extends BaseMigrateController
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         if (parent::beforeAction($action)) {
             $this->db = Instance::ensure($this->db, Connection::className());
@@ -235,7 +236,7 @@ class MigrateController extends BaseMigrateController
         $rows = $query->all($this->db);
 
         $history = [];
-        foreach ($rows as $key => $row) {
+        foreach ($rows as $row) {
             if ($row['version'] === self::BASE_MIGRATION) {
                 continue;
             }
@@ -249,7 +250,7 @@ class MigrateController extends BaseMigrateController
             $history[] = $row;
         }
 
-        usort($history, function ($a, $b) {
+        usort($history, function (array $a, array $b): int {
             if ($a['apply_time'] === $b['apply_time']) {
                 if (($compareResult = strcasecmp($b['canonicalVersion'], $a['canonicalVersion'])) !== 0) {
                     return $compareResult;
@@ -263,9 +264,7 @@ class MigrateController extends BaseMigrateController
 
         $history = array_slice($history, 0, $limit);
 
-        $history = ArrayHelper::map($history, 'version', 'apply_time');
-
-        return $history;
+        return ArrayHelper::map($history, 'version', 'apply_time');
     }
 
     /**
@@ -333,10 +332,8 @@ class MigrateController extends BaseMigrateController
 
     /**
      * Determines whether the error message is related to deleting a view or not
-     * @param string $errorMessage
-     * @return bool
      */
-    private function isViewRelated($errorMessage)
+    private function isViewRelated(string $errorMessage): bool
     {
         $dropViewErrors = [
             'DROP VIEW to delete view', // SQLite
@@ -387,10 +384,9 @@ class MigrateController extends BaseMigrateController
      * Normalizes table name for generator.
      * When name is preceded with underscore name case is kept - otherwise it's converted from camelcase to underscored.
      * Last underscore is always trimmed so if there should be underscore at the end of name use two of them.
-     * @param string $name
      * @return string
      */
-    private function normalizeTableName($name)
+    private function normalizeTableName(string $name)
     {
         if (substr($name, -1) === '_') {
             $name = substr($name, 0, -1);
@@ -513,10 +509,9 @@ class MigrateController extends BaseMigrateController
      * prefix format.
      *
      * @param string $tableName the table name to generate.
-     * @return string
      * @since 2.0.8
      */
-    protected function generateTableName($tableName)
+    protected function generateTableName(string $tableName): string
     {
         if (!$this->useTablePrefix) {
             return $tableName;
@@ -534,12 +529,12 @@ class MigrateController extends BaseMigrateController
      *
      * @since 2.0.7
      */
-    protected function parseFields()
+    protected function parseFields(): array
     {
         $fields = [];
         $foreignKeys = [];
 
-        foreach ($this->fields as $index => $field) {
+        foreach ($this->fields as $field) {
             $chunks = $this->splitFieldIntoChunks($field);
             $property = array_shift($chunks);
 
@@ -547,9 +542,7 @@ class MigrateController extends BaseMigrateController
                 if (strncmp($chunk, 'foreignKey', 10) === 0) {
                     preg_match('/foreignKey\((\w*)\s?(\w*)\)/', $chunk, $matches);
                     $foreignKeys[$property] = [
-                        'table' => isset($matches[1])
-                            ? $matches[1]
-                            : preg_replace('/_id$/', '', $property),
+                        'table' => $matches[1] ?? preg_replace('/_id$/', '', $property),
                         'column' => !empty($matches[2])
                             ? $matches[2]
                             : null,

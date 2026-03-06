@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -83,11 +85,10 @@ class Captcha extends InputWidget
      */
     public $options = ['class' => 'form-control'];
 
-
     /**
      * Initializes the widget.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -101,7 +102,7 @@ class Captcha extends InputWidget
     /**
      * Renders the widget.
      */
-    public function run()
+    public function run(): void
     {
         $this->registerClientScript();
         $input = $this->renderInputHtml('text');
@@ -121,7 +122,7 @@ class Captcha extends InputWidget
     /**
      * Registers the needed JavaScript.
      */
-    public function registerClientScript()
+    public function registerClientScript(): void
     {
         $options = $this->getClientOptions();
         $options = empty($options) ? '' : Json::htmlEncode($options);
@@ -135,7 +136,7 @@ class Captcha extends InputWidget
      * Returns the options for the captcha JS widget.
      * @return array the options
      */
-    protected function getClientOptions()
+    protected function getClientOptions(): array
     {
         $route = $this->captchaAction;
         if (is_array($route)) {
@@ -144,12 +145,10 @@ class Captcha extends InputWidget
             $route = [$route, CaptchaAction::REFRESH_GET_VAR => 1];
         }
 
-        $options = [
+        return [
             'refreshUrl' => Url::toRoute($route),
             'hashKey' => 'yiiCaptcha/' . trim($route[0], '/'),
         ];
-
-        return $options;
     }
 
     /**
@@ -158,7 +157,7 @@ class Captcha extends InputWidget
      * @return string the name of the graphic extension, either "imagick" or "gd".
      * @throws InvalidConfigException if neither ImageMagick nor GD is installed.
      */
-    public static function checkRequirements()
+    public static function checkRequirements(): string
     {
         if (extension_loaded('imagick')) {
             $imagickFormats = (new \Imagick())->queryFormats('PNG');

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -37,7 +39,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
     /**
      * @var int Number of data providers on the current page. Used to generate unique IDs.
      */
-    private static $counter = 0;
+    private static int $counter = 0;
     /**
      * @var string|null an ID that uniquely identifies the data provider among all data providers.
      * Generated automatically the following way in case it is not set:
@@ -53,11 +55,10 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
     private $_models;
     private $_totalCount;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->id === null) {
@@ -97,7 +98,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      *
      * @param bool $forcePrepare whether to force data preparation even if it has been done before.
      */
-    public function prepare($forcePrepare = false)
+    public function prepare($forcePrepare = false): void
     {
         if ($forcePrepare || $this->_models === null) {
             $this->_models = $this->prepareModels();
@@ -122,7 +123,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Sets the data models in the current page.
      * @param array $models the models in the current page
      */
-    public function setModels($models)
+    public function setModels($models): void
     {
         $this->_models = $models;
     }
@@ -143,7 +144,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Sets the key values associated with the data models.
      * @param array $keys the list of key values corresponding to [[models]].
      */
-    public function setKeys($keys)
+    public function setKeys($keys): void
     {
         $this->_keys = $keys;
     }
@@ -167,7 +168,8 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
     {
         if ($this->getPagination() === false) {
             return $this->getCount();
-        } elseif ($this->_totalCount === null) {
+        }
+        if ($this->_totalCount === null) {
             $this->_totalCount = $this->prepareTotalCount();
         }
         return $this->_totalCount;
@@ -177,7 +179,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * Sets the total number of data models.
      * @param int $value the total number of data models.
      */
-    public function setTotalCount($value)
+    public function setTotalCount($value): void
     {
         $this->_totalCount = $value;
     }
@@ -209,7 +211,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      *
      * @throws InvalidArgumentException
      */
-    public function setPagination($value)
+    public function setPagination($value): void
     {
         if (is_array($value)) {
             $config = ['class' => Pagination::className()];
@@ -250,7 +252,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      *
      * @throws InvalidArgumentException
      */
-    public function setSort($value)
+    public function setSort($value): void
     {
         if (is_array($value)) {
             $config = ['class' => Sort::className()];
@@ -270,7 +272,7 @@ abstract class BaseDataProvider extends Component implements DataProviderInterfa
      * After calling this method, if [[getModels()]], [[getKeys()]] or [[getTotalCount()]] is called again,
      * they will re-execute the query and return the latest data available.
      */
-    public function refresh()
+    public function refresh(): void
     {
         $this->_totalCount = null;
         $this->_models = null;

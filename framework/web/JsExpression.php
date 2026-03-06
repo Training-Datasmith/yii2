@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -26,7 +28,6 @@ class JsExpression extends BaseObject
      */
     public $expression;
 
-
     /**
      * Constructor.
      * @param string $expression the JavaScript expression represented by this object
@@ -42,7 +43,7 @@ class JsExpression extends BaseObject
      * The PHP magic function converting an object into a string.
      * @return string the JavaScript expression.
      */
-    public function __toString()
+    public function __toString(): string
     {
         return (string) $this->expression;
     }

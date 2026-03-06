@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -32,7 +34,6 @@ abstract class BaseManager extends Component implements ManagerInterface
      * Note that these roles are applied to users, regardless of their state of authentication.
      */
     protected $defaultRoles = [];
-
 
     /**
      * Returns the named auth item.
@@ -129,9 +130,9 @@ abstract class BaseManager extends Component implements ManagerInterface
                 $rule->name = $object->ruleName;
                 $this->addRule($rule);
             }
-
             return $this->addItem($object);
-        } elseif ($object instanceof Rule) {
+        }
+        if ($object instanceof Rule) {
             return $this->addRule($object);
         }
 
@@ -145,7 +146,8 @@ abstract class BaseManager extends Component implements ManagerInterface
     {
         if ($object instanceof Item) {
             return $this->removeItem($object);
-        } elseif ($object instanceof Rule) {
+        }
+        if ($object instanceof Rule) {
             return $this->removeRule($object);
         }
 
@@ -163,9 +165,9 @@ abstract class BaseManager extends Component implements ManagerInterface
                 $rule->name = $object->ruleName;
                 $this->addRule($rule);
             }
-
             return $this->updateItem($name, $object);
-        } elseif ($object instanceof Rule) {
+        }
+        if ($object instanceof Rule) {
             return $this->updateRule($name, $object);
         }
 
@@ -215,7 +217,7 @@ abstract class BaseManager extends Component implements ManagerInterface
      * @throws InvalidValueException when Closure return is not an array
      * @since 2.0.14
      */
-    public function setDefaultRoles($roles)
+    public function setDefaultRoles($roles): void
     {
         if (is_array($roles)) {
             $this->defaultRoles = $roles;

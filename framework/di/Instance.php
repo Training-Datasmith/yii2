@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -65,7 +67,6 @@ class Instance
      */
     public $optional;
 
-
     /**
      * Constructor.
      * @param string $id the component ID
@@ -83,7 +84,7 @@ class Instance
      * @param bool $optional if null should be returned instead of throwing an exception
      * @return Instance the new Instance object.
      */
-    public static function of($id, $optional = false)
+    public static function of($id, $optional = false): self
     {
         return new static($id, $optional);
     }
@@ -137,9 +138,9 @@ class Instance
             if ($type === null || $component instanceof $type) {
                 return $component;
             }
-
             throw new InvalidConfigException('Invalid data type: ' . $class . '. ' . $type . ' is expected.');
-        } elseif (empty($reference)) {
+        }
+        if (empty($reference)) {
             throw new InvalidConfigException('The required component is not specified.');
         }
 
@@ -159,7 +160,7 @@ class Instance
                 return $component;
             }
 
-            throw new InvalidConfigException('"' . $reference->id . '" refers to a ' . get_class($component) . " component. $type is expected.");
+            throw new InvalidConfigException('"' . $reference->id . '" refers to a ' . ($component !== null ? get_class($component) : self::class) . " component. $type is expected.");
         }
 
         $valueType = is_object($reference) ? get_class($reference) : gettype($reference);
@@ -183,12 +184,7 @@ class Instance
             }
 
             return Yii::$container->get($this->id);
-        } catch (\Exception $e) {
-            if ($this->optional) {
-                return null;
-            }
-            throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception|\Throwable $e) {
             if ($this->optional) {
                 return null;
             }
@@ -199,13 +195,12 @@ class Instance
     /**
      * Restores class state after using `var_export()`.
      *
-     * @param array $state
      * @return Instance
      * @throws InvalidConfigException when $state property does not contain `id` parameter
      * @see https://www.php.net/manual/en/function.var-export.php
      * @since 2.0.12
      */
-    public static function __set_state($state)
+    public static function __set_state(array $state)
     {
         if (!isset($state['id'])) {
             throw new InvalidConfigException('Failed to instantiate class "Instance". Required parameter "id" is missing');

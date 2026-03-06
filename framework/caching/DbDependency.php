@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -38,7 +40,6 @@ class DbDependency extends Dependency
      * @var array the parameters (name => value) to be bound to the SQL statement specified by [[sql]].
      */
     public $params = [];
-
 
     /**
      * Generates the data needed to determine if dependency has been changed.

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -11,8 +13,8 @@ namespace yiiunit\framework\web;
 use yii\data\DataProviderInterface;
 use yii\web\Controller;
 use yii\web\Request;
-use yiiunit\framework\web\stubs\VendorImage;
 use yiiunit\framework\web\stubs\ModelBindingStub;
+use yiiunit\framework\web\stubs\VendorImage;
 
 /**
  * @author Sam Mousa<sam@mousa.nl>

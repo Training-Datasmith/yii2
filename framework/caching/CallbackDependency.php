@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -24,7 +26,6 @@ class CallbackDependency extends Dependency
      * @var callable the PHP callback that will be called to determine if the dependency has been changed.
      */
     public $callback;
-
 
     /**
      * Generates the data needed to determine if dependency has been changed.

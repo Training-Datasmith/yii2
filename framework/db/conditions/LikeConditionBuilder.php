@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -38,7 +40,6 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      */
     protected $escapeCharacter;
 
-
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
@@ -47,7 +48,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
      * @param array $params the binding parameters.
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(ExpressionInterface $expression, array &$params = []): string
     {
         $operator = strtoupper($expression->getOperator());
         $column = $expression->getColumn();
@@ -57,7 +58,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
             $escape = $this->escapingReplacements;
         }
 
-        list($andor, $not, $operator) = $this->parseOperator($operator);
+        [$andor, $not, $operator] = $this->parseOperator($operator);
 
         if (!is_array($values)) {
             $values = [$values];
@@ -87,10 +88,7 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
         return implode($andor, $parts);
     }
 
-    /**
-     * @return string
-     */
-    private function getEscapeSql()
+    private function getEscapeSql(): string
     {
         if ($this->escapeCharacter !== null) {
             return " ESCAPE '{$this->escapeCharacter}'";
@@ -101,9 +99,8 @@ class LikeConditionBuilder implements ExpressionBuilderInterface
 
     /**
      * @param string $operator
-     * @return array
      */
-    protected function parseOperator($operator)
+    protected function parseOperator($operator): array
     {
         if (!preg_match('/^(AND |OR |)(((NOT |))I?LIKE)/', $operator, $matches)) {
             throw new InvalidArgumentException("Invalid operator '$operator'.");

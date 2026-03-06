@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -237,17 +239,13 @@ class Response extends \yii\base\Response
     /**
      * @var int the HTTP status code to send with the response.
      */
-    private $_statusCode = 200;
-    /**
-     * @var HeaderCollection|null
-     */
-    private $_headers;
-
+    private int $_statusCode = 200;
+    private ?\yii\web\HeaderCollection $_headers = null;
 
     /**
      * Initializes this component.
      */
-    public function init()
+    public function init(): void
     {
         if ($this->version === null) {
             if (isset($_SERVER['SERVER_PROTOCOL']) && $_SERVER['SERVER_PROTOCOL'] === 'HTTP/1.0') {
@@ -278,7 +276,7 @@ class Response extends \yii\base\Response
      * @throws InvalidArgumentException if the status code is invalid.
      * @return $this the response object itself
      */
-    public function setStatusCode($value, $text = null)
+    public function setStatusCode($value, $text = null): self
     {
         if ($value === null) {
             $value = 200;
@@ -288,7 +286,7 @@ class Response extends \yii\base\Response
             throw new InvalidArgumentException("The HTTP status code is invalid: $value");
         }
         if ($text === null) {
-            $this->statusText = isset(static::$httpStatuses[$this->_statusCode]) ? static::$httpStatuses[$this->_statusCode] : '';
+            $this->statusText = static::$httpStatuses[$this->_statusCode] ?? '';
         } else {
             $this->statusText = $text;
         }
@@ -303,7 +301,7 @@ class Response extends \yii\base\Response
      * @return $this the response object itself
      * @since 2.0.12
      */
-    public function setStatusCodeByException($e)
+    public function setStatusCodeByException($e): self
     {
         if ($e instanceof HttpException) {
             $this->setStatusCode($e->statusCode);
@@ -331,7 +329,7 @@ class Response extends \yii\base\Response
     /**
      * Sends the response to the client.
      */
-    public function send()
+    public function send(): void
     {
         if ($this->isSent) {
             return;
@@ -348,7 +346,7 @@ class Response extends \yii\base\Response
     /**
      * Clears the headers, cookies, content, status code of the response.
      */
-    public function clear()
+    public function clear(): void
     {
         $this->_headers = null;
         $this->_cookies = null;
@@ -413,24 +411,14 @@ class Response extends \yii\base\Response
             if ($expire != 1 && isset($validationKey)) {
                 $value = Yii::$app->getSecurity()->hashData(serialize([$cookie->name, $value]), $validationKey);
             }
-            if (PHP_VERSION_ID >= 70300) {
-                setcookie($cookie->name, $value, [
-                    'expires' => $expire,
-                    'path' => $cookie->path,
-                    'domain' => $cookie->domain,
-                    'secure' => $cookie->secure,
-                    'httpOnly' => $cookie->httpOnly,
-                    'sameSite' => !empty($cookie->sameSite) ? $cookie->sameSite : null,
-                ]);
-            } else {
-                // Work around for setting sameSite cookie prior PHP 7.3
-                // https://stackoverflow.com/questions/39750906/php-setcookie-samesite-strict/46971326#46971326
-                $cookiePath = $cookie->path;
-                if (!is_null($cookie->sameSite)) {
-                    $cookiePath .= '; samesite=' . $cookie->sameSite;
-                }
-                setcookie($cookie->name, $value, $expire, $cookiePath, $cookie->domain, $cookie->secure, $cookie->httpOnly);
-            }
+            setcookie($cookie->name, $value, [
+                'expires' => $expire,
+                'path' => $cookie->path,
+                'domain' => $cookie->domain,
+                'secure' => $cookie->secure,
+                'httpOnly' => $cookie->httpOnly,
+                'sameSite' => !empty($cookie->sameSite) ? $cookie->sameSite : null,
+            ]);
         }
     }
 
@@ -461,7 +449,7 @@ class Response extends \yii\base\Response
 
         $iterationCount = 0;
         if (is_array($this->stream)) {
-            list($handle, $begin, $end) = $this->stream;
+            [$handle, $begin, $end] = $this->stream;
 
             // only seek if stream is seekable
             if ($this->isSeekable($handle)) {
@@ -528,7 +516,7 @@ class Response extends \yii\base\Response
      * @see sendStreamAsFile()
      * @see xSendFile()
      */
-    public function sendFile($filePath, $attachmentName = null, $options = [])
+    public function sendFile($filePath, $attachmentName = null, array $options = []): self
     {
         if (!isset($options['mimeType'])) {
             $options['mimeType'] = FileHelper::getMimeTypeByExtension($filePath);
@@ -560,7 +548,7 @@ class Response extends \yii\base\Response
      * @throws RangeNotSatisfiableHttpException if the requested range is not satisfiable
      * @see sendFile() for an example implementation.
      */
-    public function sendContentAsFile($content, $attachmentName, $options = [])
+    public function sendContentAsFile($content, $attachmentName, array $options = []): self
     {
         $headers = $this->getHeaders();
 
@@ -572,7 +560,7 @@ class Response extends \yii\base\Response
             throw new RangeNotSatisfiableHttpException();
         }
 
-        list($begin, $end) = $range;
+        [$begin, $end] = $range;
         if ($begin != 0 || $end != $contentLength - 1) {
             $this->setStatusCode(206);
             $headers->set('Content-Range', "bytes $begin-$end/$contentLength");
@@ -582,7 +570,7 @@ class Response extends \yii\base\Response
             $this->content = $content;
         }
 
-        $mimeType = isset($options['mimeType']) ? $options['mimeType'] : 'application/octet-stream';
+        $mimeType = $options['mimeType'] ?? 'application/octet-stream';
         $this->setDownloadHeaders($attachmentName, $mimeType, !empty($options['inline']), $end - $begin + 1);
 
         $this->format = self::FORMAT_RAW;
@@ -611,7 +599,7 @@ class Response extends \yii\base\Response
      * @throws RangeNotSatisfiableHttpException if the requested range is not satisfiable
      * @see sendFile() for an example implementation.
      */
-    public function sendStreamAsFile($handle, $attachmentName, $options = [])
+    public function sendStreamAsFile($handle, $attachmentName, array $options = []): self
     {
         $headers = $this->getHeaders();
         if (isset($options['fileSize'])) {
@@ -631,7 +619,7 @@ class Response extends \yii\base\Response
             throw new RangeNotSatisfiableHttpException();
         }
 
-        list($begin, $end) = $range;
+        [$begin, $end] = $range;
         if ($begin != 0 || $end != $fileSize - 1) {
             $this->setStatusCode(206);
             $headers->set('Content-Range', "bytes $begin-$end/$fileSize");
@@ -639,7 +627,7 @@ class Response extends \yii\base\Response
             $this->setStatusCode(200);
         }
 
-        $mimeType = isset($options['mimeType']) ? $options['mimeType'] : 'application/octet-stream';
+        $mimeType = $options['mimeType'] ?? 'application/octet-stream';
         $this->setDownloadHeaders($attachmentName, $mimeType, !empty($options['inline']), $end - $begin + 1);
 
         $this->format = self::FORMAT_RAW;
@@ -657,7 +645,7 @@ class Response extends \yii\base\Response
      * @param int|null $contentLength the byte length of the file being downloaded. If null, `Content-Length` header will NOT be set.
      * @return $this the response object itself
      */
-    public function setDownloadHeaders($attachmentName, $mimeType = null, $inline = false, $contentLength = null)
+    public function setDownloadHeaders($attachmentName, $mimeType = null, $inline = false, $contentLength = null): self
     {
         $headers = $this->getHeaders();
 
@@ -771,7 +759,7 @@ class Response extends \yii\base\Response
      * @return $this the response object itself
      * @see sendFile()
      */
-    public function xSendFile($filePath, $attachmentName = null, $options = [])
+    public function xSendFile($filePath, $attachmentName = null, array $options = []): self
     {
         if ($attachmentName === null) {
             $attachmentName = basename($filePath);
@@ -818,11 +806,10 @@ class Response extends \yii\base\Response
      *
      * @param string $disposition
      * @param string $attachmentName
-     * @return string
      *
      * @since 2.0.10
      */
-    protected function getDispositionHeaderValue($disposition, $attachmentName)
+    protected function getDispositionHeaderValue($disposition, $attachmentName): string
     {
         $fallbackName = str_replace(
             ['%', '/', '\\', '"', "\x7F"],
@@ -895,7 +882,7 @@ class Response extends \yii\base\Response
      * Takes effect only when request header `X-Ie-Redirect-Compatibility` is absent.
      * @return $this the response object itself
      */
-    public function redirect($url, $statusCode = 302, $checkAjax = true)
+    public function redirect($url, $statusCode = 302, $checkAjax = true): self
     {
         if (is_array($url) && isset($url[0])) {
             // ensure the route is absolute
@@ -948,15 +935,12 @@ class Response extends \yii\base\Response
      * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
      * @return Response the response object itself
      */
-    public function refresh($anchor = '')
+    public function refresh(string $anchor = '')
     {
         return $this->redirect(Yii::$app->getRequest()->getUrl() . $anchor);
     }
 
-    /**
-     * @var CookieCollection|null
-     */
-    private $_cookies;
+    private ?\yii\web\CookieCollection $_cookies = null;
 
     /**
      * Returns the cookie collection.
@@ -990,15 +974,18 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response has a valid [[statusCode]].
      */
-    public function getIsInvalid()
+    public function getIsInvalid(): bool
     {
-        return $this->getStatusCode() < 100 || $this->getStatusCode() >= 600;
+        if ($this->getStatusCode() < 100) {
+            return true;
+        }
+        return $this->getStatusCode() >= 600;
     }
 
     /**
      * @return bool whether this response is informational
      */
-    public function getIsInformational()
+    public function getIsInformational(): bool
     {
         return $this->getStatusCode() >= 100 && $this->getStatusCode() < 200;
     }
@@ -1006,7 +993,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response is successful
      */
-    public function getIsSuccessful()
+    public function getIsSuccessful(): bool
     {
         return $this->getStatusCode() >= 200 && $this->getStatusCode() < 300;
     }
@@ -1014,7 +1001,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response is a redirection
      */
-    public function getIsRedirection()
+    public function getIsRedirection(): bool
     {
         return $this->getStatusCode() >= 300 && $this->getStatusCode() < 400;
     }
@@ -1022,7 +1009,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response indicates a client error
      */
-    public function getIsClientError()
+    public function getIsClientError(): bool
     {
         return $this->getStatusCode() >= 400 && $this->getStatusCode() < 500;
     }
@@ -1030,7 +1017,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response indicates a server error
      */
-    public function getIsServerError()
+    public function getIsServerError(): bool
     {
         return $this->getStatusCode() >= 500 && $this->getStatusCode() < 600;
     }
@@ -1038,7 +1025,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response is OK
      */
-    public function getIsOk()
+    public function getIsOk(): bool
     {
         return $this->getStatusCode() == 200;
     }
@@ -1046,7 +1033,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response indicates the current request is forbidden
      */
-    public function getIsForbidden()
+    public function getIsForbidden(): bool
     {
         return $this->getStatusCode() == 403;
     }
@@ -1054,7 +1041,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response indicates the currently requested resource is not found
      */
-    public function getIsNotFound()
+    public function getIsNotFound(): bool
     {
         return $this->getStatusCode() == 404;
     }
@@ -1062,7 +1049,7 @@ class Response extends \yii\base\Response
     /**
      * @return bool whether this response is empty
      */
-    public function getIsEmpty()
+    public function getIsEmpty(): bool
     {
         return in_array($this->getStatusCode(), [201, 204, 304]);
     }
@@ -1070,7 +1057,7 @@ class Response extends \yii\base\Response
     /**
      * @return array the formatters that are supported by default
      */
-    protected function defaultFormatters()
+    protected function defaultFormatters(): array
     {
         return [
             self::FORMAT_HTML => [
@@ -1127,10 +1114,11 @@ class Response extends \yii\base\Response
         } else {
             throw new InvalidConfigException("Unsupported response format: {$this->format}");
         }
-
         if (is_array($this->content)) {
             throw new InvalidArgumentException('Response content must not be an array.');
-        } elseif (is_object($this->content)) {
+        }
+
+        if (is_object($this->content)) {
             if (method_exists($this->content, '__toString')) {
                 $this->content = $this->content->__toString();
             } else {

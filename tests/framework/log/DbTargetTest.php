@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,13 +10,13 @@
 
 namespace yiiunit\framework\log;
 
+use Yii;
+use yii\base\InvalidConfigException;
+use yii\base\InvalidParamException;
 use yii\console\Application;
 use yii\console\Controller;
-use yii\base\InvalidParamException;
-use yii\db\Exception;
-use yii\base\InvalidConfigException;
-use Yii;
 use yii\db\Connection;
+use yii\db\Exception;
 use yii\db\Query;
 use yii\log\Logger;
 use yiiunit\framework\console\controllers\EchoMigrateController;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -122,11 +124,10 @@ class HostControl extends ActionFilter
      */
     public $fallbackHostInfo = '';
 
-
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         $allowedHosts = $this->allowedHosts;
         if ($allowedHosts instanceof \Closure) {

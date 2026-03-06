@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -64,7 +66,6 @@ class DynamicModel extends Model
      * @since 2.0.35
      */
     private $_attributeLabels = [];
-
 
     /**
      * Constructor.
@@ -134,17 +135,23 @@ class DynamicModel extends Model
     /**
      * {@inheritdoc}
      */
-    public function canGetProperty($name, $checkVars = true, $checkBehaviors = true)
+    public function canGetProperty($name, $checkVars = true, $checkBehaviors = true): bool
     {
-        return parent::canGetProperty($name, $checkVars, $checkBehaviors) || $this->hasAttribute($name);
+        if (parent::canGetProperty($name, $checkVars, $checkBehaviors)) {
+            return true;
+        }
+        return $this->hasAttribute($name);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function canSetProperty($name, $checkVars = true, $checkBehaviors = true)
+    public function canSetProperty($name, $checkVars = true, $checkBehaviors = true): bool
     {
-        return parent::canSetProperty($name, $checkVars, $checkBehaviors) || $this->hasAttribute($name);
+        if (parent::canSetProperty($name, $checkVars, $checkBehaviors)) {
+            return true;
+        }
+        return $this->hasAttribute($name);
     }
 
     /**
@@ -153,7 +160,7 @@ class DynamicModel extends Model
      * @return bool whether the model has an attribute with the specified name.
      * @since 2.0.16
      */
-    public function hasAttribute($name)
+    public function hasAttribute($name): bool
     {
         return array_key_exists($name, $this->_attributes);
     }
@@ -163,7 +170,7 @@ class DynamicModel extends Model
      * @param string $name the attribute name.
      * @param mixed $value the attribute value.
      */
-    public function defineAttribute($name, $value = null)
+    public function defineAttribute($name, $value = null): void
     {
         $this->_attributes[$name] = $value;
     }
@@ -172,7 +179,7 @@ class DynamicModel extends Model
      * Undefines an attribute.
      * @param string $name the attribute name.
      */
-    public function undefineAttribute($name)
+    public function undefineAttribute($name): void
     {
         unset($this->_attributes[$name]);
     }
@@ -191,7 +198,7 @@ class DynamicModel extends Model
      * @param array $options the options (name-value pairs) to be applied to the validator.
      * @return $this
      */
-    public function addRule($attributes, $validator, $options = [])
+    public function addRule($attributes, $validator, $options = []): self
     {
         $validators = $this->getValidators();
 
@@ -218,7 +225,6 @@ class DynamicModel extends Model
      */
     public static function validateData(array $data, $rules = [])
     {
-        /** @var static $model */
         $model = new static($data);
         if (!empty($rules)) {
             $validators = $model->getValidators();
@@ -245,7 +251,7 @@ class DynamicModel extends Model
      * Define the attributes that applies to the specified Validator.
      * @param Validator $validator the validator whose attributes are to be defined.
      */
-    private function defineAttributesByValidator($validator)
+    private function defineAttributesByValidator($validator): void
     {
         foreach ($validator->getAttributeNames() as $attribute) {
             if (!$this->hasAttribute($attribute)) {
@@ -257,7 +263,7 @@ class DynamicModel extends Model
     /**
      * {@inheritdoc}
      */
-    public function attributes()
+    public function attributes(): array
     {
         return array_keys($this->_attributes);
     }
@@ -268,7 +274,7 @@ class DynamicModel extends Model
      * @return $this
      * @since 2.0.35
      */
-    public function setAttributeLabels(array $labels = [])
+    public function setAttributeLabels(array $labels = []): self
     {
         $this->_attributeLabels = $labels;
 
@@ -282,7 +288,7 @@ class DynamicModel extends Model
      * @return $this
      * @since 2.0.35
      */
-    public function setAttributeLabel($attribute, $label)
+    public function setAttributeLabel($attribute, $label): self
     {
         $this->_attributeLabels[$attribute] = $label;
 

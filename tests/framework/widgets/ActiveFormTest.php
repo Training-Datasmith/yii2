@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,11 +10,11 @@
 
 namespace yiiunit\framework\widgets;
 
-use yiiunit\TestCase;
 use yii\base\DynamicModel;
 use yii\base\Widget;
 use yii\web\View;
 use yii\widgets\ActiveForm;
+use yiiunit\TestCase;
 
 /**
  * @group widgets
@@ -52,7 +54,6 @@ EOF,
 EOF,
             (string) $form->field($model, 'name', $o)->input('email', ['required' => false])
         );
-
 
         $this->assertEqualsWithoutLE(
             <<<'EOF'
@@ -162,7 +163,7 @@ HTML,
                 'enableClientScript' => false,
                 'on init' => function () use (&$initTriggered) {
                     $initTriggered = true;
-                }
+                },
             ]
         );
         ActiveForm::end();
@@ -198,7 +199,6 @@ HTML,
 EOF,
             (string) $form->field($model, 'name')
         );
-
 
         $this->assertEqualsWithoutLE(
             <<<'EOF'

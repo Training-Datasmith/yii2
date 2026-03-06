@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -21,13 +23,14 @@ use yiiunit\data\ar\Beta;
 use yiiunit\data\ar\BitValues;
 use yiiunit\data\ar\Cat;
 use yiiunit\data\ar\Category;
+use yiiunit\data\ar\CroppedType;
 use yiiunit\data\ar\Customer;
-use yiiunit\data\ar\CustomerWithAlias;
-use yiiunit\data\ar\Document;
-use yiiunit\data\ar\Dossier;
 use yiiunit\data\ar\CustomerQuery;
+use yiiunit\data\ar\CustomerWithAlias;
 use yiiunit\data\ar\CustomerWithConstructor;
+use yiiunit\data\ar\Document;
 use yiiunit\data\ar\Dog;
+use yiiunit\data\ar\Dossier;
 use yiiunit\data\ar\Item;
 use yiiunit\data\ar\NullValues;
 use yiiunit\data\ar\Order;
@@ -39,7 +42,6 @@ use yiiunit\data\ar\OrderWithNullFK;
 use yiiunit\data\ar\Profile;
 use yiiunit\data\ar\ProfileWithConstructor;
 use yiiunit\data\ar\Type;
-use yiiunit\data\ar\CroppedType;
 use yiiunit\framework\ar\ActiveRecordTestTrait;
 use yiiunit\framework\db\cubrid\ActiveRecordTest as CubridActiveRecordTest;
 use yiiunit\TestCase;
@@ -1948,8 +1950,8 @@ abstract class ActiveRecordTest extends DatabaseTestCase
             ]]],
             [Customer::class, [[
                 'nested_illegal' => [
-                    'false or 1=' => 1
-                ]
+                    'false or 1=' => 1,
+                ],
             ]]],
             [Customer::class, [['true--' => 1]]],
 
@@ -1960,8 +1962,8 @@ abstract class ActiveRecordTest extends DatabaseTestCase
             ]]],
             [CustomerWithAlias::class, [[
                 'nested_illegal' => [
-                    'false or 1=' => 1
-                ]
+                    'false or 1=' => 1,
+                ],
             ]]],
             [CustomerWithAlias::class, [['true--' => 1]]],
         ];

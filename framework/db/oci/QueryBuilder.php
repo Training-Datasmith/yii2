@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -12,9 +14,9 @@ use yii\base\InvalidArgumentException;
 use yii\db\Connection;
 use yii\db\Exception;
 use yii\db\Expression;
+use yii\db\ExpressionInterface;
 use yii\db\Query;
 use yii\helpers\StringHelper;
-use yii\db\ExpressionInterface;
 
 /**
  * QueryBuilder is the query builder for Oracle databases.
@@ -50,7 +52,6 @@ class QueryBuilder extends \yii\db\QueryBuilder
         Schema::TYPE_BOOLEAN => 'NUMBER(1)',
         Schema::TYPE_MONEY => 'NUMBER(19,4)',
     ];
-
 
     /**
      * {@inheritdoc}

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -82,8 +84,7 @@ class Theme extends Component
      */
     public $pathMap;
 
-    private $_baseUrl;
-
+    private ?string $_baseUrl = null;
 
     /**
      * @return string the base URL (without ending slash) for this theme. All resources of this theme are considered
@@ -98,7 +99,7 @@ class Theme extends Component
      * @param string $url the base URL or [path alias](guide:concept-aliases) for this theme. All resources of this theme are considered
      * to be under this base URL.
      */
-    public function setBaseUrl($url)
+    public function setBaseUrl($url): void
     {
         $this->_baseUrl = $url === null ? null : rtrim(Yii::getAlias($url), '/');
     }
@@ -119,7 +120,7 @@ class Theme extends Component
      * under this directory.
      * @see pathMap
      */
-    public function setBasePath($path)
+    public function setBasePath($path): void
     {
         $this->_basePath = Yii::getAlias($path);
     }
@@ -164,7 +165,7 @@ class Theme extends Component
      * @return string the absolute URL
      * @throws InvalidConfigException if [[baseUrl]] is not set
      */
-    public function getUrl($url)
+    public function getUrl($url): string
     {
         if (($baseUrl = $this->getBaseUrl()) !== null) {
             return $baseUrl . '/' . ltrim($url, '/');
@@ -179,7 +180,7 @@ class Theme extends Component
      * @return string the absolute file path
      * @throws InvalidConfigException if [[basePath]] is not set
      */
-    public function getPath($path)
+    public function getPath($path): string
     {
         if (($basePath = $this->getBasePath()) !== null) {
             return $basePath . DIRECTORY_SEPARATOR . ltrim($path, '/\\');

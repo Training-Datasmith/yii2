@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -39,7 +41,6 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @var array<string, Cookie> the cookies in this collection (indexed by the cookie names)
      */
     private $_cookies;
-
 
     /**
      * Constructor.
@@ -81,7 +82,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * Returns the number of cookies in the collection.
      * @return int the number of cookies in the collection.
      */
-    public function getCount()
+    public function getCount(): int
     {
         return count($this->_cookies);
     }
@@ -92,9 +93,9 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @return Cookie|null the cookie with the specified name. Null if the named cookie does not exist.
      * @see getValue()
      */
-    public function get($name)
+    public function get(string $name)
     {
-        return isset($this->_cookies[$name]) ? $this->_cookies[$name] : null;
+        return $this->_cookies[$name] ?? null;
     }
 
     /**
@@ -147,7 +148,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param Cookie $cookie the cookie to be added
      * @throws InvalidCallException if the cookie collection is read only
      */
-    public function add($cookie)
+    public function add($cookie): void
     {
         if ($this->readOnly) {
             throw new InvalidCallException('The cookie collection is read only.');
@@ -163,7 +164,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param bool $removeFromBrowser whether to remove the cookie from browser
      * @throws InvalidCallException if the cookie collection is read only
      */
-    public function remove($cookie, $removeFromBrowser = true)
+    public function remove($cookie, $removeFromBrowser = true): void
     {
         if ($this->readOnly) {
             throw new InvalidCallException('The cookie collection is read only.');
@@ -189,7 +190,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * Removes all cookies.
      * @throws InvalidCallException if the cookie collection is read only
      */
-    public function removeAll()
+    public function removeAll(): void
     {
         if ($this->readOnly) {
             throw new InvalidCallException('The cookie collection is read only.');
@@ -212,7 +213,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param array $array the cookies to populate from
      * @since 2.0.3
      */
-    public function fromArray(array $array)
+    public function fromArray(array $array): void
     {
         $this->_cookies = $array;
     }
@@ -253,7 +254,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param Cookie $cookie the cookie to be added
      */
     #[\ReturnTypeWillChange]
-    public function offsetSet($name, $cookie)
+    public function offsetSet($name, $cookie): void
     {
         $this->add($cookie);
     }
@@ -266,7 +267,7 @@ class CookieCollection extends BaseObject implements \IteratorAggregate, \ArrayA
      * @param string $name the cookie name
      */
     #[\ReturnTypeWillChange]
-    public function offsetUnset($name)
+    public function offsetUnset($name): void
     {
         $this->remove($name);
     }

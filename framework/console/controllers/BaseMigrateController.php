@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -110,7 +112,6 @@ abstract class BaseMigrateController extends Controller
      * @since 2.0.13
      */
     public $compact = false;
-
 
     /**
      * {@inheritdoc}
@@ -396,15 +397,17 @@ abstract class BaseMigrateController extends Controller
     {
         if (($namespaceVersion = $this->extractNamespaceMigrationVersion($version)) !== false) {
             return $this->migrateToVersion($namespaceVersion);
-        } elseif (($migrationName = $this->extractMigrationVersion($version)) !== false) {
-            return $this->migrateToVersion($migrationName);
-        } elseif ((string) (int) $version == $version) {
-            return $this->migrateToTime($version);
-        } elseif (($time = strtotime($version)) !== false) {
-            return $this->migrateToTime($time);
-        } else {
-            throw new Exception("The version argument must be either a timestamp (e.g. 101129_185401),\n the full name of a migration (e.g. m101129_185401_create_user_table),\n the full namespaced name of a migration (e.g. app\\migrations\\M101129185401CreateUserTable),\n a UNIX timestamp (e.g. 1392853000), or a datetime string parseable\nby the strtotime() function (e.g. 2014-02-15 13:00:50).");
         }
+        if (($migrationName = $this->extractMigrationVersion($version)) !== false) {
+            return $this->migrateToVersion($migrationName);
+        }
+        if ((string) (int) $version == $version) {
+            return $this->migrateToTime($version);
+        }
+        if (($time = strtotime($version)) !== false) {
+            return $this->migrateToTime($time);
+        }
+        throw new Exception("The version argument must be either a timestamp (e.g. 101129_185401),\n the full name of a migration (e.g. m101129_185401_create_user_table),\n the full namespaced name of a migration (e.g. app\\migrations\\M101129185401CreateUserTable),\n a UNIX timestamp (e.g. 1392853000), or a datetime string parseable\nby the strtotime() function (e.g. 2014-02-15 13:00:50).");
     }
 
     /**
@@ -660,7 +663,7 @@ abstract class BaseMigrateController extends Controller
             throw new Exception('The migration name should contain letters, digits, underscore and/or backslash characters only.');
         }
 
-        list($namespace, $className) = $this->generateClassName($name);
+        [$namespace, $className] = $this->generateClassName($name);
         // Abort if name is too long
         $nameLimit = $this->getMigrationNameLimit();
         if ($nameLimit !== null && strlen($className) > $nameLimit) {
@@ -697,7 +700,7 @@ abstract class BaseMigrateController extends Controller
      * @return array list of 2 elements: 'namespace' and 'class base name'
      * @since 2.0.10
      */
-    private function generateClassName($name)
+    private function generateClassName($name): array
     {
         $namespace = null;
         $name = trim($name, '\\');
@@ -744,7 +747,7 @@ abstract class BaseMigrateController extends Controller
      * @return string file path.
      * @since 2.0.10
      */
-    private function getNamespacePath($namespace)
+    private function getNamespacePath($namespace): string
     {
         return str_replace('/', DIRECTORY_SEPARATOR, Yii::getAlias('@' . str_replace('\\', '/', $namespace)));
     }
@@ -931,13 +934,16 @@ abstract class BaseMigrateController extends Controller
 
         $migrations = [];
         foreach ($migrationPaths as $item) {
-            list($migrationPath, $namespace) = $item;
+            [$migrationPath, $namespace] = $item;
             if (!file_exists($migrationPath)) {
                 continue;
             }
             $handle = opendir($migrationPath);
             while (($file = readdir($handle)) !== false) {
-                if ($file === '.' || $file === '..') {
+                if ($file === '.') {
+                    continue;
+                }
+                if ($file === '..') {
                     continue;
                 }
                 $path = $migrationPath . DIRECTORY_SEPARATOR . $file;

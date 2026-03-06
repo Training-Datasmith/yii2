@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -83,7 +85,6 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      */
     private $_uploadFileMaxCount;
 
-
     /**
      * @return int upload file max size in bytes.
      */
@@ -99,7 +100,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * @param int $uploadFileMaxSize upload file max size in bytes.
      */
-    public function setUploadFileMaxSize($uploadFileMaxSize)
+    public function setUploadFileMaxSize($uploadFileMaxSize): void
     {
         $this->_uploadFileMaxSize = $uploadFileMaxSize;
     }
@@ -119,15 +120,16 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
     /**
      * @param int $uploadFileMaxCount maximum upload files count.
      */
-    public function setUploadFileMaxCount($uploadFileMaxCount)
+    public function setUploadFileMaxCount($uploadFileMaxCount): void
     {
         $this->_uploadFileMaxCount = $uploadFileMaxCount;
     }
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    public function parse($rawBody, $contentType)
+    public function parse($rawBody, $contentType): array
     {
         if (!$this->force) {
             if (!empty($_POST) || !empty($_FILES)) {
@@ -157,7 +159,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
             if (empty($bodyPart)) {
                 continue;
             }
-            list($headers, $value) = preg_split('/\\R\\R/', $bodyPart, 2);
+            [$headers, $value] = preg_split('/\\R\\R/', $bodyPart, 2);
             $headers = $this->parseHeaders($headers);
 
             if (!isset($headers['content-disposition']['name'])) {
@@ -216,7 +218,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * @param string $headerContent headers source content
      * @return array parsed headers.
      */
-    private function parseHeaders($headerContent)
+    private function parseHeaders($headerContent): array
     {
         $headers = [];
         $headerParts = preg_split('/\\R/su', $headerContent, -1, PREG_SPLIT_NO_EMPTY);
@@ -225,7 +227,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
                 continue;
             }
 
-            list($headerName, $headerValue) = explode(':', $headerPart, 2);
+            [$headerName, $headerValue] = explode(':', $headerPart, 2);
             $headerName = strtolower(trim($headerName));
             $headerValue = trim($headerValue);
 
@@ -238,7 +240,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
                     if (strpos($part, '=') === false) {
                         $headers[$headerName][] = $part;
                     } else {
-                        list($name, $value) = explode('=', $part, 2);
+                        [$name, $value] = explode('=', $part, 2);
                         $name = strtolower(trim($name));
                         $value = trim(trim($value), '"');
                         $headers[$headerName][$name] = $value;
@@ -256,7 +258,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * @param string $name input name specification.
      * @param mixed $value value to be added.
      */
-    private function addValue(&$array, $name, $value)
+    private function addValue(array &$array, $name, $value): void
     {
         $nameParts = preg_split('/\\]\\[|\\[/s', $name);
         $current = &$array;
@@ -283,7 +285,7 @@ class MultipartFormDataParser extends BaseObject implements RequestParserInterfa
      * @param string $name input name specification.
      * @param array $info file info.
      */
-    private function addFile(&$files, $name, $info)
+    private function addFile(array &$files, $name, array $info): void
     {
         if (strpos($name, '[') === false) {
             $files[$name] = $info;

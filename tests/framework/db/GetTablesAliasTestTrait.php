@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,8 +11,8 @@
 namespace yiiunit\framework\db;
 
 use stdClass;
-use yii\db\Expression;
 use yii\db\ActiveQuery;
+use yii\db\Expression;
 use yii\db\Query;
 
 trait GetTablesAliasTestTrait
@@ -45,7 +47,7 @@ trait GetTablesAliasTestTrait
         $query = $this->createQuery();
         $query->from = [
             '{{profile}}',
-            'user'
+            'user',
         ];
 
         $tables = $query->getTablesUsedInFrom();

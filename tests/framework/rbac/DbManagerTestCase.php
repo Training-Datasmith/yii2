@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,18 +10,18 @@
 
 namespace yiiunit\framework\rbac;
 
-use yii\base\InvalidParamException;
-use yii\db\Exception;
-use yii\base\InvalidConfigException;
-use yii\rbac\ManagerInterface;
 use Yii;
+use yii\base\InvalidConfigException;
+use yii\base\InvalidParamException;
 use yii\caching\ArrayCache;
 use yii\console\Application;
 use yii\console\ExitCode;
 use yii\db\Connection;
+use yii\db\Exception;
 use yii\log\Logger;
 use yii\rbac\Assignment;
 use yii\rbac\DbManager;
+use yii\rbac\ManagerInterface;
 use yii\rbac\Permission;
 use yii\rbac\Role;
 use yiiunit\data\rbac\UserID;

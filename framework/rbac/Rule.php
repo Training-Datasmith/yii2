@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -32,7 +34,6 @@ abstract class Rule extends BaseObject
      * @var int UNIX timestamp representing the rule updating time
      */
     public $updatedAt;
-
 
     /**
      * Executes the rule.

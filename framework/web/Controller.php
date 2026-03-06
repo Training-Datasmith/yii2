@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -9,12 +11,12 @@
 namespace yii\web;
 
 use Yii;
-use yii\base\Exception;
-use yii\base\InlineAction;
-use yii\helpers\Url;
 use yii\base\Action;
 use yii\base\Controller as BaseController;
+use yii\base\Exception;
+use yii\base\InlineAction;
 use yii\base\Module;
+use yii\helpers\Url;
 
 /**
  * Controller is the base class of web controllers.
@@ -42,7 +44,6 @@ class Controller extends BaseController
      * @var array the parameters bound to the current action.
      */
     public $actionParams = [];
-
 
     /**
      * Renders a view in response to an AJAX request.
@@ -130,7 +131,7 @@ class Controller extends BaseController
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function bindActionParams($action, $params)
+    public function bindActionParams($action, $params): array
     {
         if ($action instanceof InlineAction) {
             $method = new \ReflectionMethod($this, $action->actionMethod);
@@ -202,10 +203,9 @@ class Controller extends BaseController
      * The logic for [[bindActionParam]] to validate whether a given parameter matches the action's typing
      * if the function parameter has a single named type.
      * @param mixed $param The parameter value.
-     * @param \ReflectionNamedType $type
      * @return array{mixed, bool} The resulting parameter value and a boolean indicating whether the value is valid.
      */
-    private function filterSingleTypeActionParam($param, $type)
+    private function filterSingleTypeActionParam($param, \ReflectionNamedType $type): array
     {
         $isArray = $type->getName() === 'array';
         if ($isArray) {
@@ -247,20 +247,21 @@ class Controller extends BaseController
      * The logic for [[bindActionParam]] to validate whether a given parameter matches the action's typing
      * if the function parameter has a union type.
      * @param mixed $param The parameter value.
-     * @param \ReflectionUnionType $type
      * @return array{mixed, bool} The resulting parameter value and a boolean indicating whether the value is valid.
      */
-    private function filterUnionTypeActionParam($param, $type)
+    private function filterUnionTypeActionParam($param, \ReflectionUnionType $type): array
     {
         $types = $type->getTypes();
         if ($param === '' && $type->allowsNull()) {
             // check if type can be string for old string behavior compatibility
             foreach ($types as $partialType) {
-                if (
-                    $partialType === null
-                    || !method_exists($partialType, 'isBuiltin')
-                    || !$partialType->isBuiltin()
-                ) {
+                if ($partialType === null) {
+                    continue;
+                }
+                if (!method_exists($partialType, 'isBuiltin')) {
+                    continue;
+                }
+                if (!$partialType->isBuiltin()) {
                     continue;
                 }
                 $typeName = PHP_VERSION_ID >= 70100 ? $partialType->getName() : (string)$partialType;
@@ -276,11 +277,13 @@ class Controller extends BaseController
         $canBeArray = false;
         $canBeString = false;
         foreach ($types as $partialType) {
-            if (
-                $partialType === null
-                || !method_exists($partialType, 'isBuiltin')
-                || !$partialType->isBuiltin()
-            ) {
+            if ($partialType === null) {
+                continue;
+            }
+            if (!method_exists($partialType, 'isBuiltin')) {
+                continue;
+            }
+            if (!$partialType->isBuiltin()) {
                 continue;
             }
             $foundBuiltinType = true;
@@ -330,7 +333,7 @@ class Controller extends BaseController
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action)
+    public function beforeAction($action): bool
     {
         if (parent::beforeAction($action)) {
             if ($this->enableCsrfValidation && Yii::$app->getErrorHandler()->exception === null && !$this->request->validateCsrfToken()) {
@@ -430,7 +433,7 @@ class Controller extends BaseController
      * Defaults to empty. Make sure the anchor starts with '#' if you want to specify it.
      * @return Response the response object itself
      */
-    public function refresh($anchor = '')
+    public function refresh(string $anchor = '')
     {
         return $this->response->redirect($this->request->getUrl() . $anchor);
     }

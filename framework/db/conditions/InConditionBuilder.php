@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -23,7 +25,6 @@ use yii\db\Query;
 class InConditionBuilder implements ExpressionBuilderInterface
 {
     use ExpressionBuilderTrait;
-
 
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
@@ -111,12 +112,11 @@ class InConditionBuilder implements ExpressionBuilderInterface
     /**
      * Builds $values to be used in [[InCondition]]
      *
-     * @param ConditionInterface|InCondition $condition
      * @param array $values
      * @param array $params the binding parameters
      * @return array of prepared for SQL placeholders
      */
-    protected function buildValues(ConditionInterface $condition, $values, &$params)
+    protected function buildValues(ConditionInterface $condition, $values, &$params): array
     {
         $sqlValues = [];
         $column = $condition->getColumn();
@@ -136,11 +136,12 @@ class InConditionBuilder implements ExpressionBuilderInterface
 
         foreach ($values as $i => $value) {
             if (is_array($value) || $value instanceof \ArrayAccess) {
-                $value = isset($value[$column]) ? $value[$column] : null;
+                $value = $value[$column] ?? null;
             }
             if ($value === null) {
                 continue;
-            } elseif ($value instanceof ExpressionInterface) {
+            }
+            if ($value instanceof ExpressionInterface) {
                 $sqlValues[$i] = $this->queryBuilder->buildExpression($value, $params);
             } else {
                 $sqlValues[$i] = $this->queryBuilder->bindParam($value, $params);
@@ -159,7 +160,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @param array $params
      * @return string SQL
      */
-    protected function buildSubqueryInCondition($operator, $columns, $values, &$params)
+    protected function buildSubqueryInCondition($operator, $columns, \yii\db\ExpressionInterface $values, &$params): string
     {
         $sql = $this->queryBuilder->buildExpression($values, $params);
 
@@ -195,7 +196,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @param array $params
      * @return string SQL
      */
-    protected function buildCompositeInCondition($operator, $columns, $values, &$params)
+    protected function buildCompositeInCondition($operator, $columns, $values, &$params): string
     {
         $vss = [];
         foreach ($values as $value) {
@@ -218,7 +219,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
         }
 
         $sqlColumns = [];
-        foreach ($columns as $i => $column) {
+        foreach ($columns as $column) {
             if ($column instanceof Expression) {
                 $column = $column->expression;
             }
@@ -236,7 +237,7 @@ class InConditionBuilder implements ExpressionBuilderInterface
      * @return string is null or is not null condition
      * @since 2.0.31
      */
-    protected function getNullCondition($operator, $column)
+    protected function getNullCondition($operator, $column): string
     {
         $column = $this->queryBuilder->db->quoteColumnName($column);
         if ($operator === 'IN') {
@@ -246,11 +247,10 @@ class InConditionBuilder implements ExpressionBuilderInterface
     }
 
     /**
-     * @param \Traversable $traversableObject
      * @return array raw values
      * @since 2.0.31
      */
-    protected function getRawValuesFromTraversableObject(\Traversable $traversableObject)
+    protected function getRawValuesFromTraversableObject(\Traversable $traversableObject): array
     {
         $rawValues = [];
         foreach ($traversableObject as $value) {

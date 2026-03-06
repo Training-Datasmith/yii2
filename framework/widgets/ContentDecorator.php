@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -53,11 +55,10 @@ class ContentDecorator extends Widget
      */
     public $params = [];
 
-
     /**
      * Starts recording a clip.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -72,7 +73,7 @@ class ContentDecorator extends Widget
      * Ends recording a clip.
      * This method stops output buffering and saves the rendering result as a named clip in the controller.
      */
-    public function run()
+    public function run(): void
     {
         $params = $this->params;
         $params['content'] = ob_get_clean();

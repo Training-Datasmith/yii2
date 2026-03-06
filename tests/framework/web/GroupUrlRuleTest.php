@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -68,7 +70,7 @@ class GroupUrlRuleTest extends TestCase
         $config = [
             'prefix' => 'admin',
             'rules' => [
-                'login' => 'user/login'
+                'login' => 'user/login',
             ],
         ];
         $rules = new GroupUrlRule($config);
@@ -88,7 +90,7 @@ class GroupUrlRuleTest extends TestCase
         $config = [
             'prefix' => 'admin',
             'rules' => [
-                'POST login' => 'user/login'
+                'POST login' => 'user/login',
             ],
         ];
         $rules = new GroupUrlRule($config);
@@ -99,7 +101,7 @@ class GroupUrlRuleTest extends TestCase
         $config = [
             'prefix' => 'admin',
             'rules' => [
-                'POST,GET login' => 'user/login'
+                'POST,GET login' => 'user/login',
             ],
         ];
         $rules = new GroupUrlRule($config);

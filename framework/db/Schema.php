@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -112,11 +114,11 @@ abstract class Schema extends BaseObject
     /**
      * @var array list of ALL table names in the database
      */
-    private $_tableNames = [];
+    private array $_tableNames = [];
     /**
      * @var array list of loaded table metadata (table name => metadata type => metadata).
      */
-    private $_tableMetadata = [];
+    private array $_tableMetadata = [];
     /**
      * @var QueryBuilder the query builder for this database
      */
@@ -125,7 +127,6 @@ abstract class Schema extends BaseObject
      * @var string server version as a string.
      */
     private $_serverVersion;
-
 
     /**
      * Resolves the table name and schema name (if any).
@@ -270,7 +271,7 @@ abstract class Schema extends BaseObject
         ];
         $type = gettype($data);
 
-        return isset($typeMap[$type]) ? $typeMap[$type] : \PDO::PARAM_STR;
+        return $typeMap[$type] ?? \PDO::PARAM_STR;
     }
 
     /**
@@ -278,7 +279,7 @@ abstract class Schema extends BaseObject
      * This method cleans up all cached table schemas so that they can be re-created later
      * to reflect the database schema change.
      */
-    public function refresh()
+    public function refresh(): void
     {
         /** @var CacheInterface $cache */
         $cache = is_string($this->db->schemaCache) ? Yii::$app->get($this->db->schemaCache, false) : $this->db->schemaCache;
@@ -296,7 +297,7 @@ abstract class Schema extends BaseObject
      * @param string $name table name.
      * @since 2.0.6
      */
-    public function refreshTableSchema($name)
+    public function refreshTableSchema($name): void
     {
         $rawName = $this->getRawTableName($name);
         unset($this->_tableMetadata[$rawName]);
@@ -384,7 +385,7 @@ abstract class Schema extends BaseObject
      * Creates a new savepoint.
      * @param string $name the savepoint name
      */
-    public function createSavepoint($name)
+    public function createSavepoint($name): void
     {
         $this->db->createCommand("SAVEPOINT $name")->execute();
     }
@@ -393,7 +394,7 @@ abstract class Schema extends BaseObject
      * Releases an existing savepoint.
      * @param string $name the savepoint name
      */
-    public function releaseSavepoint($name)
+    public function releaseSavepoint($name): void
     {
         $this->db->createCommand("RELEASE SAVEPOINT $name")->execute();
     }
@@ -402,7 +403,7 @@ abstract class Schema extends BaseObject
      * Rolls back to a previously created savepoint.
      * @param string $name the savepoint name
      */
-    public function rollBackSavepoint($name)
+    public function rollBackSavepoint($name): void
     {
         $this->db->createCommand("ROLLBACK TO SAVEPOINT $name")->execute();
     }
@@ -415,7 +416,7 @@ abstract class Schema extends BaseObject
      * after `SET TRANSACTION ISOLATION LEVEL`.
      * @see https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
-    public function setTransactionIsolationLevel($level)
+    public function setTransactionIsolationLevel($level): void
     {
         $this->db->createCommand("SET TRANSACTION ISOLATION LEVEL $level")->execute();
     }
@@ -427,7 +428,7 @@ abstract class Schema extends BaseObject
      * @return array|false primary key values or false if the command fails
      * @since 2.0.4
      */
-    public function insert($table, $columns)
+    public function insert($table, array $columns)
     {
         $command = $this->db->createCommand()->insert($table, $columns);
         if (!$command->execute()) {
@@ -441,7 +442,7 @@ abstract class Schema extends BaseObject
                 break;
             }
 
-            $result[$name] = isset($columns[$name]) ? $columns[$name] : $tableSchema->columns[$name]->defaultValue;
+            $result[$name] = $columns[$name] ?? $tableSchema->columns[$name]->defaultValue;
         }
 
         return $result;
@@ -541,12 +542,12 @@ abstract class Schema extends BaseObject
      * @param string $name table name
      * @return string the properly quoted table name
      */
-    public function quoteSimpleTableName($name)
+    public function quoteSimpleTableName(string $name)
     {
         if (is_string($this->tableQuoteCharacter)) {
             $startingCharacter = $endingCharacter = $this->tableQuoteCharacter;
         } else {
-            list($startingCharacter, $endingCharacter) = $this->tableQuoteCharacter;
+            [$startingCharacter, $endingCharacter] = $this->tableQuoteCharacter;
         }
         return strpos($name, $startingCharacter) !== false ? $name : $startingCharacter . $name . $endingCharacter;
     }
@@ -563,7 +564,7 @@ abstract class Schema extends BaseObject
         if (is_string($this->columnQuoteCharacter)) {
             $startingCharacter = $endingCharacter = $this->columnQuoteCharacter;
         } else {
-            list($startingCharacter, $endingCharacter) = $this->columnQuoteCharacter;
+            [$startingCharacter, $endingCharacter] = $this->columnQuoteCharacter;
         }
         return $name === '*' || strpos($name, $startingCharacter) !== false ? $name : $startingCharacter . $name . $endingCharacter;
     }
@@ -644,7 +645,8 @@ abstract class Schema extends BaseObject
         if (isset($typeMap[$column->type])) {
             if ($column->type === 'bigint') {
                 return PHP_INT_SIZE === 8 && !$column->unsigned ? 'integer' : 'string';
-            } elseif ($column->type === 'integer') {
+            }
+            if ($column->type === 'integer') {
                 return PHP_INT_SIZE === 4 && $column->unsigned ? 'string' : 'integer';
             }
 
@@ -657,7 +659,6 @@ abstract class Schema extends BaseObject
     /**
      * Converts a DB exception to a more concrete one if possible.
      *
-     * @param \Exception $e
      * @param string $rawSql SQL that produced exception
      * @return Exception
      */
@@ -669,7 +670,7 @@ abstract class Schema extends BaseObject
 
         $exceptionClass = '\yii\db\Exception';
         foreach ($this->exceptionMap as $error => $class) {
-            if (strpos($e->getMessage(), $error) !== false) {
+            if (strpos($e->getMessage(), (string) $error) !== false) {
                 $exceptionClass = $class;
             }
         }
@@ -710,7 +711,7 @@ abstract class Schema extends BaseObject
     protected function getCacheKey($name)
     {
         return [
-            __CLASS__,
+            self::class,
             $this->db->dsn,
             $this->db->username,
             $this->getRawTableName($name),
@@ -725,7 +726,7 @@ abstract class Schema extends BaseObject
     protected function getCacheTag()
     {
         return md5(serialize([
-            __CLASS__,
+            self::class,
             $this->db->dsn,
             $this->db->username,
         ]));
@@ -816,9 +817,7 @@ abstract class Schema extends BaseObject
         }
 
         if ($multiple) {
-            return array_map(function (array $row) {
-                return array_change_key_case($row, CASE_LOWER);
-            }, $row);
+            return array_map(fn (array $row) => array_change_key_case($row, CASE_LOWER), $row);
         }
 
         return array_change_key_case($row, CASE_LOWER);
@@ -829,7 +828,7 @@ abstract class Schema extends BaseObject
      * @param Cache|null $cache
      * @param string $name
      */
-    private function loadTableMetadataFromCache($cache, $name)
+    private function loadTableMetadataFromCache(?\yii\caching\CacheInterface $cache, $name): void
     {
         if ($cache === null) {
             $this->_tableMetadata[$name] = [];
@@ -851,7 +850,7 @@ abstract class Schema extends BaseObject
      * @param Cache|null $cache
      * @param string $name
      */
-    private function saveTableMetadataToCache($cache, $name)
+    private function saveTableMetadataToCache(?\yii\caching\CacheInterface $cache, $name): void
     {
         if ($cache === null) {
             return;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -49,7 +51,6 @@ class Action extends Component
      */
     public $controller;
 
-
     /**
      * Constructor.
      *
@@ -69,7 +70,7 @@ class Action extends Component
      *
      * @return string the unique ID of this action among the whole application.
      */
-    public function getUniqueId()
+    public function getUniqueId(): string
     {
         return $this->controller->getUniqueId() . '/' . $this->id;
     }
@@ -109,7 +110,7 @@ class Action extends Component
      *
      * @return bool whether to run the action.
      */
-    protected function beforeRun()
+    protected function beforeRun(): bool
     {
         return true;
     }

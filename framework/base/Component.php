@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -107,17 +109,16 @@ class Component extends BaseObject
     /**
      * @var array the attached event handlers (event name => handlers)
      */
-    private $_events = [];
+    private array $_events = [];
     /**
      * @var array the event handlers attached for wildcard patterns (event name wildcard => handlers)
      * @since 2.0.14
      */
-    private $_eventWildcards = [];
+    private array $_eventWildcards = [];
     /**
      * @var Behavior<static>[]|null the attached behaviors (behavior name => behavior). This is `null` when not initialized.
      */
-    private $_behaviors;
-
+    private ?array $_behaviors = null;
 
     /**
      * Returns the value of a component property.
@@ -182,14 +183,14 @@ class Component extends BaseObject
         if (method_exists($this, $setter)) {
             // set property
             $this->$setter($value);
-
             return;
-        } elseif (strncmp($name, 'on ', 3) === 0) {
+        }
+        if (strncmp($name, 'on ', 3) === 0) {
             // on event: attach event handler
             $this->on(trim(substr($name, 3)), $value);
-
             return;
-        } elseif (strncmp($name, 'as ', 3) === 0) {
+        }
+        if (strncmp($name, 'as ', 3) === 0) {
             // as behavior: attach behavior
             $name = trim(substr($name, 3));
             if ($value instanceof Behavior) {
@@ -205,7 +206,6 @@ class Component extends BaseObject
             } else {
                 throw new InvalidConfigException('Class is not of type ' . Behavior::class . ' or its subclasses');
             }
-
             return;
         }
 
@@ -344,9 +344,12 @@ class Component extends BaseObject
      * @see canGetProperty()
      * @see canSetProperty()
      */
-    public function hasProperty($name, $checkVars = true, $checkBehaviors = true)
+    public function hasProperty($name, $checkVars = true, $checkBehaviors = true): bool
     {
-        return $this->canGetProperty($name, $checkVars, $checkBehaviors) || $this->canSetProperty($name, false, $checkBehaviors);
+        if ($this->canGetProperty($name, $checkVars, $checkBehaviors)) {
+            return true;
+        }
+        return $this->canSetProperty($name, false, $checkBehaviors);
     }
 
     /**
@@ -365,11 +368,12 @@ class Component extends BaseObject
      * @return bool whether the property can be read
      * @see canSetProperty()
      */
-    public function canGetProperty($name, $checkVars = true, $checkBehaviors = true)
+    public function canGetProperty($name, $checkVars = true, $checkBehaviors = true): bool
     {
         if (method_exists($this, 'get' . $name) || $checkVars && property_exists($this, $name)) {
             return true;
-        } elseif ($checkBehaviors) {
+        }
+        if ($checkBehaviors) {
             $this->ensureBehaviors();
             foreach ($this->_behaviors as $behavior) {
                 if ($behavior->canGetProperty($name, $checkVars)) {
@@ -397,11 +401,12 @@ class Component extends BaseObject
      * @return bool whether the property can be written
      * @see canGetProperty()
      */
-    public function canSetProperty($name, $checkVars = true, $checkBehaviors = true)
+    public function canSetProperty($name, $checkVars = true, $checkBehaviors = true): bool
     {
         if (method_exists($this, 'set' . $name) || $checkVars && property_exists($this, $name)) {
             return true;
-        } elseif ($checkBehaviors) {
+        }
+        if ($checkBehaviors) {
             $this->ensureBehaviors();
             foreach ($this->_behaviors as $behavior) {
                 if ($behavior->canSetProperty($name, $checkVars)) {
@@ -425,11 +430,12 @@ class Component extends BaseObject
      * @param bool $checkBehaviors whether to treat behaviors' methods as methods of this component
      * @return bool whether the method is defined
      */
-    public function hasMethod($name, $checkBehaviors = true)
+    public function hasMethod($name, $checkBehaviors = true): bool
     {
         if (method_exists($this, $name)) {
             return true;
-        } elseif ($checkBehaviors) {
+        }
+        if ($checkBehaviors) {
             $this->ensureBehaviors();
             foreach ($this->_behaviors as $behavior) {
                 if ($behavior->hasMethod($name)) {
@@ -466,7 +472,7 @@ class Component extends BaseObject
      *
      * @return array<array-key, class-string|array{class: class-string, ...}> the behavior configurations.
      */
-    public function behaviors()
+    public function behaviors(): array
     {
         return [];
     }
@@ -531,7 +537,7 @@ class Component extends BaseObject
      * handler list.
      * @see off()
      */
-    public function on($name, $handler, $data = null, $append = true)
+    public function on($name, $handler, $data = null, $append = true): void
     {
         $this->ensureBehaviors();
 
@@ -620,7 +626,7 @@ class Component extends BaseObject
      * @param string $name the event name
      * @param Event|null $event the event instance. If not set, a default [[Event]] object will be created.
      */
-    public function trigger($name, ?Event $event = null)
+    public function trigger($name, ?Event $event = null): void
     {
         $this->ensureBehaviors();
 
@@ -669,7 +675,7 @@ class Component extends BaseObject
     public function getBehavior($name)
     {
         $this->ensureBehaviors();
-        return isset($this->_behaviors[$name]) ? $this->_behaviors[$name] : null;
+        return $this->_behaviors[$name] ?? null;
     }
 
     /**
@@ -719,7 +725,7 @@ class Component extends BaseObject
      * @param array $behaviors list of behaviors to be attached to the component
      * @see attachBehavior()
      */
-    public function attachBehaviors($behaviors)
+    public function attachBehaviors($behaviors): void
     {
         $this->ensureBehaviors();
         foreach ($behaviors as $name => $behavior) {
@@ -752,7 +758,7 @@ class Component extends BaseObject
     /**
      * Detaches all behaviors from the component.
      */
-    public function detachBehaviors()
+    public function detachBehaviors(): void
     {
         $this->ensureBehaviors();
         foreach ($this->_behaviors as $name => $behavior) {
@@ -763,7 +769,7 @@ class Component extends BaseObject
     /**
      * Makes sure that the behaviors declared in [[behaviors()]] are attached to this component.
      */
-    public function ensureBehaviors()
+    public function ensureBehaviors(): void
     {
         if ($this->_behaviors === null) {
             $this->_behaviors = [];

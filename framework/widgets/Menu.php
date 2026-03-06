@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -166,11 +168,10 @@ class Menu extends Widget
      */
     public $params;
 
-
     /**
      * Renders the menu.
      */
-    public function run()
+    public function run(): void
     {
         if ($this->route === null && Yii::$app->controller !== null) {
             $this->route = Yii::$app->controller->getRoute();
@@ -192,7 +193,7 @@ class Menu extends Widget
      * @param array $items the menu items to be rendered recursively
      * @return string the rendering result
      */
-    protected function renderItems($items)
+    protected function renderItems($items): string
     {
         $n = count($items);
         $lines = [];
@@ -230,7 +231,7 @@ class Menu extends Widget
      * @param array $item the menu item to be rendered. Please refer to [[items]] to see what data might be in the item.
      * @return string the rendering result
      */
-    protected function renderItem($item)
+    protected function renderItem(array $item): string
     {
         if (isset($item['url'])) {
             $template = ArrayHelper::getValue($item, 'template', $this->linkTemplate);
@@ -254,7 +255,7 @@ class Menu extends Widget
      * @param bool $active whether there is an active child menu item.
      * @return array the normalized menu items
      */
-    protected function normalizeItems($items, &$active)
+    protected function normalizeItems(array $items, &$active): array
     {
         foreach ($items as $i => $item) {
             if (isset($item['visible']) && !$item['visible']) {
@@ -264,7 +265,7 @@ class Menu extends Widget
             if (!isset($item['label'])) {
                 $item['label'] = '';
             }
-            $encodeLabel = isset($item['encode']) ? $item['encode'] : $this->encodeLabels;
+            $encodeLabel = $item['encode'] ?? $this->encodeLabels;
             $items[$i]['label'] = $encodeLabel ? Html::encode($item['label']) : $item['label'];
             $hasActiveChild = false;
             if (isset($item['items'])) {
@@ -307,7 +308,7 @@ class Menu extends Widget
      * @param array $item the menu item to be checked
      * @return bool whether the menu item is active
      */
-    protected function isItemActive($item)
+    protected function isItemActive(array $item): bool
     {
         if (isset($item['url']) && is_array($item['url']) && isset($item['url'][0])) {
             $route = Yii::getAlias($item['url'][0]);

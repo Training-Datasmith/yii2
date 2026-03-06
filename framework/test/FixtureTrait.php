@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -34,7 +36,6 @@ trait FixtureTrait
      * if B depends on A.
      */
     private $_fixtures;
-
 
     /**
      * Declares the fixtures that are needed by the current test case.

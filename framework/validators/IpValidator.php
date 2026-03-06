@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -203,11 +205,10 @@ class IpValidator extends Validator
      */
     private $_ranges = [];
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -267,7 +268,7 @@ class IpValidator extends Validator
      * In this example, access is allowed for all the IPv4 and IPv6 addresses excluding the `192.168.10.0/24` subnet.
      * IPv4 address `192.168.10.128` is also allowed, because it is listed before the restriction.
      */
-    public function setRanges($ranges)
+    public function setRanges($ranges): void
     {
         $this->_ranges = $this->prepareRanges((array) $ranges);
     }
@@ -283,7 +284,7 @@ class IpValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         $result = $this->validateSubnet($value);
         if (is_array($result)) {
@@ -297,7 +298,7 @@ class IpValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
 
@@ -332,7 +333,7 @@ class IpValidator extends Validator
         if (preg_match($this->getIpParsePattern(), $ip, $matches)) {
             $negation = ($matches[1] !== '') ? $matches[1] : null;
             $ip = $matches[2];
-            $cidr = isset($matches[4]) ? $matches[4] : null;
+            $cidr = $matches[4] ?? null;
         }
 
         if ($this->subnet === true && $cidr === null) {
@@ -403,7 +404,7 @@ class IpValidator extends Validator
      * @param string $ip the original IPv6
      * @return string the expanded IPv6
      */
-    private function expandIPv6($ip)
+    private function expandIPv6(string $ip): string
     {
         return IpHelper::expandIPv6($ip);
     }
@@ -423,7 +424,7 @@ class IpValidator extends Validator
         }
 
         foreach ($this->ranges as $string) {
-            list($isNegated, $range) = $this->parseNegatedRange($string);
+            [$isNegated, $range] = $this->parseNegatedRange($string);
             if ($this->inRange($ip, $cidr, $range)) {
                 return !$isNegated;
             }
@@ -440,9 +441,9 @@ class IpValidator extends Validator
      *  - boolean: whether the string is negated
      *  - string: the string without negation (when the negation were present)
      */
-    private function parseNegatedRange($string)
+    private function parseNegatedRange($string): array
     {
-        $isNegated = strpos($string, static::NEGATION_CHAR) === 0;
+        $isNegated = strpos($string, (string) static::NEGATION_CHAR) === 0;
         return [$isNegated, $isNegated ? substr($string, strlen(static::NEGATION_CHAR)) : $string];
     }
 
@@ -453,18 +454,17 @@ class IpValidator extends Validator
      *  - Removes duplicates.
      *
      * @param $ranges
-     * @return array
      * @see networks
      */
-    private function prepareRanges($ranges)
+    private function prepareRanges($ranges): array
     {
         $result = [];
         foreach ($ranges as $string) {
-            list($isRangeNegated, $range) = $this->parseNegatedRange($string);
+            [$isRangeNegated, $range] = $this->parseNegatedRange($string);
             if (isset($this->networks[$range])) {
                 $replacements = $this->prepareRanges($this->networks[$range]);
                 foreach ($replacements as &$replacement) {
-                    list($isReplacementNegated, $replacement) = $this->parseNegatedRange($replacement);
+                    [$isReplacementNegated, $replacement] = $this->parseNegatedRange($replacement);
                     $result[] = ($isRangeNegated && !$isReplacementNegated ? static::NEGATION_CHAR : '') . $replacement;
                 }
             } else {
@@ -479,9 +479,8 @@ class IpValidator extends Validator
      * Validates IPv4 address.
      *
      * @param string $value
-     * @return bool
      */
-    protected function validateIPv4($value)
+    protected function validateIPv4($value): bool
     {
         return preg_match($this->ipv4Pattern, $value) !== 0;
     }
@@ -490,29 +489,24 @@ class IpValidator extends Validator
      * Validates IPv6 address.
      *
      * @param string $value
-     * @return bool
      */
-    protected function validateIPv6($value)
+    protected function validateIPv6($value): bool
     {
         return preg_match($this->ipv6Pattern, $value) !== 0;
     }
 
     /**
      * Gets the IP version.
-     *
-     * @param string $ip
-     * @return int
      */
-    private function getIpVersion($ip)
+    private function getIpVersion(string $ip): int
     {
         return IpHelper::getIpVersion($ip);
     }
 
     /**
      * Used to get the Regexp pattern for initial IP address parsing.
-     * @return string
      */
-    private function getIpParsePattern()
+    private function getIpParsePattern(): string
     {
         return '/^(' . preg_quote(static::NEGATION_CHAR, '/') . '?)(.+?)(\/(\d+))?$/';
     }
@@ -525,7 +519,7 @@ class IpValidator extends Validator
      * @param string $range subnet in CIDR format e.g. `10.0.0.0/8` or `2001:af::/64`
      * @return bool
      */
-    private function inRange($ip, $cidr, $range)
+    private function inRange(string $ip, $cidr, $range)
     {
         return IpHelper::inRange($ip . '/' . $cidr, $range);
     }
@@ -533,7 +527,7 @@ class IpValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
@@ -544,7 +538,7 @@ class IpValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $messages = [
             'ipv6NotAllowed' => $this->ipv6NotAllowed,

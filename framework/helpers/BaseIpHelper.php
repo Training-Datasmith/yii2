@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -36,7 +38,7 @@ class BaseIpHelper
      * @param string $ip the valid IPv4 or IPv6 address.
      * @return int [[IPV4]] or [[IPV6]]
      */
-    public static function getIpVersion($ip)
+    public static function getIpVersion($ip): int
     {
         return strpos($ip, ':') === false ? self::IPV4 : self::IPV6;
     }
@@ -67,8 +69,8 @@ class BaseIpHelper
      */
     public static function inRange($subnet, $range)
     {
-        list($ip, $mask) = array_pad(explode('/', $subnet), 2, null);
-        list($net, $netMask) = array_pad(explode('/', $range), 2, null);
+        [$ip, $mask] = array_pad(explode('/', $subnet), 2, null);
+        [$net, $netMask] = array_pad(explode('/', $range), 2, null);
 
         $ipVersion = static::getIpVersion($ip);
         $netVersion = static::getIpVersion($net);
@@ -77,8 +79,8 @@ class BaseIpHelper
         }
 
         $maxMask = $ipVersion === self::IPV4 ? self::IPV4_ADDRESS_LENGTH : self::IPV6_ADDRESS_LENGTH;
-        $mask = isset($mask) ? $mask : $maxMask;
-        $netMask = isset($netMask) ? $netMask : $maxMask;
+        $mask ??= $maxMask;
+        $netMask ??= $maxMask;
 
         $binIp = static::ip2bin($ip);
         $binNet = static::ip2bin($net);
@@ -93,7 +95,7 @@ class BaseIpHelper
      * @param string $ip the original valid IPv6 address
      * @return string the expanded IPv6 address
      */
-    public static function expandIPv6($ip)
+    public static function expandIPv6($ip): string
     {
         $hex = unpack('H*hex', inet_pton($ip));
         return substr(preg_replace('/([a-f0-9]{4})/i', '$1:', $hex['hex']), 0, -1);
@@ -106,7 +108,7 @@ class BaseIpHelper
      * @return string bits as a string
      * @throws NotSupportedException
      */
-    public static function ip2bin($ip)
+    public static function ip2bin($ip): string
     {
         $ipBinary = null;
         if (static::getIpVersion($ip) === self::IPV4) {

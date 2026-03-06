@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,11 +10,11 @@
 
 namespace yiiunit\framework\i18n;
 
-use DateTimeImmutable;
-use IntlDateFormatter;
-use DateTimeZone;
 use DateInterval;
 use DateTime;
+use DateTimeImmutable;
+use DateTimeZone;
+use IntlDateFormatter;
 use yii\i18n\Formatter;
 use yiiunit\TestCase;
 

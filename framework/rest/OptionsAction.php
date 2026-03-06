@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,8 +10,8 @@
 
 namespace yii\rest;
 
-use yii\base\Action as BaseAction;
 use Yii;
+use yii\base\Action as BaseAction;
 
 /**
  * OptionsAction responds to the OPTIONS request by sending back an `Allow` header.
@@ -33,12 +35,11 @@ class OptionsAction extends BaseAction
      */
     public $resourceOptions = ['GET', 'PUT', 'PATCH', 'DELETE', 'HEAD', 'OPTIONS'];
 
-
     /**
      * Responds to the OPTIONS request.
      * @param string|null $id
      */
-    public function run($id = null)
+    public function run($id = null): void
     {
         if (Yii::$app->getRequest()->getMethod() !== 'OPTIONS') {
             Yii::$app->getResponse()->setStatusCode(405);

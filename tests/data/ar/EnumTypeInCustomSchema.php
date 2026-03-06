@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace yiiunit\data\ar;
 
 use yii\db\ArrayExpression;

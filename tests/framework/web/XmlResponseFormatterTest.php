@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -63,7 +65,7 @@ class XmlResponseFormatterTest extends FormatterTest
             ], "<response><a>1</a><b>abc</b></response>\n"],
             [
                 ['image:loc' => 'url'],
-                "<response><image:loc>url</image:loc></response>\n"
+                "<response><image:loc>url</image:loc></response>\n",
             ],
             [[
                 1,

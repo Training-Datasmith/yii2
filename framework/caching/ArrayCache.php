@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -25,13 +27,12 @@ namespace yii\caching;
  */
 class ArrayCache extends Cache
 {
-    private $_cache = [];
-
+    private array $_cache = [];
 
     /**
      * {@inheritdoc}
      */
-    public function exists($key)
+    public function exists($key): bool
     {
         $key = $this->buildKey($key);
         return isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true));
@@ -52,7 +53,7 @@ class ArrayCache extends Cache
     /**
      * {@inheritdoc}
      */
-    protected function setValue($key, $value, $duration)
+    protected function setValue($key, $value, $duration): bool
     {
         $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
         return true;
@@ -61,7 +62,7 @@ class ArrayCache extends Cache
     /**
      * {@inheritdoc}
      */
-    protected function addValue($key, $value, $duration)
+    protected function addValue($key, $value, $duration): bool
     {
         if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
             return false;
@@ -73,7 +74,7 @@ class ArrayCache extends Cache
     /**
      * {@inheritdoc}
      */
-    protected function deleteValue($key)
+    protected function deleteValue($key): bool
     {
         unset($this->_cache[$key]);
         return true;
@@ -82,7 +83,7 @@ class ArrayCache extends Cache
     /**
      * {@inheritdoc}
      */
-    protected function flushValues()
+    protected function flushValues(): bool
     {
         $this->_cache = [];
         return true;

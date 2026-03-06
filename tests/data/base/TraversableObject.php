@@ -10,10 +10,10 @@ declare(strict_types=1);
 
 namespace yiiunit\data\base;
 
-use Iterator;
 use Countable;
-use ReturnTypeWillChange;
 use Exception;
+use Iterator;
+use ReturnTypeWillChange;
 
 /**
  * TraversableObject

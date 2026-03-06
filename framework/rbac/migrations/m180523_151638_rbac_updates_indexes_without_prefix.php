@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -37,7 +39,7 @@ class m180523_151638_rbac_updates_indexes_without_prefix extends Migration
     /**
      * {@inheritdoc}
      */
-    public function up()
+    public function up(): ?bool
     {
         $authManager = $this->getAuthManager();
         $this->db = $authManager->db;
@@ -52,14 +54,13 @@ class m180523_151638_rbac_updates_indexes_without_prefix extends Migration
     /**
      * {@inheritdoc}
      */
-    public function down()
+    public function down(): ?bool
     {
         $authManager = $this->getAuthManager();
         $this->db = $authManager->db;
 
         $this->dropIndex('{{%idx-auth_assignment-user_id}}', $authManager->assignmentTable);
         $this->createIndex('auth_assignment_user_id_idx', $authManager->assignmentTable, 'user_id');
-
 
         $this->dropIndex('{{%idx-auth_item-type}}', $authManager->itemTable);
         $this->createIndex('idx-auth_item-type', $authManager->itemTable, 'type');

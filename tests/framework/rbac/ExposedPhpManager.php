@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,10 +10,10 @@
 
 namespace yiiunit\framework\rbac;
 
-use yii\rbac\Item;
 use yii\rbac\Assignment;
-use yii\rbac\Rule;
+use yii\rbac\Item;
 use yii\rbac\PhpManager;
+use yii\rbac\Rule;
 
 /**
  * Exposes protected properties and methods to inspect from outside.

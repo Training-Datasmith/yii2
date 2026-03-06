@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,15 +10,15 @@
 
 namespace yiiunit\framework\di;
 
+use Exception;
+use Yii;
 use yii\console\Request;
 use yii\console\Response;
-use Exception;
-use yii\di\NotInstantiableException;
-use yii\web\Application;
-use Yii;
 use yii\di\Container;
 use yii\di\Instance;
+use yii\di\NotInstantiableException;
 use yii\validators\NumberValidator;
+use yii\web\Application;
 use yiiunit\data\ar\Cat;
 use yiiunit\data\ar\Order;
 use yiiunit\data\ar\Type;
@@ -31,8 +33,8 @@ use yiiunit\framework\di\stubs\FooProperty;
 use yiiunit\framework\di\stubs\Kappa;
 use yiiunit\framework\di\stubs\Qux;
 use yiiunit\framework\di\stubs\QuxAnother;
-use yiiunit\framework\di\stubs\QuxInterface;
 use yiiunit\framework\di\stubs\QuxFactory;
+use yiiunit\framework\di\stubs\QuxInterface;
 use yiiunit\framework\di\stubs\UnionTypeNotNull;
 use yiiunit\framework\di\stubs\UnionTypeNull;
 use yiiunit\framework\di\stubs\UnionTypeWithClass;
@@ -188,7 +190,6 @@ class ContainerTest extends TestCase
         $result = Yii::$container->invoke($callback, ['MDM', 'not_default']);
         $this->assertEquals(['MDM', true, 'independent', 'not_default'], $result);
 
-
         $myFunc = function ($a, NumberValidator $b, $c = 'default') {
             return [$a, \get_class($b), $c];
         };
@@ -204,7 +205,6 @@ class ContainerTest extends TestCase
         // use helper function
         $array = ['M36', 'D426', 'Y2684'];
         $this->assertFalse(Yii::$container->invoke(['yii\helpers\ArrayHelper', 'isAssociative'], [$array]));
-
 
         $myFunc = function (Request $request, Response $response) {
             return [$request, $response];
@@ -281,7 +281,7 @@ class ContainerTest extends TestCase
                 return new Qux();
             },
             'rollbar',
-            'baibaratsky\yii\rollbar\Rollbar'
+            'baibaratsky\yii\rollbar\Rollbar',
         ]);
         $container->setDefinitions([]);
 
@@ -360,7 +360,7 @@ class ContainerTest extends TestCase
             'bar' => [
                 '__class' => Bar::class,
                 '__construct()' => [
-                    Instance::of('qux')
+                    Instance::of('qux'),
                 ],
             ],
         ]);
@@ -531,7 +531,7 @@ class ContainerTest extends TestCase
             'id' => 'test',
             'components' => [
                 'request' => [
-                    'baseUrl' => '123'
+                    'baseUrl' => '123',
                 ],
             ],
             'container' => [

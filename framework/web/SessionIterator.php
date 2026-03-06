@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -21,19 +23,18 @@ class SessionIterator implements \Iterator
     /**
      * @var array list of keys in the map
      */
-    private $_keys;
+    private array $_keys;
     /**
      * @var string|int|false current key
      */
     private $_key;
-
 
     /**
      * Constructor.
      */
     public function __construct()
     {
-        $this->_keys = array_keys(isset($_SESSION) ? $_SESSION : []);
+        $this->_keys = array_keys($_SESSION ?? []);
         $this->rewind();
     }
 
@@ -42,7 +43,7 @@ class SessionIterator implements \Iterator
      * This method is required by the interface [[\Iterator]].
      */
     #[\ReturnTypeWillChange]
-    public function rewind()
+    public function rewind(): void
     {
         $this->_key = reset($this->_keys);
     }
@@ -74,7 +75,7 @@ class SessionIterator implements \Iterator
      * This method is required by the interface [[\Iterator]].
      */
     #[\ReturnTypeWillChange]
-    public function next()
+    public function next(): void
     {
         do {
             $this->_key = next($this->_keys);

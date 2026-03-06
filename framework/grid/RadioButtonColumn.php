@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -63,12 +65,11 @@ class RadioButtonColumn extends Column
      */
     public $radioOptions = [];
 
-
     /**
      * {@inheritdoc}
      * @throws \yii\base\InvalidConfigException if [[name]] is not set.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (empty($this->name)) {
@@ -93,7 +94,7 @@ class RadioButtonColumn extends Column
                 $options['value'] = is_array($key) ? json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : $key;
             }
         }
-        $checked = isset($options['checked']) ? $options['checked'] : false;
+        $checked = $options['checked'] ?? false;
         return Html::radio($this->name, $checked, $options);
     }
 }

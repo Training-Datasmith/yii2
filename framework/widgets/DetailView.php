@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -121,12 +123,11 @@ class DetailView extends Widget
      */
     public $formatter;
 
-
     /**
      * Initializes the detail view.
      * This method will initialize required property values.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
 
@@ -152,7 +153,7 @@ class DetailView extends Widget
      * Renders the detail view.
      * This is the main entry of the whole detail view rendering.
      */
-    public function run()
+    public function run(): void
     {
         $rows = [];
         $i = 0;
@@ -171,7 +172,7 @@ class DetailView extends Widget
      * @param int $index the zero-based index of the attribute in the [[attributes]] array
      * @return string the rendering result
      */
-    protected function renderAttribute($attribute, $index)
+    protected function renderAttribute(array $attribute, $index)
     {
         if (is_string($this->template)) {
             $captionOptions = Html::renderTagAttributes(ArrayHelper::getValue($attribute, 'captionOptions', []));
@@ -213,8 +214,8 @@ class DetailView extends Widget
                 }
                 $attribute = [
                     'attribute' => $matches[1],
-                    'format' => isset($matches[3]) ? $matches[3] : 'text',
-                    'label' => isset($matches[5]) ? $matches[5] : null,
+                    'format' => $matches[3] ?? 'text',
+                    'label' => $matches[5] ?? null,
                 ];
             }
 

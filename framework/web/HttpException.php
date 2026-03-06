@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,7 +37,6 @@ class HttpException extends UserException
      */
     public $statusCode;
 
-
     /**
      * Constructor.
      * @param int $status HTTP status code, such as 404, 500, etc.
@@ -52,12 +53,8 @@ class HttpException extends UserException
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
+    public function getName(): string
     {
-        if (isset(Response::$httpStatuses[$this->statusCode])) {
-            return Response::$httpStatuses[$this->statusCode];
-        }
-
-        return 'Error';
+        return Response::$httpStatuses[$this->statusCode] ?? 'Error';
     }
 }

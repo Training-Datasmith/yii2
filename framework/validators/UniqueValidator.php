@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -96,11 +98,10 @@ class UniqueValidator extends Validator
      */
     public $forceMasterDb =  true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if ($this->message !== null) {
@@ -121,9 +122,9 @@ class UniqueValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
-        $targetAttribute = $this->targetAttribute === null ? $attribute : $this->targetAttribute;
+        $targetAttribute = $this->targetAttribute ?? $attribute;
         if ($this->skipOnError) {
             foreach ((array)$targetAttribute as $k => $v) {
                 if ($model->hasErrors(is_int($k) ? $v : $k)) {
@@ -150,7 +151,7 @@ class UniqueValidator extends Validator
         $modelExists = false;
 
         if ($this->forceMasterDb && method_exists($db, 'useMaster')) {
-            $db->useMaster(function () use ($targetClass, $conditions, $model, &$modelExists) {
+            $db->useMaster(function () use ($targetClass, $conditions, $model, &$modelExists): void {
                 $modelExists = $this->modelExists($targetClass, $conditions, $model);
             });
         } else {
@@ -172,7 +173,7 @@ class UniqueValidator extends Validator
      */
     private function getTargetClass($model)
     {
-        return $this->targetClass === null ? get_class($model) : $this->targetClass;
+        return $this->targetClass ?? get_class($model);
     }
 
     /**
@@ -185,7 +186,7 @@ class UniqueValidator extends Validator
      *
      * @return bool whether the model already exists
      */
-    private function modelExists($targetClass, $conditions, $model)
+    private function modelExists($targetClass, array $conditions, $model)
     {
         /** @var ActiveRecordInterface|\yii\base\BaseObject $targetClass $query */
         $query = $this->prepareQuery($targetClass, $conditions);
@@ -294,7 +295,7 @@ class UniqueValidator extends Validator
      * @param \yii\base\Model $model the data model.
      * @param string $attribute the name of the attribute.
      */
-    private function addComboNotUniqueError($model, $attribute)
+    private function addComboNotUniqueError($model, $attribute): void
     {
         $attributeCombo = [];
         $valueCombo = [];
@@ -318,9 +319,8 @@ class UniqueValidator extends Validator
      * @param ActiveQuery<ActiveRecord> $query
      * @param array $conditions array of condition, keys to be modified
      * @param string|null $alias set empty string for no apply alias. Set null for apply primary table alias
-     * @return array
      */
-    private function applyTableAlias($query, $conditions, $alias = null)
+    private function applyTableAlias($query, array $conditions, $alias = null): array
     {
         if ($alias === null) {
             $alias = array_keys($query->getTablesUsedInFrom())[0];

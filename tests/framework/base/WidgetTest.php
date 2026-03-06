@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -57,8 +59,8 @@ class WidgetTest extends TestCase
         Yii::$container = new Container();
         Yii::$container->setDefinitions([
             TestWidgetB::class => [
-                'class' => TestWidget::class
-            ]
+                'class' => TestWidget::class,
+            ],
         ]);
 
         ob_start();
@@ -79,7 +81,7 @@ class WidgetTest extends TestCase
         Yii::$container->setDefinitions([
             TestWidgetB::class => function () {
                 return new TestWidget(['id' => 'test']);
-            }
+            },
         ]);
 
         ob_start();

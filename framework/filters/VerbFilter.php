@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -77,12 +79,11 @@ class VerbFilter extends Behavior
      */
     public $actions = [];
 
-
     /**
      * Declares event handlers for the [[owner]]'s events.
      * @return array events (array keys) and the corresponding event handler methods (array values).
      */
-    public function events()
+    public function events(): array
     {
         return [Controller::EVENT_BEFORE_ACTION => 'beforeAction'];
     }

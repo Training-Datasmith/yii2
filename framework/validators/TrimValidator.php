@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -32,11 +34,10 @@ class TrimValidator extends Validator
      */
     public $skipOnEmpty = false;
 
-
     /**
      * @inheritDoc
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
         if (!$this->skipOnArray || !is_array($value)) {
@@ -50,9 +51,8 @@ class TrimValidator extends Validator
      * Converts given value to string and strips declared characters.
      *
      * @param mixed $value the value to strip
-     * @return string
      */
-    protected function trimValue($value)
+    protected function trimValue($value): string
     {
         return $this->isEmpty($value) ? '' : trim((string) $value, $this->chars ?: " \n\r\t\v\x00");
     }
@@ -60,7 +60,7 @@ class TrimValidator extends Validator
     /**
      * @inheritDoc
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): ?string
     {
         if ($this->skipOnArray && is_array($model->$attribute)) {
             return null;
@@ -75,7 +75,7 @@ class TrimValidator extends Validator
     /**
      * @inheritDoc
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         return [
             'skipOnArray' => (bool) $this->skipOnArray,

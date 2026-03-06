@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -434,7 +436,7 @@ class Connection extends Component
     /**
      * @var Transaction|null the currently active transaction
      */
-    private $_transaction;
+    private ?\yii\db\Transaction $_transaction = null;
     /**
      * @var Schema|null the database schema
      */
@@ -454,22 +456,21 @@ class Connection extends Component
     /**
      * @var array query cache parameters for the [[cache()]] calls
      */
-    private $_queryCacheInfo = [];
+    private array $_queryCacheInfo = [];
     /**
      * @var string[]|null quoted table name cache for [[quoteTableName()]] calls
      */
-    private $_quotedTableNames;
+    private ?array $_quotedTableNames = null;
     /**
      * @var string[]|null quoted column name cache for [[quoteColumnName()]] calls
      */
-    private $_quotedColumnNames;
-
+    private ?array $_quotedColumnNames = null;
 
     /**
      * Returns a value indicating whether the DB connection is established.
      * @return bool whether the DB connection is established
      */
-    public function getIsActive()
+    public function getIsActive(): bool
     {
         return $this->pdo !== null;
     }
@@ -506,15 +507,12 @@ class Connection extends Component
      */
     public function cache(callable $callable, $duration = null, $dependency = null)
     {
-        $this->_queryCacheInfo[] = [$duration === null ? $this->queryCacheDuration : $duration, $dependency];
+        $this->_queryCacheInfo[] = [$duration ?? $this->queryCacheDuration, $dependency];
         try {
             $result = call_user_func($callable, $this);
             array_pop($this->_queryCacheInfo);
             return $result;
-        } catch (\Exception $e) {
-            array_pop($this->_queryCacheInfo);
-            throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception|\Throwable $e) {
             array_pop($this->_queryCacheInfo);
             throw $e;
         }
@@ -552,10 +550,7 @@ class Connection extends Component
             $result = call_user_func($callable, $this);
             array_pop($this->_queryCacheInfo);
             return $result;
-        } catch (\Exception $e) {
-            array_pop($this->_queryCacheInfo);
-            throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception|\Throwable $e) {
             array_pop($this->_queryCacheInfo);
             throw $e;
         }
@@ -569,7 +564,7 @@ class Connection extends Component
      * @return array|null the current query cache information, or null if query cache is not enabled.
      * @internal
      */
-    public function getQueryCacheInfo($duration, $dependency)
+    public function getQueryCacheInfo($duration, $dependency): ?array
     {
         if (!$this->enableQueryCache) {
             return null;
@@ -604,7 +599,7 @@ class Connection extends Component
      * It does nothing if a DB connection has already been established.
      * @throws Exception if connection fails
      */
-    public function open()
+    public function open(): void
     {
         if ($this->pdo !== null) {
             return;
@@ -654,7 +649,7 @@ class Connection extends Component
      * Closes the currently active DB connection.
      * It does nothing if the connection is already closed.
      */
-    public function close()
+    public function close(): void
     {
         if ($this->_master) {
             if ($this->pdo === $this->_master->pdo) {
@@ -820,10 +815,7 @@ class Connection extends Component
             if ($transaction->isActive && $transaction->level === $level) {
                 $transaction->commit();
             }
-        } catch (\Exception $e) {
-            $this->rollbackTransactionOnLevel($transaction, $level);
-            throw $e;
-        } catch (\Throwable $e) {
+        } catch (\Exception|\Throwable $e) {
             $this->rollbackTransactionOnLevel($transaction, $level);
             throw $e;
         }
@@ -838,7 +830,7 @@ class Connection extends Component
      * @param Transaction $transaction Transaction object given from [[beginTransaction()]].
      * @param int $level Transaction level just after [[beginTransaction()]] call.
      */
-    private function rollbackTransactionOnLevel($transaction, $level)
+    private function rollbackTransactionOnLevel($transaction, $level): void
     {
         if ($transaction->isActive && $transaction->level === $level) {
             // https://github.com/yiisoft/yii2/pull/13347
@@ -891,7 +883,7 @@ class Connection extends Component
      * @param array $value the [[QueryBuilder]] properties to be configured.
      * @since 2.0.14
      */
-    public function setQueryBuilder($value)
+    public function setQueryBuilder($value): void
     {
         Yii::configure($this->getQueryBuilder(), $value);
         $this->_queryBuilderConfigurations[] = $value;
@@ -900,7 +892,7 @@ class Connection extends Component
     /**
      * Restores custom QueryBuilder configuration after the connection close/open cycle
      */
-    private function restoreQueryBuilderConfiguration()
+    private function restoreQueryBuilderConfiguration(): void
     {
         if ($this->_queryBuilderConfigurations === []) {
             return;
@@ -957,10 +949,7 @@ class Connection extends Component
      */
     public function quoteTableName($name)
     {
-        if (isset($this->_quotedTableNames[$name])) {
-            return $this->_quotedTableNames[$name];
-        }
-        return $this->_quotedTableNames[$name] = $this->getSchema()->quoteTableName($name);
+        return $this->_quotedTableNames[$name] ?? $this->_quotedTableNames[$name] = $this->getSchema()->quoteTableName($name);
     }
 
     /**
@@ -973,10 +962,7 @@ class Connection extends Component
      */
     public function quoteColumnName($name)
     {
-        if (isset($this->_quotedColumnNames[$name])) {
-            return $this->_quotedColumnNames[$name];
-        }
-        return $this->_quotedColumnNames[$name] = $this->getSchema()->quoteColumnName($name);
+        return $this->_quotedColumnNames[$name] ?? $this->_quotedColumnNames[$name] = $this->getSchema()->quoteColumnName($name);
     }
 
     /**
@@ -988,7 +974,7 @@ class Connection extends Component
      * @param string $sql the SQL to be quoted
      * @return string the quoted SQL
      */
-    public function quoteSql($sql)
+    public function quoteSql($sql): ?string
     {
         return preg_replace_callback(
             '/(\\{\\{(%?[\w\-\. ]+%?)\\}\\}|\\[\\[([\w\-\. ]+)\\]\\])/',
@@ -1025,7 +1011,7 @@ class Connection extends Component
      * Changes the current driver name.
      * @param string $driverName name of the DB driver
      */
-    public function setDriverName($driverName)
+    public function setDriverName($driverName): void
     {
         $this->_driverName = strtolower($driverName);
     }
@@ -1129,10 +1115,7 @@ class Connection extends Component
             $this->enableSlaves = false;
             try {
                 $result = call_user_func($callback, $this);
-            } catch (\Exception $e) {
-                $this->enableSlaves = true;
-                throw $e;
-            } catch (\Throwable $e) {
+            } catch (\Exception|\Throwable $e) {
                 $this->enableSlaves = true;
                 throw $e;
             }
@@ -1261,10 +1244,10 @@ class Connection extends Component
         $fields = (array) $this;
 
         unset($fields['pdo']);
-        unset($fields["\000" . __CLASS__ . "\000" . '_master']);
-        unset($fields["\000" . __CLASS__ . "\000" . '_slave']);
-        unset($fields["\000" . __CLASS__ . "\000" . '_transaction']);
-        unset($fields["\000" . __CLASS__ . "\000" . '_schema']);
+        unset($fields["\000" . self::class . "\000" . '_master']);
+        unset($fields["\000" . self::class . "\000" . '_slave']);
+        unset($fields["\000" . self::class . "\000" . '_transaction']);
+        unset($fields["\000" . self::class . "\000" . '_schema']);
 
         return array_keys($fields);
     }

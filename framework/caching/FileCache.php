@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -71,11 +73,10 @@ class FileCache extends Cache
      */
     public $dirMode = 0775;
 
-
     /**
      * Initializes this component by ensuring the existence of the cache path.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->cachePath = Yii::getAlias($this->cachePath);
@@ -94,7 +95,7 @@ class FileCache extends Cache
      * a complex data structure consisting of factors representing the key.
      * @return bool true if a value exists in cache, false if the value is not in the cache or expired.
      */
-    public function exists($key)
+    public function exists($key): bool
     {
         $cacheFile = $this->getCacheFile($this->buildKey($key));
 
@@ -135,7 +136,7 @@ class FileCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. Fewer than or equal to 0 means 1 year expiration time.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function setValue($key, $value, $duration)
+    protected function setValue($key, $value, $duration): bool
     {
         $this->gc();
         $cacheFile = $this->getCacheFile($key);
@@ -213,7 +214,7 @@ class FileCache extends Cache
      * @param string $normalizedKey normalized cache key by [[buildKey]] method
      * @return string the cache file path
      */
-    protected function getCacheFile($normalizedKey)
+    protected function getCacheFile(string $normalizedKey): string
     {
         $cacheKey = $normalizedKey;
 
@@ -241,7 +242,7 @@ class FileCache extends Cache
      * This is the implementation of the method declared in the parent class.
      * @return bool whether the flush operation was successful.
      */
-    protected function flushValues()
+    protected function flushValues(): bool
     {
         $this->gc(true, false);
 
@@ -255,7 +256,7 @@ class FileCache extends Cache
      * @param bool $expiredOnly whether to removed expired cache files only.
      * If false, all cache files under [[cachePath]] will be removed.
      */
-    public function gc($force = false, $expiredOnly = true)
+    public function gc($force = false, $expiredOnly = true): void
     {
         if ($force || random_int(0, 1000000) < $this->gcProbability) {
             $this->gcRecursive($this->cachePath, $expiredOnly);
@@ -269,7 +270,7 @@ class FileCache extends Cache
      * @param bool $expiredOnly whether to only remove expired cache files. If false, all files
      * under `$path` will be removed.
      */
-    protected function gcRecursive($path, $expiredOnly)
+    protected function gcRecursive(string $path, $expiredOnly)
     {
         if (($handle = opendir($path)) !== false) {
             while (($file = readdir($handle)) !== false) {

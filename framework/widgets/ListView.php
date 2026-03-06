@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -106,12 +108,11 @@ class ListView extends BaseListView
      */
     public $afterItem;
 
-
     /**
      * Renders all data models.
      * @return string the rendering result
      */
-    public function renderItems()
+    public function renderItems(): string
     {
         $models = $this->dataProvider->getModels();
         $keys = $this->dataProvider->getKeys();

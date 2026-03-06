@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,20 +10,20 @@
 
 namespace yiiunit\framework\helpers;
 
+use ArrayAccess;
+use ArrayObject;
 use DateTime;
 use DateTimeZone;
-use stdClass;
-use yii\helpers\UnsetArrayValue;
-use yii\helpers\ReplaceArrayValue;
-use ArrayObject;
-use Throwable;
-use ReturnTypeWillChange;
-use ArrayAccess;
 use Iterator;
+use ReturnTypeWillChange;
+use stdClass;
+use Throwable;
 use yii\base\BaseObject;
 use yii\base\Model;
 use yii\data\Sort;
 use yii\helpers\ArrayHelper;
+use yii\helpers\ReplaceArrayValue;
+use yii\helpers\UnsetArrayValue;
 use yiiunit\TestCase;
 
 /**
@@ -794,7 +796,7 @@ class ArrayHelperTest extends TestCase
         $this->assertEquals([
             '11' => '22',
             '33' => '44',
-            '55' => '66'
+            '55' => '66',
         ], $result);
     }
 
@@ -1492,7 +1494,7 @@ class ArrayHelperTest extends TestCase
             ],
         ], ArrayHelper::filter($array, ['A', '!A.D']));
         $this->assertEquals([
-            'G' => 1
+            'G' => 1,
         ], ArrayHelper::filter($array, ['G', '!Z', '!X.A']));
 
         //Non existing keys tests
@@ -1577,7 +1579,7 @@ class ArrayHelperTest extends TestCase
             //Normal index array
             [
                 [1, 2, 3, 4],
-                [4, 1, 3, 2]
+                [4, 1, 3, 2],
             ],
             //Normal associative array
             [
@@ -1587,7 +1589,7 @@ class ArrayHelperTest extends TestCase
             //Normal index array
             [
                 [1, 2, 3, 4],
-                [4, 1, 3, 2]
+                [4, 1, 3, 2],
             ],
             //Multidimensional associative array
             [
@@ -1617,7 +1619,7 @@ class ArrayHelperTest extends TestCase
                     'd' => ['b' => 2, 'c' => 3, 'a' => ['a' => 1, 'd' => 4, 'b' => 2, 'c' => 3], 'd' => 4],
                     'c' => ['c' => 3, 'a' => 1, 'd' => 4, 'b' => ['c' => 3, 'a' => 1, 'd' => 4, 'b' => 2]],
                     'a' => ['d' => ['d' => 4, 'b' => 2, 'c' => 3, 'a' => 1], 'b' => 2, 'c' => 3, 'a' => 1],
-                ]
+                ],
             ],
         ];
     }

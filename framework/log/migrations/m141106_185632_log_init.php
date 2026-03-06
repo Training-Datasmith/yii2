@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -25,7 +27,7 @@ class m141106_185632_log_init extends Migration
     /**
      * @var DbTarget[] Targets to create log table for
      */
-    private $_dbTargets = [];
+    private array $_dbTargets = [];
 
     /**
      * @throws InvalidConfigException
@@ -59,7 +61,7 @@ class m141106_185632_log_init extends Migration
         return $this->_dbTargets;
     }
 
-    public function up()
+    public function up(): ?bool
     {
         foreach ($this->getDbTargets() as $target) {
             $this->db = $target->db;
@@ -84,7 +86,7 @@ class m141106_185632_log_init extends Migration
         }
     }
 
-    public function down()
+    public function down(): ?bool
     {
         foreach ($this->getDbTargets() as $target) {
             $this->db = $target->db;

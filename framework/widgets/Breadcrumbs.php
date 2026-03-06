@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -124,11 +126,10 @@ class Breadcrumbs extends Widget
      */
     public $activeItemTemplate = "<li class=\"active\">{link}</li>\n";
 
-
     /**
      * Renders the widget.
      */
-    public function run()
+    public function run(): void
     {
         if (empty($this->links)) {
             return;
@@ -158,7 +159,7 @@ class Breadcrumbs extends Widget
      * @return string the rendering result
      * @throws InvalidConfigException if `$link` does not have "label" element.
      */
-    protected function renderItem($link, $template)
+    protected function renderItem(array $link, $template): string
     {
         $encodeLabel = ArrayHelper::remove($link, 'encode', $this->encodeLabels);
         if (array_key_exists('label', $link)) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -73,11 +75,10 @@ class StringValidator extends Validator
      */
     public $strict = true;
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (is_array($this->length)) {
@@ -109,7 +110,7 @@ class StringValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validateAttribute($model, $attribute): void
     {
         $value = $model->$attribute;
         if (!$this->strict && is_scalar($value) && !is_string($value)) {
@@ -137,7 +138,7 @@ class StringValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value)
+    protected function validateValue($value): ?array
     {
         if (!$this->strict && is_scalar($value) && !is_string($value)) {
             $value = (string)$value;
@@ -165,7 +166,7 @@ class StringValidator extends Validator
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function clientValidateAttribute($model, $attribute, $view): string
     {
         ValidationAsset::register($view);
         $options = $this->getClientOptions($model, $attribute);
@@ -175,8 +176,9 @@ class StringValidator extends Validator
 
     /**
      * {@inheritdoc}
+     * @return mixed[]
      */
-    public function getClientOptions($model, $attribute)
+    public function getClientOptions($model, $attribute): array
     {
         $label = $model->getAttributeLabel($attribute);
 

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -49,11 +51,10 @@ class I18N extends Component
      */
     public $translations;
 
-
     /**
      * Initializes the component by configuring the default message categories.
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (!isset($this->translations['yii']) && !isset($this->translations['yii*'])) {
@@ -157,7 +158,7 @@ class I18N extends Component
      * Can be given as array or string configuration that will be given to [[Yii::createObject]] to create an instance
      * or a [[MessageFormatter]] instance.
      */
-    public function setMessageFormatter($value)
+    public function setMessageFormatter($value): void
     {
         $this->_messageFormatter = $value;
     }

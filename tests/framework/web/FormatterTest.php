@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,9 +10,9 @@
 
 namespace yiiunit\framework\web;
 
-use yiiunit\TestCase;
 use yii\web\Response;
 use yii\web\ResponseFormatterInterface;
+use yiiunit\TestCase;
 
 abstract class FormatterTest extends TestCase
 {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -68,7 +70,6 @@ class UrlNormalizer extends BaseObject
      */
     public $action = self::ACTION_REDIRECT_PERMANENT;
 
-
     /**
      * Performs normalization action for the specified $route.
      * @param array $route route for normalization
@@ -77,15 +78,18 @@ class UrlNormalizer extends BaseObject
      * @throws UrlNormalizerRedirectException if normalization requires redirection.
      * @throws NotFoundHttpException if normalization suggests action matching route does not exist.
      */
-    public function normalizeRoute($route)
+    public function normalizeRoute(array $route)
     {
         if ($this->action === null) {
             return $route;
-        } elseif ($this->action === static::ACTION_REDIRECT_PERMANENT || $this->action === static::ACTION_REDIRECT_TEMPORARY) {
+        }
+        if ($this->action === static::ACTION_REDIRECT_PERMANENT || $this->action === static::ACTION_REDIRECT_TEMPORARY) {
             throw new UrlNormalizerRedirectException([$route[0]] + $route[1], $this->action);
-        } elseif ($this->action === static::ACTION_NOT_FOUND) {
+        }
+        if ($this->action === static::ACTION_NOT_FOUND) {
             throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
-        } elseif (is_callable($this->action)) {
+        }
+        if (is_callable($this->action)) {
             return call_user_func($this->action, $route, $this);
         }
 
@@ -125,7 +129,7 @@ class UrlNormalizer extends BaseObject
      * @param string $pathInfo raw path info.
      * @return string normalized path info.
      */
-    protected function collapseSlashes($pathInfo)
+    protected function collapseSlashes($pathInfo): string
     {
         return ltrim(preg_replace('#/{2,}#', '/', $pathInfo), '/');
     }

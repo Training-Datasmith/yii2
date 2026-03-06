@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -160,7 +162,6 @@ class UrlManagerCreateUrlTest extends TestCase
         // with defaultAction
         $url = $manager->$method(['/post', 'page' => 1]);
         $this->assertEquals("$prefix/post.html?page=1", $url);
-
 
         // test suffix '/' as it may be trimmed
         $config['suffix'] = '/';

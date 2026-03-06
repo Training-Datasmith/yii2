@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -33,7 +35,6 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
      */
     protected $createStatus;
 
-
     /**
      * Creates the URL rules that should be contained within this composite rule.
      * @return UrlRuleInterface[]|UrlRuleInterface[][] the URL rules
@@ -43,7 +44,7 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         $this->rules = $this->createRules();
@@ -57,13 +58,11 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
         foreach ($this->rules as $rule) {
             /** @var UrlRule $rule */
             $result = $rule->parseRequest($manager, $request);
-            if (YII_DEBUG) {
-                Yii::debug([
-                    'rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule),
-                    'match' => $result !== false,
-                    'parent' => self::className(),
-                ], __METHOD__);
-            }
+            Yii::debug([
+                'rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule),
+                'match' => $result !== false,
+                'parent' => self::className(),
+            ], __METHOD__);
             if ($result !== false) {
                 return $result;
             }

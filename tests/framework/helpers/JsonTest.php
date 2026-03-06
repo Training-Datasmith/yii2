@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,15 +10,15 @@
 
 namespace yiiunit\framework\helpers;
 
-use stdClass;
-use SplStack;
-use yii\base\InvalidArgumentException;
 use DateTime;
 use DateTimeZone;
+use SplStack;
+use stdClass;
+use yii\base\InvalidArgumentException;
 use yii\helpers\Json;
 use yii\web\JsExpression;
-use yiiunit\framework\web\Post;
 use yiiunit\framework\models\JsonModel;
+use yiiunit\framework\web\Post;
 use yiiunit\TestCase;
 
 /**
@@ -58,7 +60,7 @@ class JsonTest extends TestCase
         // simple object with zero indexed keys encoding
         $data = (object) [
             0 => 1,
-            1 => 2
+            1 => 2,
         ];
         $default = Json::$keepObjectType;
         Json::$keepObjectType = true;

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -35,11 +37,10 @@ class SerialColumn extends Column
      */
     public $header = '#';
 
-
     /**
      * {@inheritdoc}
      */
-    protected function renderDataCellContent($model, $key, $index)
+    protected function renderDataCellContent($model, $key, $index): string
     {
         $pagination = $this->grid->dataProvider->getPagination();
         if ($pagination !== false) {

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -58,11 +60,10 @@ class EmailTarget extends Target
      */
     public $mailer = 'mailer';
 
-
     /**
      * {@inheritdoc}
      */
-    public function init()
+    public function init(): void
     {
         parent::init();
         if (empty($this->message['to'])) {
@@ -76,7 +77,7 @@ class EmailTarget extends Target
      * Starting from version 2.0.14, this method throws LogRuntimeException in case the log can not be exported.
      * @throws LogRuntimeException
      */
-    public function export()
+    public function export(): void
     {
         // moved initialization of subject here because of the following issue
         // https://github.com/yiisoft/yii2/issues/1446

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -109,12 +111,11 @@ class CaptchaAction extends Action
      */
     public $imageLibrary;
 
-
     /**
      * Initializes the action.
      * @throws InvalidConfigException if the font file does not exist.
      */
-    public function init()
+    public function init(): void
     {
         $this->fontFile = Yii::getAlias($this->fontFile);
         if (!is_file($this->fontFile)) {
@@ -151,7 +152,7 @@ class CaptchaAction extends Action
      * @param string $code the CAPTCHA code
      * @return string a hash code generated from the CAPTCHA code
      */
-    public function generateValidationHash($code)
+    public function generateValidationHash($code): int
     {
         for ($h = 0, $i = strlen($code) - 1; $i >= 0; --$i) {
             $h += ord($code[$i]) << $i;
@@ -207,7 +208,7 @@ class CaptchaAction extends Action
      * Generates a new verification code.
      * @return string the generated verification code
      */
-    protected function generateVerifyCode()
+    protected function generateVerifyCode(): string
     {
         if ($this->minLength > $this->maxLength) {
             $this->maxLength = $this->minLength;
@@ -239,7 +240,7 @@ class CaptchaAction extends Action
      * Returns the session variable name used to store verification code.
      * @return string the session variable name
      */
-    protected function getSessionKey()
+    protected function getSessionKey(): string
     {
         return '__captcha/' . $this->getUniqueId();
     }
@@ -259,7 +260,8 @@ class CaptchaAction extends Action
         }
         if ($imageLibrary === 'gd') {
             return $this->renderImageByGD($code);
-        } elseif ($imageLibrary === 'imagick') {
+        }
+        if ($imageLibrary === 'imagick') {
             return $this->renderImageByImagick($code);
         }
 
@@ -328,7 +330,7 @@ class CaptchaAction extends Action
      * @param string $code the verification code
      * @return string image contents in PNG format.
      */
-    protected function renderImageByImagick($code)
+    protected function renderImageByImagick($code): string
     {
         $backColor = $this->transparent ? new \ImagickPixel('transparent') : new \ImagickPixel('#' . str_pad(dechex($this->backColor), 6, 0, STR_PAD_LEFT));
         $foreColor = new \ImagickPixel('#' . str_pad(dechex($this->foreColor), 6, 0, STR_PAD_LEFT));

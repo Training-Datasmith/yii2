@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -18,7 +20,7 @@ use yii\db\Migration;
  */
 class m150207_210500_i18n_init extends Migration
 {
-    public function up()
+    public function up(): ?bool
     {
         $tableOptions = null;
         if ($this->db->driverName === 'mysql') {
@@ -49,7 +51,7 @@ class m150207_210500_i18n_init extends Migration
         $this->createIndex('idx_message_language', '{{%message}}', 'language');
     }
 
-    public function down()
+    public function down(): ?bool
     {
         $this->dropForeignKey('fk_message_source_message', '{{%message}}');
         $this->dropTable('{{%message}}');

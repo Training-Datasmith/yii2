@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -47,8 +49,7 @@ use yii\base\NotSupportedException;
 class MessageFormatter extends Component
 {
     private $_errorCode = 0;
-    private $_errorMessage = '';
-
+    private string $_errorMessage = '';
 
     /**
      * Get the error code from the last operation.
@@ -204,10 +205,9 @@ class MessageFormatter extends Component
      * @param string $pattern The pattern string to replace things into.
      * @param array $givenParams The array of values to insert into the format string.
      * @param array $resultingParams Modified array of parameters.
-     * @param array $map
      * @return string|false The pattern string with placeholders replaced.
      */
-    private function replaceNamedArguments($pattern, $givenParams, &$resultingParams = [], &$map = [])
+    private function replaceNamedArguments($pattern, array $givenParams, array &$resultingParams = [], array &$map = [])
     {
         if (($tokens = self::tokenizePattern($pattern)) === false) {
             return false;
@@ -339,7 +339,7 @@ class MessageFormatter extends Component
      * @return bool|string parsed token or false on failure
      * @throws \yii\base\NotSupportedException when unsupported formatting is used.
      */
-    private function parseToken($token, $args, $locale)
+    private function parseToken(array $token, array $args, $locale)
     {
         // parsing pattern based on ICU grammar:
         // https://unicode-org.github.io/icu-docs/#/icu4c/classMessageFormat.html

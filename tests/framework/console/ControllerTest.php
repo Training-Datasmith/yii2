@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -8,16 +10,16 @@
 
 namespace yiiunit\framework\console;
 
-use yii\data\ArrayDataProvider;
 use RuntimeException;
-use yii\console\Exception;
-use yiiunit\framework\console\stubs\DummyService;
 use Yii;
 use yii\base\InlineAction;
 use yii\base\Module;
 use yii\console\Application;
+use yii\console\Exception;
 use yii\console\Request;
+use yii\data\ArrayDataProvider;
 use yii\helpers\Console;
+use yiiunit\framework\console\stubs\DummyService;
 use yiiunit\TestCase;
 
 /**
