@@ -456,7 +456,7 @@ class DbManager extends BaseManager
     {
         $class = $row['type'] == Item::TYPE_PERMISSION ? Permission::className() : Role::className();
 
-        if (!isset($row['data']) || ($data = @unserialize(is_resource($row['data']) ? stream_get_contents($row['data']) : $row['data'])) === false) {
+        if (!isset($row['data']) || ($data = @unserialize(is_resource($row['data']) ? stream_get_contents($row['data']) : $row['data'], ['allowed_classes' => [Permission::class, Role::class]])) === false) {
             $data = null;
         }
 
@@ -684,7 +684,7 @@ class DbManager extends BaseManager
         if (!$data) {
             return null;
         }
-        return unserialize($data);
+        return unserialize($data, ['allowed_classes' => [Rule::class]]);
     }
 
     /**
@@ -705,7 +705,7 @@ class DbManager extends BaseManager
                 $data = stream_get_contents($data);
             }
             if ($data) {
-                $rules[$row['name']] = unserialize($data);
+                $rules[$row['name']] = unserialize($data, ['allowed_classes' => [Rule::class]]);
             }
         }
 
@@ -1068,7 +1068,7 @@ class DbManager extends BaseManager
                 $data = stream_get_contents($data);
             }
             if ($data) {
-                $this->rules[$row['name']] = unserialize($data);
+                $this->rules[$row['name']] = unserialize($data, ['allowed_classes' => [Rule::class]]);
             }
         }
 

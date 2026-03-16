@@ -158,7 +158,7 @@ class ErrorHandler extends \yii\base\ErrorHandler
             $array['status'] = $exception->statusCode;
         }
         $array['type'] = get_class($exception);
-        if (!$exception instanceof UserException) {
+        if (YII_DEBUG && !$exception instanceof UserException) {
             $array['file'] = $exception->getFile();
             $array['line'] = $exception->getLine();
             $array['stack-trace'] = explode("\n", $exception->getTraceAsString());

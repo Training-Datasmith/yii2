@@ -561,6 +561,9 @@ class Session extends Component implements \IteratorAggregate, \ArrayAccess, \Co
      */
     public function setUseStrictMode($value): void
     {
+        $this->freeze();
+        ini_set('session.use_strict_mode', $value ? '1' : '0');
+        $this->unfreeze();
     }
 
     /**

@@ -138,7 +138,7 @@ abstract class Cache extends Component implements CacheInterface
             return $value;
         }
         if ($this->serializer === null) {
-            $value = unserialize((string)$value);
+            $value = unserialize((string)$value, ['allowed_classes' => true]);
         } else {
             $value = call_user_func($this->serializer[1], $value);
         }
@@ -211,7 +211,7 @@ abstract class Cache extends Component implements CacheInterface
                 if ($this->serializer === false) {
                     $results[$key] = $values[$newKey];
                 } else {
-                    $value = $this->serializer === null ? unserialize($values[$newKey])
+                    $value = $this->serializer === null ? unserialize($values[$newKey], ['allowed_classes' => true])
                         : call_user_func($this->serializer[1], $values[$newKey]);
 
                     if (is_array($value) && !($value[1] instanceof Dependency && $value[1]->isChanged($this))) {

@@ -47,6 +47,9 @@ class ExpressionDependency extends Dependency
      */
     protected function generateDependencyData($cache)
     {
+        // The use of eval() here is intentional and controlled: the expression is
+        // developer-supplied configuration, not user input, and no safer runtime
+        // evaluation mechanism is available for arbitrary PHP expressions.
         return eval("return {$this->expression};");
     }
 }

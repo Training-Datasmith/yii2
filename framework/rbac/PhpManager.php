@@ -764,7 +764,7 @@ class PhpManager extends BaseManager
         }
 
         foreach ($rules as $name => $ruleData) {
-            $this->rules[$name] = unserialize($ruleData);
+            $this->rules[$name] = unserialize($ruleData, ['allowed_classes' => [Rule::class]]);
         }
     }
 
