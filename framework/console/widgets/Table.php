@@ -1,20 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\console\widgets;
 
 use Yii;
 use yii\base\Widget;
-use yii\helpers\ArrayHelper;
+use yii\helpers\Array_Helper;
 use yii\helpers\Console;
-
 /**
  * Table class displays a table in console.
  *
@@ -85,153 +82,98 @@ class Table extends Widget
      * @var array table chars
      * @since 2.0.19
      */
-    protected $chars = [
-        self::CHAR_TOP => '═',
-        self::CHAR_TOP_MID => '╤',
-        self::CHAR_TOP_LEFT => '╔',
-        self::CHAR_TOP_RIGHT => '╗',
-        self::CHAR_BOTTOM => '═',
-        self::CHAR_BOTTOM_MID => '╧',
-        self::CHAR_BOTTOM_LEFT => '╚',
-        self::CHAR_BOTTOM_RIGHT => '╝',
-        self::CHAR_LEFT => '║',
-        self::CHAR_LEFT_MID => '╟',
-        self::CHAR_MID => '─',
-        self::CHAR_MID_MID => '┼',
-        self::CHAR_RIGHT => '║',
-        self::CHAR_RIGHT_MID => '╢',
-        self::CHAR_MIDDLE => '│',
-    ];
+    protected $chars = [self::CHAR_TOP => '═', self::CHAR_TOP_MID => '╤', self::CHAR_TOP_LEFT => '╔', self::CHAR_TOP_RIGHT => '╗', self::CHAR_BOTTOM => '═', self::CHAR_BOTTOM_MID => '╧', self::CHAR_BOTTOM_LEFT => '╚', self::CHAR_BOTTOM_RIGHT => '╝', self::CHAR_LEFT => '║', self::CHAR_LEFT_MID => '╟', self::CHAR_MID => '─', self::CHAR_MID_MID => '┼', self::CHAR_RIGHT => '║', self::CHAR_RIGHT_MID => '╢', self::CHAR_MIDDLE => '│'];
     /**
      * @var array table column widths
      * @since 2.0.19
      */
-    protected $columnWidths = [];
+    protected $column_widths = [];
     /**
      * @var int screen width
      * @since 2.0.19
      */
-    protected $screenWidth;
+    protected $screen_width;
     /**
      * @var string list prefix
      * @since 2.0.19
      */
-    protected $listPrefix = '• ';
-
+    protected $list_prefix = '• ';
     /**
      * Set table headers.
      *
      * @param array $headers table headers
      * @return $this
      */
-    public function setHeaders(array $headers): self
+    public function set_headers(array $headers): self
     {
         $this->headers = array_values($headers);
         return $this;
     }
-
     /**
      * Set table rows.
      *
      * @param array $rows table rows
      * @return $this
      */
-    public function setRows(array $rows): self
+    public function set_rows(array $rows): self
     {
-        $this->rows = array_map(fn ($row) => array_map(fn ($value) => empty($value) && !is_numeric($value)
-            ? ' '
-            : (is_array($value)
-                ? array_values($value)
-                : $value), array_values($row)), $rows);
+        $this->rows = array_map(fn($row) => array_map(fn($value) => empty($value) && !is_numeric($value) ? ' ' : (is_array($value) ? array_values($value) : $value), array_values($row)), $rows);
         return $this;
     }
-
     /**
      * Set table chars.
      *
      * @param array $chars table chars
      * @return $this
      */
-    public function setChars(array $chars): self
+    public function set_chars(array $chars): self
     {
         $this->chars = $chars;
         return $this;
     }
-
     /**
      * Set screen width.
      *
      * @param int $width screen width
      * @return $this
      */
-    public function setScreenWidth($width): self
+    public function set_screen_width($width): self
     {
-        $this->screenWidth = $width;
+        $this->screen_width = $width;
         return $this;
     }
-
     /**
      * Set list prefix.
      *
      * @param string $listPrefix list prefix
      * @return $this
      */
-    public function setListPrefix($listPrefix): self
+    public function set_list_prefix($list_prefix): self
     {
-        $this->listPrefix = $listPrefix;
+        $this->list_prefix = $list_prefix;
         return $this;
     }
-
     /**
      * @return string the rendered table
      */
     public function run(): string
     {
-        $this->calculateRowsSize();
-        $headerCount = count($this->headers);
-
-        $buffer = $this->renderSeparator(
-            $this->chars[self::CHAR_TOP_LEFT],
-            $this->chars[self::CHAR_TOP_MID],
-            $this->chars[self::CHAR_TOP],
-            $this->chars[self::CHAR_TOP_RIGHT]
-        );
+        $this->calculate_rows_size();
+        $header_count = count($this->headers);
+        $buffer = $this->render_separator($this->chars[self::CHAR_TOP_LEFT], $this->chars[self::CHAR_TOP_MID], $this->chars[self::CHAR_TOP], $this->chars[self::CHAR_TOP_RIGHT]);
         // Header
-        if ($headerCount > 0) {
-            $buffer .= $this->renderRow(
-                $this->headers,
-                $this->chars[self::CHAR_LEFT],
-                $this->chars[self::CHAR_MIDDLE],
-                $this->chars[self::CHAR_RIGHT]
-            );
+        if ($header_count > 0) {
+            $buffer .= $this->render_row($this->headers, $this->chars[self::CHAR_LEFT], $this->chars[self::CHAR_MIDDLE], $this->chars[self::CHAR_RIGHT]);
         }
-
         // Content
         foreach ($this->rows as $i => $row) {
-            if ($i > 0 || $headerCount > 0) {
-                $buffer .= $this->renderSeparator(
-                    $this->chars[self::CHAR_LEFT_MID],
-                    $this->chars[self::CHAR_MID_MID],
-                    $this->chars[self::CHAR_MID],
-                    $this->chars[self::CHAR_RIGHT_MID]
-                );
+            if ($i > 0 || $header_count > 0) {
+                $buffer .= $this->render_separator($this->chars[self::CHAR_LEFT_MID], $this->chars[self::CHAR_MID_MID], $this->chars[self::CHAR_MID], $this->chars[self::CHAR_RIGHT_MID]);
             }
-            $buffer .= $this->renderRow(
-                $row,
-                $this->chars[self::CHAR_LEFT],
-                $this->chars[self::CHAR_MIDDLE],
-                $this->chars[self::CHAR_RIGHT]
-            );
+            $buffer .= $this->render_row($row, $this->chars[self::CHAR_LEFT], $this->chars[self::CHAR_MIDDLE], $this->chars[self::CHAR_RIGHT]);
         }
-
-        return $buffer . $this->renderSeparator(
-            $this->chars[self::CHAR_BOTTOM_LEFT],
-            $this->chars[self::CHAR_BOTTOM_MID],
-            $this->chars[self::CHAR_BOTTOM],
-            $this->chars[self::CHAR_BOTTOM_RIGHT]
-        );
+        return $buffer . $this->render_separator($this->chars[self::CHAR_BOTTOM_LEFT], $this->chars[self::CHAR_BOTTOM_MID], $this->chars[self::CHAR_BOTTOM], $this->chars[self::CHAR_BOTTOM_RIGHT]);
     }
-
     /**
      * Renders a row of data into a string.
      *
@@ -241,69 +183,60 @@ class Table extends Widget
      * @param string $spanRight character for right border
      * @see \yii\console\widgets\Table::render()
      */
-    protected function renderRow(array $row, string $spanLeft, string $spanMiddle, $spanRight): string
+    protected function render_row(array $row, string $span_left, string $span_middle, $span_right): string
     {
-        $size = $this->columnWidths;
-
+        $size = $this->column_widths;
         $buffer = '';
-        $arrayPointer = [];
-        $renderedChunkTexts = [];
-        for ($i = 0, ($max = $this->calculateRowHeight($row)) ?: $max = 1; $i < $max; $i++) {
-            $buffer .= $spanLeft . ' ';
-            foreach ($size as $index => $cellSize) {
+        $array_pointer = [];
+        $rendered_chunk_texts = [];
+        for ($i = 0, ($max = $this->calculate_row_height($row)) ?: $max = 1; $i < $max; $i++) {
+            $buffer .= $span_left . ' ';
+            foreach ($size as $index => $cell_size) {
                 $cell = $row[$index] ?? null;
                 $prefix = '';
                 if ($index !== 0) {
-                    $buffer .= $spanMiddle . ' ';
+                    $buffer .= $span_middle . ' ';
                 }
-
-                $arrayFromMultilineString = false;
+                $array_from_multiline_string = false;
                 if (is_string($cell)) {
-                    $cellLines = explode(PHP_EOL, $cell);
-                    if (count($cellLines) > 1) {
-                        $cell = $cellLines;
-                        $arrayFromMultilineString = true;
+                    $cell_lines = explode(PHP_EOL, $cell);
+                    if (count($cell_lines) > 1) {
+                        $cell = $cell_lines;
+                        $array_from_multiline_string = true;
                     }
                 }
-
                 if (is_array($cell)) {
-                    if (empty($renderedChunkTexts[$index])) {
-                        $renderedChunkTexts[$index] = '';
+                    if (empty($rendered_chunk_texts[$index])) {
+                        $rendered_chunk_texts[$index] = '';
                         $start = 0;
-                        $prefix = $arrayFromMultilineString ? '' : $this->listPrefix;
-                        if (!isset($arrayPointer[$index])) {
-                            $arrayPointer[$index] = 0;
+                        $prefix = $array_from_multiline_string ? '' : $this->list_prefix;
+                        if (!isset($array_pointer[$index])) {
+                            $array_pointer[$index] = 0;
                         }
                     } else {
-                        $start = mb_strwidth($renderedChunkTexts[$index], Yii::$app->charset);
+                        $start = mb_strwidth($rendered_chunk_texts[$index], Yii::$app->charset);
                     }
-                    $chunk = Console::ansiColorizedSubstr(
-                        $cell[$arrayPointer[$index]],
-                        $start,
-                        $cellSize - 2 - Console::ansiStrwidth($prefix)
-                    );
-                    $renderedChunkTexts[$index] .= Console::stripAnsiFormat($chunk);
-                    $fullChunkText = Console::stripAnsiFormat($cell[$arrayPointer[$index]]);
-                    if (isset($cell[$arrayPointer[$index] + 1]) && $renderedChunkTexts[$index] === $fullChunkText) {
-                        $arrayPointer[$index]++;
-                        $renderedChunkTexts[$index] = '';
+                    $chunk = Console::ansi_colorized_substr($cell[$array_pointer[$index]], $start, $cell_size - 2 - Console::ansi_strwidth($prefix));
+                    $rendered_chunk_texts[$index] .= Console::strip_ansi_format($chunk);
+                    $full_chunk_text = Console::strip_ansi_format($cell[$array_pointer[$index]]);
+                    if (isset($cell[$array_pointer[$index] + 1]) && $rendered_chunk_texts[$index] === $full_chunk_text) {
+                        $array_pointer[$index]++;
+                        $rendered_chunk_texts[$index] = '';
                     }
                 } else {
-                    $chunk = Console::ansiColorizedSubstr($cell, ($cellSize * $i) - ($i * 2), $cellSize - 2);
+                    $chunk = Console::ansi_colorized_substr($cell, $cell_size * $i - $i * 2, $cell_size - 2);
                 }
                 $chunk = $prefix . $chunk;
-                $repeat = $cellSize - Console::ansiStrwidth($chunk) - 1;
+                $repeat = $cell_size - Console::ansi_strwidth($chunk) - 1;
                 $buffer .= $chunk;
                 if ($repeat >= 0) {
                     $buffer .= str_repeat(' ', $repeat);
                 }
             }
-            $buffer .= "$spanRight\n";
+            $buffer .= "{$span_right}\n";
         }
-
         return $buffer;
     }
-
     /**
      * Renders separator.
      *
@@ -314,78 +247,72 @@ class Table extends Widget
      * @return string the generated separator row
      * @see \yii\console\widgets\Table::render()
      */
-    protected function renderSeparator($spanLeft, string $spanMid, $spanMidMid, string $spanRight): string
+    protected function render_separator($span_left, string $span_mid, $span_mid_mid, string $span_right): string
     {
-        $separator = $spanLeft;
-        foreach ($this->columnWidths as $index => $rowSize) {
+        $separator = $span_left;
+        foreach ($this->column_widths as $index => $row_size) {
             if ($index !== 0) {
-                $separator .= $spanMid;
+                $separator .= $span_mid;
             }
-            $separator .= str_repeat($spanMidMid, $rowSize);
+            $separator .= str_repeat($span_mid_mid, $row_size);
         }
-        return $separator . ($spanRight . "\n");
+        return $separator . ($span_right . "\n");
     }
-
     /**
      * Calculate the size of rows to draw anchor of columns in console.
      *
      * @see \yii\console\widgets\Table::render()
      */
-    protected function calculateRowsSize()
+    protected function calculate_rows_size()
     {
-        $this->columnWidths = $columns = [];
-        $totalWidth = 0;
-        $screenWidth = $this->getScreenWidth() - self::CONSOLE_SCROLLBAR_OFFSET;
-
-        $headerCount = count($this->headers);
+        $this->column_widths = $columns = [];
+        $total_width = 0;
+        $screen_width = $this->get_screen_width() - self::CONSOLE_SCROLLBAR_OFFSET;
+        $header_count = count($this->headers);
         if (empty($this->rows)) {
-            $rowColCount = 0;
+            $row_col_count = 0;
         } else {
-            $rowColCount = max(array_map('count', $this->rows));
+            $row_col_count = max(array_map('count', $this->rows));
         }
-        $count = max($headerCount, $rowColCount);
+        $count = max($header_count, $row_col_count);
         for ($i = 0; $i < $count; $i++) {
-            $columns[] = ArrayHelper::getColumn($this->rows, $i);
-            if ($i < $headerCount) {
+            $columns[] = Array_Helper::get_column($this->rows, $i);
+            if ($i < $header_count) {
                 $columns[$i][] = $this->headers[$i];
             }
         }
-
         foreach ($columns as $column) {
-            $columnWidth = max(array_map(function ($val) {
+            $column_width = max(array_map(function ($val) {
                 if (is_array($val)) {
-                    return max(array_map('yii\helpers\Console::ansiStrwidth', $val)) + Console::ansiStrwidth($this->listPrefix);
+                    return max(array_map('yii\helpers\Console::ansiStrwidth', $val)) + Console::ansi_strwidth($this->list_prefix);
                 }
                 if (is_string($val)) {
                     return max(array_map('yii\helpers\Console::ansiStrwidth', explode(PHP_EOL, $val)));
                 }
-                return Console::ansiStrwidth($val);
+                return Console::ansi_strwidth($val);
             }, $column)) + 2;
-            $this->columnWidths[] = $columnWidth;
-            $totalWidth += $columnWidth;
+            $this->column_widths[] = $column_width;
+            $total_width += $column_width;
         }
-
-        if ($totalWidth > $screenWidth) {
-            $minWidth = 3;
-            $fixWidths = [];
-            $relativeWidth = $screenWidth / $totalWidth;
-            foreach ($this->columnWidths as $j => $width) {
-                $scaledWidth = (int) ($width * $relativeWidth);
-                if ($scaledWidth < $minWidth) {
-                    $fixWidths[$j] = 3;
+        if ($total_width > $screen_width) {
+            $min_width = 3;
+            $fix_widths = [];
+            $relative_width = $screen_width / $total_width;
+            foreach ($this->column_widths as $j => $width) {
+                $scaled_width = (int) ($width * $relative_width);
+                if ($scaled_width < $min_width) {
+                    $fix_widths[$j] = 3;
                 }
             }
-
-            $totalFixWidth = array_sum($fixWidths);
-            $relativeWidth = ($screenWidth - $totalFixWidth) / ($totalWidth - $totalFixWidth);
-            foreach ($this->columnWidths as $j => $width) {
-                if (!array_key_exists($j, $fixWidths)) {
-                    $this->columnWidths[$j] = (int) ($width * $relativeWidth);
+            $total_fix_width = array_sum($fix_widths);
+            $relative_width = ($screen_width - $total_fix_width) / ($total_width - $total_fix_width);
+            foreach ($this->column_widths as $j => $width) {
+                if (!array_key_exists($j, $fix_widths)) {
+                    $this->column_widths[$j] = (int) ($width * $relative_width);
                 }
             }
         }
     }
-
     /**
      * Calculate the height of a row.
      *
@@ -393,41 +320,40 @@ class Table extends Widget
      * @return int maximum row per cell
      * @see \yii\console\widgets\Table::render()
      */
-    protected function calculateRowHeight($row)
+    protected function calculate_row_height($row)
     {
-        $rowsPerCell = array_map(function ($size, $columnWidth) {
-            if (is_array($columnWidth)) {
+        $rows_per_cell = array_map(function ($size, $column_width) {
+            if (is_array($column_width)) {
                 $rows = 0;
-                foreach ($columnWidth as $width) {
-                    $rows +=  $size == 2 ? 0 : ceil($width / ($size - 2));
+                foreach ($column_width as $width) {
+                    $rows += $size == 2 ? 0 : ceil($width / ($size - 2));
                 }
                 return $rows;
             }
-            return $size == 2 || $columnWidth == 0 ? 0 : ceil($columnWidth / ($size - 2));
-        }, $this->columnWidths, array_map(function ($val) {
+            return $size == 2 || $column_width == 0 ? 0 : ceil($column_width / ($size - 2));
+        }, $this->column_widths, array_map(function ($val) {
             if (is_array($val)) {
                 return array_map('yii\helpers\Console::ansiStrwidth', $val);
             }
             if (is_string($val)) {
                 return array_map('yii\helpers\Console::ansiStrwidth', explode(PHP_EOL, $val));
             }
-            return Console::ansiStrwidth($val);
+            return Console::ansi_strwidth($val);
         }, $row));
-        return max($rowsPerCell);
+        return max($rows_per_cell);
     }
-
     /**
      * Getting screen width.
      * If it is not able to determine screen width, default value `123` will be set.
      *
      * @return int screen width
      */
-    protected function getScreenWidth()
+    protected function get_screen_width()
     {
-        if (!$this->screenWidth) {
-            $size = Console::getScreenSize();
-            $this->screenWidth = $size[0] ?? self::DEFAULT_CONSOLE_SCREEN_WIDTH + self::CONSOLE_SCROLLBAR_OFFSET;
+        if (!$this->screen_width) {
+            $size = Console::get_screen_size();
+            $this->screen_width = $size[0] ?? self::DEFAULT_CONSOLE_SCREEN_WIDTH + self::CONSOLE_SCROLLBAR_OFFSET;
         }
-        return $this->screenWidth;
+        return $this->screen_width;
     }
 }

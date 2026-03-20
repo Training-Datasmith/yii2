@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\data;
 
 /**
@@ -18,7 +16,7 @@ namespace yii\data;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0.13
  */
-class ActiveDataFilter extends DataFilter
+class Active_Data_Filter extends Data_Filter
 {
     /**
      * @var array maps filtering condition keywords to build methods.
@@ -36,20 +34,7 @@ class ActiveDataFilter extends DataFilter
      * ]
      * ```
      */
-    public $conditionBuilders = [
-        'AND' => 'buildConjunctionCondition',
-        'OR' => 'buildConjunctionCondition',
-        'NOT' => 'buildBlockCondition',
-        '<' => 'buildOperatorCondition',
-        '>' => 'buildOperatorCondition',
-        '<=' => 'buildOperatorCondition',
-        '>=' => 'buildOperatorCondition',
-        '=' => 'buildOperatorCondition',
-        '!=' => 'buildOperatorCondition',
-        'IN' => 'buildOperatorCondition',
-        'NOT IN' => 'buildOperatorCondition',
-        'LIKE' => 'buildOperatorCondition',
-    ];
+    public $condition_builders = ['AND' => 'buildConjunctionCondition', 'OR' => 'buildConjunctionCondition', 'NOT' => 'buildBlockCondition', '<' => 'buildOperatorCondition', '>' => 'buildOperatorCondition', '<=' => 'buildOperatorCondition', '>=' => 'buildOperatorCondition', '=' => 'buildOperatorCondition', '!=' => 'buildOperatorCondition', 'IN' => 'buildOperatorCondition', 'NOT IN' => 'buildOperatorCondition', 'LIKE' => 'buildOperatorCondition'];
     /**
      * @var array map filtering operators to operators used in [[\yii\db\QueryInterface::where()]].
      * The format is: `[filterOperator => queryOperator]`.
@@ -65,31 +50,28 @@ class ActiveDataFilter extends DataFilter
      * ]
      * ```
      */
-    public $queryOperatorMap = [];
-
+    public $query_operator_map = [];
     /**
      * {@inheritdoc}
      */
-    protected function buildInternal()
+    protected function build_internal()
     {
         $filter = $this->normalize(false);
         if (empty($filter)) {
             return [];
         }
-
-        return $this->buildCondition($filter);
+        return $this->build_condition($filter);
     }
-
     /**
      * @param array $condition
      * @return array built condition.
      */
-    protected function buildCondition($condition)
+    protected function build_condition($condition)
     {
         $parts = [];
         foreach ($condition as $key => $value) {
-            if (isset($this->conditionBuilders[$key])) {
-                $method = $this->conditionBuilders[$key];
+            if (isset($this->condition_builders[$key])) {
+                $method = $this->condition_builders[$key];
                 if (is_string($method)) {
                     $callback = [$this, $method];
                 } else {
@@ -100,7 +82,6 @@ class ActiveDataFilter extends DataFilter
             }
             $parts[] = $callback($key, $value);
         }
-
         if (!empty($parts)) {
             if (count($parts) > 1) {
                 array_unshift($parts, 'AND');
@@ -108,10 +89,8 @@ class ActiveDataFilter extends DataFilter
                 $parts = array_shift($parts);
             }
         }
-
         return $parts;
     }
-
     /**
      * Builds conjunction condition, which consists of multiple independent ones.
      * It covers such operators as `and` and `or`.
@@ -119,20 +98,17 @@ class ActiveDataFilter extends DataFilter
      * @param mixed $condition raw condition.
      * @return array actual condition.
      */
-    protected function buildConjunctionCondition($operator, $condition): array
+    protected function build_conjunction_condition($operator, $condition): array
     {
-        if (isset($this->queryOperatorMap[$operator])) {
-            $operator = $this->queryOperatorMap[$operator];
+        if (isset($this->query_operator_map[$operator])) {
+            $operator = $this->query_operator_map[$operator];
         }
         $result = [$operator];
-
         foreach ($condition as $part) {
-            $result[] = $this->buildCondition($part);
+            $result[] = $this->build_condition($part);
         }
-
         return $result;
     }
-
     /**
      * Builds block condition, which consists of a single condition.
      * It covers such operators as `not`.
@@ -140,31 +116,27 @@ class ActiveDataFilter extends DataFilter
      * @param mixed $condition raw condition.
      * @return array actual condition.
      */
-    protected function buildBlockCondition($operator, $condition): array
+    protected function build_block_condition($operator, $condition): array
     {
-        if (isset($this->queryOperatorMap[$operator])) {
-            $operator = $this->queryOperatorMap[$operator];
+        if (isset($this->query_operator_map[$operator])) {
+            $operator = $this->query_operator_map[$operator];
         }
-        return [
-            $operator,
-            $this->buildCondition($condition),
-        ];
+        return [$operator, $this->build_condition($condition)];
     }
-
     /**
      * Builds search condition for a particular attribute.
      * @param string $attribute search attribute name.
      * @param mixed $condition search condition.
      * @return array actual condition.
      */
-    protected function buildAttributeCondition($attribute, $condition)
+    protected function build_attribute_condition($attribute, $condition)
     {
         if (is_array($condition)) {
             $parts = [];
             foreach ($condition as $operator => $value) {
-                if (isset($this->operatorTypes[$operator])) {
-                    if (isset($this->conditionBuilders[$operator])) {
-                        $method = $this->conditionBuilders[$operator];
+                if (isset($this->operator_types[$operator])) {
+                    if (isset($this->condition_builders[$operator])) {
+                        $method = $this->condition_builders[$operator];
                         if (is_string($method)) {
                             $callback = [$this, $method];
                         } else {
@@ -172,11 +144,10 @@ class ActiveDataFilter extends DataFilter
                         }
                         $parts[] = $callback($operator, $value, $attribute);
                     } else {
-                        $parts[] = $this->buildOperatorCondition($operator, $value, $attribute);
+                        $parts[] = $this->build_operator_condition($operator, $value, $attribute);
                     }
                 }
             }
-
             if (!empty($parts)) {
                 if (count($parts) > 1) {
                     return array_merge(['AND'], $parts);
@@ -184,10 +155,8 @@ class ActiveDataFilter extends DataFilter
                 return array_shift($parts);
             }
         }
-
-        return [$attribute => $this->filterAttributeValue($attribute, $condition)];
+        return [$attribute => $this->filter_attribute_value($attribute, $condition)];
     }
-
     /**
      * Builds an operator condition.
      * @param string $operator operator keyword.
@@ -195,11 +164,11 @@ class ActiveDataFilter extends DataFilter
      * @param string $attribute attribute name.
      * @return array actual condition.
      */
-    protected function buildOperatorCondition($operator, $condition, $attribute): array
+    protected function build_operator_condition($operator, $condition, $attribute): array
     {
-        if (isset($this->queryOperatorMap[$operator])) {
-            $operator = $this->queryOperatorMap[$operator];
+        if (isset($this->query_operator_map[$operator])) {
+            $operator = $this->query_operator_map[$operator];
         }
-        return [$operator, $attribute, $this->filterAttributeValue($attribute, $condition)];
+        return [$operator, $attribute, $this->filter_attribute_value($attribute, $condition)];
     }
 }

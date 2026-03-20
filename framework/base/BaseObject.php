@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
-
 /**
  * BaseObject is the base class that implements the *property* feature.
  *
@@ -77,18 +74,17 @@ use Yii;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0.13
  */
-class BaseObject implements Configurable
+class Base_Object implements Configurable
 {
     /**
      * Returns the fully qualified name of this class.
      * @return string the fully qualified name of this class.
      * @deprecated since 2.0.14. On PHP >=5.5, use `::class` instead.
      */
-    public static function className(): string
+    public static function class_name(): string
     {
         return static::class;
     }
-
     /**
      * Constructor.
      *
@@ -111,7 +107,6 @@ class BaseObject implements Configurable
         }
         $this->init();
     }
-
     /**
      * Initializes the object.
      * This method is invoked at the end of the constructor after the object is initialized with the
@@ -120,7 +115,6 @@ class BaseObject implements Configurable
     public function init()
     {
     }
-
     /**
      * Returns the value of an object property.
      *
@@ -136,15 +130,13 @@ class BaseObject implements Configurable
     {
         $getter = 'get' . $name;
         if (method_exists($this, $getter)) {
-            return $this->$getter();
+            return $this->{$getter}();
         }
         if (method_exists($this, 'set' . $name)) {
-            throw new InvalidCallException('Getting write-only property: ' . get_class($this) . '::' . $name);
+            throw new Invalid_Call_Exception('Getting write-only property: ' . get_class($this) . '::' . $name);
         }
-
-        throw new UnknownPropertyException('Getting unknown property: ' . get_class($this) . '::' . $name);
+        throw new Unknown_Property_Exception('Getting unknown property: ' . get_class($this) . '::' . $name);
     }
-
     /**
      * Sets value of an object property.
      *
@@ -160,14 +152,13 @@ class BaseObject implements Configurable
     {
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
-            $this->$setter($value);
+            $this->{$setter}($value);
         } elseif (method_exists($this, 'get' . $name)) {
-            throw new InvalidCallException('Setting read-only property: ' . get_class($this) . '::' . $name);
+            throw new Invalid_Call_Exception('Setting read-only property: ' . get_class($this) . '::' . $name);
         } else {
-            throw new UnknownPropertyException('Setting unknown property: ' . get_class($this) . '::' . $name);
+            throw new Unknown_Property_Exception('Setting unknown property: ' . get_class($this) . '::' . $name);
         }
     }
-
     /**
      * Checks if a property is set, i.e. defined and not null.
      *
@@ -183,12 +174,10 @@ class BaseObject implements Configurable
     {
         $getter = 'get' . $name;
         if (method_exists($this, $getter)) {
-            return $this->$getter() !== null;
+            return $this->{$getter}() !== null;
         }
-
         return false;
     }
-
     /**
      * Sets an object property to null.
      *
@@ -205,12 +194,11 @@ class BaseObject implements Configurable
     {
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
-            $this->$setter(null);
+            $this->{$setter}(null);
         } elseif (method_exists($this, 'get' . $name)) {
-            throw new InvalidCallException('Unsetting read-only property: ' . get_class($this) . '::' . $name);
+            throw new Invalid_Call_Exception('Unsetting read-only property: ' . get_class($this) . '::' . $name);
         }
     }
-
     /**
      * Calls the named method which is not a class method.
      *
@@ -223,9 +211,8 @@ class BaseObject implements Configurable
      */
     public function __call(string $name, array $params)
     {
-        throw new UnknownMethodException('Calling unknown method: ' . get_class($this) . "::$name()");
+        throw new Unknown_Method_Exception('Calling unknown method: ' . get_class($this) . "::{$name}()");
     }
-
     /**
      * Returns a value indicating whether a property is defined.
      *
@@ -241,14 +228,13 @@ class BaseObject implements Configurable
      * @see canGetProperty()
      * @see canSetProperty()
      */
-    public function hasProperty($name, $checkVars = true): bool
+    public function has_property($name, $check_vars = true): bool
     {
-        if ($this->canGetProperty($name, $checkVars)) {
+        if ($this->can_get_property($name, $check_vars)) {
             return true;
         }
-        return $this->canSetProperty($name, false);
+        return $this->can_set_property($name, false);
     }
-
     /**
      * Returns a value indicating whether a property can be read.
      *
@@ -263,11 +249,10 @@ class BaseObject implements Configurable
      * @return bool whether the property can be read
      * @see canSetProperty()
      */
-    public function canGetProperty(string $name, $checkVars = true): bool
+    public function can_get_property(string $name, $check_vars = true): bool
     {
-        return method_exists($this, 'get' . $name) || $checkVars && property_exists($this, $name);
+        return method_exists($this, 'get' . $name) || $check_vars && property_exists($this, $name);
     }
-
     /**
      * Returns a value indicating whether a property can be set.
      *
@@ -282,11 +267,10 @@ class BaseObject implements Configurable
      * @return bool whether the property can be written
      * @see canGetProperty()
      */
-    public function canSetProperty(string $name, $checkVars = true): bool
+    public function can_set_property(string $name, $check_vars = true): bool
     {
-        return method_exists($this, 'set' . $name) || $checkVars && property_exists($this, $name);
+        return method_exists($this, 'set' . $name) || $check_vars && property_exists($this, $name);
     }
-
     /**
      * Returns a value indicating whether a method is defined.
      *
@@ -295,7 +279,7 @@ class BaseObject implements Configurable
      * @param string $name the method name
      * @return bool whether the method is defined
      */
-    public function hasMethod($name): bool
+    public function has_method($name): bool
     {
         return method_exists($this, $name);
     }

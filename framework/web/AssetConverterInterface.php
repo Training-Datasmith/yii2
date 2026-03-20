@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -16,7 +14,7 @@ namespace yii\web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-interface AssetConverterInterface
+interface Asset_Converter_Interface
 {
     /**
      * Converts a given asset file into a CSS or JS file.
@@ -24,5 +22,5 @@ interface AssetConverterInterface
      * @param string $basePath the directory the $asset is relative to.
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert($asset, $basePath);
+    public function convert($asset, $base_path);
 }

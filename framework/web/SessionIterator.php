@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -18,7 +16,7 @@ namespace yii\web;
  *
  * @implements \Iterator<array-key, mixed>
  */
-class SessionIterator implements \Iterator
+class Session_Iterator implements \Iterator
 {
     /**
      * @var array list of keys in the map
@@ -28,7 +26,6 @@ class SessionIterator implements \Iterator
      * @var string|int|false current key
      */
     private $_key;
-
     /**
      * Constructor.
      */
@@ -37,57 +34,52 @@ class SessionIterator implements \Iterator
         $this->_keys = array_keys($_SESSION ?? []);
         $this->rewind();
     }
-
     /**
      * Rewinds internal array pointer.
      * This method is required by the interface [[\Iterator]].
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function rewind(): void
     {
         $this->_key = reset($this->_keys);
     }
-
     /**
      * Returns the key of the current array element.
      * This method is required by the interface [[\Iterator]].
      * @return string|int|null the key of the current array element
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function key()
     {
         return $this->_key === false ? null : $this->_key;
     }
-
     /**
      * Returns the current array element.
      * This method is required by the interface [[\Iterator]].
      * @return mixed the current array element
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function current()
     {
         return $this->_key !== false && isset($_SESSION[$this->_key]) ? $_SESSION[$this->_key] : null;
     }
-
     /**
      * Moves the internal pointer to the next array element.
      * This method is required by the interface [[\Iterator]].
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function next(): void
     {
         do {
             $this->_key = next($this->_keys);
         } while ($this->_key !== false && !isset($_SESSION[$this->_key]));
     }
-
     /**
      * Returns whether there is an element at current position.
      * This method is required by the interface [[\Iterator]].
      * @return bool
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function valid()
     {
         return $this->_key !== false;

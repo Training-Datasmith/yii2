@@ -4,24 +4,44 @@
  * @var array $foreignKeys
  * @var string $table
  */
+foreach ($foreign_keys as $column => $fk_data) {
+    ?>
 
-?>
-<?php foreach ($foreignKeys as $column => $fkData): ?>
-
-        // creates index for column `<?= $column ?>`
+        // creates index for column `<?php 
+    echo $column;
+    ?>`
         $this->createIndex(
-            '<?= $fkData['idx']  ?>',
-            '<?= $table ?>',
-            '<?= $column ?>'
+            '<?php 
+    echo $fk_data['idx'];
+    ?>',
+            '<?php 
+    echo $table;
+    ?>',
+            '<?php 
+    echo $column;
+    ?>'
         );
 
-        // add foreign key for table `<?= $fkData['relatedTable'] ?>`
+        // add foreign key for table `<?php 
+    echo $fk_data['relatedTable'];
+    ?>`
         $this->addForeignKey(
-            '<?= $fkData['fk'] ?>',
-            '<?= $table ?>',
-            '<?= $column ?>',
-            '<?= $fkData['relatedTable'] ?>',
-            '<?= $fkData['relatedColumn'] ?>',
+            '<?php 
+    echo $fk_data['fk'];
+    ?>',
+            '<?php 
+    echo $table;
+    ?>',
+            '<?php 
+    echo $column;
+    ?>',
+            '<?php 
+    echo $fk_data['relatedTable'];
+    ?>',
+            '<?php 
+    echo $fk_data['relatedColumn'];
+    ?>',
             'CASCADE'
         );
-<?php endforeach;
+<?php 
+}

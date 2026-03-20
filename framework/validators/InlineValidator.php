@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 /**
@@ -16,7 +14,7 @@ namespace yii\validators;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class InlineValidator extends Validator
+class Inline_Validator extends Validator
 {
     /**
      * @var string|callable an anonymous function or the name of a model class method that will be
@@ -53,51 +51,47 @@ class InlineValidator extends Validator
      * Please refer to [[clientValidateAttribute()]] and [guide](guide:input-validation#client-side-validation) for details on how
      * to return client validation code.
      */
-    public $clientValidate;
+    public $client_validate;
     /**
      * @var mixed the value of attribute being currently validated.
      * @since 2.0.36
      */
     public $current;
-
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute): void
+    public function validate_attribute($model, $attribute): void
     {
         $method = $this->method;
         if (is_string($method)) {
             $method = [$model, $method];
         } elseif ($method instanceof \Closure) {
-            $method = $method->bindTo($model);
+            $method = $method->bind_to($model);
         }
-
         $current = $this->current;
         if ($current === null) {
-            $current = $model->$attribute;
+            $current = $model->{$attribute};
         }
         $method($attribute, $this->params, $this, $current);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view)
+    public function client_validate_attribute($model, $attribute, $view)
     {
-        if ($this->clientValidate !== null) {
-            $method = $this->clientValidate;
+        if ($this->client_validate !== null) {
+            $method = $this->client_validate;
             if (is_string($method)) {
                 $method = [$model, $method];
             } elseif ($method instanceof \Closure) {
-                $method = $method->bindTo($model);
+                $method = $method->bind_to($model);
             }
             $current = $this->current;
             if ($current === null) {
-                $current = $model->$attribute;
+                $current = $model->{$attribute};
             }
             return $method($attribute, $this->params, $this, $current, $view);
         }
-
         return null;
     }
 }

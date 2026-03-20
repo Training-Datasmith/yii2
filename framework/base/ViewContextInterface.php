@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -18,10 +16,10 @@ namespace yii\base;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0
  */
-interface ViewContextInterface
+interface View_Context_Interface
 {
     /**
      * @return string the view path that may be prefixed to a relative view name.
      */
-    public function getViewPath();
+    public function get_view_path();
 }

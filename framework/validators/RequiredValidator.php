@@ -1,30 +1,27 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 use Yii;
 use yii\helpers\Json;
-
 /**
  * RequiredValidator validates that the specified attribute does not have null or empty value.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class RequiredValidator extends Validator
+class Required_Validator extends Validator
 {
     /**
      * @var bool whether to skip this validator if the value being validated is empty.
      */
-    public $skipOnEmpty = false;
+    public $skip_on_empty = false;
     /**
      * @var mixed the desired value that the attribute must have.
      * If this is null, the validator will validate that the specified attribute is not empty.
@@ -33,7 +30,7 @@ class RequiredValidator extends Validator
      * Defaults to null.
      * @see strict
      */
-    public $requiredValue;
+    public $required_value;
     /**
      * @var bool whether the comparison between the attribute value and [[requiredValue]] is strict.
      * When this is true, both the values and types must match.
@@ -54,7 +51,6 @@ class RequiredValidator extends Validator
      * - `{requiredValue}`: the value of [[requiredValue]]
      */
     public $message;
-
     /**
      * {@inheritdoc}
      */
@@ -62,65 +58,51 @@ class RequiredValidator extends Validator
     {
         parent::init();
         if ($this->message === null) {
-            $this->message = $this->requiredValue === null ? Yii::t('yii', '{attribute} cannot be blank.')
-                : Yii::t('yii', '{attribute} must be "{requiredValue}".');
+            $this->message = $this->required_value === null ? Yii::t('yii', '{attribute} cannot be blank.') : Yii::t('yii', '{attribute} must be "{requiredValue}".');
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value): ?array
+    protected function validate_value($value): ?array
     {
-        if ($this->requiredValue === null) {
-            if ($this->strict && $value !== null || !$this->strict && !$this->isEmpty(is_string($value) ? trim($value) : $value)) {
+        if ($this->required_value === null) {
+            if ($this->strict && $value !== null || !$this->strict && !$this->is_empty(is_string($value) ? trim($value) : $value)) {
                 return null;
             }
-        } elseif (!$this->strict && $value == $this->requiredValue || $this->strict && $value === $this->requiredValue) {
+        } elseif (!$this->strict && $value == $this->required_value || $this->strict && $value === $this->required_value) {
             return null;
         }
-        if ($this->requiredValue === null) {
+        if ($this->required_value === null) {
             return [$this->message, []];
         }
-
-        return [$this->message, [
-            'requiredValue' => $this->requiredValue,
-        ]];
+        return [$this->message, ['requiredValue' => $this->required_value]];
     }
-
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view): string
+    public function client_validate_attribute($model, $attribute, $view): string
     {
-        ValidationAsset::register($view);
-        $options = $this->getClientOptions($model, $attribute);
-
-        return 'yii.validation.required(value, messages, ' . Json::htmlEncode($options) . ');';
+        Validation_Asset::register($view);
+        $options = $this->get_client_options($model, $attribute);
+        return 'yii.validation.required(value, messages, ' . Json::html_encode($options) . ');';
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute): array
+    public function get_client_options($model, $attribute): array
     {
         $options = [];
-        if ($this->requiredValue !== null) {
-            $options['message'] = $this->formatMessage($this->message, [
-                'requiredValue' => $this->requiredValue,
-            ]);
-            $options['requiredValue'] = $this->requiredValue;
+        if ($this->required_value !== null) {
+            $options['message'] = $this->format_message($this->message, ['requiredValue' => $this->required_value]);
+            $options['requiredValue'] = $this->required_value;
         } else {
             $options['message'] = $this->message;
         }
         if ($this->strict) {
             $options['strict'] = 1;
         }
-
-        $options['message'] = $this->formatMessage($options['message'], [
-            'attribute' => $model->getAttributeLabel($attribute),
-        ]);
-
+        $options['message'] = $this->format_message($options['message'], ['attribute' => $model->get_attribute_label($attribute)]);
         return $options;
     }
 }

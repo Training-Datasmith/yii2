@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
-
 /**
  * InlineAction represents an action that is defined as a controller method.
  *
@@ -26,39 +23,36 @@ use Yii;
  * @template T of Controller = Controller
  * @extends Action<T>
  */
-class InlineAction extends Action
+class Inline_Action extends Action
 {
     /**
      * @var string the controller method that this inline action is associated with
      */
-    public $actionMethod;
-
+    public $action_method;
     /**
      * @param string $id the ID of this action
      * @param T $controller the controller that owns this action
      * @param string $actionMethod the controller method that this inline action is associated with
      * @param array<string, mixed> $config name-value pairs that will be used to initialize the object properties
      */
-    public function __construct($id, $controller, $actionMethod, $config = [])
+    public function __construct($id, $controller, $action_method, $config = [])
     {
-        $this->actionMethod = $actionMethod;
+        $this->action_method = $action_method;
         parent::__construct($id, $controller, $config);
     }
-
     /**
      * Runs this action with the specified parameters.
      * This method is mainly invoked by the controller.
      * @param array $params action parameters
      * @return mixed the result of the action
      */
-    public function runWithParams($params)
+    public function run_with_params($params)
     {
-        $args = $this->controller->bindActionParams($this, $params);
-        Yii::debug('Running action: ' . get_class($this->controller) . '::' . $this->actionMethod . '()', __METHOD__);
-        if (Yii::$app->requestedParams === null) {
-            Yii::$app->requestedParams = $args;
+        $args = $this->controller->bind_action_params($this, $params);
+        Yii::debug('Running action: ' . get_class($this->controller) . '::' . $this->action_method . '()', __METHOD__);
+        if (Yii::$app->requested_params === null) {
+            Yii::$app->requested_params = $args;
         }
-
-        return call_user_func_array([$this->controller, $this->actionMethod], $args);
+        return call_user_func_array([$this->controller, $this->action_method], $args);
     }
 }

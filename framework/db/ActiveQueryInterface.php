@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -23,15 +21,14 @@ namespace yii\db;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-interface ActiveQueryInterface extends QueryInterface
+interface Active_Query_Interface extends Query_Interface
 {
     /**
      * Sets the [[asArray]] property.
      * @param bool $value whether to return the query results in terms of arrays instead of Active Records.
      * @return $this the query object itself
      */
-    public function asArray($value = true);
-
+    public function as_array($value = true);
     /**
      * Executes query and returns a single row of result.
      * @param Connection|null $db the DB connection used to create the DB command.
@@ -41,7 +38,6 @@ interface ActiveQueryInterface extends QueryInterface
      * if the query results in nothing.
      */
     public function one($db = null);
-
     /**
      * Sets the [[indexBy]] property.
      * @param string|callable $column the name of the column by which the query results should be indexed by.
@@ -59,8 +55,7 @@ interface ActiveQueryInterface extends QueryInterface
      *
      * @return $this the query object itself
      */
-    public function indexBy($column);
-
+    public function index_by($column);
     /**
      * Specifies the relations with which this query should be performed.
      *
@@ -91,7 +86,6 @@ interface ActiveQueryInterface extends QueryInterface
      * @return $this the query object itself
      */
     public function with();
-
     /**
      * Specifies the relation associated with the junction table for use in relational query.
      * @param string $relationName the relation name. This refers to a relation declared in the [[ActiveRelationTrait::primaryModel|primaryModel]] of the relation.
@@ -99,8 +93,7 @@ interface ActiveQueryInterface extends QueryInterface
      * Its signature should be `function($query)`, where `$query` is the query to be customized.
      * @return $this the relation object itself.
      */
-    public function via($relationName, ?callable $callable = null);
-
+    public function via($relation_name, ?callable $callable = null);
     /**
      * Finds the related records for the specified primary record.
      * This method is invoked when a relation of an ActiveRecord is being accessed in a lazy fashion.
@@ -108,5 +101,5 @@ interface ActiveQueryInterface extends QueryInterface
      * @param ActiveRecordInterface $model the primary model
      * @return mixed the related record(s)
      */
-    public function findFor($name, $model);
+    public function find_for($name, $model);
 }

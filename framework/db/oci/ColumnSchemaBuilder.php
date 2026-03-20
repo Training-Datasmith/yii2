@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\oci;
 
-use yii\db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
-
+use yii\db\Column_Schema_Builder as AbstractColumnSchemaBuilder;
 /**
  * ColumnSchemaBuilder is the schema builder for Oracle databases.
  *
@@ -19,22 +16,21 @@ use yii\db\ColumnSchemaBuilder as AbstractColumnSchemaBuilder;
  * @author Chris Harris <chris@buckshotsoftware.com>
  * @since 2.0.6
  */
-class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
+class Column_Schema_Builder extends Abstract_Column_Schema_Builder
 {
     /**
      * {@inheritdoc}
      */
-    protected function buildUnsignedString(): string
+    protected function build_unsigned_string(): string
     {
-        return $this->isUnsigned ? ' UNSIGNED' : '';
+        return $this->is_unsigned ? ' UNSIGNED' : '';
     }
-
     /**
      * {@inheritdoc}
      */
     public function __toString(): string
     {
-        switch ($this->getTypeCategory()) {
+        switch ($this->get_type_category()) {
             case self::CATEGORY_PK:
                 $format = '{type}{length}{check}{append}';
                 break;
@@ -44,7 +40,6 @@ class ColumnSchemaBuilder extends AbstractColumnSchemaBuilder
             default:
                 $format = '{type}{length}{default}{notnull}{check}{append}';
         }
-
-        return $this->buildCompleteString($format);
+        return $this->build_complete_string($format);
     }
 }

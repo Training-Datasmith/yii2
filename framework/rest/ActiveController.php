@@ -1,20 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rest;
 
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\base\Model;
 use yii\base\Module;
-use yii\web\ForbiddenHttpException;
-
+use yii\web\Forbidden_Http_Exception;
 /**
  * ActiveController implements a common set of actions for supporting RESTful access to ActiveRecord.
  *
@@ -44,87 +41,46 @@ use yii\web\ForbiddenHttpException;
  * @template T of Module = Module
  * @extends Controller<T>
  */
-class ActiveController extends Controller
+class Active_Controller extends Controller
 {
     /**
      * @var string the model class name. This property must be set.
      */
-    public $modelClass;
+    public $model_class;
     /**
      * @var string the scenario used for updating a model.
      * @see \yii\base\Model::scenarios()
      */
-    public $updateScenario = Model::SCENARIO_DEFAULT;
+    public $update_scenario = Model::SCENARIO_DEFAULT;
     /**
      * @var string the scenario used for creating a model.
      * @see \yii\base\Model::scenarios()
      */
-    public $createScenario = Model::SCENARIO_DEFAULT;
-
+    public $create_scenario = Model::SCENARIO_DEFAULT;
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         parent::init();
-        if ($this->modelClass === null) {
-            throw new InvalidConfigException('The "modelClass" property must be set.');
+        if ($this->model_class === null) {
+            throw new Invalid_Config_Exception('The "modelClass" property must be set.');
         }
     }
-
     /**
      * {@inheritdoc}
      */
     public function actions(): array
     {
-        return [
-            'index' => [
-                'class' => 'yii\rest\IndexAction',
-                'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
-            ],
-            'view' => [
-                'class' => 'yii\rest\ViewAction',
-                'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
-            ],
-            'create' => [
-                'class' => 'yii\rest\CreateAction',
-                'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
-                'scenario' => $this->createScenario,
-            ],
-            'update' => [
-                'class' => 'yii\rest\UpdateAction',
-                'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
-                'scenario' => $this->updateScenario,
-            ],
-            'delete' => [
-                'class' => 'yii\rest\DeleteAction',
-                'modelClass' => $this->modelClass,
-                'checkAccess' => [$this, 'checkAccess'],
-            ],
-            'options' => [
-                'class' => 'yii\rest\OptionsAction',
-            ],
-        ];
+        return ['index' => ['class' => 'yii\rest\IndexAction', 'modelClass' => $this->model_class, 'checkAccess' => [$this, 'checkAccess']], 'view' => ['class' => 'yii\rest\ViewAction', 'modelClass' => $this->model_class, 'checkAccess' => [$this, 'checkAccess']], 'create' => ['class' => 'yii\rest\CreateAction', 'modelClass' => $this->model_class, 'checkAccess' => [$this, 'checkAccess'], 'scenario' => $this->create_scenario], 'update' => ['class' => 'yii\rest\UpdateAction', 'modelClass' => $this->model_class, 'checkAccess' => [$this, 'checkAccess'], 'scenario' => $this->update_scenario], 'delete' => ['class' => 'yii\rest\DeleteAction', 'modelClass' => $this->model_class, 'checkAccess' => [$this, 'checkAccess']], 'options' => ['class' => 'yii\rest\OptionsAction']];
     }
-
     /**
      * {@inheritdoc}
      */
     protected function verbs(): array
     {
-        return [
-            'index' => ['GET', 'HEAD'],
-            'view' => ['GET', 'HEAD'],
-            'create' => ['POST'],
-            'update' => ['PUT', 'PATCH'],
-            'delete' => ['DELETE'],
-        ];
+        return ['index' => ['GET', 'HEAD'], 'view' => ['GET', 'HEAD'], 'create' => ['POST'], 'update' => ['PUT', 'PATCH'], 'delete' => ['DELETE']];
     }
-
     /**
      * Checks the privilege of the current user.
      *
@@ -137,7 +93,7 @@ class ActiveController extends Controller
      * @param array $params additional parameters
      * @throws ForbiddenHttpException if the user does not have access
      */
-    public function checkAccess($action, $model = null, $params = [])
+    public function check_access($action, $model = null, $params = [])
     {
     }
 }

@@ -1,21 +1,18 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\behaviors;
 
 use Closure;
 use yii\base\Behavior;
 use yii\base\Event;
-use yii\db\ActiveRecord;
-use yii\db\BaseActiveRecord;
-
+use yii\db\Active_Record;
+use yii\db\Base_Active_Record;
 /**
  * AttributeBehavior automatically assigns a specified value to one or multiple attributes of an ActiveRecord
  * object when certain events happen.
@@ -55,7 +52,7 @@ use yii\db\BaseActiveRecord;
  * @template T of BaseActiveRecord = BaseActiveRecord
  * @extends Behavior<T>
  */
-class AttributeBehavior extends Behavior
+class Attribute_Behavior extends Behavior
 {
     /**
      * @var array list of attributes that are to be automatically filled with the value specified via [[value]].
@@ -91,53 +88,42 @@ class AttributeBehavior extends Behavior
      * modified
      * @since 2.0.8
      */
-    public $skipUpdateOnClean = true;
+    public $skip_update_on_clean = true;
     /**
      * @var bool whether to preserve non-empty attribute values.
      * @since 2.0.13
      */
-    public $preserveNonEmptyValues = false;
-
+    public $preserve_non_empty_values = false;
     /**
      * {@inheritdoc}
      */
     public function events(): array
     {
-        return array_fill_keys(
-            array_keys($this->attributes),
-            'evaluateAttributes'
-        );
+        return array_fill_keys(array_keys($this->attributes), 'evaluateAttributes');
     }
-
     /**
      * Evaluates the attribute value and assigns it to the current attributes.
      * @param Event $event
      */
-    public function evaluateAttributes($event): void
+    public function evaluate_attributes($event): void
     {
-        if (
-            $this->skipUpdateOnClean
-            && $event->name == ActiveRecord::EVENT_BEFORE_UPDATE
-            && empty($this->owner->dirtyAttributes)
-        ) {
+        if ($this->skip_update_on_clean && $event->name == Active_Record::EVENT_BEFORE_UPDATE && empty($this->owner->dirty_attributes)) {
             return;
         }
-
         if (!empty($this->attributes[$event->name])) {
             $attributes = (array) $this->attributes[$event->name];
-            $value = $this->getValue($event);
+            $value = $this->get_value($event);
             foreach ($attributes as $attribute) {
                 // ignore attribute names which are not string (e.g. when set by TimestampBehavior::updatedAtAttribute)
                 if (is_string($attribute)) {
-                    if ($this->preserveNonEmptyValues && !empty($this->owner->$attribute)) {
+                    if ($this->preserve_non_empty_values && !empty($this->owner->{$attribute})) {
                         continue;
                     }
-                    $this->owner->$attribute = $value;
+                    $this->owner->{$attribute} = $value;
                 }
             }
         }
     }
-
     /**
      * Returns the value for the current attributes.
      * This method is called by [[evaluateAttributes()]]. Its return value will be assigned
@@ -145,12 +131,11 @@ class AttributeBehavior extends Behavior
      * @param Event $event the event that triggers the current attribute updating.
      * @return mixed the attribute value
      */
-    protected function getValue($event)
+    protected function get_value($event)
     {
-        if ($this->value instanceof Closure || (is_array($this->value) && is_callable($this->value))) {
+        if ($this->value instanceof Closure || is_array($this->value) && is_callable($this->value)) {
             return call_user_func($this->value, $event);
         }
-
         return $this->value;
     }
 }

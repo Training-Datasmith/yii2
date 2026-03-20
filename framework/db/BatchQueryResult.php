@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 use yii\base\Component;
-
 /**
  * BatchQueryResult represents a batch query from which you can retrieve data in batches.
  *
@@ -33,7 +30,7 @@ use yii\base\Component;
  *
  * @implements \Iterator<int, mixed>
  */
-class BatchQueryResult extends Component implements \Iterator
+class Batch_Query_Result extends Component implements \Iterator
 {
     /**
      * @event Event an event that is triggered when the batch query is reset.
@@ -64,17 +61,16 @@ class BatchQueryResult extends Component implements \Iterator
     /**
      * @var int the number of rows to be returned in each batch.
      */
-    public $batchSize = 100;
+    public $batch_size = 100;
     /**
      * @var bool whether to return a single row during each iteration.
      * If false, a whole batch of rows will be returned in each iteration.
      */
     public $each = false;
-
     /**
      * @var DataReader|null the data reader associated with this batch query.
      */
-    private $_dataReader;
+    private $_data_reader;
     /**
      * @var array|null the data retrieved in the current batch
      */
@@ -87,7 +83,6 @@ class BatchQueryResult extends Component implements \Iterator
      * @var string|int|null the key for the current iteration
      */
     private $_key;
-
     /**
      * Destructor.
      */
@@ -96,49 +91,45 @@ class BatchQueryResult extends Component implements \Iterator
         // make sure cursor is closed
         $this->reset();
     }
-
     /**
      * Resets the batch query.
      * This method will clean up the existing batch query so that a new batch query can be performed.
      */
     public function reset(): void
     {
-        if ($this->_dataReader !== null) {
-            $this->_dataReader->close();
+        if ($this->_data_reader !== null) {
+            $this->_data_reader->close();
         }
-        $this->_dataReader = null;
+        $this->_data_reader = null;
         $this->_batch = null;
         $this->_value = null;
         $this->_key = null;
         $this->trigger(self::EVENT_RESET);
     }
-
     /**
      * Resets the iterator to the initial state.
      * This method is required by the interface [[\Iterator]].
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function rewind(): void
     {
         $this->reset();
         $this->next();
     }
-
     /**
      * Moves the internal pointer to the next dataset.
      * This method is required by the interface [[\Iterator]].
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function next(): void
     {
         if ($this->_batch === null || !$this->each || $this->each && next($this->_batch) === false) {
-            $this->_batch = $this->fetchData();
+            $this->_batch = $this->fetch_data();
             reset($this->_batch);
         }
-
         if ($this->each) {
             $this->_value = current($this->_batch);
-            if ($this->query->indexBy !== null) {
+            if ($this->query->index_by !== null) {
                 $this->_key = key($this->_batch);
             } elseif (key($this->_batch) !== null) {
                 $this->_key = $this->_key === null ? 0 : $this->_key + 1;
@@ -150,35 +141,30 @@ class BatchQueryResult extends Component implements \Iterator
             $this->_key = $this->_key === null ? 0 : $this->_key + 1;
         }
     }
-
     /**
      * Fetches the next batch of data.
      * @return array the data fetched
      * @throws Exception
      */
-    protected function fetchData()
+    protected function fetch_data()
     {
-        if ($this->_dataReader === null) {
-            $this->_dataReader = $this->query->createCommand($this->db)->query();
+        if ($this->_data_reader === null) {
+            $this->_data_reader = $this->query->create_command($this->db)->query();
         }
-
-        $rows = $this->getRows();
-
+        $rows = $this->get_rows();
         return $this->query->populate($rows);
     }
-
     /**
      * Reads and collects rows for batch
      * @since 2.0.23
      */
-    protected function getRows(): array
+    protected function get_rows(): array
     {
         $rows = [];
         $count = 0;
-
         try {
-            while ($count++ < $this->batchSize) {
-                if ($row = $this->_dataReader->read()) {
+            while ($count++ < $this->batch_size) {
+                if ($row = $this->_data_reader->read()) {
                     $rows[] = $row;
                 } else {
                     // we've reached the end
@@ -187,69 +173,61 @@ class BatchQueryResult extends Component implements \Iterator
                 }
             }
         } catch (\PDOException $e) {
-            $errorCode = $e->errorInfo[1] ?? null;
-            if ($this->getDbDriverName() !== 'sqlsrv' || $errorCode !== self::MSSQL_NO_MORE_ROWS_ERROR_CODE) {
+            $error_code = $e->error_info[1] ?? null;
+            if ($this->get_db_driver_name() !== 'sqlsrv' || $error_code !== self::MSSQL_NO_MORE_ROWS_ERROR_CODE) {
                 throw $e;
             }
         }
-
         return $rows;
     }
-
     /**
      * Returns the index of the current dataset.
      * This method is required by the interface [[\Iterator]].
      * @return int the index of the current row.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function key()
     {
         return $this->_key;
     }
-
     /**
      * Returns the current dataset.
      * This method is required by the interface [[\Iterator]].
      * @return mixed the current dataset.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function current()
     {
         return $this->_value;
     }
-
     /**
      * Returns whether there is a valid dataset at the current position.
      * This method is required by the interface [[\Iterator]].
      * @return bool whether there is a valid dataset at the current position.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function valid()
     {
         return !empty($this->_batch);
     }
-
     /**
      * Gets db driver name from the db connection that is passed to the `batch()`, if it is not passed it uses
      * connection from the active record model
      * @return string|null
      */
-    private function getDbDriverName()
+    private function get_db_driver_name()
     {
-        if (isset($this->db->driverName)) {
-            return $this->db->driverName;
+        if (isset($this->db->driver_name)) {
+            return $this->db->driver_name;
         }
-
         if (!empty($this->_batch)) {
             $key = array_keys($this->_batch)[0];
-            if (isset($this->_batch[$key]->db->driverName)) {
-                return $this->_batch[$key]->db->driverName;
+            if (isset($this->_batch[$key]->db->driver_name)) {
+                return $this->_batch[$key]->db->driver_name;
             }
         }
-
         return null;
     }
-
     /**
      * Unserialization is disabled to prevent remote code execution in case application
      * calls unserialize() on user input containing specially crafted string.

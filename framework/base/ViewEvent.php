@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -16,12 +14,12 @@ namespace yii\base;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ViewEvent extends Event
+class View_Event extends Event
 {
     /**
      * @var string the view file being rendered.
      */
-    public $viewFile;
+    public $view_file;
     /**
      * @var array the parameter array passed to the [[View::render()]] method.
      */
@@ -38,5 +36,5 @@ class ViewEvent extends Event
      * [[View::EVENT_BEFORE_RENDER]] may set this property to decide whether
      * to continue rendering the current view file.
      */
-    public $isValid = true;
+    public $is_valid = true;
 }

@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\helpers;
 
 /**
@@ -19,6 +17,6 @@ namespace yii\helpers;
  * @author Enrica Ruedin <e.ruedin@guggach.com>
  * @since 2.0
  */
-class FormatConverter extends BaseFormatConverter
+class Format_Converter extends Base_Format_Converter
 {
 }

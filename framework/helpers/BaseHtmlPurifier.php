@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\helpers;
 
 /**
@@ -18,7 +16,7 @@ namespace yii\helpers;
  * @author Alexander Makarov <sam@rmcreative.ru>
  * @since 2.0
  */
-class BaseHtmlPurifier
+class Base_Html_Purifier
 {
     /**
      * Passes markup through HTMLPurifier making it safe to output to end user.
@@ -47,20 +45,17 @@ class BaseHtmlPurifier
      */
     public static function process($content, $config = null)
     {
-        $configInstance = \HTMLPurifier_Config::create($config instanceof \Closure ? null : $config);
-        $configInstance->autoFinalize = false;
-        $purifier = \HTMLPurifier::instance($configInstance);
-        $purifier->config->set('Cache.SerializerPath', \Yii::$app->getRuntimePath());
+        $config_instance = \Html_Purifier_config::create($config instanceof \Closure ? null : $config);
+        $config_instance->auto_finalize = false;
+        $purifier = \Html_Purifier::instance($config_instance);
+        $purifier->config->set('Cache.SerializerPath', \Yii::$app->get_runtime_path());
         $purifier->config->set('Cache.SerializerPermissions', 0775);
-
-        static::configure($configInstance);
+        static::configure($config_instance);
         if ($config instanceof \Closure) {
-            call_user_func($config, $configInstance);
+            call_user_func($config, $config_instance);
         }
-
         return $purifier->purify($content);
     }
-
     /**
      * Allow the extended HtmlPurifier class to set some default config options.
      * @param \HTMLPurifier_Config $config

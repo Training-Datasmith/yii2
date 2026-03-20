@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\db\Migration;
-use yii\log\DbTarget;
-
+use yii\log\Db_Target;
 /**
  * Initializes log table.
  *
@@ -27,71 +24,51 @@ class m141106_185632_log_init extends Migration
     /**
      * @var DbTarget[] Targets to create log table for
      */
-    private array $_dbTargets = [];
-
+    private array $_db_targets = [];
     /**
      * @throws InvalidConfigException
      * @return DbTarget[]
      */
-    protected function getDbTargets()
+    protected function get_db_targets()
     {
-        if ($this->_dbTargets === []) {
-            $log = Yii::$app->getLog();
-
-            $usedTargets = [];
+        if ($this->_db_targets === []) {
+            $log = Yii::$app->get_log();
+            $used_targets = [];
             foreach ($log->targets as $target) {
-                if ($target instanceof DbTarget) {
-                    $currentTarget = [
-                        $target->db,
-                        $target->logTable,
-                    ];
-                    if (!in_array($currentTarget, $usedTargets, true)) {
+                if ($target instanceof Db_Target) {
+                    $current_target = [$target->db, $target->log_table];
+                    if (!in_array($current_target, $used_targets, true)) {
                         // do not create same table twice
-                        $usedTargets[] = $currentTarget;
-                        $this->_dbTargets[] = $target;
+                        $used_targets[] = $current_target;
+                        $this->_db_targets[] = $target;
                     }
                 }
             }
-
-            if ($this->_dbTargets === []) {
-                throw new InvalidConfigException('You should configure "log" component to use one or more database targets before executing this migration.');
+            if ($this->_db_targets === []) {
+                throw new Invalid_Config_Exception('You should configure "log" component to use one or more database targets before executing this migration.');
             }
         }
-
-        return $this->_dbTargets;
+        return $this->_db_targets;
     }
-
     public function up(): ?bool
     {
-        foreach ($this->getDbTargets() as $target) {
+        foreach ($this->get_db_targets() as $target) {
             $this->db = $target->db;
-
-            $tableOptions = null;
-            if ($this->db->driverName === 'mysql') {
+            $table_options = null;
+            if ($this->db->driver_name === 'mysql') {
                 // https://stackoverflow.com/questions/766809/whats-the-difference-between-utf8-general-ci-and-utf8-unicode-ci
-                $tableOptions = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
+                $table_options = 'CHARACTER SET utf8 COLLATE utf8_unicode_ci ENGINE=InnoDB';
             }
-
-            $this->createTable($target->logTable, [
-                'id' => $this->bigPrimaryKey(),
-                'level' => $this->integer(),
-                'category' => $this->string(),
-                'log_time' => $this->double(),
-                'prefix' => $this->text(),
-                'message' => $this->text(),
-            ], $tableOptions);
-
-            $this->createIndex('idx_log_level', $target->logTable, 'level');
-            $this->createIndex('idx_log_category', $target->logTable, 'category');
+            $this->create_table($target->log_table, ['id' => $this->big_primary_key(), 'level' => $this->integer(), 'category' => $this->string(), 'log_time' => $this->double(), 'prefix' => $this->text(), 'message' => $this->text()], $table_options);
+            $this->create_index('idx_log_level', $target->log_table, 'level');
+            $this->create_index('idx_log_category', $target->log_table, 'category');
         }
     }
-
     public function down(): ?bool
     {
-        foreach ($this->getDbTargets() as $target) {
+        foreach ($this->get_db_targets() as $target) {
             $this->db = $target->db;
-
-            $this->dropTable($target->logTable);
+            $this->drop_table($target->log_table);
         }
     }
 }

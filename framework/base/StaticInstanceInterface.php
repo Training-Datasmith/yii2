@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -22,7 +20,7 @@ namespace yii\base;
  * @since 2.0.13
  * @see StaticInstanceTrait
  */
-interface StaticInstanceInterface
+interface Static_Instance_Interface
 {
     /**
      * Returns static class instance, which can be used to obtain meta information.

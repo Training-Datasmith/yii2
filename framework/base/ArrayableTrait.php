@@ -1,20 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
-use yii\helpers\ArrayHelper;
+use yii\helpers\Array_Helper;
 use yii\web\Link;
 use yii\web\Linkable;
-
 /**
  * ArrayableTrait provides a common implementation of the [[Arrayable]] interface.
  *
@@ -24,7 +21,7 @@ use yii\web\Linkable;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-trait ArrayableTrait
+trait Arrayable_Trait
 {
     /**
      * Returns the list of fields that should be returned by default by [[toArray()]] when no specific fields are specified.
@@ -73,10 +70,9 @@ trait ArrayableTrait
      */
     public function fields(): array
     {
-        $fields = array_keys(Yii::getObjectVars($this));
+        $fields = array_keys(Yii::get_object_vars($this));
         return array_combine($fields, $fields);
     }
-
     /**
      * Returns the list of fields that can be expanded further and returned by [[toArray()]].
      *
@@ -95,11 +91,10 @@ trait ArrayableTrait
      * @see toArray()
      * @see fields()
      */
-    public function extraFields(): array
+    public function extra_fields(): array
     {
         return [];
     }
-
     /**
      * Converts the model into an array.
      *
@@ -122,44 +117,37 @@ trait ArrayableTrait
      * @param bool $recursive whether to recursively return array representation of embedded objects.
      * @return array the array representation of the object
      */
-    public function toArray(array $fields = [], array $expand = [], $recursive = true)
+    public function to_array(array $fields = [], array $expand = [], $recursive = true)
     {
         $data = [];
-        foreach ($this->resolveFields($fields, $expand) as $field => $definition) {
-            $attribute = is_string($definition) ? ($this->$definition ?? null) : $definition($this, $field);
-
+        foreach ($this->resolve_fields($fields, $expand) as $field => $definition) {
+            $attribute = is_string($definition) ? $this->{$definition} ?? null : $definition($this, $field);
             if ($recursive) {
-                $nestedFields = $this->extractFieldsFor($fields, $field);
-                $nestedExpand = $this->extractFieldsFor($expand, $field);
+                $nested_fields = $this->extract_fields_for($fields, $field);
+                $nested_expand = $this->extract_fields_for($expand, $field);
                 if ($attribute instanceof Arrayable) {
-                    $attribute = $attribute->toArray($nestedFields, $nestedExpand);
+                    $attribute = $attribute->to_array($nested_fields, $nested_expand);
                 } elseif ($attribute instanceof \JsonSerializable) {
                     $attribute = $attribute->jsonSerialize();
                 } elseif (is_array($attribute)) {
-                    $attribute = array_map(
-                        function ($item) use ($nestedFields, $nestedExpand) {
-                            if ($item instanceof Arrayable) {
-                                return $item->toArray($nestedFields, $nestedExpand);
-                            }
-                            if ($item instanceof \JsonSerializable) {
-                                return $item->jsonSerialize();
-                            }
-                            return $item;
-                        },
-                        $attribute
-                    );
+                    $attribute = array_map(function ($item) use ($nested_fields, $nested_expand) {
+                        if ($item instanceof Arrayable) {
+                            return $item->to_array($nested_fields, $nested_expand);
+                        }
+                        if ($item instanceof \JsonSerializable) {
+                            return $item->jsonSerialize();
+                        }
+                        return $item;
+                    }, $attribute);
                 }
             }
             $data[$field] = $attribute;
         }
-
         if ($this instanceof Linkable) {
-            $data['_links'] = Link::serialize($this->getLinks());
+            $data['_links'] = Link::serialize($this->get_links());
         }
-
-        return $recursive ? ArrayHelper::toArray($data) : $data;
+        return $recursive ? Array_Helper::to_array($data) : $data;
     }
-
     /**
      * Extracts the root field names from nested fields.
      * Nested fields are separated with dots (.). e.g: "item.id"
@@ -169,21 +157,17 @@ trait ArrayableTrait
      * @return array root fields extracted from the given nested fields
      * @since 2.0.14
      */
-    protected function extractRootFields(array $fields): array
+    protected function extract_root_fields(array $fields): array
     {
         $result = [];
-
         foreach ($fields as $field) {
             $result[] = current(explode('.', $field, 2));
         }
-
         if (in_array('*', $result, true)) {
             $result = [];
         }
-
         return array_unique($result);
     }
-
     /**
      * Extract nested fields from a fields collection for a given root field
      * Nested fields are separated with dots (.). e.g: "item.id"
@@ -194,19 +178,16 @@ trait ArrayableTrait
      * @return array nested fields extracted for the given field
      * @since 2.0.14
      */
-    protected function extractFieldsFor(array $fields, $rootField): array
+    protected function extract_fields_for(array $fields, $root_field): array
     {
         $result = [];
-
         foreach ($fields as $field) {
-            if (0 === strpos($field, "{$rootField}.")) {
-                $result[] = preg_replace('/^' . preg_quote($rootField, '/') . '\./i', '', $field);
+            if (0 === strpos($field, "{$root_field}.")) {
+                $result[] = preg_replace('/^' . preg_quote($root_field, '/') . '\./i', '', $field);
             }
         }
-
         return array_unique($result);
     }
-
     /**
      * Determines which fields can be returned by [[toArray()]].
      * This method will first extract the root fields from the given fields.
@@ -217,12 +198,11 @@ trait ArrayableTrait
      * @return array the list of fields to be exported. The array keys are the field names, and the array values
      * are the corresponding object property names or PHP callables returning the field values.
      */
-    protected function resolveFields(array $fields, array $expand): array
+    protected function resolve_fields(array $fields, array $expand): array
     {
-        $fields = $this->extractRootFields($fields);
-        $expand = $this->extractRootFields($expand);
+        $fields = $this->extract_root_fields($fields);
+        $expand = $this->extract_root_fields($expand);
         $result = [];
-
         foreach ($this->fields() as $field => $definition) {
             if (is_int($field)) {
                 $field = $definition;
@@ -231,12 +211,10 @@ trait ArrayableTrait
                 $result[$field] = $definition;
             }
         }
-
         if (empty($expand)) {
             return $result;
         }
-
-        foreach ($this->extraFields() as $field => $definition) {
+        foreach ($this->extra_fields() as $field => $definition) {
             if (is_int($field)) {
                 $field = $definition;
             }
@@ -244,7 +222,6 @@ trait ArrayableTrait
                 $result[$field] = $definition;
             }
         }
-
         return $result;
     }
 }

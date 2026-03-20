@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\db\Migration;
-use yii\rbac\DbManager;
-
+use yii\rbac\Db_Manager;
 /**
  * Updates indexes without a prefix.
  *
@@ -26,43 +23,36 @@ class m180523_151638_rbac_updates_indexes_without_prefix extends Migration
      * @throws yii\base\InvalidConfigException
      * @return DbManager
      */
-    protected function getAuthManager()
+    protected function get_auth_manager()
     {
-        $authManager = Yii::$app->getAuthManager();
-        if (!$authManager instanceof DbManager) {
-            throw new InvalidConfigException('You should configure "authManager" component to use database before executing this migration.');
+        $auth_manager = Yii::$app->get_auth_manager();
+        if (!$auth_manager instanceof Db_Manager) {
+            throw new Invalid_Config_Exception('You should configure "authManager" component to use database before executing this migration.');
         }
-
-        return $authManager;
+        return $auth_manager;
     }
-
     /**
      * {@inheritdoc}
      */
     public function up(): ?bool
     {
-        $authManager = $this->getAuthManager();
-        $this->db = $authManager->db;
-
-        $this->dropIndex('auth_assignment_user_id_idx', $authManager->assignmentTable);
-        $this->createIndex('{{%idx-auth_assignment-user_id}}', $authManager->assignmentTable, 'user_id');
-
-        $this->dropIndex('idx-auth_item-type', $authManager->itemTable);
-        $this->createIndex('{{%idx-auth_item-type}}', $authManager->itemTable, 'type');
+        $auth_manager = $this->get_auth_manager();
+        $this->db = $auth_manager->db;
+        $this->drop_index('auth_assignment_user_id_idx', $auth_manager->assignment_table);
+        $this->create_index('{{%idx-auth_assignment-user_id}}', $auth_manager->assignment_table, 'user_id');
+        $this->drop_index('idx-auth_item-type', $auth_manager->item_table);
+        $this->create_index('{{%idx-auth_item-type}}', $auth_manager->item_table, 'type');
     }
-
     /**
      * {@inheritdoc}
      */
     public function down(): ?bool
     {
-        $authManager = $this->getAuthManager();
-        $this->db = $authManager->db;
-
-        $this->dropIndex('{{%idx-auth_assignment-user_id}}', $authManager->assignmentTable);
-        $this->createIndex('auth_assignment_user_id_idx', $authManager->assignmentTable, 'user_id');
-
-        $this->dropIndex('{{%idx-auth_item-type}}', $authManager->itemTable);
-        $this->createIndex('idx-auth_item-type', $authManager->itemTable, 'type');
+        $auth_manager = $this->get_auth_manager();
+        $this->db = $auth_manager->db;
+        $this->drop_index('{{%idx-auth_assignment-user_id}}', $auth_manager->assignment_table);
+        $this->create_index('auth_assignment_user_id_idx', $auth_manager->assignment_table, 'user_id');
+        $this->drop_index('{{%idx-auth_item-type}}', $auth_manager->item_table);
+        $this->create_index('idx-auth_item-type', $auth_manager->item_table, 'type');
     }
 }

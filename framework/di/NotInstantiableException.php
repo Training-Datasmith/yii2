@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\di;
 
-use yii\base\InvalidConfigException;
-
+use yii\base\Invalid_Config_Exception;
 /**
  * NotInstantiableException represents an exception caused by incorrect dependency injection container
  * configuration or usage.
@@ -19,7 +16,7 @@ use yii\base\InvalidConfigException;
  * @author Sam Mousa <sam@mousa.nl>
  * @since 2.0.9
  */
-class NotInstantiableException extends InvalidConfigException
+class Not_Instantiable_Exception extends Invalid_Config_Exception
 {
     /**
      * {@inheritdoc}
@@ -27,15 +24,14 @@ class NotInstantiableException extends InvalidConfigException
     public function __construct($class, $message = null, $code = 0, $previous = null)
     {
         if ($message === null) {
-            $message = "Can not instantiate $class.";
+            $message = "Can not instantiate {$class}.";
         }
         parent::__construct($message, $code, $previous);
     }
-
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return 'Not instantiable';
     }

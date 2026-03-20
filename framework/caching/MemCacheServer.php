@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
 /**
@@ -21,7 +19,7 @@ namespace yii\caching;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class MemCacheServer extends \yii\base\BaseObject
+class Mem_Cache_Server extends \yii\base\Base_Object
 {
     /**
      * @var string memcache server hostname or IP address
@@ -48,7 +46,7 @@ class MemCacheServer extends \yii\base\BaseObject
     /**
      * @var int how often a failed server will be retried (in seconds). This is used by memcache only.
      */
-    public $retryInterval = 15;
+    public $retry_interval = 15;
     /**
      * @var bool if the server should be flagged as online upon a failure. This is used by memcache only.
      */
@@ -59,5 +57,5 @@ class MemCacheServer extends \yii\base\BaseObject
      * the [[host]] and the [[port]] of the failed server.
      * This is used by memcache only.
      */
-    public $failureCallback;
+    public $failure_callback;
 }

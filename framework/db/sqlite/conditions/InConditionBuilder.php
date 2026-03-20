@@ -1,50 +1,45 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\sqlite\conditions;
 
-use yii\base\NotSupportedException;
+use yii\base\Not_Supported_Exception;
 use yii\db\Expression;
-
 /**
  * {@inheritdoc}
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14
  */
-class InConditionBuilder extends \yii\db\conditions\InConditionBuilder
+class In_Condition_Builder extends \yii\db\conditions\In_Condition_Builder
 {
     /**
      * {@inheritdoc}
      * @throws NotSupportedException if `$columns` is an array
      */
-    protected function buildSubqueryInCondition($operator, $columns, \yii\db\ExpressionInterface $values, &$params)
+    protected function build_subquery_in_condition($operator, $columns, \yii\db\Expression_Interface $values, &$params)
     {
         if (is_array($columns)) {
-            throw new NotSupportedException(__METHOD__ . ' is not supported by SQLite.');
+            throw new Not_Supported_Exception(__METHOD__ . ' is not supported by SQLite.');
         }
-
-        return parent::buildSubqueryInCondition($operator, $columns, $values, $params);
+        return parent::build_subquery_in_condition($operator, $columns, $values, $params);
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function buildCompositeInCondition($operator, $columns, $values, &$params): string
+    protected function build_composite_in_condition($operator, $columns, $values, &$params): string
     {
-        $quotedColumns = [];
+        $quoted_columns = [];
         foreach ($columns as $i => $column) {
             if ($column instanceof Expression) {
                 $column = $column->expression;
             }
-            $quotedColumns[$i] = strpos($column, '(') === false ? $this->queryBuilder->db->quoteColumnName($column) : $column;
+            $quoted_columns[$i] = strpos($column, '(') === false ? $this->query_builder->db->quote_column_name($column) : $column;
         }
         $vss = [];
         foreach ($values as $value) {
@@ -54,15 +49,14 @@ class InConditionBuilder extends \yii\db\conditions\InConditionBuilder
                     $column = $column->expression;
                 }
                 if (isset($value[$column])) {
-                    $phName = $this->queryBuilder->bindParam($value[$column], $params);
-                    $vs[] = $quotedColumns[$i] . ($operator === 'IN' ? ' = ' : ' != ') . $phName;
+                    $ph_name = $this->query_builder->bind_param($value[$column], $params);
+                    $vs[] = $quoted_columns[$i] . ($operator === 'IN' ? ' = ' : ' != ') . $ph_name;
                 } else {
-                    $vs[] = $quotedColumns[$i] . ($operator === 'IN' ? ' IS' : ' IS NOT') . ' NULL';
+                    $vs[] = $quoted_columns[$i] . ($operator === 'IN' ? ' IS' : ' IS NOT') . ' NULL';
                 }
             }
             $vss[] = '(' . implode($operator === 'IN' ? ' AND ' : ' OR ', $vs) . ')';
         }
-
         return '(' . implode($operator === 'IN' ? ' OR ' : ' AND ', $vss) . ')';
     }
 }

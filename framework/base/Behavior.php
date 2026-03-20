@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -25,18 +23,16 @@ namespace yii\base;
  *
  * @template T of Component = Component
  */
-class Behavior extends BaseObject
+class Behavior extends Base_Object
 {
     /**
      * @var T|null the owner of this behavior
      */
     public $owner;
-
     /**
      * @var array Attached events handlers
      */
-    private $_attachedEvents = [];
-
+    private $_attached_events = [];
     /**
      * Declares event handlers for the [[owner]]'s events.
      *
@@ -69,7 +65,6 @@ class Behavior extends BaseObject
     {
         return [];
     }
-
     /**
      * Attaches the behavior object to the component.
      * The default implementation will set the [[owner]] property
@@ -81,11 +76,10 @@ class Behavior extends BaseObject
     {
         $this->owner = $owner;
         foreach ($this->events() as $event => $handler) {
-            $this->_attachedEvents[$event] = $handler;
+            $this->_attached_events[$event] = $handler;
             $owner->on($event, is_string($handler) ? [$this, $handler] : $handler);
         }
     }
-
     /**
      * Detaches the behavior object from the component.
      * The default implementation will unset the [[owner]] property
@@ -95,10 +89,10 @@ class Behavior extends BaseObject
     public function detach(): void
     {
         if ($this->owner) {
-            foreach ($this->_attachedEvents as $event => $handler) {
+            foreach ($this->_attached_events as $event => $handler) {
                 $this->owner->off($event, is_string($handler) ? [$this, $handler] : $handler);
             }
-            $this->_attachedEvents = [];
+            $this->_attached_events = [];
             $this->owner = null;
         }
     }

@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\helpers;
 
-use yii\base\NotSupportedException;
-
+use yii\base\Not_Supported_Exception;
 /**
  * Class BaseIpHelper provides concrete implementation for [[IpHelper]]
  *
@@ -20,7 +17,7 @@ use yii\base\NotSupportedException;
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14
  */
-class BaseIpHelper
+class Base_Ip_Helper
 {
     public const IPV4 = 4;
     public const IPV6 = 6;
@@ -38,11 +35,10 @@ class BaseIpHelper
      * @param string $ip the valid IPv4 or IPv6 address.
      * @return int [[IPV4]] or [[IPV6]]
      */
-    public static function getIpVersion($ip): int
+    public static function get_ip_version($ip): int
     {
         return strpos($ip, ':') === false ? self::IPV4 : self::IPV6;
     }
-
     /**
      * Checks whether IP address or subnet $subnet is contained by $subnet.
      *
@@ -67,26 +63,22 @@ class BaseIpHelper
      * @throws NotSupportedException
      * @see https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing
      */
-    public static function inRange($subnet, $range)
+    public static function in_range($subnet, $range)
     {
         [$ip, $mask] = array_pad(explode('/', $subnet), 2, null);
-        [$net, $netMask] = array_pad(explode('/', $range), 2, null);
-
-        $ipVersion = static::getIpVersion($ip);
-        $netVersion = static::getIpVersion($net);
-        if ($ipVersion !== $netVersion) {
+        [$net, $net_mask] = array_pad(explode('/', $range), 2, null);
+        $ip_version = static::get_ip_version($ip);
+        $net_version = static::get_ip_version($net);
+        if ($ip_version !== $net_version) {
             return false;
         }
-
-        $maxMask = $ipVersion === self::IPV4 ? self::IPV4_ADDRESS_LENGTH : self::IPV6_ADDRESS_LENGTH;
-        $mask ??= $maxMask;
-        $netMask ??= $maxMask;
-
-        $binIp = static::ip2bin($ip);
-        $binNet = static::ip2bin($net);
-        return substr($binIp, 0, $netMask) === substr($binNet, 0, $netMask) && $mask >= $netMask;
+        $max_mask = $ip_version === self::IPV4 ? self::IPV4_ADDRESS_LENGTH : self::IPV6_ADDRESS_LENGTH;
+        $mask ??= $max_mask;
+        $net_mask ??= $max_mask;
+        $bin_ip = static::ip2bin($ip);
+        $bin_net = static::ip2bin($net);
+        return substr($bin_ip, 0, $net_mask) === substr($bin_net, 0, $net_mask) && $mask >= $net_mask;
     }
-
     /**
      * Expands an IPv6 address to it's full notation.
      *
@@ -95,12 +87,11 @@ class BaseIpHelper
      * @param string $ip the original valid IPv6 address
      * @return string the expanded IPv6 address
      */
-    public static function expandIPv6($ip): string
+    public static function expand_i_pv6($ip): string
     {
         $hex = unpack('H*hex', inet_pton($ip));
         return substr(preg_replace('/([a-f0-9]{4})/i', '$1:', $hex['hex']), 0, -1);
     }
-
     /**
      * Converts IP address to bits representation.
      *
@@ -110,18 +101,17 @@ class BaseIpHelper
      */
     public static function ip2bin($ip): string
     {
-        $ipBinary = null;
-        if (static::getIpVersion($ip) === self::IPV4) {
-            $ipBinary = pack('N', ip2long($ip));
+        $ip_binary = null;
+        if (static::get_ip_version($ip) === self::IPV4) {
+            $ip_binary = pack('N', ip2long($ip));
         } elseif (@inet_pton('::1') === false) {
-            throw new NotSupportedException('IPv6 is not supported by inet_pton()!');
+            throw new Not_Supported_Exception('IPv6 is not supported by inet_pton()!');
         } else {
-            $ipBinary = inet_pton($ip);
+            $ip_binary = inet_pton($ip);
         }
-
         $result = '';
-        for ($i = 0, $iMax = strlen($ipBinary); $i < $iMax; $i += 4) {
-            $result .= str_pad(decbin(unpack('N', substr($ipBinary, $i, 4))[1]), 32, '0', STR_PAD_LEFT);
+        for ($i = 0, $i_max = strlen($ip_binary); $i < $i_max; $i += 4) {
+            $result .= str_pad(decbin(unpack('N', substr($ip_binary, $i, 4))[1]), 32, '0', STR_PAD_LEFT);
         }
         return $result;
     }

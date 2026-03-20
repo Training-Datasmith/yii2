@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\mssql;
 
 /**
@@ -17,7 +15,7 @@ namespace yii\db\mssql;
  * @author Timur Ruziev <resurtm@gmail.com>
  * @since 2.0
  */
-class SqlsrvPDO extends \PDO
+class Sqlsrv_Pdo extends \PDO
 {
     /**
      * Returns value of the last inserted ID.
@@ -29,9 +27,9 @@ class SqlsrvPDO extends \PDO
      * @param string|null $sequence the sequence name. Defaults to null.
      * @return string|false last inserted ID value.
      */
-    #[\ReturnTypeWillChange]
-    public function lastInsertId($sequence = null)
+    #[\Return_Type_Will_Change]
+    public function last_insert_id($sequence = null)
     {
-        return !$sequence ? parent::lastInsertId() : parent::lastInsertId($sequence);
+        return !$sequence ? parent::last_insert_id() : parent::last_insert_id($sequence);
     }
 }

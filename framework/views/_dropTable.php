@@ -7,9 +7,8 @@
  * @var string $table the name table
  * @var array $foreignKeys the foreign keys
  */
-
-echo $this->render('_dropForeignKeys', [
-    'table' => $table,
-    'foreignKeys' => $foreignKeys,
-]) ?>
-        $this->dropTable('<?= $table ?>');
+echo $this->render('_dropForeignKeys', ['table' => $table, 'foreignKeys' => $foreign_keys]);
+?>
+        $this->dropTable('<?php 
+echo $table;
+?>');

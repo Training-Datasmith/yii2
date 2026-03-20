@@ -1,100 +1,67 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\oci;
 
 use yii\base\InvalidArgumentException;
 use yii\db\Connection;
 use yii\db\Exception;
 use yii\db\Expression;
-use yii\db\ExpressionInterface;
+use yii\db\Expression_Interface;
 use yii\db\Query;
-use yii\helpers\StringHelper;
-
+use yii\helpers\String_Helper;
 /**
  * QueryBuilder is the query builder for Oracle databases.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class QueryBuilder extends \yii\db\QueryBuilder
+class Query_Builder extends \yii\db\Query_Builder
 {
     /**
      * @var array mapping from abstract column types (keys) to physical column types (values).
      */
-    public $typeMap = [
-        Schema::TYPE_PK => 'NUMBER(10) NOT NULL PRIMARY KEY',
-        Schema::TYPE_UPK => 'NUMBER(10) UNSIGNED NOT NULL PRIMARY KEY',
-        Schema::TYPE_BIGPK => 'NUMBER(20) NOT NULL PRIMARY KEY',
-        Schema::TYPE_UBIGPK => 'NUMBER(20) UNSIGNED NOT NULL PRIMARY KEY',
-        Schema::TYPE_CHAR => 'CHAR(1)',
-        Schema::TYPE_STRING => 'VARCHAR2(255)',
-        Schema::TYPE_TEXT => 'CLOB',
-        Schema::TYPE_TINYINT => 'NUMBER(3)',
-        Schema::TYPE_SMALLINT => 'NUMBER(5)',
-        Schema::TYPE_INTEGER => 'NUMBER(10)',
-        Schema::TYPE_BIGINT => 'NUMBER(20)',
-        Schema::TYPE_FLOAT => 'NUMBER',
-        Schema::TYPE_DOUBLE => 'NUMBER',
-        Schema::TYPE_DECIMAL => 'NUMBER',
-        Schema::TYPE_DATETIME => 'TIMESTAMP',
-        Schema::TYPE_TIMESTAMP => 'TIMESTAMP',
-        Schema::TYPE_TIME => 'TIMESTAMP',
-        Schema::TYPE_DATE => 'DATE',
-        Schema::TYPE_BINARY => 'BLOB',
-        Schema::TYPE_BOOLEAN => 'NUMBER(1)',
-        Schema::TYPE_MONEY => 'NUMBER(19,4)',
-    ];
-
+    public $type_map = [Schema::TYPE_PK => 'NUMBER(10) NOT NULL PRIMARY KEY', Schema::TYPE_UPK => 'NUMBER(10) UNSIGNED NOT NULL PRIMARY KEY', Schema::TYPE_BIGPK => 'NUMBER(20) NOT NULL PRIMARY KEY', Schema::TYPE_UBIGPK => 'NUMBER(20) UNSIGNED NOT NULL PRIMARY KEY', Schema::TYPE_CHAR => 'CHAR(1)', Schema::TYPE_STRING => 'VARCHAR2(255)', Schema::TYPE_TEXT => 'CLOB', Schema::TYPE_TINYINT => 'NUMBER(3)', Schema::TYPE_SMALLINT => 'NUMBER(5)', Schema::TYPE_INTEGER => 'NUMBER(10)', Schema::TYPE_BIGINT => 'NUMBER(20)', Schema::TYPE_FLOAT => 'NUMBER', Schema::TYPE_DOUBLE => 'NUMBER', Schema::TYPE_DECIMAL => 'NUMBER', Schema::TYPE_DATETIME => 'TIMESTAMP', Schema::TYPE_TIMESTAMP => 'TIMESTAMP', Schema::TYPE_TIME => 'TIMESTAMP', Schema::TYPE_DATE => 'DATE', Schema::TYPE_BINARY => 'BLOB', Schema::TYPE_BOOLEAN => 'NUMBER(1)', Schema::TYPE_MONEY => 'NUMBER(19,4)'];
     /**
      * {@inheritdoc}
      */
-    protected function defaultExpressionBuilders()
+    protected function default_expression_builders()
     {
-        return array_merge(parent::defaultExpressionBuilders(), [
-            'yii\db\conditions\InCondition' => 'yii\db\oci\conditions\InConditionBuilder',
-            'yii\db\conditions\LikeCondition' => 'yii\db\oci\conditions\LikeConditionBuilder',
-        ]);
+        return array_merge(parent::default_expression_builders(), ['yii\db\conditions\InCondition' => 'yii\db\oci\conditions\InConditionBuilder', 'yii\db\conditions\LikeCondition' => 'yii\db\oci\conditions\LikeConditionBuilder']);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function buildOrderByAndLimit($sql, $orderBy, $limit, $offset)
+    public function build_order_by_and_limit($sql, $order_by, $limit, $offset)
     {
-        $orderBy = $this->buildOrderBy($orderBy);
-        if ($orderBy !== '') {
-            $sql .= $this->separator . $orderBy;
+        $order_by = $this->build_order_by($order_by);
+        if ($order_by !== '') {
+            $sql .= $this->separator . $order_by;
         }
-
         $filters = [];
-        if ($this->hasOffset($offset)) {
+        if ($this->has_offset($offset)) {
             $filters[] = 'rowNumId > ' . $offset;
         }
-        if ($this->hasLimit($limit)) {
+        if ($this->has_limit($limit)) {
             $filters[] = 'rownum <= ' . $limit;
         }
         if (empty($filters)) {
             return $sql;
         }
-
         $filter = implode(' AND ', $filters);
         return <<<EOD
-WITH USER_SQL AS ($sql),
-    PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
-SELECT *
-FROM PAGINATION
-WHERE $filter
-EOD;
+        WITH USER_SQL AS ({$sql}),
+            PAGINATION AS (SELECT USER_SQL.*, rownum as rowNumId FROM USER_SQL)
+        SELECT *
+        FROM PAGINATION
+        WHERE {$filter}
+        EOD;
     }
-
     /**
      * Builds a SQL statement for renaming a DB table.
      *
@@ -102,11 +69,10 @@ EOD;
      * @param string $newName the new table name. The name will be properly quoted by the method.
      * @return string the SQL statement for renaming a DB table.
      */
-    public function renameTable($table, $newName)
+    public function rename_table($table, $new_name)
     {
-        return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' RENAME TO ' . $this->db->quoteTableName($newName);
+        return 'ALTER TABLE ' . $this->db->quote_table_name($table) . ' RENAME TO ' . $this->db->quote_table_name($new_name);
     }
-
     /**
      * Builds a SQL statement for changing the definition of a column.
      *
@@ -117,13 +83,11 @@ EOD;
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
      * @return string the SQL statement for changing the definition of a column.
      */
-    public function alterColumn($table, $column, $type)
+    public function alter_column($table, $column, $type)
     {
-        $type = $this->getColumnType($type);
-
-        return 'ALTER TABLE ' . $this->db->quoteTableName($table) . ' MODIFY ' . $this->db->quoteColumnName($column) . ' ' . $this->getColumnType($type);
+        $type = $this->get_column_type($type);
+        return 'ALTER TABLE ' . $this->db->quote_table_name($table) . ' MODIFY ' . $this->db->quote_column_name($column) . ' ' . $this->get_column_type($type);
     }
-
     /**
      * Builds a SQL statement for dropping an index.
      *
@@ -131,152 +95,130 @@ EOD;
      * @param string $table the table whose index is to be dropped. The name will be properly quoted by the method.
      * @return string the SQL statement for dropping an index.
      */
-    public function dropIndex($name, $table)
+    public function drop_index($name, $table)
     {
-        return 'DROP INDEX ' . $this->db->quoteTableName($name);
+        return 'DROP INDEX ' . $this->db->quote_table_name($name);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function executeResetSequence($table, $value = null)
+    public function execute_reset_sequence($table, $value = null)
     {
-        $tableSchema = $this->db->getTableSchema($table);
-        if ($tableSchema === null) {
-            throw new InvalidArgumentException("Unknown table: $table");
+        $table_schema = $this->db->get_table_schema($table);
+        if ($table_schema === null) {
+            throw new InvalidArgumentException("Unknown table: {$table}");
         }
-        if ($tableSchema->sequenceName === null) {
-            throw new InvalidArgumentException("There is no sequence associated with table: $table");
+        if ($table_schema->sequence_name === null) {
+            throw new InvalidArgumentException("There is no sequence associated with table: {$table}");
         }
-
         if ($value !== null) {
             $value = (int) $value;
         } else {
-            if (count($tableSchema->primaryKey) > 1) {
-                throw new InvalidArgumentException("Can't reset sequence for composite primary key in table: $table");
+            if (count($table_schema->primary_key) > 1) {
+                throw new InvalidArgumentException("Can't reset sequence for composite primary key in table: {$table}");
             }
             // use master connection to get the biggest PK value
-            $value = $this->db->useMaster(function (Connection $db) use ($tableSchema) {
-                return $db->createCommand(
-                    'SELECT MAX("' . $tableSchema->primaryKey[0] . '") FROM "' . $tableSchema->name . '"'
-                )->queryScalar();
+            $value = $this->db->use_master(function (Connection $db) use ($table_schema) {
+                return $db->create_command('SELECT MAX("' . $table_schema->primary_key[0] . '") FROM "' . $table_schema->name . '"')->query_scalar();
             }) + 1;
         }
-
         //Oracle needs at least two queries to reset sequence (see adding transactions and/or use alter method to avoid grants' issue?)
-        $this->db->createCommand('DROP SEQUENCE "' . $tableSchema->sequenceName . '"')->execute();
-        $this->db->createCommand('CREATE SEQUENCE "' . $tableSchema->sequenceName . '" START WITH ' . $value
-            . ' INCREMENT BY 1 NOMAXVALUE NOCACHE')->execute();
+        $this->db->create_command('DROP SEQUENCE "' . $table_schema->sequence_name . '"')->execute();
+        $this->db->create_command('CREATE SEQUENCE "' . $table_schema->sequence_name . '" START WITH ' . $value . ' INCREMENT BY 1 NOMAXVALUE NOCACHE')->execute();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null)
+    public function add_foreign_key($name, $table, $columns, $ref_table, $ref_columns, $delete = null, $update = null)
     {
-        $sql = 'ALTER TABLE ' . $this->db->quoteTableName($table)
-            . ' ADD CONSTRAINT ' . $this->db->quoteColumnName($name)
-            . ' FOREIGN KEY (' . $this->buildColumns($columns) . ')'
-            . ' REFERENCES ' . $this->db->quoteTableName($refTable)
-            . ' (' . $this->buildColumns($refColumns) . ')';
+        $sql = 'ALTER TABLE ' . $this->db->quote_table_name($table) . ' ADD CONSTRAINT ' . $this->db->quote_column_name($name) . ' FOREIGN KEY (' . $this->build_columns($columns) . ')' . ' REFERENCES ' . $this->db->quote_table_name($ref_table) . ' (' . $this->build_columns($ref_columns) . ')';
         if ($delete !== null) {
             $sql .= ' ON DELETE ' . $delete;
         }
         if ($update !== null) {
             throw new Exception('Oracle does not support ON UPDATE clause.');
         }
-
         return $sql;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function prepareInsertValues($table, $columns, $params = [])
+    protected function prepare_insert_values($table, $columns, $params = [])
     {
-        list($names, $placeholders, $values, $params) = parent::prepareInsertValues($table, $columns, $params);
+        list($names, $placeholders, $values, $params) = parent::prepare_insert_values($table, $columns, $params);
         if (!$columns instanceof Query && empty($names)) {
-            $tableSchema = $this->db->getSchema()->getTableSchema($table);
-            if ($tableSchema !== null) {
-                $columns = !empty($tableSchema->primaryKey) ? $tableSchema->primaryKey : [reset($tableSchema->columns)->name];
+            $table_schema = $this->db->get_schema()->get_table_schema($table);
+            if ($table_schema !== null) {
+                $columns = !empty($table_schema->primary_key) ? $table_schema->primary_key : [reset($table_schema->columns)->name];
                 foreach ($columns as $name) {
-                    $names[] = $this->db->quoteColumnName($name);
+                    $names[] = $this->db->quote_column_name($name);
                     $placeholders[] = 'DEFAULT';
                 }
             }
         }
         return [$names, $placeholders, $values, $params];
     }
-
     /**
      * {@inheritdoc}
      * @see https://docs.oracle.com/cd/B28359_01/server.111/b28286/statements_9016.htm#SQLRF01606
      */
-    public function upsert($table, $insertColumns, $updateColumns, &$params)
+    public function upsert($table, $insert_columns, $update_columns, &$params)
     {
-        list($uniqueNames, $insertNames, $updateNames) = $this->prepareUpsertColumns($table, $insertColumns, $updateColumns, $constraints);
-        if (empty($uniqueNames)) {
-            return $this->insert($table, $insertColumns, $params);
+        list($unique_names, $insert_names, $update_names) = $this->prepare_upsert_columns($table, $insert_columns, $update_columns, $constraints);
+        if (empty($unique_names)) {
+            return $this->insert($table, $insert_columns, $params);
         }
-        if ($updateNames === []) {
+        if ($update_names === []) {
             // there are no columns to update
-            $updateColumns = false;
+            $update_columns = false;
         }
-
-        $onCondition = ['or'];
-        $quotedTableName = $this->db->quoteTableName($table);
+        $on_condition = ['or'];
+        $quoted_table_name = $this->db->quote_table_name($table);
         foreach ($constraints as $constraint) {
-            $constraintCondition = ['and'];
-            foreach ($constraint->columnNames as $name) {
-                $quotedName = $this->db->quoteColumnName($name);
-                $constraintCondition[] = "$quotedTableName.$quotedName=\"EXCLUDED\".$quotedName";
+            $constraint_condition = ['and'];
+            foreach ($constraint->column_names as $name) {
+                $quoted_name = $this->db->quote_column_name($name);
+                $constraint_condition[] = "{$quoted_table_name}.{$quoted_name}=\"EXCLUDED\".{$quoted_name}";
             }
-            $onCondition[] = $constraintCondition;
+            $on_condition[] = $constraint_condition;
         }
-        $on = $this->buildCondition($onCondition, $params);
-        list(, $placeholders, $values, $params) = $this->prepareInsertValues($table, $insertColumns, $params);
+        $on = $this->build_condition($on_condition, $params);
+        list(, $placeholders, $values, $params) = $this->prepare_insert_values($table, $insert_columns, $params);
         if (!empty($placeholders)) {
-            $usingSelectValues = [];
-            foreach ($insertNames as $index => $name) {
-                $usingSelectValues[$name] = new Expression($placeholders[$index]);
+            $using_select_values = [];
+            foreach ($insert_names as $index => $name) {
+                $using_select_values[$name] = new Expression($placeholders[$index]);
             }
-            $usingSubQuery = (new Query())
-                ->select($usingSelectValues)
-                ->from('DUAL');
-            list($usingValues, $params) = $this->build($usingSubQuery, $params);
+            $using_sub_query = (new Query())->select($using_select_values)->from('DUAL');
+            list($using_values, $params) = $this->build($using_sub_query, $params);
         }
-        $mergeSql = 'MERGE INTO ' . $this->db->quoteTableName($table) . ' '
-            . 'USING (' . (isset($usingValues) ? $usingValues : ltrim($values, ' ')) . ') "EXCLUDED" '
-            . "ON ($on)";
-        $insertValues = [];
-        foreach ($insertNames as $name) {
-            $quotedName = $this->db->quoteColumnName($name);
-            if (strrpos($quotedName, '.') === false) {
-                $quotedName = '"EXCLUDED".' . $quotedName;
+        $merge_sql = 'MERGE INTO ' . $this->db->quote_table_name($table) . ' ' . 'USING (' . (isset($using_values) ? $using_values : ltrim($values, ' ')) . ') "EXCLUDED" ' . "ON ({$on})";
+        $insert_values = [];
+        foreach ($insert_names as $name) {
+            $quoted_name = $this->db->quote_column_name($name);
+            if (strrpos($quoted_name, '.') === false) {
+                $quoted_name = '"EXCLUDED".' . $quoted_name;
             }
-            $insertValues[] = $quotedName;
+            $insert_values[] = $quoted_name;
         }
-        $insertSql = 'INSERT (' . implode(', ', $insertNames) . ')'
-            . ' VALUES (' . implode(', ', $insertValues) . ')';
-        if ($updateColumns === false) {
-            return "$mergeSql WHEN NOT MATCHED THEN $insertSql";
+        $insert_sql = 'INSERT (' . implode(', ', $insert_names) . ')' . ' VALUES (' . implode(', ', $insert_values) . ')';
+        if ($update_columns === false) {
+            return "{$merge_sql} WHEN NOT MATCHED THEN {$insert_sql}";
         }
-
-        if ($updateColumns === true) {
-            $updateColumns = [];
-            foreach ($updateNames as $name) {
-                $quotedName = $this->db->quoteColumnName($name);
-                if (strrpos($quotedName, '.') === false) {
-                    $quotedName = '"EXCLUDED".' . $quotedName;
+        if ($update_columns === true) {
+            $update_columns = [];
+            foreach ($update_names as $name) {
+                $quoted_name = $this->db->quote_column_name($name);
+                if (strrpos($quoted_name, '.') === false) {
+                    $quoted_name = '"EXCLUDED".' . $quoted_name;
                 }
-                $updateColumns[$name] = new Expression($quotedName);
+                $update_columns[$name] = new Expression($quoted_name);
             }
         }
-        list($updates, $params) = $this->prepareUpdateSets($table, $updateColumns, $params);
-        $updateSql = 'UPDATE SET ' . implode(', ', $updates);
-        return "$mergeSql WHEN MATCHED THEN $updateSql WHEN NOT MATCHED THEN $insertSql";
+        list($updates, $params) = $this->prepare_update_sets($table, $update_columns, $params);
+        $update_sql = 'UPDATE SET ' . implode(', ', $updates);
+        return "{$merge_sql} WHEN MATCHED THEN {$update_sql} WHEN NOT MATCHED THEN {$insert_sql}";
     }
-
     /**
      * Generates a batch INSERT SQL statement.
      *
@@ -297,37 +239,35 @@ EOD;
      * @param array|\Generator $rows the rows to be batch inserted into the table
      * @return string the batch INSERT SQL statement
      */
-    public function batchInsert($table, $columns, $rows, &$params = [])
+    public function batch_insert($table, $columns, $rows, &$params = [])
     {
         if (empty($rows)) {
             return '';
         }
-
-        $schema = $this->db->getSchema();
-        if (($tableSchema = $schema->getTableSchema($table)) !== null) {
-            $columnSchemas = $tableSchema->columns;
+        $schema = $this->db->get_schema();
+        if (($table_schema = $schema->get_table_schema($table)) !== null) {
+            $column_schemas = $table_schema->columns;
         } else {
-            $columnSchemas = [];
+            $column_schemas = [];
         }
-
         $values = [];
         foreach ($rows as $row) {
             $vs = [];
             foreach ($row as $i => $value) {
-                if (isset($columns[$i], $columnSchemas[$columns[$i]])) {
-                    $value = $columnSchemas[$columns[$i]]->dbTypecast($value);
+                if (isset($columns[$i], $column_schemas[$columns[$i]])) {
+                    $value = $column_schemas[$columns[$i]]->db_typecast($value);
                 }
                 if (is_string($value)) {
-                    $value = $schema->quoteValue($value);
+                    $value = $schema->quote_value($value);
                 } elseif (is_float($value)) {
                     // ensure type cast always has . as decimal separator in all locales
-                    $value = StringHelper::floatToString($value);
+                    $value = String_Helper::float_to_string($value);
                 } elseif ($value === false) {
                     $value = 0;
                 } elseif ($value === null) {
                     $value = 'NULL';
-                } elseif ($value instanceof ExpressionInterface) {
-                    $value = $this->buildExpression($value, $params);
+                } elseif ($value instanceof Expression_Interface) {
+                    $value = $this->build_expression($value, $params);
                 }
                 $vs[] = $value;
             }
@@ -336,41 +276,34 @@ EOD;
         if (empty($values)) {
             return '';
         }
-
         foreach ($columns as $i => $name) {
-            $columns[$i] = $schema->quoteColumnName($name);
+            $columns[$i] = $schema->quote_column_name($name);
         }
-
-        $tableAndColumns = ' INTO ' . $schema->quoteTableName($table)
-        . ' (' . implode(', ', $columns) . ') VALUES ';
-
-        return 'INSERT ALL ' . $tableAndColumns . implode($tableAndColumns, $values) . ' SELECT 1 FROM SYS.DUAL';
+        $table_and_columns = ' INTO ' . $schema->quote_table_name($table) . ' (' . implode(', ', $columns) . ') VALUES ';
+        return 'INSERT ALL ' . $table_and_columns . implode($table_and_columns, $values) . ' SELECT 1 FROM SYS.DUAL';
     }
-
     /**
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function selectExists($rawSql)
+    public function select_exists($raw_sql)
     {
-        return 'SELECT CASE WHEN EXISTS(' . $rawSql . ') THEN 1 ELSE 0 END FROM DUAL';
+        return 'SELECT CASE WHEN EXISTS(' . $raw_sql . ') THEN 1 ELSE 0 END FROM DUAL';
     }
-
     /**
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function dropCommentFromColumn($table, $column)
+    public function drop_comment_from_column($table, $column)
     {
-        return 'COMMENT ON COLUMN ' . $this->db->quoteTableName($table) . '.' . $this->db->quoteColumnName($column) . " IS ''";
+        return 'COMMENT ON COLUMN ' . $this->db->quote_table_name($table) . '.' . $this->db->quote_column_name($column) . " IS ''";
     }
-
     /**
      * {@inheritdoc}
      * @since 2.0.8
      */
-    public function dropCommentFromTable($table)
+    public function drop_comment_from_table($table)
     {
-        return 'COMMENT ON TABLE ' . $this->db->quoteTableName($table) . " IS ''";
+        return 'COMMENT ON TABLE ' . $this->db->quote_table_name($table) . " IS ''";
     }
 }

@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\log;
 
 /**
@@ -16,12 +14,12 @@ namespace yii\log;
  * @author Bizley <pawel@positive.codes>
  * @since 2.0.14
  */
-class LogRuntimeException extends \yii\base\Exception
+class Log_Runtime_Exception extends \yii\base\Exception
 {
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return 'Log Runtime';
     }

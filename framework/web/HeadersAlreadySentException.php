@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use yii\base\Exception;
-
 /**
  * HeadersAlreadySentException represents an exception caused by
  * any headers that were already sent before web response was sent.
@@ -19,7 +16,7 @@ use yii\base\Exception;
  * @author Dmitry Dorogin <dmirogin@ya.ru>
  * @since 2.0.14
  */
-class HeadersAlreadySentException extends Exception
+class Headers_Already_Sent_Exception extends Exception
 {
     /**
      * {@inheritdoc}

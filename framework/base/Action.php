@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
-
 /**
  * Action is the base class for all controller action classes.
  *
@@ -50,7 +47,6 @@ class Action extends Component
      * @var T the controller that owns this action
      */
     public $controller;
-
     /**
      * Constructor.
      *
@@ -64,17 +60,15 @@ class Action extends Component
         $this->controller = $controller;
         parent::__construct($config);
     }
-
     /**
      * Returns the unique ID of this action among the whole application.
      *
      * @return string the unique ID of this action among the whole application.
      */
-    public function getUniqueId(): string
+    public function get_unique_id(): string
     {
-        return $this->controller->getUniqueId() . '/' . $this->id;
+        return $this->controller->get_unique_id() . '/' . $this->id;
     }
-
     /**
      * Runs this action with the specified parameters.
      * This method is mainly invoked by the controller.
@@ -83,26 +77,23 @@ class Action extends Component
      * @return mixed the result of the action
      * @throws InvalidConfigException if the action class does not have a run() method
      */
-    public function runWithParams($params)
+    public function run_with_params($params)
     {
         if (!method_exists($this, 'run')) {
-            throw new InvalidConfigException(get_class($this) . ' must define a "run()" method.');
+            throw new Invalid_Config_Exception(get_class($this) . ' must define a "run()" method.');
         }
-        $args = $this->controller->bindActionParams($this, $params);
+        $args = $this->controller->bind_action_params($this, $params);
         Yii::debug('Running action: ' . get_class($this) . '::run(), invoked by ' . get_class($this->controller), __METHOD__);
-        if (Yii::$app->requestedParams === null) {
-            Yii::$app->requestedParams = $args;
+        if (Yii::$app->requested_params === null) {
+            Yii::$app->requested_params = $args;
         }
-        if ($this->beforeRun()) {
+        if ($this->before_run()) {
             $result = call_user_func_array([$this, 'run'], $args);
-            $this->afterRun();
-
+            $this->after_run();
             return $result;
         }
-
         return null;
     }
-
     /**
      * This method is called right before `run()` is executed.
      * You may override this method to do preparation work for the action run.
@@ -110,16 +101,15 @@ class Action extends Component
      *
      * @return bool whether to run the action.
      */
-    protected function beforeRun(): bool
+    protected function before_run(): bool
     {
         return true;
     }
-
     /**
      * This method is called right after `run()` is executed.
      * You may override this method to do post-processing work for the action run.
      */
-    protected function afterRun()
+    protected function after_run()
     {
     }
 }

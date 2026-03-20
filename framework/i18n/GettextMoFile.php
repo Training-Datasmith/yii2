@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\i18n;
 
 use yii\base\Exception;
-
 /**
  * GettextMoFile represents an MO Gettext message file.
  *
@@ -44,13 +41,12 @@ use yii\base\Exception;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class GettextMoFile extends GettextFile
+class Gettext_Mo_File extends Gettext_File
 {
     /**
      * @var bool whether to use big-endian when reading and writing an integer.
      */
-    public $useBigEndian = false;
-
+    public $use_big_endian = false;
     /**
      * Loads messages from an MO file.
      * @param string $filePath file path
@@ -59,73 +55,62 @@ class GettextMoFile extends GettextFile
      * source message => translated message.
      * @throws Exception if unable to read the MO file
      */
-    public function load($filePath, $context): array
+    public function load($file_path, $context): array
     {
-        if (false === ($fileHandle = @fopen($filePath, 'rb'))) {
-            throw new Exception('Unable to read file "' . $filePath . '".');
+        if (false === $file_handle = @fopen($file_path, 'rb')) {
+            throw new Exception('Unable to read file "' . $file_path . '".');
         }
-        if (false === @flock($fileHandle, LOCK_SH)) {
-            throw new Exception('Unable to lock file "' . $filePath . '" for reading.');
+        if (false === @flock($file_handle, LOCK_SH)) {
+            throw new Exception('Unable to lock file "' . $file_path . '" for reading.');
         }
-
         // magic
-        $array = unpack('c', $this->readBytes($fileHandle, 4));
+        $array = unpack('c', $this->read_bytes($file_handle, 4));
         $magic = current($array);
         if ($magic == -34) {
-            $this->useBigEndian = false;
+            $this->use_big_endian = false;
         } elseif ($magic == -107) {
-            $this->useBigEndian = true;
+            $this->use_big_endian = true;
         } else {
-            throw new Exception('Invalid MO file: ' . $filePath . ' (magic: ' . $magic . ').');
+            throw new Exception('Invalid MO file: ' . $file_path . ' (magic: ' . $magic . ').');
         }
-
         // revision
-        $revision = $this->readInteger($fileHandle);
+        $revision = $this->read_integer($file_handle);
         if ($revision !== 0) {
             throw new Exception('Invalid MO file revision: ' . $revision . '.');
         }
-
-        $count = $this->readInteger($fileHandle);
-        $sourceOffset = $this->readInteger($fileHandle);
-        $targetOffset = $this->readInteger($fileHandle);
-
-        $sourceLengths = [];
-        $sourceOffsets = [];
-        fseek($fileHandle, $sourceOffset);
+        $count = $this->read_integer($file_handle);
+        $source_offset = $this->read_integer($file_handle);
+        $target_offset = $this->read_integer($file_handle);
+        $source_lengths = [];
+        $source_offsets = [];
+        fseek($file_handle, $source_offset);
         for ($i = 0; $i < $count; ++$i) {
-            $sourceLengths[] = $this->readInteger($fileHandle);
-            $sourceOffsets[] = $this->readInteger($fileHandle);
+            $source_lengths[] = $this->read_integer($file_handle);
+            $source_offsets[] = $this->read_integer($file_handle);
         }
-
-        $targetLengths = [];
-        $targetOffsets = [];
-        fseek($fileHandle, $targetOffset);
+        $target_lengths = [];
+        $target_offsets = [];
+        fseek($file_handle, $target_offset);
         for ($i = 0; $i < $count; ++$i) {
-            $targetLengths[] = $this->readInteger($fileHandle);
-            $targetOffsets[] = $this->readInteger($fileHandle);
+            $target_lengths[] = $this->read_integer($file_handle);
+            $target_offsets[] = $this->read_integer($file_handle);
         }
-
         $messages = [];
         for ($i = 0; $i < $count; ++$i) {
-            $id = $this->readString($fileHandle, $sourceLengths[$i], $sourceOffsets[$i]);
-            $separatorPosition = strpos((string)$id, chr(4));
-
-            if ((!$context && $separatorPosition === false) || ($context && $separatorPosition !== false && strncmp($id, $context, $separatorPosition) === 0)) {
-                if ($separatorPosition !== false) {
-                    $id = substr($id, $separatorPosition + 1);
+            $id = $this->read_string($file_handle, $source_lengths[$i], $source_offsets[$i]);
+            $separator_position = strpos((string) $id, chr(4));
+            if (!$context && $separator_position === false || $context && $separator_position !== false && strncmp($id, $context, $separator_position) === 0) {
+                if ($separator_position !== false) {
+                    $id = substr($id, $separator_position + 1);
                 }
-
-                $message = $this->readString($fileHandle, $targetLengths[$i], $targetOffsets[$i]);
+                $message = $this->read_string($file_handle, $target_lengths[$i], $target_offsets[$i]);
                 $messages[$id] = $message;
             }
         }
-
-        @flock($fileHandle, LOCK_UN);
-        @fclose($fileHandle);
-
+        @flock($file_handle, LOCK_UN);
+        @fclose($file_handle);
         return $messages;
     }
-
     /**
      * Saves messages to an MO file.
      * @param string $filePath file path
@@ -134,119 +119,104 @@ class GettextMoFile extends GettextFile
      * the message ID must be prefixed with the context with chr(4) as the separator.
      * @throws Exception if unable to save the MO file
      */
-    public function save($filePath, $messages): void
+    public function save($file_path, $messages): void
     {
-        if (false === ($fileHandle = @fopen($filePath, 'wb'))) {
-            throw new Exception('Unable to write file "' . $filePath . '".');
+        if (false === $file_handle = @fopen($file_path, 'wb')) {
+            throw new Exception('Unable to write file "' . $file_path . '".');
         }
-        if (false === @flock($fileHandle, LOCK_EX)) {
-            throw new Exception('Unable to lock file "' . $filePath . '" for reading.');
+        if (false === @flock($file_handle, LOCK_EX)) {
+            throw new Exception('Unable to lock file "' . $file_path . '" for reading.');
         }
-
         // magic
-        if ($this->useBigEndian) {
-            $this->writeBytes($fileHandle, pack('c*', 0x95, 0x04, 0x12, 0xde)); // -107
+        if ($this->use_big_endian) {
+            $this->write_bytes($file_handle, pack('c*', 0x95, 0x4, 0x12, 0xde));
+            // -107
         } else {
-            $this->writeBytes($fileHandle, pack('c*', 0xde, 0x12, 0x04, 0x95)); // -34
+            $this->write_bytes($file_handle, pack('c*', 0xde, 0x12, 0x4, 0x95));
+            // -34
         }
-
         // revision
-        $this->writeInteger($fileHandle, 0);
-
+        $this->write_integer($file_handle, 0);
         // message count
-        $messageCount = count($messages);
-        $this->writeInteger($fileHandle, $messageCount);
-
+        $message_count = count($messages);
+        $this->write_integer($file_handle, $message_count);
         // offset of source message table
         $offset = 28;
-        $this->writeInteger($fileHandle, $offset);
-        $offset += $messageCount * 8;
-        $this->writeInteger($fileHandle, $offset);
-
+        $this->write_integer($file_handle, $offset);
+        $offset += $message_count * 8;
+        $this->write_integer($file_handle, $offset);
         // hashtable size, omitted
-        $this->writeInteger($fileHandle, 0);
-        $offset += $messageCount * 8;
-        $this->writeInteger($fileHandle, $offset);
-
+        $this->write_integer($file_handle, 0);
+        $offset += $message_count * 8;
+        $this->write_integer($file_handle, $offset);
         // length and offsets for source messages
         foreach (array_keys($messages) as $id) {
             $length = strlen($id);
-            $this->writeInteger($fileHandle, $length);
-            $this->writeInteger($fileHandle, $offset);
+            $this->write_integer($file_handle, $length);
+            $this->write_integer($file_handle, $offset);
             $offset += $length + 1;
         }
-
         // length and offsets for target messages
         foreach ($messages as $message) {
             $length = strlen($message);
-            $this->writeInteger($fileHandle, $length);
-            $this->writeInteger($fileHandle, $offset);
+            $this->write_integer($file_handle, $length);
+            $this->write_integer($file_handle, $offset);
             $offset += $length + 1;
         }
-
         // source messages
         foreach (array_keys($messages) as $id) {
-            $this->writeString($fileHandle, $id);
+            $this->write_string($file_handle, $id);
         }
-
         // target messages
         foreach ($messages as $message) {
-            $this->writeString($fileHandle, $message);
+            $this->write_string($file_handle, $message);
         }
-
-        @flock($fileHandle, LOCK_UN);
-        @fclose($fileHandle);
+        @flock($file_handle, LOCK_UN);
+        @fclose($file_handle);
     }
-
     /**
      * Reads one or several bytes.
      * @param resource $fileHandle to read from
      * @param int $byteCount to be read
      * @return string|null bytes
      */
-    protected function readBytes($fileHandle, $byteCount = 1)
+    protected function read_bytes($file_handle, $byte_count = 1)
     {
-        if ($byteCount > 0) {
-            return fread($fileHandle, $byteCount);
+        if ($byte_count > 0) {
+            return fread($file_handle, $byte_count);
         }
-
         return null;
     }
-
     /**
      * Write bytes.
      * @param resource $fileHandle to write to
      * @param string $bytes to be written
      * @return int how many bytes are written
      */
-    protected function writeBytes($fileHandle, $bytes)
+    protected function write_bytes($file_handle, $bytes)
     {
-        return fwrite($fileHandle, $bytes);
+        return fwrite($file_handle, $bytes);
     }
-
     /**
      * Reads a 4-byte integer.
      * @param resource $fileHandle to read from
      * @return int the result
      */
-    protected function readInteger($fileHandle)
+    protected function read_integer($file_handle)
     {
-        $array = unpack($this->useBigEndian ? 'N' : 'V', $this->readBytes($fileHandle, 4));
-
+        $array = unpack($this->use_big_endian ? 'N' : 'V', $this->read_bytes($file_handle, 4));
         return current($array);
     }
-
     /**
      * Writes a 4-byte integer.
      * @param resource $fileHandle to write to
      * @param int $integer to be written
      * @return int how many bytes are written
      */
-    protected function writeInteger($fileHandle, $integer)
+    protected function write_integer($file_handle, $integer)
     {
-        return $this->writeBytes($fileHandle, pack($this->useBigEndian ? 'N' : 'V', (int) $integer));
+        return $this->write_bytes($file_handle, pack($this->use_big_endian ? 'N' : 'V', (int) $integer));
     }
-
     /**
      * Reads a string.
      * @param resource $fileHandle file handle
@@ -254,23 +224,21 @@ class GettextMoFile extends GettextFile
      * @param int|null $offset of the string in the file. If null, it reads from the current position.
      * @return string|null the result
      */
-    protected function readString($fileHandle, $length, $offset = null)
+    protected function read_string($file_handle, $length, $offset = null)
     {
         if ($offset !== null) {
-            fseek($fileHandle, $offset);
+            fseek($file_handle, $offset);
         }
-
-        return $this->readBytes($fileHandle, $length);
+        return $this->read_bytes($file_handle, $length);
     }
-
     /**
      * Writes a string.
      * @param resource $fileHandle to write to
      * @param string $string to be written
      * @return int how many bytes are written
      */
-    protected function writeString($fileHandle, string $string)
+    protected function write_string($file_handle, string $string)
     {
-        return $this->writeBytes($fileHandle, $string . "\0");
+        return $this->write_bytes($file_handle, $string . "\x00");
     }
 }

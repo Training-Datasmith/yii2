@@ -1,20 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rest;
 
 use yii\base\Action as BaseAction;
-use yii\base\InvalidConfigException;
-use yii\db\ActiveRecordInterface;
-use yii\web\NotFoundHttpException;
-
+use yii\base\Invalid_Config_Exception;
+use yii\db\Active_Record_Interface;
+use yii\web\Not_Found_Http_Exception;
 /**
  * Action is the base class for action classes that implement RESTful API.
  *
@@ -26,14 +23,14 @@ use yii\web\NotFoundHttpException;
  * @template T of Controller = Controller
  * @extends BaseAction<T>
  */
-class Action extends BaseAction
+class Action extends Base_Action
 {
     /**
      * @var string class name of the model which will be handled by this action.
      * The model class must implement [[ActiveRecordInterface]].
      * This property must be set.
      */
-    public $modelClass;
+    public $model_class;
     /**
      * @var callable|null a PHP callable that will be called to return the model corresponding
      * to the specified primary key value. If not set, [[findModel()]] will be used instead.
@@ -49,7 +46,7 @@ class Action extends BaseAction
      *
      * The callable should return the model found, or throw an exception if not found.
      */
-    public $findModel;
+    public $find_model;
     /**
      * @var callable|null a PHP callable that will be called when running an action to determine
      * if the current user has the permission to execute the action. If not set, the access
@@ -62,18 +59,16 @@ class Action extends BaseAction
      * }
      * ```
      */
-    public $checkAccess;
-
+    public $check_access;
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
-        if ($this->modelClass === null) {
-            throw new InvalidConfigException(get_class($this) . '::$modelClass must be set.');
+        if ($this->model_class === null) {
+            throw new Invalid_Config_Exception(get_class($this) . '::$modelClass must be set.');
         }
     }
-
     /**
      * Returns the data model based on the primary key given.
      * If the data model is not found, a 404 HTTP exception will be raised.
@@ -84,28 +79,25 @@ class Action extends BaseAction
      * @return ActiveRecordInterface the model found
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function findModel($id)
+    public function find_model($id)
     {
-        if ($this->findModel !== null) {
-            return call_user_func($this->findModel, $id, $this);
+        if ($this->find_model !== null) {
+            return call_user_func($this->find_model, $id, $this);
         }
-
         /** @var ActiveRecordInterface $modelClass */
-        $modelClass = $this->modelClass;
-        $keys = $modelClass::primaryKey();
+        $model_class = $this->model_class;
+        $keys = $model_class::primary_key();
         if (count($keys) > 1) {
             $values = explode(',', $id);
             if (count($keys) === count($values)) {
-                $model = $modelClass::findOne(array_combine($keys, $values));
+                $model = $model_class::find_one(array_combine($keys, $values));
             }
         } elseif ($id !== null) {
-            $model = $modelClass::findOne($id);
+            $model = $model_class::find_one($id);
         }
-
         if (isset($model)) {
             return $model;
         }
-
-        throw new NotFoundHttpException("Object not found: $id");
+        throw new Not_Found_Http_Exception("Object not found: {$id}");
     }
 }

@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -23,7 +21,7 @@ namespace yii\db;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-interface QueryInterface
+interface Query_Interface
 {
     /**
      * Executes the query and returns all results as an array.
@@ -32,7 +30,6 @@ interface QueryInterface
      * @return array the query results. If the query results in nothing, an empty array will be returned.
      */
     public function all($db = null);
-
     /**
      * Executes the query and returns a single row of result.
      * @param Connection|null $db the database connection used to execute the query.
@@ -41,7 +38,6 @@ interface QueryInterface
      * results in nothing.
      */
     public function one($db = null);
-
     /**
      * Returns the number of records.
      * @param string $q the COUNT expression. Defaults to '*'.
@@ -50,7 +46,6 @@ interface QueryInterface
      * @return int|string|null number of records.
      */
     public function count($q = '*', $db = null);
-
     /**
      * Returns a value indicating whether the query result contains any row of data.
      * @param Connection|null $db the database connection used to execute the query.
@@ -58,7 +53,6 @@ interface QueryInterface
      * @return bool whether the query result contains any row of data.
      */
     public function exists($db = null);
-
     /**
      * Sets the [[indexBy]] property.
      * @param string|callable $column the name of the column by which the query results should be indexed by.
@@ -74,8 +68,7 @@ interface QueryInterface
      *
      * @return $this the query object itself
      */
-    public function indexBy($column);
-
+    public function index_by($column);
     /**
      * Sets the WHERE part of the query.
      *
@@ -164,7 +157,6 @@ interface QueryInterface
      * @see orWhere()
      */
     public function where($condition);
-
     /**
      * Adds an additional WHERE condition to the existing one.
      * The new condition and the existing one will be joined using the 'AND' operator.
@@ -174,8 +166,7 @@ interface QueryInterface
      * @see where()
      * @see orWhere()
      */
-    public function andWhere($condition);
-
+    public function and_where($condition);
     /**
      * Adds an additional WHERE condition to the existing one.
      * The new condition and the existing one will be joined using the 'OR' operator.
@@ -185,8 +176,7 @@ interface QueryInterface
      * @see where()
      * @see andWhere()
      */
-    public function orWhere($condition);
-
+    public function or_where($condition);
     /**
      * Sets the WHERE part of the query ignoring empty parameters.
      *
@@ -196,8 +186,7 @@ interface QueryInterface
      * @see andFilterWhere()
      * @see orFilterWhere()
      */
-    public function filterWhere(array $condition);
-
+    public function filter_where(array $condition);
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
      * The new condition and the existing one will be joined using the 'AND' operator.
@@ -207,8 +196,7 @@ interface QueryInterface
      * @see filterWhere()
      * @see orFilterWhere()
      */
-    public function andFilterWhere(array $condition);
-
+    public function and_filter_where(array $condition);
     /**
      * Adds an additional WHERE condition to the existing one ignoring empty parameters.
      * The new condition and the existing one will be joined using the 'OR' operator.
@@ -218,8 +206,7 @@ interface QueryInterface
      * @see filterWhere()
      * @see andFilterWhere()
      */
-    public function orFilterWhere(array $condition);
-
+    public function or_filter_where(array $condition);
     /**
      * Sets the ORDER BY part of the query.
      * @param string|array $columns the columns (and the directions) to be ordered by.
@@ -230,8 +217,7 @@ interface QueryInterface
      * @return $this the query object itself
      * @see addOrderBy()
      */
-    public function orderBy($columns);
-
+    public function order_by($columns);
     /**
      * Adds additional ORDER BY columns to the query.
      * @param string|array $columns the columns (and the directions) to be ordered by.
@@ -242,22 +228,19 @@ interface QueryInterface
      * @return $this the query object itself
      * @see orderBy()
      */
-    public function addOrderBy($columns);
-
+    public function add_order_by($columns);
     /**
      * Sets the LIMIT part of the query.
      * @param int|null $limit the limit. Use null or negative value to disable limit.
      * @return $this the query object itself
      */
     public function limit($limit);
-
     /**
      * Sets the OFFSET part of the query.
      * @param int|null $offset the offset. Use null or negative value to disable offset.
      * @return $this the query object itself
      */
     public function offset($offset);
-
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
      * After this mode is enabled, methods, returning query results like [[one()]], [[all()]], [[exists()]]
@@ -268,5 +251,5 @@ interface QueryInterface
      * @return $this the query object itself.
      * @since 2.0.11
      */
-    public function emulateExecution($value = true);
+    public function emulate_execution($value = true);
 }

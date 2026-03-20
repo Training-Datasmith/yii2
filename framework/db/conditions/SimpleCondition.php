@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\conditions;
 
 use yii\base\InvalidArgumentException;
-
 /**
  * Class SimpleCondition represents a simple condition like `"column" operator value`.
  *
@@ -19,7 +16,7 @@ use yii\base\InvalidArgumentException;
  * @since 2.0.14
  * @phpcs:disable Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore
  */
-class SimpleCondition implements ConditionInterface
+class Simple_Condition implements Condition_Interface
 {
     /**
      * @var string $operator the operator to use. Anything could be used e.g. `>`, `<=`, etc.
@@ -33,7 +30,6 @@ class SimpleCondition implements ConditionInterface
      * @var mixed the value to the right of the [[operator]]
      */
     private $value;
-
     /**
      * SimpleCondition constructor
      *
@@ -47,41 +43,36 @@ class SimpleCondition implements ConditionInterface
         $this->operator = $operator;
         $this->value = $value;
     }
-
     /**
      * @return string
      */
-    public function getOperator()
+    public function get_operator()
     {
         return $this->operator;
     }
-
     /**
      * @return mixed
      */
-    public function getColumn()
+    public function get_column()
     {
         return $this->column;
     }
-
     /**
      * @return mixed
      */
-    public function getValue()
+    public function get_value()
     {
         return $this->value;
     }
-
     /**
      * {@inheritdoc}
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands): self
+    public static function from_array_definition($operator, $operands): self
     {
         if (count($operands) !== 2) {
-            throw new InvalidArgumentException("Operator '$operator' requires two operands.");
+            throw new InvalidArgumentException("Operator '{$operator}' requires two operands.");
         }
-
         return new static($operands[0], $operator, $operands[1]);
     }
 }

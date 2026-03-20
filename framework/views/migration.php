@@ -8,7 +8,6 @@
  * @var string $className the new migration class name without namespace
  * @var string $namespace the new migration class namespace
  */
-
 echo "<?php\n";
 if (!empty($namespace)) {
     echo "\nnamespace {$namespace};\n";
@@ -17,7 +16,9 @@ if (!empty($namespace)) {
 
 use yii\db\Migration;
 
-class <?= $className ?> extends Migration
+class <?php 
+echo $class_name;
+?> extends Migration
 {
     /**
      * {@inheritdoc}
@@ -32,7 +33,9 @@ class <?= $className ?> extends Migration
      */
     public function safeDown()
     {
-        echo "<?= $className ?> cannot be reverted.\n";
+        echo "<?php 
+echo $class_name;
+?> cannot be reverted.\n";
 
         return false;
     }
@@ -46,7 +49,9 @@ class <?= $className ?> extends Migration
 
     public function down()
     {
-        echo "<?= $className ?> cannot be reverted.\n";
+        echo "<?php 
+echo $class_name;
+?> cannot be reverted.\n";
 
         return false;
     }

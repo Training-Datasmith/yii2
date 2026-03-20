@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\conditions;
 
 /**
@@ -16,12 +14,12 @@ namespace yii\db\conditions;
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14
  */
-class AndCondition extends ConjunctionCondition
+class And_Condition extends Conjunction_Condition
 {
     /**
      * Returns the operator that is represented by this condition class, e.g. `AND`, `OR`.
      */
-    public function getOperator(): string
+    public function get_operator(): string
     {
         return 'AND';
     }

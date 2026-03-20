@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\mail;
 
 /**
@@ -29,7 +27,7 @@ namespace yii\mail;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0
  */
-interface MailerInterface
+interface Mailer_Interface
 {
     /**
      * Creates a new message instance and optionally composes its body content via view rendering.
@@ -47,14 +45,12 @@ interface MailerInterface
      * @return MessageInterface message instance.
      */
     public function compose($view = null, array $params = []);
-
     /**
      * Sends the given email message.
      * @param MessageInterface $message email message instance to be sent
      * @return bool whether the message has been sent successfully
      */
     public function send($message);
-
     /**
      * Sends multiple messages at once.
      *
@@ -63,5 +59,5 @@ interface MailerInterface
      * @param array $messages list of email messages, which should be sent.
      * @return int number of messages that are successfully sent.
      */
-    public function sendMultiple(array $messages);
+    public function send_multiple(array $messages);
 }

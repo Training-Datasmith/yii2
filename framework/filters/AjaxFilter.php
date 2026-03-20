@@ -1,21 +1,18 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\filters;
 
 use Yii;
-use yii\base\ActionFilter;
+use yii\base\Action_Filter;
 use yii\base\Component;
-use yii\web\BadRequestHttpException;
+use yii\web\Bad_Request_Http_Exception;
 use yii\web\Request;
-
 /**
  * AjaxFilter allow to limit access only for ajax requests.
  *
@@ -37,36 +34,33 @@ use yii\web\Request;
  * @template T of Component = Component
  * @extends ActionFilter<T>
  */
-class AjaxFilter extends ActionFilter
+class Ajax_Filter extends Action_Filter
 {
     /**
      * @var string the message to be displayed when request isn't ajax
      */
-    public $errorMessage = 'Request must be XMLHttpRequest.';
+    public $error_message = 'Request must be XMLHttpRequest.';
     /**
      * @var Request|null the current request. If not set, the `request` application component will be used.
      */
     public $request;
-
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         if ($this->request === null) {
-            $this->request = Yii::$app->getRequest();
+            $this->request = Yii::$app->get_request();
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action): bool
+    public function before_action($action): bool
     {
-        if ($this->request->getIsAjax()) {
+        if ($this->request->get_is_ajax()) {
             return true;
         }
-
-        throw new BadRequestHttpException($this->errorMessage);
+        throw new Bad_Request_Http_Exception($this->error_message);
     }
 }

@@ -1,25 +1,22 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\mysql;
 
-use yii\db\ExpressionInterface;
-use yii\db\JsonExpression;
-
+use yii\db\Expression_Interface;
+use yii\db\Json_Expression;
 /**
  * Class ColumnSchema for MySQL database
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14.1
  */
-class ColumnSchema extends \yii\db\ColumnSchema
+class Column_Schema extends \yii\db\Column_Schema
 {
     /**
      * @var bool whether the column schema should OMIT using JSON support feature.
@@ -29,41 +26,34 @@ class ColumnSchema extends \yii\db\ColumnSchema
      * @since 2.0.14.1
      * @deprecated Since 2.0.14.1 and will be removed in 2.1.
      */
-    public $disableJsonSupport = false;
-
+    public $disable_json_support = false;
     /**
      * {@inheritdoc}
      */
-    public function dbTypecast($value)
+    public function db_typecast($value)
     {
         if ($value === null) {
             return $value;
         }
-
-        if ($value instanceof ExpressionInterface) {
+        if ($value instanceof Expression_Interface) {
             return $value;
         }
-
-        if (!$this->disableJsonSupport && $this->dbType === Schema::TYPE_JSON) {
-            return new JsonExpression($value, $this->type);
+        if (!$this->disable_json_support && $this->db_type === Schema::TYPE_JSON) {
+            return new Json_Expression($value, $this->type);
         }
-
         return $this->typecast($value);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function phpTypecast($value)
+    public function php_typecast($value)
     {
         if ($value === null) {
             return null;
         }
-
-        if (!$this->disableJsonSupport && $this->type === Schema::TYPE_JSON) {
+        if (!$this->disable_json_support && $this->type === Schema::TYPE_JSON) {
             return json_decode($value, true);
         }
-
-        return parent::phpTypecast($value);
+        return parent::php_typecast($value);
     }
 }

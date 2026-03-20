@@ -1,24 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\behaviors;
 
 use yii\base\Behavior;
 use yii\base\InvalidArgumentException;
 use yii\base\Model;
-use yii\db\BaseActiveRecord;
-use yii\helpers\StringHelper;
-use yii\validators\BooleanValidator;
-use yii\validators\NumberValidator;
-use yii\validators\StringValidator;
-
+use yii\db\Base_Active_Record;
+use yii\helpers\String_Helper;
+use yii\validators\Boolean_Validator;
+use yii\validators\Number_Validator;
+use yii\validators\String_Validator;
 /**
  * AttributeTypecastBehavior provides an ability of automatic model attribute typecasting.
  * This behavior is very useful in case of usage of ActiveRecord for the schema-less databases like MongoDB or Redis.
@@ -115,7 +112,7 @@ use yii\validators\StringValidator;
  * @template T of Model|BaseActiveRecord = Model|BaseActiveRecord
  * @extends Behavior<T>
  */
-class AttributeTypecastBehavior extends Behavior
+class Attribute_Typecast_Behavior extends Behavior
 {
     public const TYPE_INTEGER = 'integer';
     public const TYPE_FLOAT = 'float';
@@ -144,20 +141,20 @@ class AttributeTypecastBehavior extends Behavior
      *
      * If not set, attribute type map will be composed automatically from the owner validation rules.
      */
-    public $attributeTypes;
+    public $attribute_types;
     /**
      * @var bool whether to skip typecasting of `null` values.
      * If enabled attribute value which equals to `null` will not be type-casted (e.g. `null` remains `null`),
      * otherwise it will be converted according to the type configured at [[attributeTypes]].
      */
-    public $skipOnNull = true;
+    public $skip_on_null = true;
     /**
      * @var bool whether to perform typecasting after owner model validation.
      * Note that typecasting will be performed only if validation was successful, e.g.
      * owner model has no errors.
      * Note that changing this option value will have no effect after this behavior has been attached to the model.
      */
-    public $typecastAfterValidate = true;
+    public $typecast_after_validate = true;
     /**
      * @var bool whether to perform typecasting before saving owner model (insert or update).
      * This option may be disabled in order to achieve better performance.
@@ -165,7 +162,7 @@ class AttributeTypecastBehavior extends Behavior
      * will grant no benefit an thus can be disabled.
      * Note that changing this option value will have no effect after this behavior has been attached to the model.
      */
-    public $typecastBeforeSave = false;
+    public $typecast_before_save = false;
     /**
      * @var bool whether to perform typecasting after saving owner model (insert or update).
      * This option may be disabled in order to achieve better performance.
@@ -174,7 +171,7 @@ class AttributeTypecastBehavior extends Behavior
      * Note that changing this option value will have no effect after this behavior has been attached to the model.
      * @since 2.0.14
      */
-    public $typecastAfterSave = false;
+    public $typecast_after_save = false;
     /**
      * @var bool whether to perform typecasting after retrieving owner model data from
      * the database (after find or refresh).
@@ -183,82 +180,73 @@ class AttributeTypecastBehavior extends Behavior
      * will grant no benefit in most cases an thus can be disabled.
      * Note that changing this option value will have no effect after this behavior has been attached to the model.
      */
-    public $typecastAfterFind = false;
-
+    public $typecast_after_find = false;
     /**
      * @var array internal static cache for auto detected [[attributeTypes]] values
      * in format: ownerClassName => attributeTypes
      */
-    private static array $_autoDetectedAttributeTypes = [];
-
+    private static array $_auto_detected_attribute_types = [];
     /**
      * Clears internal static cache of auto detected [[attributeTypes]] values
      * over all affected owner classes.
      */
-    public static function clearAutoDetectedAttributeTypes(): void
+    public static function clear_auto_detected_attribute_types(): void
     {
-        self::$_autoDetectedAttributeTypes = [];
+        self::$_auto_detected_attribute_types = [];
     }
-
     /**
      * {@inheritdoc}
      */
     public function attach($owner): void
     {
         parent::attach($owner);
-
-        if ($this->attributeTypes === null) {
-            $ownerClass = $this->owner !== null ? get_class($this->owner) : self::class;
-            if (!isset(self::$_autoDetectedAttributeTypes[$ownerClass])) {
-                self::$_autoDetectedAttributeTypes[$ownerClass] = $this->detectAttributeTypes();
+        if ($this->attribute_types === null) {
+            $owner_class = $this->owner !== null ? get_class($this->owner) : self::class;
+            if (!isset(self::$_auto_detected_attribute_types[$owner_class])) {
+                self::$_auto_detected_attribute_types[$owner_class] = $this->detect_attribute_types();
             }
-            $this->attributeTypes = self::$_autoDetectedAttributeTypes[$ownerClass];
+            $this->attribute_types = self::$_auto_detected_attribute_types[$owner_class];
         }
     }
-
     /**
      * Typecast owner attributes according to [[attributeTypes]].
      * @param array|null $attributeNames list of attribute names that should be type-casted.
      * If this parameter is empty, it means any attribute listed in the [[attributeTypes]]
      * should be type-casted.
      */
-    public function typecastAttributes($attributeNames = null): void
+    public function typecast_attributes($attribute_names = null): void
     {
-        $attributeTypes = [];
-
-        if ($attributeNames === null) {
-            $attributeTypes = $this->attributeTypes;
+        $attribute_types = [];
+        if ($attribute_names === null) {
+            $attribute_types = $this->attribute_types;
         } else {
-            foreach ($attributeNames as $attribute) {
-                if (!isset($this->attributeTypes[$attribute])) {
+            foreach ($attribute_names as $attribute) {
+                if (!isset($this->attribute_types[$attribute])) {
                     throw new InvalidArgumentException("There is no type mapping for '{$attribute}'.");
                 }
-                $attributeTypes[$attribute] = $this->attributeTypes[$attribute];
+                $attribute_types[$attribute] = $this->attribute_types[$attribute];
             }
         }
-
-        foreach ($attributeTypes as $attribute => $type) {
+        foreach ($attribute_types as $attribute => $type) {
             $value = $this->owner->{$attribute};
-            if ($this->skipOnNull && $value === null) {
+            if ($this->skip_on_null && $value === null) {
                 continue;
             }
-            $this->owner->{$attribute} = $this->typecastValue($value, $type);
+            $this->owner->{$attribute} = $this->typecast_value($value, $type);
         }
     }
-
     /**
      * Casts the given value to the specified type.
      * @param mixed $value value to be type-casted.
      * @param string|callable $type type name or typecast callable.
      * @return mixed typecast result.
      */
-    protected function typecastValue($value, $type)
+    protected function typecast_value($value, $type)
     {
         if (is_scalar($type)) {
             if (is_object($value) && method_exists($value, '__toString')) {
                 $value = $value->__toString();
             }
-
             switch ($type) {
                 case self::TYPE_INTEGER:
                     return (int) $value;
@@ -268,49 +256,42 @@ class AttributeTypecastBehavior extends Behavior
                     return (bool) $value;
                 case self::TYPE_STRING:
                     if (is_float($value)) {
-                        return StringHelper::floatToString($value);
+                        return String_Helper::float_to_string($value);
                     }
                     return (string) $value;
             }
-
-            if (PHP_VERSION_ID >= 80100 && is_subclass_of($type, \BackedEnum::class)) {
+            if (PHP_VERSION_ID >= 80100 && is_subclass_of($type, \Backed_Enum::class)) {
                 if ($value instanceof $type) {
                     return $value;
                 }
                 return $type::from($value);
             }
-
             throw new InvalidArgumentException("Unsupported type '{$type}'");
         }
-
         return call_user_func($type, $value);
     }
-
     /**
      * Composes default value for [[attributeTypes]] from the owner validation rules.
      * @return array attribute type map.
      */
-    protected function detectAttributeTypes(): array
+    protected function detect_attribute_types(): array
     {
-        $attributeTypes = [];
-        foreach ($this->owner->getValidators() as $validator) {
+        $attribute_types = [];
+        foreach ($this->owner->get_validators() as $validator) {
             $type = null;
-            if ($validator instanceof BooleanValidator) {
+            if ($validator instanceof Boolean_Validator) {
                 $type = self::TYPE_BOOLEAN;
-            } elseif ($validator instanceof NumberValidator) {
-                $type = $validator->integerOnly ? self::TYPE_INTEGER : self::TYPE_FLOAT;
-            } elseif ($validator instanceof StringValidator) {
+            } elseif ($validator instanceof Number_Validator) {
+                $type = $validator->integer_only ? self::TYPE_INTEGER : self::TYPE_FLOAT;
+            } elseif ($validator instanceof String_Validator) {
                 $type = self::TYPE_STRING;
             }
-
             if ($type !== null) {
-                $attributeTypes += array_fill_keys($validator->getAttributeNames(), $type);
+                $attribute_types += array_fill_keys($validator->get_attribute_names(), $type);
             }
         }
-
-        return $attributeTypes;
+        return $attribute_types;
     }
-
     /**
      * {@inheritdoc}
      * @return 'afterFind'[]|'afterSave'[]|'afterValidate'[]|'beforeSave'[]
@@ -318,80 +299,70 @@ class AttributeTypecastBehavior extends Behavior
     public function events(): array
     {
         $events = [];
-
-        if ($this->typecastAfterValidate) {
+        if ($this->typecast_after_validate) {
             $events[Model::EVENT_AFTER_VALIDATE] = 'afterValidate';
         }
-        if ($this->typecastBeforeSave) {
-            $events[BaseActiveRecord::EVENT_BEFORE_INSERT] = 'beforeSave';
-            $events[BaseActiveRecord::EVENT_BEFORE_UPDATE] = 'beforeSave';
+        if ($this->typecast_before_save) {
+            $events[Base_Active_Record::EVENT_BEFORE_INSERT] = 'beforeSave';
+            $events[Base_Active_Record::EVENT_BEFORE_UPDATE] = 'beforeSave';
         }
-        if ($this->typecastAfterSave) {
-            $events[BaseActiveRecord::EVENT_AFTER_INSERT] = 'afterSave';
-            $events[BaseActiveRecord::EVENT_AFTER_UPDATE] = 'afterSave';
+        if ($this->typecast_after_save) {
+            $events[Base_Active_Record::EVENT_AFTER_INSERT] = 'afterSave';
+            $events[Base_Active_Record::EVENT_AFTER_UPDATE] = 'afterSave';
         }
-        if ($this->typecastAfterFind) {
-            $events[BaseActiveRecord::EVENT_AFTER_FIND] = 'afterFind';
+        if ($this->typecast_after_find) {
+            $events[Base_Active_Record::EVENT_AFTER_FIND] = 'afterFind';
         }
-
         return $events;
     }
-
     /**
      * Handles owner 'afterValidate' event, ensuring attribute typecasting.
      * @param \yii\base\Event $event event instance.
      */
-    public function afterValidate($event): void
+    public function after_validate($event): void
     {
-        if (!$this->owner->hasErrors()) {
-            $this->typecastAttributes();
+        if (!$this->owner->has_errors()) {
+            $this->typecast_attributes();
         }
     }
-
     /**
      * Handles owner 'beforeInsert' and 'beforeUpdate' events, ensuring attribute typecasting.
      * @param \yii\base\Event $event event instance.
      */
-    public function beforeSave($event): void
+    public function before_save($event): void
     {
-        $this->typecastAttributes();
+        $this->typecast_attributes();
     }
-
     /**
      * Handles owner 'afterInsert' and 'afterUpdate' events, ensuring attribute typecasting.
      * @param \yii\base\Event $event event instance.
      * @since 2.0.14
      */
-    public function afterSave($event): void
+    public function after_save($event): void
     {
-        $this->typecastAttributes();
+        $this->typecast_attributes();
     }
-
     /**
      * Handles owner 'afterFind' event, ensuring attribute typecasting.
      * @param \yii\base\Event $event event instance.
      */
-    public function afterFind($event): void
+    public function after_find($event): void
     {
-        $this->typecastAttributes();
-
-        $this->resetOldAttributes();
+        $this->typecast_attributes();
+        $this->reset_old_attributes();
     }
-
     /**
      * Resets the old values of the named attributes.
      */
-    protected function resetOldAttributes()
+    protected function reset_old_attributes()
     {
-        if ($this->attributeTypes === null) {
+        if ($this->attribute_types === null) {
             return;
         }
-
-        $attributes = array_keys($this->attributeTypes);
-
+        $attributes = array_keys($this->attribute_types);
         foreach ($attributes as $attribute) {
-            if ($this->owner->canSetOldAttribute($attribute)) {
-                $this->owner->setOldAttribute($attribute, $this->owner->{$attribute});
+            if ($this->owner->can_set_old_attribute($attribute)) {
+                $this->owner->set_old_attribute($attribute, $this->owner->{$attribute});
             }
         }
     }

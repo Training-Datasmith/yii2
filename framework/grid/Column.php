@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\grid;
 
 use Closure;
-use yii\base\BaseObject;
+use yii\base\Base_Object;
 use yii\helpers\Html;
-
 /**
  * Column is the base class of all [[GridView]] column classes.
  *
@@ -22,7 +19,7 @@ use yii\helpers\Html;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Column extends BaseObject
+class Column extends Base_Object
 {
     /**
      * @var GridView the grid view object that owns this column.
@@ -56,7 +53,7 @@ class Column extends BaseObject
      * @var array the HTML attributes for the header cell tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $headerOptions = [];
+    public $header_options = [];
     /**
      * @var array|\Closure the HTML attributes for the data cell tag. This can either be an array of
      * attributes or an anonymous function ([[Closure]]) that returns such an array.
@@ -67,34 +64,31 @@ class Column extends BaseObject
      *
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $contentOptions = [];
+    public $content_options = [];
     /**
      * @var array the HTML attributes for the footer cell tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $footerOptions = [];
+    public $footer_options = [];
     /**
      * @var array the HTML attributes for the filter cell tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $filterOptions = [];
-
+    public $filter_options = [];
     /**
      * Renders the header cell.
      */
-    public function renderHeaderCell()
+    public function render_header_cell()
     {
-        return Html::tag('th', $this->renderHeaderCellContent(), $this->headerOptions);
+        return Html::tag('th', $this->render_header_cell_content(), $this->header_options);
     }
-
     /**
      * Renders the footer cell.
      */
-    public function renderFooterCell()
+    public function render_footer_cell()
     {
-        return Html::tag('td', $this->renderFooterCellContent(), $this->footerOptions);
+        return Html::tag('td', $this->render_footer_cell_content(), $this->footer_options);
     }
-
     /**
      * Renders a data cell.
      * @param mixed $model the data model being rendered
@@ -102,58 +96,52 @@ class Column extends BaseObject
      * @param int $index the zero-based index of the data item among the item array returned by [[GridView::dataProvider]].
      * @return string the rendering result
      */
-    public function renderDataCell($model, $key, $index)
+    public function render_data_cell($model, $key, $index)
     {
-        if ($this->contentOptions instanceof Closure) {
-            $options = call_user_func($this->contentOptions, $model, $key, $index, $this);
+        if ($this->content_options instanceof Closure) {
+            $options = call_user_func($this->content_options, $model, $key, $index, $this);
         } else {
-            $options = $this->contentOptions;
+            $options = $this->content_options;
         }
-
-        return Html::tag('td', $this->renderDataCellContent($model, $key, $index), $options);
+        return Html::tag('td', $this->render_data_cell_content($model, $key, $index), $options);
     }
-
     /**
      * Renders the filter cell.
      */
-    public function renderFilterCell()
+    public function render_filter_cell()
     {
-        return Html::tag('td', $this->renderFilterCellContent(), $this->filterOptions);
+        return Html::tag('td', $this->render_filter_cell_content(), $this->filter_options);
     }
-
     /**
      * Renders the header cell content.
      * The default implementation simply renders [[header]].
      * This method may be overridden to customize the rendering of the header cell.
      * @return string the rendering result
      */
-    protected function renderHeaderCellContent()
+    protected function render_header_cell_content()
     {
-        return $this->header !== null && trim($this->header) !== '' ? $this->header : $this->getHeaderCellLabel();
+        return $this->header !== null && trim($this->header) !== '' ? $this->header : $this->get_header_cell_label();
     }
-
     /**
      * Returns header cell label.
      * This method may be overridden to customize the label of the header cell.
      * @return string label
      * @since 2.0.8
      */
-    protected function getHeaderCellLabel()
+    protected function get_header_cell_label()
     {
-        return $this->grid->emptyCell;
+        return $this->grid->empty_cell;
     }
-
     /**
      * Renders the footer cell content.
      * The default implementation simply renders [[footer]].
      * This method may be overridden to customize the rendering of the footer cell.
      * @return string the rendering result
      */
-    protected function renderFooterCellContent()
+    protected function render_footer_cell_content()
     {
-        return $this->footer !== null && trim($this->footer) !== '' ? $this->footer : $this->grid->emptyCell;
+        return $this->footer !== null && trim($this->footer) !== '' ? $this->footer : $this->grid->empty_cell;
     }
-
     /**
      * Renders the data cell content.
      * @param mixed $model the data model
@@ -161,23 +149,21 @@ class Column extends BaseObject
      * @param int $index the zero-based index of the data model among the models array returned by [[GridView::dataProvider]].
      * @return string the rendering result
      */
-    protected function renderDataCellContent($model, $key, $index)
+    protected function render_data_cell_content($model, $key, $index)
     {
         if ($this->content !== null) {
             return call_user_func($this->content, $model, $key, $index, $this);
         }
-
-        return $this->grid->emptyCell;
+        return $this->grid->empty_cell;
     }
-
     /**
      * Renders the filter cell content.
      * The default implementation simply renders a space.
      * This method may be overridden to customize the rendering of the filter cell (if any).
      * @return string the rendering result
      */
-    protected function renderFilterCellContent()
+    protected function render_filter_cell_content()
     {
-        return $this->grid->emptyCell;
+        return $this->grid->empty_cell;
     }
 }

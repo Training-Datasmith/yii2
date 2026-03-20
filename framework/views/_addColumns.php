@@ -6,19 +6,15 @@
  * @var string $table
  * @var array $foreignKeys
  */
-
-?>
-<?php foreach ($fields as $field): ?>
-        $this->addColumn('<?=
-            $table
-    ?>', '<?=
-        $field['property']
-    ?>', $this-><?=
-        $field['decorators']
+foreach ($fields as $field) {
+    ?>
+        $this->addColumn('<?php 
+    echo $table;
+    ?>', '<?php 
+    echo $field['property'];
+    ?>', $this-><?php 
+    echo $field['decorators'];
     ?>);
-<?php endforeach;
-
-echo $this->render('_addForeignKeys', [
-    'table' => $table,
-    'foreignKeys' => $foreignKeys,
-]);
+<?php 
+}
+echo $this->render('_addForeignKeys', ['table' => $table, 'foreignKeys' => $foreign_keys]);

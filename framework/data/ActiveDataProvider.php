@@ -1,22 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\data;
 
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\base\Model;
-use yii\db\ActiveQueryInterface;
+use yii\db\Active_Query_Interface;
 use yii\db\Connection;
-use yii\db\QueryInterface;
+use yii\db\Query_Interface;
 use yii\di\Instance;
-
 /**
  * ActiveDataProvider implements a data provider based on [[\yii\db\Query]] and [[\yii\db\ActiveQuery]].
  *
@@ -56,7 +53,7 @@ use yii\di\Instance;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ActiveDataProvider extends BaseDataProvider
+class Active_Data_Provider extends Base_Data_Provider
 {
     /**
      * @var QueryInterface|null the query that is used to fetch data models and [[totalCount]] if it is not explicitly set.
@@ -80,7 +77,6 @@ class ActiveDataProvider extends BaseDataProvider
      * Starting from version 2.0.2, this can also be a configuration array for creating the object.
      */
     public $db;
-
     /**
      * Initializes the DB connection component.
      * This method will initialize the [[db]] property (when set) to make sure it refers to a valid DB connection.
@@ -93,35 +89,32 @@ class ActiveDataProvider extends BaseDataProvider
             $this->db = Instance::ensure($this->db);
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function prepareModels()
+    protected function prepare_models()
     {
-        if (!$this->query instanceof QueryInterface) {
-            throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
+        if (!$this->query instanceof Query_Interface) {
+            throw new Invalid_Config_Exception('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
         }
         $query = clone $this->query;
-        if (($pagination = $this->getPagination()) !== false) {
-            $pagination->totalCount = $this->getTotalCount();
-            if ($pagination->totalCount === 0) {
+        if (($pagination = $this->get_pagination()) !== false) {
+            $pagination->total_count = $this->get_total_count();
+            if ($pagination->total_count === 0) {
                 return [];
             }
-            $query->limit($pagination->getLimit())->offset($pagination->getOffset());
+            $query->limit($pagination->get_limit())->offset($pagination->get_offset());
         }
-        if (($sort = $this->getSort()) !== false) {
-            $query->addOrderBy($sort->getOrders());
+        if (($sort = $this->get_sort()) !== false) {
+            $query->add_order_by($sort->get_orders());
         }
-
         return $query->all($this->db);
     }
-
     /**
      * {@inheritdoc}
      * @return mixed[]
      */
-    protected function prepareKeys($models): array
+    protected function prepare_keys($models): array
     {
         $keys = [];
         if ($this->key !== null) {
@@ -134,10 +127,10 @@ class ActiveDataProvider extends BaseDataProvider
             }
             return $keys;
         }
-        if ($this->query instanceof ActiveQueryInterface) {
+        if ($this->query instanceof Active_Query_Interface) {
             /** @var \yii\db\ActiveRecordInterface $class */
-            $class = $this->query->modelClass;
-            $pks = $class::primaryKey();
+            $class = $this->query->model_class;
+            $pks = $class::primary_key();
             if (count($pks) === 1) {
                 $pk = $pks[0];
                 foreach ($models as $model) {
@@ -154,52 +147,44 @@ class ActiveDataProvider extends BaseDataProvider
             }
             return $keys;
         }
-
         return array_keys($models);
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function prepareTotalCount(): int
+    protected function prepare_total_count(): int
     {
-        if (!$this->query instanceof QueryInterface) {
-            throw new InvalidConfigException('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
+        if (!$this->query instanceof Query_Interface) {
+            throw new Invalid_Config_Exception('The "query" property must be an instance of a class that implements the QueryInterface e.g. yii\db\Query or its subclasses.');
         }
         $query = clone $this->query;
-        return (int) $query->limit(-1)->offset(-1)->orderBy([])->count('*', $this->db);
+        return (int) $query->limit(-1)->offset(-1)->order_by([])->count('*', $this->db);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function setSort($value): void
+    public function set_sort($value): void
     {
-        parent::setSort($value);
-        if ($this->query instanceof ActiveQueryInterface && ($sort = $this->getSort()) !== false) {
+        parent::set_sort($value);
+        if ($this->query instanceof Active_Query_Interface && ($sort = $this->get_sort()) !== false) {
             /** @var Model $modelClass */
-            $modelClass = $this->query->modelClass;
-            $model = $modelClass::instance();
+            $model_class = $this->query->model_class;
+            $model = $model_class::instance();
             if (empty($sort->attributes)) {
                 foreach ($model->attributes() as $attribute) {
-                    $sort->attributes[$attribute] = [
-                        'asc' => [$attribute => SORT_ASC],
-                        'desc' => [$attribute => SORT_DESC],
-                    ];
+                    $sort->attributes[$attribute] = ['asc' => [$attribute => SORT_ASC], 'desc' => [$attribute => SORT_DESC]];
                 }
             }
-            if ($sort->modelClass === null) {
-                $sort->modelClass = $modelClass;
+            if ($sort->model_class === null) {
+                $sort->model_class = $model_class;
             }
         }
     }
-
     public function __clone()
     {
         if (is_object($this->query)) {
             $this->query = clone $this->query;
         }
-
         parent::__clone();
     }
 }

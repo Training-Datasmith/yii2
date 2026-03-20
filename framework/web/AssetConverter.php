@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use Yii;
 use yii\base\Component;
 use yii\base\Exception;
-
 /**
  * AssetConverter supports conversion of several popular formats into JS or CSS files.
  *
@@ -22,7 +19,7 @@ use yii\base\Exception;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AssetConverter extends Component implements AssetConverterInterface
+class Asset_Converter extends Component implements Asset_Converter_Interface
 {
     /**
      * @var array the commands that are used to perform the asset conversion.
@@ -43,29 +40,21 @@ class AssetConverter extends Component implements AssetConverterInterface
      *
      * @see https://sass-lang.com/documentation/cli/ SASS/SCSS
      */
-    public $commands = [
-        'less' => ['css', 'lessc {from} {to} --no-color --source-map'],
-        'scss' => ['css', 'sass --style=compressed {from} {to}'],
-        'sass' => ['css', 'sass --style=compressed {from} {to}'],
-        'styl' => ['css', 'stylus < {from} > {to}'],
-        'coffee' => ['js', 'coffee -p {from} > {to}'],
-        'ts' => ['js', 'tsc --out {to} {from}'],
-    ];
+    public $commands = ['less' => ['css', 'lessc {from} {to} --no-color --source-map'], 'scss' => ['css', 'sass --style=compressed {from} {to}'], 'sass' => ['css', 'sass --style=compressed {from} {to}'], 'styl' => ['css', 'stylus < {from} > {to}'], 'coffee' => ['js', 'coffee -p {from} > {to}'], 'ts' => ['js', 'tsc --out {to} {from}']];
     /**
      * @var bool whether the source asset file should be converted even if its result already exists.
      * You may want to set this to be `true` during the development stage to make sure the converted
      * assets are always up-to-date. Do not set this to true on production servers as it will
      * significantly degrade the performance.
      */
-    public $forceConvert = false;
-
+    public $force_convert = false;
     /**
      * Converts a given asset file into a CSS or JS file.
      * @param string $asset the asset file path, relative to $basePath
      * @param string $basePath the directory the $asset is relative to.
      * @return string the converted asset file path, relative to $basePath.
      */
-    public function convert($asset, $basePath)
+    public function convert($asset, $base_path)
     {
         $pos = strrpos($asset, '.');
         if ($pos !== false) {
@@ -73,17 +62,14 @@ class AssetConverter extends Component implements AssetConverterInterface
             if (isset($this->commands[$ext])) {
                 [$ext, $command] = $this->commands[$ext];
                 $result = substr($asset, 0, $pos + 1) . $ext;
-                if ($this->forceConvert || @filemtime("$basePath/$result") < @filemtime("$basePath/$asset")) {
-                    $this->runCommand($command, $basePath, $asset, $result);
+                if ($this->force_convert || @filemtime("{$base_path}/{$result}") < @filemtime("{$base_path}/{$asset}")) {
+                    $this->run_command($command, $base_path, $asset, $result);
                 }
-
                 return $result;
             }
         }
-
         return $asset;
     }
-
     /**
      * Runs a command to convert asset files.
      * @param string $command the command to run. If prefixed with an `@` it will be treated as a [path alias](guide:concept-aliases).
@@ -94,35 +80,26 @@ class AssetConverter extends Component implements AssetConverterInterface
      * @throws \yii\base\Exception when the command fails and YII_DEBUG is true.
      * In production mode the error will be logged.
      */
-    protected function runCommand($command, $basePath, $asset, $result): bool
+    protected function run_command($command, $base_path, $asset, $result): bool
     {
-        $command = Yii::getAlias($command);
-
-        $command = strtr($command, [
-            '{from}' => escapeshellarg("$basePath/$asset"),
-            '{to}' => escapeshellarg("$basePath/$result"),
-        ]);
-        $descriptor = [
-            1 => ['pipe', 'w'],
-            2 => ['pipe', 'w'],
-        ];
+        $command = Yii::get_alias($command);
+        $command = strtr($command, ['{from}' => escapeshellarg("{$base_path}/{$asset}"), '{to}' => escapeshellarg("{$base_path}/{$result}")]);
+        $descriptor = [1 => ['pipe', 'w'], 2 => ['pipe', 'w']];
         $pipes = [];
-        $proc = proc_open($command, $descriptor, $pipes, $basePath);
+        $proc = proc_open($command, $descriptor, $pipes, $base_path);
         $stdout = stream_get_contents($pipes[1]);
         $stderr = stream_get_contents($pipes[2]);
         foreach ($pipes as $pipe) {
             fclose($pipe);
         }
         $status = proc_close($proc);
-
         if ($status === 0) {
-            Yii::debug("Converted $asset into $result:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", __METHOD__);
+            Yii::debug("Converted {$asset} into {$result}:\nSTDOUT:\n{$stdout}\nSTDERR:\n{$stderr}", __METHOD__);
         } elseif (YII_DEBUG) {
-            throw new Exception("AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr");
+            throw new Exception("AssetConverter command '{$command}' failed with exit code {$status}:\nSTDOUT:\n{$stdout}\nSTDERR:\n{$stderr}");
         } else {
-            Yii::error("AssetConverter command '$command' failed with exit code $status:\nSTDOUT:\n$stdout\nSTDERR:\n$stderr", __METHOD__);
+            Yii::error("AssetConverter command '{$command}' failed with exit code {$status}:\nSTDOUT:\n{$stdout}\nSTDERR:\n{$stderr}", __METHOD__);
         }
-
         return $status === 0;
     }
 }

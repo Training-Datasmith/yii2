@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 /**
@@ -26,19 +24,18 @@ namespace yii\validators;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class SafeValidator extends Validator
+class Safe_Validator extends Validator
 {
     /**
      * {@inheritdoc}
      */
-    public function validateAttributes($model, $attributes = null)
+    public function validate_attributes($model, $attributes = null)
     {
     }
-
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute)
+    public function validate_attribute($model, $attribute)
     {
     }
 }

@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 use yii\base\Component;
 use yii\di\Instance;
-use yii\helpers\StringHelper;
-
+use yii\helpers\String_Helper;
 /**
  * Migration is the base class for representing a database migration.
  *
@@ -46,10 +43,9 @@ use yii\helpers\StringHelper;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Migration extends Component implements MigrationInterface
+class Migration extends Component implements Migration_Interface
 {
-    use SchemaBuilderTrait;
-
+    use Schema_Builder_Trait;
     /**
      * @var Connection|array|string the DB connection object or the application component ID of the DB connection
      * that this migration should work with. Starting from version 2.0.2, this can also be a configuration array
@@ -73,7 +69,7 @@ class Migration extends Component implements MigrationInterface
      * console output more compact.
      * @since 2.0.13
      */
-    public $maxSqlOutputLength;
+    public $max_sql_output_length;
     /**
      * @var bool indicates whether the console output should be compacted.
      * If this is set to true, the individual commands ran within the migration will not be output to the console.
@@ -81,7 +77,6 @@ class Migration extends Component implements MigrationInterface
      * @since 2.0.13
      */
     public $compact = false;
-
     /**
      * Initializes the migration.
      * This method will set [[db]] to be the 'db' application component, if it is `null`.
@@ -89,20 +84,18 @@ class Migration extends Component implements MigrationInterface
     public function init(): void
     {
         parent::init();
-        $this->db = Instance::ensure($this->db, Connection::className());
-        $this->db->getSchema()->refresh();
-        $this->db->enableSlaves = false;
+        $this->db = Instance::ensure($this->db, Connection::class_name());
+        $this->db->get_schema()->refresh();
+        $this->db->enable_slaves = false;
     }
-
     /**
      * {@inheritdoc}
      * @since 2.0.6
      */
-    protected function getDb()
+    protected function get_db()
     {
         return $this->db;
     }
-
     /**
      * This method contains the logic to be executed when applying this migration.
      * Child classes may override this method to provide actual migration logic.
@@ -111,22 +104,20 @@ class Migration extends Component implements MigrationInterface
      */
     public function up(): ?bool
     {
-        $transaction = $this->db->beginTransaction();
+        $transaction = $this->db->begin_transaction();
         try {
-            if ($this->safeUp() === false) {
-                $transaction->rollBack();
+            if ($this->safe_up() === false) {
+                $transaction->roll_back();
                 return false;
             }
             $transaction->commit();
         } catch (\Exception|\Throwable $e) {
-            $this->printException($e);
-            $transaction->rollBack();
+            $this->print_exception($e);
+            $transaction->roll_back();
             return false;
         }
-
         return null;
     }
-
     /**
      * This method contains the logic to be executed when removing this migration.
      * The default implementation throws an exception indicating the migration cannot be removed.
@@ -136,28 +127,25 @@ class Migration extends Component implements MigrationInterface
      */
     public function down(): ?bool
     {
-        $transaction = $this->db->beginTransaction();
+        $transaction = $this->db->begin_transaction();
         try {
-            if ($this->safeDown() === false) {
-                $transaction->rollBack();
+            if ($this->safe_down() === false) {
+                $transaction->roll_back();
                 return false;
             }
             $transaction->commit();
         } catch (\Exception|\Throwable $e) {
-            $this->printException($e);
-            $transaction->rollBack();
+            $this->print_exception($e);
+            $transaction->roll_back();
             return false;
         }
-
         return null;
     }
-
-    private function printException(\Throwable $e): void
+    private function print_exception(\Throwable $e): void
     {
-        echo 'Exception: ' . $e->getMessage() . ' (' . $e->getFile() . ':' . $e->getLine() . ")\n";
-        echo $e->getTraceAsString() . "\n";
+        echo 'Exception: ' . $e->get_message() . ' (' . $e->get_file() . ':' . $e->get_line() . ")\n";
+        echo $e->get_trace_as_string() . "\n";
     }
-
     /**
      * This method contains the logic to be executed when applying this migration.
      * This method differs from [[up()]] in that the DB logic implemented here will
@@ -171,10 +159,9 @@ class Migration extends Component implements MigrationInterface
      * @return false|void|mixed return a false value to indicate the migration fails
      * and should not proceed further. All other return values mean the migration succeeds.
      */
-    public function safeUp()
+    public function safe_up()
     {
     }
-
     /**
      * This method contains the logic to be executed when removing this migration.
      * This method differs from [[down()]] in that the DB logic implemented here will
@@ -188,10 +175,9 @@ class Migration extends Component implements MigrationInterface
      * @return false|void|mixed return a false value to indicate the migration fails
      * and should not proceed further. All other return values mean the migration succeeds.
      */
-    public function safeDown()
+    public function safe_down()
     {
     }
-
     /**
      * Executes a SQL statement.
      * This method executes the specified SQL statement using [[db]].
@@ -201,16 +187,14 @@ class Migration extends Component implements MigrationInterface
      */
     public function execute($sql, $params = []): void
     {
-        $sqlOutput = $sql;
-        if ($this->maxSqlOutputLength !== null) {
-            $sqlOutput = StringHelper::truncate($sql, $this->maxSqlOutputLength, '[... hidden]');
+        $sql_output = $sql;
+        if ($this->max_sql_output_length !== null) {
+            $sql_output = String_Helper::truncate($sql, $this->max_sql_output_length, '[... hidden]');
         }
-
-        $time = $this->beginCommand("execute SQL: $sqlOutput");
-        $this->db->createCommand($sql)->bindValues($params)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("execute SQL: {$sql_output}");
+        $this->db->create_command($sql)->bind_values($params)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Creates and executes an INSERT SQL statement.
      * The method will properly escape the column names, and bind the values to be inserted.
@@ -219,11 +203,10 @@ class Migration extends Component implements MigrationInterface
      */
     public function insert($table, $columns): void
     {
-        $time = $this->beginCommand("insert into $table");
-        $this->db->createCommand()->insert($table, $columns)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("insert into {$table}");
+        $this->db->create_command()->insert($table, $columns)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Creates and executes a batch INSERT SQL statement.
      * The method will properly escape the column names, and bind the values to be inserted.
@@ -231,13 +214,12 @@ class Migration extends Component implements MigrationInterface
      * @param array $columns the column names.
      * @param array $rows the rows to be batch inserted into the table
      */
-    public function batchInsert($table, $columns, $rows): void
+    public function batch_insert($table, $columns, $rows): void
     {
-        $time = $this->beginCommand("insert into $table");
-        $this->db->createCommand()->batchInsert($table, $columns, $rows)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("insert into {$table}");
+        $this->db->create_command()->batch_insert($table, $columns, $rows)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Creates and executes a command to insert rows into a database table if
      * they do not already exist (matching unique constraints),
@@ -254,13 +236,12 @@ class Migration extends Component implements MigrationInterface
      * @param array $params the parameters to be bound to the command.
      * @since 2.0.14
      */
-    public function upsert($table, $insertColumns, $updateColumns = true, $params = []): void
+    public function upsert($table, $insert_columns, $update_columns = true, $params = []): void
     {
-        $time = $this->beginCommand("upsert into $table");
-        $this->db->createCommand()->upsert($table, $insertColumns, $updateColumns, $params)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("upsert into {$table}");
+        $this->db->create_command()->upsert($table, $insert_columns, $update_columns, $params)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Creates and executes an UPDATE SQL statement.
      * The method will properly escape the column names and bind the values to be updated.
@@ -272,11 +253,10 @@ class Migration extends Component implements MigrationInterface
      */
     public function update($table, $columns, $condition = '', $params = []): void
     {
-        $time = $this->beginCommand("update $table");
-        $this->db->createCommand()->update($table, $columns, $condition, $params)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("update {$table}");
+        $this->db->create_command()->update($table, $columns, $condition, $params)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Creates and executes a DELETE SQL statement.
      * @param string $table the table where the data will be deleted from.
@@ -286,11 +266,10 @@ class Migration extends Component implements MigrationInterface
      */
     public function delete($table, $condition = '', $params = []): void
     {
-        $time = $this->beginCommand("delete from $table");
-        $this->db->createCommand()->delete($table, $condition, $params)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("delete from {$table}");
+        $this->db->create_command()->delete($table, $condition, $params)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for creating a new DB table.
      *
@@ -319,52 +298,48 @@ class Migration extends Component implements MigrationInterface
      * @param array $columns the columns (name => definition) in the new table.
      * @param string|null $options additional SQL fragment that will be appended to the generated SQL.
      */
-    public function createTable($table, $columns, $options = null): void
+    public function create_table($table, $columns, $options = null): void
     {
-        $time = $this->beginCommand("create table $table");
-        $this->db->createCommand()->createTable($table, $columns, $options)->execute();
+        $time = $this->begin_command("create table {$table}");
+        $this->db->create_command()->create_table($table, $columns, $options)->execute();
         foreach ($columns as $column => $type) {
-            if ($type instanceof ColumnSchemaBuilder && $type->comment !== null) {
-                $this->db->createCommand()->addCommentOnColumn($table, $column, $type->comment)->execute();
+            if ($type instanceof Column_Schema_Builder && $type->comment !== null) {
+                $this->db->create_command()->add_comment_on_column($table, $column, $type->comment)->execute();
             }
         }
-        $this->endCommand($time);
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for renaming a DB table.
      * @param string $table the table to be renamed. The name will be properly quoted by the method.
      * @param string $newName the new table name. The name will be properly quoted by the method.
      */
-    public function renameTable($table, $newName): void
+    public function rename_table($table, $new_name): void
     {
-        $time = $this->beginCommand("rename table $table to $newName");
-        $this->db->createCommand()->renameTable($table, $newName)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("rename table {$table} to {$new_name}");
+        $this->db->create_command()->rename_table($table, $new_name)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for dropping a DB table.
      * @param string $table the table to be dropped. The name will be properly quoted by the method.
      */
-    public function dropTable($table): void
+    public function drop_table($table): void
     {
-        $time = $this->beginCommand("drop table $table");
-        $this->db->createCommand()->dropTable($table)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop table {$table}");
+        $this->db->create_command()->drop_table($table)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for truncating a DB table.
      * @param string $table the table to be truncated. The name will be properly quoted by the method.
      */
-    public function truncateTable($table): void
+    public function truncate_table($table): void
     {
-        $time = $this->beginCommand("truncate table $table");
-        $this->db->createCommand()->truncateTable($table)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("truncate table {$table}");
+        $this->db->create_command()->truncate_table($table)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for adding a new DB column.
      * @param string $table the table that the new column will be added to. The table name will be properly quoted by the method.
@@ -373,41 +348,38 @@ class Migration extends Component implements MigrationInterface
      * into the physical one. Anything that is not recognized as abstract type will be kept in the generated SQL.
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
      */
-    public function addColumn($table, $column, $type): void
+    public function add_column($table, $column, $type): void
     {
-        $time = $this->beginCommand("add column $column $type to table $table");
-        $this->db->createCommand()->addColumn($table, $column, $type)->execute();
-        if ($type instanceof ColumnSchemaBuilder && $type->comment !== null) {
-            $this->db->createCommand()->addCommentOnColumn($table, $column, $type->comment)->execute();
+        $time = $this->begin_command("add column {$column} {$type} to table {$table}");
+        $this->db->create_command()->add_column($table, $column, $type)->execute();
+        if ($type instanceof Column_Schema_Builder && $type->comment !== null) {
+            $this->db->create_command()->add_comment_on_column($table, $column, $type->comment)->execute();
         }
-        $this->endCommand($time);
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for dropping a DB column.
      * @param string $table the table whose column is to be dropped. The name will be properly quoted by the method.
      * @param string $column the name of the column to be dropped. The name will be properly quoted by the method.
      */
-    public function dropColumn($table, $column): void
+    public function drop_column($table, $column): void
     {
-        $time = $this->beginCommand("drop column $column from table $table");
-        $this->db->createCommand()->dropColumn($table, $column)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop column {$column} from table {$table}");
+        $this->db->create_command()->drop_column($table, $column)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for renaming a column.
      * @param string $table the table whose column is to be renamed. The name will be properly quoted by the method.
      * @param string $name the old name of the column. The name will be properly quoted by the method.
      * @param string $newName the new name of the column. The name will be properly quoted by the method.
      */
-    public function renameColumn($table, $name, $newName): void
+    public function rename_column($table, $name, $new_name): void
     {
-        $time = $this->beginCommand("rename column $name in table $table to $newName");
-        $this->db->createCommand()->renameColumn($table, $name, $newName)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("rename column {$name} in table {$table} to {$new_name}");
+        $this->db->create_command()->rename_column($table, $name, $new_name)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for changing the definition of a column.
      * @param string $table the table whose column is to be changed. The table name will be properly quoted by the method.
@@ -416,16 +388,15 @@ class Migration extends Component implements MigrationInterface
      * into the physical one. Anything that is not recognized as abstract type will be kept in the generated SQL.
      * For example, 'string' will be turned into 'varchar(255)', while 'string not null' will become 'varchar(255) not null'.
      */
-    public function alterColumn($table, $column, $type): void
+    public function alter_column($table, $column, $type): void
     {
-        $time = $this->beginCommand("alter column $column in table $table to $type");
-        $this->db->createCommand()->alterColumn($table, $column, $type)->execute();
-        if ($type instanceof ColumnSchemaBuilder && $type->comment !== null) {
-            $this->db->createCommand()->addCommentOnColumn($table, $column, $type->comment)->execute();
+        $time = $this->begin_command("alter column {$column} in table {$table} to {$type}");
+        $this->db->create_command()->alter_column($table, $column, $type)->execute();
+        if ($type instanceof Column_Schema_Builder && $type->comment !== null) {
+            $this->db->create_command()->add_comment_on_column($table, $column, $type->comment)->execute();
         }
-        $this->endCommand($time);
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for creating a primary key.
      * The method will properly quote the table and column names.
@@ -433,25 +404,23 @@ class Migration extends Component implements MigrationInterface
      * @param string $table the table that the primary key constraint will be added to.
      * @param string|array $columns comma separated string or array of columns that the primary key will consist of.
      */
-    public function addPrimaryKey($name, $table, $columns): void
+    public function add_primary_key($name, $table, $columns): void
     {
-        $time = $this->beginCommand("add primary key $name on $table (" . (is_array($columns) ? implode(',', $columns) : $columns) . ')');
-        $this->db->createCommand()->addPrimaryKey($name, $table, $columns)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("add primary key {$name} on {$table} (" . (is_array($columns) ? implode(',', $columns) : $columns) . ')');
+        $this->db->create_command()->add_primary_key($name, $table, $columns)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for dropping a primary key.
      * @param string $name the name of the primary key constraint to be removed.
      * @param string $table the table that the primary key constraint will be removed from.
      */
-    public function dropPrimaryKey($name, $table): void
+    public function drop_primary_key($name, $table): void
     {
-        $time = $this->beginCommand("drop primary key $name");
-        $this->db->createCommand()->dropPrimaryKey($name, $table)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop primary key {$name}");
+        $this->db->create_command()->drop_primary_key($name, $table)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds a SQL statement for adding a foreign key constraint to an existing table.
      * The method will properly quote the table and column names.
@@ -463,25 +432,23 @@ class Migration extends Component implements MigrationInterface
      * @param string|null $delete the ON DELETE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
      * @param string|null $update the ON UPDATE option. Most DBMS support these options: RESTRICT, CASCADE, NO ACTION, SET DEFAULT, SET NULL
      */
-    public function addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete = null, $update = null): void
+    public function add_foreign_key($name, $table, $columns, $ref_table, $ref_columns, $delete = null, $update = null): void
     {
-        $time = $this->beginCommand("add foreign key $name: $table (" . implode(',', (array) $columns) . ") references $refTable (" . implode(',', (array) $refColumns) . ')');
-        $this->db->createCommand()->addForeignKey($name, $table, $columns, $refTable, $refColumns, $delete, $update)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("add foreign key {$name}: {$table} (" . implode(',', (array) $columns) . ") references {$ref_table} (" . implode(',', (array) $ref_columns) . ')');
+        $this->db->create_command()->add_foreign_key($name, $table, $columns, $ref_table, $ref_columns, $delete, $update)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds a SQL statement for dropping a foreign key constraint.
      * @param string $name the name of the foreign key constraint to be dropped. The name will be properly quoted by the method.
      * @param string $table the table whose foreign is to be dropped. The name will be properly quoted by the method.
      */
-    public function dropForeignKey($name, $table): void
+    public function drop_foreign_key($name, $table): void
     {
-        $time = $this->beginCommand("drop foreign key $name from table $table");
-        $this->db->createCommand()->dropForeignKey($name, $table)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop foreign key {$name} from table {$table}");
+        $this->db->create_command()->drop_foreign_key($name, $table)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for creating a new index.
      * @param string $name the name of the index. The name will be properly quoted by the method.
@@ -491,25 +458,23 @@ class Migration extends Component implements MigrationInterface
      * include a left parenthesis "(".
      * @param bool $unique whether to add UNIQUE constraint on the created index.
      */
-    public function createIndex($name, $table, $columns, $unique = false): void
+    public function create_index($name, $table, $columns, $unique = false): void
     {
-        $time = $this->beginCommand('create' . ($unique ? ' unique' : '') . " index $name on $table (" . implode(',', (array) $columns) . ')');
-        $this->db->createCommand()->createIndex($name, $table, $columns, $unique)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command('create' . ($unique ? ' unique' : '') . " index {$name} on {$table} (" . implode(',', (array) $columns) . ')');
+        $this->db->create_command()->create_index($name, $table, $columns, $unique)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and executes a SQL statement for dropping an index.
      * @param string $name the name of the index to be dropped. The name will be properly quoted by the method.
      * @param string $table the table whose index is to be dropped. The name will be properly quoted by the method.
      */
-    public function dropIndex($name, $table): void
+    public function drop_index($name, $table): void
     {
-        $time = $this->beginCommand("drop index $name on $table");
-        $this->db->createCommand()->dropIndex($name, $table)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop index {$name} on {$table}");
+        $this->db->create_command()->drop_index($name, $table)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Creates a SQL command for adding a check constraint to an existing table.
      * @param string $name the name of the check constraint.
@@ -518,13 +483,12 @@ class Migration extends Component implements MigrationInterface
      * The name will be properly quoted by the method.
      * @param string $expression the SQL of the `CHECK` constraint.
      */
-    public function addCheck($name, $table, $expression): void
+    public function add_check($name, $table, $expression): void
     {
-        $time = $this->beginCommand("add check $name in table $table");
-        $this->db->createCommand()->addCheck($name, $table, $expression)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("add check {$name} in table {$table}");
+        $this->db->create_command()->add_check($name, $table, $expression)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Creates a SQL command for dropping a check constraint.
      * @param string $name the name of the check constraint to be dropped.
@@ -532,13 +496,12 @@ class Migration extends Component implements MigrationInterface
      * @param string $table the table whose check constraint is to be dropped.
      * The name will be properly quoted by the method.
      */
-    public function dropCheck($name, $table): void
+    public function drop_check($name, $table): void
     {
-        $time = $this->beginCommand("drop check $name in table $table");
-        $this->db->createCommand()->dropCheck($name, $table)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop check {$name} in table {$table}");
+        $this->db->create_command()->drop_check($name, $table)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and execute a SQL statement for adding comment to column.
      *
@@ -547,13 +510,12 @@ class Migration extends Component implements MigrationInterface
      * @param string $comment the text of the comment to be added. The comment will be properly quoted by the method.
      * @since 2.0.8
      */
-    public function addCommentOnColumn($table, $column, $comment): void
+    public function add_comment_on_column($table, $column, $comment): void
     {
-        $time = $this->beginCommand("add comment on column $column");
-        $this->db->createCommand()->addCommentOnColumn($table, $column, $comment)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("add comment on column {$column}");
+        $this->db->create_command()->add_comment_on_column($table, $column, $comment)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds a SQL statement for adding comment to table.
      *
@@ -561,13 +523,12 @@ class Migration extends Component implements MigrationInterface
      * @param string $comment the text of the comment to be added. The comment will be properly quoted by the method.
      * @since 2.0.8
      */
-    public function addCommentOnTable($table, $comment): void
+    public function add_comment_on_table($table, $comment): void
     {
-        $time = $this->beginCommand("add comment on table $table");
-        $this->db->createCommand()->addCommentOnTable($table, $comment)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("add comment on table {$table}");
+        $this->db->create_command()->add_comment_on_table($table, $comment)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds and execute a SQL statement for dropping comment from column.
      *
@@ -575,26 +536,24 @@ class Migration extends Component implements MigrationInterface
      * @param string $column the name of the column to be commented. The column name will be properly quoted by the method.
      * @since 2.0.8
      */
-    public function dropCommentFromColumn($table, $column): void
+    public function drop_comment_from_column($table, $column): void
     {
-        $time = $this->beginCommand("drop comment from column $column");
-        $this->db->createCommand()->dropCommentFromColumn($table, $column)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop comment from column {$column}");
+        $this->db->create_command()->drop_comment_from_column($table, $column)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Builds a SQL statement for dropping comment from table.
      *
      * @param string $table the table whose column is to be commented. The table name will be properly quoted by the method.
      * @since 2.0.8
      */
-    public function dropCommentFromTable($table): void
+    public function drop_comment_from_table($table): void
     {
-        $time = $this->beginCommand("drop comment from table $table");
-        $this->db->createCommand()->dropCommentFromTable($table)->execute();
-        $this->endCommand($time);
+        $time = $this->begin_command("drop comment from table {$table}");
+        $this->db->create_command()->drop_comment_from_table($table)->execute();
+        $this->end_command($time);
     }
-
     /**
      * Prepares for a command to be executed, and outputs to the console.
      *
@@ -602,21 +561,20 @@ class Migration extends Component implements MigrationInterface
      * @return float the time before the command is executed, for the time elapsed to be calculated.
      * @since 2.0.13
      */
-    protected function beginCommand($description): float
+    protected function begin_command($description): float
     {
         if (!$this->compact) {
-            echo "    > $description ...";
+            echo "    > {$description} ...";
         }
         return microtime(true);
     }
-
     /**
      * Finalizes after the command has been executed, and outputs to the console the time elapsed.
      *
      * @param float $time the time before the command was executed.
      * @since 2.0.13
      */
-    protected function endCommand($time)
+    protected function end_command($time)
     {
         if (!$this->compact) {
             echo ' done (time: ' . sprintf('%.3f', microtime(true) - $time) . "s)\n";

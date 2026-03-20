@@ -1,6 +1,6 @@
 <?php
 
-declare(strict_types=1);
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
@@ -10,16 +10,13 @@ declare(strict_types=1);
  * @var array[] $requirements
  */
 echo "\nYii Application Requirement Checker\n\n";
-
 echo "This script checks if your server configuration meets the requirements\n";
 echo "for running Yii application.\n";
 echo "It checks if the server is running the right version of PHP,\n";
 echo "if appropriate PHP extensions have been loaded, and if php.ini file settings are correct.\n";
-
 $header = 'Check conclusion:';
 echo "\n{$header}\n";
 echo str_pad('', strlen($header), '-') . "\n\n";
-
 foreach ($requirements as $requirement) {
     if ($requirement['condition']) {
         echo $requirement['name'] . ": OK\n";
@@ -33,9 +30,7 @@ foreach ($requirements as $requirement) {
     }
     echo "\n";
 }
-
-$summaryString = 'Errors: ' . $summary['errors'] . '   Warnings: ' . $summary['warnings'] . '   Total checks: ' . $summary['total'];
-echo str_pad('', strlen($summaryString), '-') . "\n";
-echo $summaryString;
-
+$summary_string = 'Errors: ' . $summary['errors'] . '   Warnings: ' . $summary['warnings'] . '   Total checks: ' . $summary['total'];
+echo str_pad('', strlen($summary_string), '-') . "\n";
+echo $summary_string;
 echo "\n\n";

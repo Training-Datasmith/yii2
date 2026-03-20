@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\mssql;
 
 /**
@@ -17,19 +15,18 @@ namespace yii\db\mssql;
  * @author Bert Brunekreeft <bbrunekreeft@gmail.com>
  * @since 2.0.41
  */
-class DBLibPDO extends \PDO
+class Db_Lib_Pdo extends \PDO
 {
     /**
      * Returns value of the last inserted ID.
      * @param string|null $name the sequence name. Defaults to null.
      * @return string|false last inserted ID value.
      */
-    #[\ReturnTypeWillChange]
-    public function lastInsertId($name = null)
+    #[\Return_Type_Will_Change]
+    public function last_insert_id($name = null)
     {
-        return $this->query('SELECT CAST(COALESCE(SCOPE_IDENTITY(), @@IDENTITY) AS bigint)')->fetchColumn();
+        return $this->query('SELECT CAST(COALESCE(SCOPE_IDENTITY(), @@IDENTITY) AS bigint)')->fetch_column();
     }
-
     /**
      * Retrieve a database connection attribute.
      *
@@ -39,15 +36,15 @@ class DBLibPDO extends \PDO
      * @return mixed A successful call returns the value of the requested PDO attribute.
      * An unsuccessful call returns null.
      */
-    #[\ReturnTypeWillChange]
-    public function getAttribute($attribute)
+    #[\Return_Type_Will_Change]
+    public function get_attribute($attribute)
     {
         try {
-            return parent::getAttribute($attribute);
+            return parent::get_attribute($attribute);
         } catch (\PDOException $e) {
             switch ($attribute) {
                 case self::ATTR_SERVER_VERSION:
-                    return $this->query("SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR)")->fetchColumn();
+                    return $this->query("SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR)")->fetch_column();
                 default:
                     throw $e;
             }

@@ -1,144 +1,121 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\pgsql;
 
-use yii\db\ArrayExpression;
-use yii\db\ExpressionBuilderInterface;
-use yii\db\ExpressionBuilderTrait;
-use yii\db\ExpressionInterface;
-use yii\db\JsonExpression;
+use yii\db\Array_Expression;
+use yii\db\Expression_Builder_Interface;
+use yii\db\Expression_Builder_Trait;
+use yii\db\Expression_Interface;
+use yii\db\Json_Expression;
 use yii\db\Query;
-
 /**
  * Class ArrayExpressionBuilder builds [[ArrayExpression]] for PostgreSQL DBMS.
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14
  */
-class ArrayExpressionBuilder implements ExpressionBuilderInterface
+class Array_Expression_Builder implements Expression_Builder_Interface
 {
-    use ExpressionBuilderTrait;
-
+    use Expression_Builder_Trait;
     /**
      * {@inheritdoc}
      * @param ArrayExpression|ExpressionInterface $expression the expression to be built
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(Expression_Interface $expression, array &$params = [])
     {
-        $value = $expression->getValue();
+        $value = $expression->get_value();
         if ($value === null) {
             return 'NULL';
         }
-
         if ($value instanceof Query) {
-            [$sql, $params] = $this->queryBuilder->build($value, $params);
-            return $this->buildSubqueryArray($sql, $expression);
+            [$sql, $params] = $this->query_builder->build($value, $params);
+            return $this->build_subquery_array($sql, $expression);
         }
-
-        $placeholders = $this->buildPlaceholders($expression, $params);
-
-        return 'ARRAY[' . implode(', ', $placeholders) . ']' . $this->getTypehint($expression);
+        $placeholders = $this->build_placeholders($expression, $params);
+        return 'ARRAY[' . implode(', ', $placeholders) . ']' . $this->get_typehint($expression);
     }
-
     /**
      * Builds placeholders array out of $expression values
      * @param array $params the binding parameters.
      */
-    protected function buildPlaceholders(ExpressionInterface $expression, &$params): array
+    protected function build_placeholders(Expression_Interface $expression, &$params): array
     {
-        $value = $expression->getValue();
-
+        $value = $expression->get_value();
         $placeholders = [];
         if ($value === null || !is_array($value) && !$value instanceof \Traversable) {
             return $placeholders;
         }
-
-        if ($expression->getDimension() > 1) {
+        if ($expression->get_dimension() > 1) {
             foreach ($value as $item) {
-                $placeholders[] = $this->build($this->unnestArrayExpression($expression, $item), $params);
+                $placeholders[] = $this->build($this->unnest_array_expression($expression, $item), $params);
             }
             return $placeholders;
         }
-
         foreach ($value as $item) {
             if ($item instanceof Query) {
-                [$sql, $params] = $this->queryBuilder->build($item, $params);
-                $placeholders[] = $this->buildSubqueryArray($sql, $expression);
+                [$sql, $params] = $this->query_builder->build($item, $params);
+                $placeholders[] = $this->build_subquery_array($sql, $expression);
                 continue;
             }
-
-            $item = $this->typecastValue($expression, $item);
-            if ($item instanceof ExpressionInterface) {
-                $placeholders[] = $this->queryBuilder->buildExpression($item, $params);
+            $item = $this->typecast_value($expression, $item);
+            if ($item instanceof Expression_Interface) {
+                $placeholders[] = $this->query_builder->build_expression($item, $params);
                 continue;
             }
-
-            $placeholders[] = $this->queryBuilder->bindParam($item, $params);
+            $placeholders[] = $this->query_builder->bind_param($item, $params);
         }
-
         return $placeholders;
     }
-
     /**
      * @param mixed $value
      * @return ArrayExpression
      */
-    private function unnestArrayExpression(ArrayExpression $expression, $value)
+    private function unnest_array_expression(Array_Expression $expression, $value)
     {
-        $expressionClass = get_class($expression);
-
-        return new $expressionClass($value, $expression->getType(), $expression->getDimension() - 1);
+        $expression_class = get_class($expression);
+        return new $expression_class($value, $expression->get_type(), $expression->get_dimension() - 1);
     }
-
     /**
      * @return string the typecast expression based on [[type]].
      */
-    protected function getTypehint(ArrayExpression $expression): string
+    protected function get_typehint(Array_Expression $expression): string
     {
-        if ($expression->getType() === null) {
+        if ($expression->get_type() === null) {
             return '';
         }
-
-        $result = '::' . $expression->getType();
-
-        return $result . str_repeat('[]', $expression->getDimension());
+        $result = '::' . $expression->get_type();
+        return $result . str_repeat('[]', $expression->get_dimension());
     }
-
     /**
      * Build an array expression from a subquery SQL.
      *
      * @param string $sql the subquery SQL.
      * @return string the subquery array expression.
      */
-    protected function buildSubqueryArray(string $sql, ArrayExpression $expression): string
+    protected function build_subquery_array(string $sql, Array_Expression $expression): string
     {
-        return 'ARRAY(' . $sql . ')' . $this->getTypehint($expression);
+        return 'ARRAY(' . $sql . ')' . $this->get_typehint($expression);
     }
-
     /**
      * Casts $value to use in $expression
      *
      * @param mixed $value
      * @return mixed
      */
-    protected function typecastValue(ArrayExpression $expression, $value)
+    protected function typecast_value(Array_Expression $expression, $value)
     {
-        if ($value instanceof ExpressionInterface) {
+        if ($value instanceof Expression_Interface) {
             return $value;
         }
-
-        if (in_array($expression->getType(), [Schema::TYPE_JSON, Schema::TYPE_JSONB], true)) {
-            return new JsonExpression($value);
+        if (in_array($expression->get_type(), [Schema::TYPE_JSON, Schema::TYPE_JSONB], true)) {
+            return new Json_Expression($value);
         }
-
         return $value;
     }
 }

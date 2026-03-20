@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -16,12 +14,12 @@ namespace yii\base;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class UnknownPropertyException extends Exception
+class Unknown_Property_Exception extends Exception
 {
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return 'Unknown Property';
     }

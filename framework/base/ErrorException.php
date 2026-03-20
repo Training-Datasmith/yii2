@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -28,7 +26,8 @@ class ErrorException extends \ErrorException
      * @see https://github.com/facebook/hhvm/blob/master/hphp/runtime/base/runtime-error.h#L62
      * @since 2.0.6
      */
-    public const E_HHVM_FATAL_ERROR = 16777217; // E_ERROR | (1 << 24)
+    public const E_HHVM_FATAL_ERROR = 16777217;
+    // E_ERROR | (1 << 24)
     /**
      * Constructs the exception.
      * @link https://www.php.net/manual/en/errorexception.construct.php
@@ -42,103 +41,74 @@ class ErrorException extends \ErrorException
     public function __construct($message = '', $code = 0, $severity = 1, $filename = __FILE__, $lineno = __LINE__, $previous = null)
     {
         parent::__construct($message, $code, $severity, $filename, $lineno, $previous);
-
-        if ($this->isXdebugStackAvailable()) {
+        if ($this->is_xdebug_stack_available()) {
             // Xdebug trace can't be modified and used directly with PHP 7
             // @see https://github.com/yiisoft/yii2/pull/11723
-            $xdebugTrace = array_slice(array_reverse(xdebug_get_function_stack()), 1, -1);
+            $xdebug_trace = array_slice(array_reverse(xdebug_get_function_stack()), 1, -1);
             $trace = [];
-            foreach ($xdebugTrace as $frame) {
+            foreach ($xdebug_trace as $frame) {
                 if (!isset($frame['function'])) {
                     $frame['function'] = 'unknown';
                 }
-
                 // Xdebug < 2.1.1: https://bugs.xdebug.org/view.php?id=695
                 if (!isset($frame['type']) || $frame['type'] === 'static') {
                     $frame['type'] = '::';
                 } elseif ($frame['type'] === 'dynamic') {
                     $frame['type'] = '->';
                 }
-
                 // Xdebug has a different key name
                 if (isset($frame['params']) && !isset($frame['args'])) {
                     $frame['args'] = $frame['params'];
                 }
                 $trace[] = $frame;
             }
-
             $ref = new \ReflectionProperty('Exception', 'trace');
-
             // @link https://wiki.php.net/rfc/deprecations_php_8_5#deprecate_reflectionsetaccessible
             // @link https://wiki.php.net/rfc/make-reflection-setaccessible-no-op
             if (PHP_VERSION_ID < 80100) {
-                $ref->setAccessible(true);
+                $ref->set_accessible(true);
             }
-
-            $ref->setValue($this, $trace);
+            $ref->set_value($this, $trace);
         }
     }
-
     /**
      * Ensures that Xdebug stack trace is available based on Xdebug version.
      * Idea taken from developer bishopb at https://github.com/rollbar/rollbar-php
      * @return bool
      */
-    private function isXdebugStackAvailable()
+    private function is_xdebug_stack_available()
     {
         if (!function_exists('xdebug_get_function_stack')) {
             return false;
         }
-
         // check for Xdebug being installed to ensure origin of xdebug_get_function_stack()
         $version = phpversion('xdebug');
         if ($version === false) {
             return false;
         }
-
         // Xdebug 2 and prior
         if (version_compare($version, '3.0.0', '<')) {
             return true;
         }
-
         // Xdebug 3 and later, proper mode is required
         return false !== strpos(ini_get('xdebug.mode'), 'develop');
     }
-
     /**
      * Returns if error is one of fatal type.
      *
      * @param array $error error got from error_get_last()
      * @return bool if error is one of fatal type
      */
-    public static function isFatalError(array $error): bool
+    public static function is_fatal_error(array $error): bool
     {
         return isset($error['type']) && in_array($error['type'], [E_ERROR, E_PARSE, E_CORE_ERROR, E_CORE_WARNING, E_COMPILE_ERROR, E_COMPILE_WARNING, self::E_HHVM_FATAL_ERROR]);
     }
-
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName()
+    public function get_name()
     {
-        static $names = [
-            E_COMPILE_ERROR => 'PHP Compile Error',
-            E_COMPILE_WARNING => 'PHP Compile Warning',
-            E_CORE_ERROR => 'PHP Core Error',
-            E_CORE_WARNING => 'PHP Core Warning',
-            E_DEPRECATED => 'PHP Deprecated Warning',
-            E_ERROR => 'PHP Fatal Error',
-            E_NOTICE => 'PHP Notice',
-            E_PARSE => 'PHP Parse Error',
-            E_RECOVERABLE_ERROR => 'PHP Recoverable Error',
-            E_USER_DEPRECATED => 'PHP User Deprecated Warning',
-            E_USER_ERROR => 'PHP User Error',
-            E_USER_NOTICE => 'PHP User Notice',
-            E_USER_WARNING => 'PHP User Warning',
-            E_WARNING => 'PHP Warning',
-            self::E_HHVM_FATAL_ERROR => 'HHVM Fatal Error',
-        ] + (PHP_VERSION_ID < 80400 ? [E_STRICT => 'PHP Strict Warning'] : []);
-
-        return $names[$this->getCode()] ?? 'Error';
+        static $names = [E_COMPILE_ERROR => 'PHP Compile Error', E_COMPILE_WARNING => 'PHP Compile Warning', E_CORE_ERROR => 'PHP Core Error', E_CORE_WARNING => 'PHP Core Warning', E_DEPRECATED => 'PHP Deprecated Warning', E_ERROR => 'PHP Fatal Error', E_NOTICE => 'PHP Notice', E_PARSE => 'PHP Parse Error', E_RECOVERABLE_ERROR => 'PHP Recoverable Error', E_USER_DEPRECATED => 'PHP User Deprecated Warning', E_USER_ERROR => 'PHP User Error', E_USER_NOTICE => 'PHP User Notice', E_USER_WARNING => 'PHP User Warning', E_WARNING => 'PHP Warning', self::E_HHVM_FATAL_ERROR => 'HHVM Fatal Error'] + (PHP_VERSION_ID < 80400 ? [E_STRICT => 'PHP Strict Warning'] : []);
+        return $names[$this->get_code()] ?? 'Error';
     }
 }

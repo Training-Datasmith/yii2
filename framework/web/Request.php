@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use Yii;
-use yii\base\InvalidConfigException;
-use yii\validators\IpValidator;
-
+use yii\base\Invalid_Config_Exception;
+use yii\validators\Ip_Validator;
 /**
  * The web Request class represents an HTTP request.
  *
@@ -123,64 +120,64 @@ class Request extends \yii\base\Request
      * @see Controller::enableCsrfValidation
      * @see https://en.wikipedia.org/wiki/Cross-site_request_forgery
      */
-    public $enableCsrfValidation = true;
+    public $enable_csrf_validation = true;
     /**
      * @var string the name of the HTTP header for sending CSRF token. Defaults to [[CSRF_HEADER]].
      * This property may be changed for Yii API applications only.
      * Don't change this property for Yii Web application.
      */
-    public $csrfHeader = self::CSRF_HEADER;
+    public $csrf_header = self::CSRF_HEADER;
     /**
      * @var array the name of the HTTP header for sending CSRF token.
      * by default validate CSRF token on non-"safe" methods only
      * This property is used only when [[enableCsrfValidation]] is true.
      * @see https://datatracker.ietf.org/doc/html/rfc9110#name-safe-methods
      */
-    public $csrfTokenSafeMethods = ['GET', 'HEAD', 'OPTIONS'];
+    public $csrf_token_safe_methods = ['GET', 'HEAD', 'OPTIONS'];
     /**
      * @var array "unsafe" methods not triggered a CORS-preflight request
      * This property is used only when both [[enableCsrfValidation]] and [[validateCsrfHeaderOnly]] are true.
      * @see https://fetch.spec.whatwg.org/#http-cors-protocol
      */
-    public $csrfHeaderUnsafeMethods = ['GET', 'HEAD', 'POST'];
+    public $csrf_header_unsafe_methods = ['GET', 'HEAD', 'POST'];
     /**
      * @var bool whether to use custom header only to CSRF validation of SPA. Defaults to false.
      * If false and [[enableCsrfValidation]] is true, CSRF validation by token will used.
      * Warning! CSRF validation by custom header can be used for Yii API applications only.
      * @see https://cheatsheetseries.owasp.org/cheatsheets/Cross-Site_Request_Forgery_Prevention_Cheat_Sheet.html#employing-custom-request-headers-for-ajaxapi
      */
-    public $validateCsrfHeaderOnly = false;
+    public $validate_csrf_header_only = false;
     /**
      * @var string the name of the token used to prevent CSRF. Defaults to '_csrf'.
      * This property is used only when [[enableCsrfValidation]] is true.
      */
-    public $csrfParam = '_csrf';
+    public $csrf_param = '_csrf';
     /**
      * @var array the configuration for creating the CSRF [[Cookie|cookie]]. This property is used only when
      * both [[enableCsrfValidation]] and [[enableCsrfCookie]] are true.
      */
-    public $csrfCookie = ['httpOnly' => true];
+    public $csrf_cookie = ['httpOnly' => true];
     /**
      * @var bool whether to use cookie to persist CSRF token. If false, CSRF token will be stored
      * in session under the name of [[csrfParam]]. Note that while storing CSRF tokens in session increases
      * security, it requires starting a session for every page, which will degrade your site performance.
      */
-    public $enableCsrfCookie = true;
+    public $enable_csrf_cookie = true;
     /**
      * @var bool whether cookies should be validated to ensure they are not tampered. Defaults to true.
      */
-    public $enableCookieValidation = true;
+    public $enable_cookie_validation = true;
     /**
      * @var string a secret key used for cookie validation. This property must be set if [[enableCookieValidation]] is true.
      */
-    public $cookieValidationKey;
+    public $cookie_validation_key;
     /**
      * @var string the name of the POST parameter that is used to indicate if a request is a PUT, PATCH or DELETE
      * request tunneled through POST. Defaults to '_method'.
      * @see getMethod()
      * @see getBodyParams()
      */
-    public $methodParam = '_method';
+    public $method_param = '_method';
     /**
      * @var array the parsers for converting the raw HTTP request body into [[bodyParams]].
      * The array keys are the request `Content-Types`, and the array values are the
@@ -237,7 +234,7 @@ class Request extends \yii\base\Request
      * @see secureHeaders
      * @since 2.0.13
      */
-    public $trustedHosts = [];
+    public $trusted_hosts = [];
     /**
      * @var array lists of headers that are, by default, subject to the trusted host configuration.
      * These headers will be filtered unless explicitly allowed in [[trustedHosts]].
@@ -248,17 +245,15 @@ class Request extends \yii\base\Request
      * @see trustedHosts
      * @since 2.0.13
      */
-    public $secureHeaders = [
+    public $secure_headers = [
         // Common:
         'X-Forwarded-For',
         'X-Forwarded-Host',
         'X-Forwarded-Proto',
         'X-Forwarded-Port',
-
         // Microsoft:
         'Front-End-Https',
         'X-Rewrite-Url',
-
         // ngrok:
         'X-Original-Host',
     ];
@@ -271,9 +266,7 @@ class Request extends \yii\base\Request
      * @see secureHeaders
      * @since 2.0.13
      */
-    public $ipHeaders = [
-        'X-Forwarded-For', // Common
-    ];
+    public $ip_headers = ['X-Forwarded-For'];
     /**
      * @var string[] List of headers where proxies store the real request port.
      * It's not advisable to put insecure headers here.
@@ -283,9 +276,7 @@ class Request extends \yii\base\Request
      * @see secureHeaders
      * @since 2.0.46
      */
-    public $portHeaders = [
-        'X-Forwarded-Port', // Common
-    ];
+    public $port_headers = ['X-Forwarded-Port'];
     /**
      * @var array list of headers to check for determining whether the connection is made via HTTPS.
      * The array keys are header names and the array value is a list of header values that indicate a secure connection.
@@ -295,20 +286,19 @@ class Request extends \yii\base\Request
      * @see secureHeaders
      * @since 2.0.13
      */
-    public $secureProtocolHeaders = [
-        'X-Forwarded-Proto' => ['https'], // Common
-        'Front-End-Https' => ['on'], // Microsoft
+    public $secure_protocol_headers = [
+        'X-Forwarded-Proto' => ['https'],
+        // Common
+        'Front-End-Https' => ['on'],
     ];
-
     /**
      * @var CookieCollection Collection of request cookies.
      */
-    private ?\yii\web\CookieCollection $_cookies = null;
+    private ?\yii\web\Cookie_Collection $_cookies = null;
     /**
      * @var HeaderCollection Collection of request headers.
      */
-    private ?\yii\web\HeaderCollection $_headers = null;
-
+    private ?\yii\web\Header_Collection $_headers = null;
     /**
      * Resolves the current request into a route and the associated parameters.
      * @return array the first element is the route, and the second is the associated parameters.
@@ -316,86 +306,79 @@ class Request extends \yii\base\Request
      */
     public function resolve()
     {
-        $result = Yii::$app->getUrlManager()->parseRequest($this);
+        $result = Yii::$app->get_url_manager()->parse_request($this);
         if ($result !== false) {
             [$route, $params] = $result;
-            if ($this->_queryParams === null) {
-                $_GET = $params + $_GET; // preserve numeric keys
+            if ($this->_query_params === null) {
+                $_GET = $params + $_GET;
+                // preserve numeric keys
             } else {
-                $this->_queryParams = $params + $this->_queryParams;
+                $this->_query_params = $params + $this->_query_params;
             }
-
-            return [$route, $this->getQueryParams()];
+            return [$route, $this->get_query_params()];
         }
-
-        throw new NotFoundHttpException(Yii::t('yii', 'Page not found.'));
+        throw new Not_Found_Http_Exception(Yii::t('yii', 'Page not found.'));
     }
-
     /**
      * Filters headers according to the [[trustedHosts]].
      * @since 2.0.13
      */
-    protected function filterHeaders(HeaderCollection $headerCollection)
+    protected function filter_headers(Header_Collection $header_collection)
     {
-        $trustedHeaders = $this->getTrustedHeaders();
-
+        $trusted_headers = $this->get_trusted_headers();
         // remove all secure headers unless they are trusted
-        foreach ($this->secureHeaders as $secureHeader) {
-            if (!in_array($secureHeader, $trustedHeaders)) {
-                $headerCollection->remove($secureHeader);
+        foreach ($this->secure_headers as $secure_header) {
+            if (!in_array($secure_header, $trusted_headers)) {
+                $header_collection->remove($secure_header);
             }
         }
     }
-
     /**
      * Trusted headers according to the [[trustedHosts]].
      * @return array
      * @since 2.0.28
      */
-    protected function getTrustedHeaders()
+    protected function get_trusted_headers()
     {
         // do not trust any of the [[secureHeaders]] by default
-        $trustedHeaders = [];
-
+        $trusted_headers = [];
         // check if the client is a trusted host
-        if (!empty($this->trustedHosts)) {
-            $validator = $this->getIpValidator();
-            $ip = $this->getRemoteIP();
-            foreach ($this->trustedHosts as $cidr => $headers) {
+        if (!empty($this->trusted_hosts)) {
+            $validator = $this->get_ip_validator();
+            $ip = $this->get_remote_ip();
+            foreach ($this->trusted_hosts as $cidr => $headers) {
                 if (!is_array($headers)) {
                     $cidr = $headers;
-                    $headers = $this->secureHeaders;
+                    $headers = $this->secure_headers;
                 }
-                $validator->setRanges($cidr);
+                $validator->set_ranges($cidr);
                 if ($validator->validate($ip)) {
-                    $trustedHeaders = $headers;
+                    $trusted_headers = $headers;
                     break;
                 }
             }
         }
-        return $trustedHeaders;
+        return $trusted_headers;
     }
-
     /**
      * Creates instance of [[IpValidator]].
      * You can override this method to adjust validator or implement different matching strategy.
      *
      * @since 2.0.13
      */
-    protected function getIpValidator(): \yii\validators\IpValidator
+    protected function get_ip_validator(): \yii\validators\Ip_Validator
     {
-        return new IpValidator();
+        return new Ip_Validator();
     }
-
     /**
      * Returns the header collection.
      * The header collection contains incoming HTTP headers.
      * @return HeaderCollection the header collection
      */
-    public function getHeaders()
+    public function get_headers()
     {
         if ($this->_headers === null) {
-            $this->_headers = new HeaderCollection();
+            $this->_headers = new Header_Collection();
             if (function_exists('getallheaders')) {
                 $headers = getallheaders();
                 foreach ($headers as $name => $value) {
@@ -408,10 +391,9 @@ class Request extends \yii\base\Request
                 }
             } else {
                 // ['prefix' => length]
-                $headerPrefixes = ['HTTP_' => 5, 'REDIRECT_HTTP_' => 14];
-
+                $header_prefixes = ['HTTP_' => 5, 'REDIRECT_HTTP_' => 14];
                 foreach ($_SERVER as $name => $value) {
-                    foreach ($headerPrefixes as $prefix => $length) {
+                    foreach ($header_prefixes as $prefix => $length) {
                         if (strncmp($name, $prefix, $length) === 0) {
                             $name = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, $length)))));
                             $this->_headers->add($name, $value);
@@ -420,102 +402,84 @@ class Request extends \yii\base\Request
                     }
                 }
             }
-            $this->filterHeaders($this->_headers);
+            $this->filter_headers($this->_headers);
         }
-
         return $this->_headers;
     }
-
     /**
      * Returns the method of the current request (e.g. GET, POST, HEAD, PUT, PATCH, DELETE).
      * @return string request method, such as GET, POST, HEAD, PUT, PATCH, DELETE.
      * The value returned is turned into upper case.
      */
-    public function getMethod(): string
+    public function get_method(): string
     {
-        if (
-            isset($_POST[$this->methodParam])
-            // Never allow to downgrade request from WRITE methods (POST, PATCH, DELETE, etc)
-            // to read methods (GET, HEAD, OPTIONS) for security reasons.
-            && !in_array(strtoupper($_POST[$this->methodParam]), ['GET', 'HEAD', 'OPTIONS'], true)
-        ) {
-            return strtoupper($_POST[$this->methodParam]);
+        if (isset($_POST[$this->method_param]) && !in_array(strtoupper($_POST[$this->method_param]), ['GET', 'HEAD', 'OPTIONS'], true)) {
+            return strtoupper($_POST[$this->method_param]);
         }
-
         if ($this->headers->has('X-Http-Method-Override')) {
             return strtoupper($this->headers->get('X-Http-Method-Override'));
         }
-
         if (isset($_SERVER['REQUEST_METHOD'])) {
             return strtoupper($_SERVER['REQUEST_METHOD']);
         }
-
         return 'GET';
     }
-
     /**
      * Returns whether this is a GET request.
      * @return bool whether this is a GET request.
      */
-    public function getIsGet(): bool
+    public function get_is_get(): bool
     {
-        return $this->getMethod() === 'GET';
+        return $this->get_method() === 'GET';
     }
-
     /**
      * Returns whether this is an OPTIONS request.
      * @return bool whether this is a OPTIONS request.
      */
-    public function getIsOptions(): bool
+    public function get_is_options(): bool
     {
-        return $this->getMethod() === 'OPTIONS';
+        return $this->get_method() === 'OPTIONS';
     }
-
     /**
      * Returns whether this is a HEAD request.
      * @return bool whether this is a HEAD request.
      */
-    public function getIsHead(): bool
+    public function get_is_head(): bool
     {
-        return $this->getMethod() === 'HEAD';
+        return $this->get_method() === 'HEAD';
     }
-
     /**
      * Returns whether this is a POST request.
      * @return bool whether this is a POST request.
      */
-    public function getIsPost(): bool
+    public function get_is_post(): bool
     {
-        return $this->getMethod() === 'POST';
+        return $this->get_method() === 'POST';
     }
-
     /**
      * Returns whether this is a DELETE request.
      * @return bool whether this is a DELETE request.
      */
-    public function getIsDelete(): bool
+    public function get_is_delete(): bool
     {
-        return $this->getMethod() === 'DELETE';
+        return $this->get_method() === 'DELETE';
     }
-
     /**
      * Returns whether this is a PUT request.
      * @return bool whether this is a PUT request.
      */
-    public function getIsPut(): bool
+    public function get_is_put(): bool
     {
-        return $this->getMethod() === 'PUT';
+        return $this->get_method() === 'PUT';
     }
-
     /**
      * Returns whether this is a PATCH request.
      * @return bool whether this is a PATCH request.
      */
-    public function getIsPatch(): bool
+    public function get_is_patch(): bool
     {
-        return $this->getMethod() === 'PATCH';
+        return $this->get_method() === 'PATCH';
     }
-
     /**
      * Returns whether this is an AJAX (XMLHttpRequest) request.
      *
@@ -533,58 +497,49 @@ class Request extends \yii\base\Request
      *
      * @return bool whether this is an AJAX (XMLHttpRequest) request.
      */
-    public function getIsAjax(): bool
+    public function get_is_ajax(): bool
     {
         return $this->headers->get('X-Requested-With') === 'XMLHttpRequest';
     }
-
     /**
      * Returns whether this is a PJAX request.
      * @return bool whether this is a PJAX request
      */
-    public function getIsPjax(): bool
+    public function get_is_pjax(): bool
     {
-        return $this->getIsAjax() && $this->headers->has('X-Pjax');
+        return $this->get_is_ajax() && $this->headers->has('X-Pjax');
     }
-
     /**
      * Returns whether this is an Adobe Flash or Flex request.
      * @return bool whether this is an Adobe Flash or Adobe Flex request.
      */
-    public function getIsFlash(): bool
+    public function get_is_flash(): bool
     {
-        $userAgent = $this->headers->get('User-Agent', '');
-        return stripos($userAgent, 'Shockwave') !== false
-            || stripos($userAgent, 'Flash') !== false;
+        $user_agent = $this->headers->get('User-Agent', '');
+        return stripos($user_agent, 'Shockwave') !== false || stripos($user_agent, 'Flash') !== false;
     }
-
-    private $_rawBody;
-
+    private $_raw_body;
     /**
      * Returns the raw HTTP request body.
      * @return string the request body
      */
-    public function getRawBody()
+    public function get_raw_body()
     {
-        if ($this->_rawBody === null) {
-            $this->_rawBody = file_get_contents('php://input');
+        if ($this->_raw_body === null) {
+            $this->_raw_body = file_get_contents('php://input');
         }
-
-        return $this->_rawBody;
+        return $this->_raw_body;
     }
-
     /**
      * Sets the raw HTTP request body, this method is mainly used by test scripts to simulate raw HTTP requests.
      * @param string $rawBody the request body
      */
-    public function setRawBody($rawBody): void
+    public function set_raw_body($raw_body): void
     {
-        $this->_rawBody = $rawBody;
+        $this->_raw_body = $raw_body;
     }
-
     /** @var array|object */
-    private $_bodyParams;
-
+    private $_body_params;
     /**
      * Returns the request parameters given in the request body.
      *
@@ -597,58 +552,53 @@ class Request extends \yii\base\Request
      * @see getBodyParam()
      * @see setBodyParams()
      */
-    public function getBodyParams()
+    public function get_body_params()
     {
-        if ($this->_bodyParams === null) {
-            if (isset($_POST[$this->methodParam])) {
-                $this->_bodyParams = $_POST;
-                unset($this->_bodyParams[$this->methodParam]);
-                return $this->_bodyParams;
+        if ($this->_body_params === null) {
+            if (isset($_POST[$this->method_param])) {
+                $this->_body_params = $_POST;
+                unset($this->_body_params[$this->method_param]);
+                return $this->_body_params;
             }
-
-            $rawContentType = $this->getContentType();
-            if (($pos = strpos((string)$rawContentType, ';')) !== false) {
+            $raw_content_type = $this->get_content_type();
+            if (($pos = strpos((string) $raw_content_type, ';')) !== false) {
                 // e.g. text/html; charset=UTF-8
-                $contentType = substr($rawContentType, 0, $pos);
+                $content_type = substr($raw_content_type, 0, $pos);
             } else {
-                $contentType = $rawContentType;
+                $content_type = $raw_content_type;
             }
-
-            if (isset($this->parsers[$contentType])) {
-                $parser = Yii::createObject($this->parsers[$contentType]);
-                if (!($parser instanceof RequestParserInterface)) {
-                    throw new InvalidConfigException("The '$contentType' request parser is invalid. It must implement the yii\\web\\RequestParserInterface.");
+            if (isset($this->parsers[$content_type])) {
+                $parser = Yii::create_object($this->parsers[$content_type]);
+                if (!$parser instanceof Request_Parser_Interface) {
+                    throw new Invalid_Config_Exception("The '{$content_type}' request parser is invalid. It must implement the yii\\web\\RequestParserInterface.");
                 }
-                $this->_bodyParams = $parser->parse($this->getRawBody(), $rawContentType);
+                $this->_body_params = $parser->parse($this->get_raw_body(), $raw_content_type);
             } elseif (isset($this->parsers['*'])) {
-                $parser = Yii::createObject($this->parsers['*']);
-                if (!($parser instanceof RequestParserInterface)) {
-                    throw new InvalidConfigException('The fallback request parser is invalid. It must implement the yii\\web\\RequestParserInterface.');
+                $parser = Yii::create_object($this->parsers['*']);
+                if (!$parser instanceof Request_Parser_Interface) {
+                    throw new Invalid_Config_Exception('The fallback request parser is invalid. It must implement the yii\web\RequestParserInterface.');
                 }
-                $this->_bodyParams = $parser->parse($this->getRawBody(), $rawContentType);
-            } elseif ($this->getMethod() === 'POST') {
+                $this->_body_params = $parser->parse($this->get_raw_body(), $raw_content_type);
+            } elseif ($this->get_method() === 'POST') {
                 // PHP has already parsed the body so we have all params in $_POST
-                $this->_bodyParams = $_POST;
+                $this->_body_params = $_POST;
             } else {
-                $this->_bodyParams = [];
-                mb_parse_str($this->getRawBody(), $this->_bodyParams);
+                $this->_body_params = [];
+                mb_parse_str($this->get_raw_body(), $this->_body_params);
             }
         }
-
-        return $this->_bodyParams;
+        return $this->_body_params;
     }
-
     /**
      * Sets the request body parameters.
      *
      * @param array|object $values the request body parameters (name-value pairs)
      * @see getBodyParams()
      */
-    public function setBodyParams($values): void
+    public function set_body_params($values): void
     {
-        $this->_bodyParams = $values;
+        $this->_body_params = $values;
     }
-
     /**
      * Returns the named request body parameter value.
      *
@@ -660,22 +610,19 @@ class Request extends \yii\base\Request
      * @see getBodyParams()
      * @see setBodyParams()
      */
-    public function getBodyParam($name, $defaultValue = null)
+    public function get_body_param($name, $default_value = null)
     {
-        $params = $this->getBodyParams();
-
+        $params = $this->get_body_params();
         if (is_object($params)) {
             // unable to use `ArrayHelper::getValue()` due to different dots in key logic and lack of exception handling
             try {
-                return $params->{$name} ?? $defaultValue;
+                return $params->{$name} ?? $default_value;
             } catch (\Exception $e) {
-                return $defaultValue;
+                return $default_value;
             }
         }
-
-        return $params[$name] ?? $defaultValue;
+        return $params[$name] ?? $default_value;
     }
-
     /**
      * Returns POST parameter with a given name. If name isn't specified, returns an array of all POST parameters.
      *
@@ -683,18 +630,15 @@ class Request extends \yii\base\Request
      * @param mixed $defaultValue the default parameter value if the parameter does not exist.
      * @return ($name is null ? array|object : mixed)
      */
-    public function post($name = null, $defaultValue = null)
+    public function post($name = null, $default_value = null)
     {
         if ($name === null) {
-            return $this->getBodyParams();
+            return $this->get_body_params();
         }
-
-        return $this->getBodyParam($name, $defaultValue);
+        return $this->get_body_param($name, $default_value);
     }
-
     /** @var array */
-    private $_queryParams;
-
+    private $_query_params;
     /**
      * Returns the request parameters given in the [[queryString]].
      *
@@ -702,26 +646,23 @@ class Request extends \yii\base\Request
      * @return array the request GET parameter values.
      * @see setQueryParams()
      */
-    public function getQueryParams()
+    public function get_query_params()
     {
-        if ($this->_queryParams === null) {
+        if ($this->_query_params === null) {
             return $_GET;
         }
-
-        return $this->_queryParams;
+        return $this->_query_params;
     }
-
     /**
      * Sets the request [[queryString]] parameters.
      * @param array $values the request query parameters (name-value pairs)
      * @see getQueryParam()
      * @see getQueryParams()
      */
-    public function setQueryParams($values): void
+    public function set_query_params($values): void
     {
-        $this->_queryParams = $values;
+        $this->_query_params = $values;
     }
-
     /**
      * Returns GET parameter with a given name. If name isn't specified, returns an array of all GET parameters.
      *
@@ -729,15 +670,13 @@ class Request extends \yii\base\Request
      * @param mixed $defaultValue the default parameter value if the parameter does not exist.
      * @return ($name is null ? array : mixed)
      */
-    public function get($name = null, $defaultValue = null)
+    public function get($name = null, $default_value = null)
     {
         if ($name === null) {
-            return $this->getQueryParams();
+            return $this->get_query_params();
         }
-
-        return $this->getQueryParam($name, $defaultValue);
+        return $this->get_query_param($name, $default_value);
     }
-
     /**
      * Returns the named GET parameter value.
      * If the GET parameter does not exist, the second parameter passed to this method will be returned.
@@ -746,16 +685,13 @@ class Request extends \yii\base\Request
      * @return mixed the GET parameter value
      * @see getBodyParam()
      */
-    public function getQueryParam($name, $defaultValue = null)
+    public function get_query_param($name, $default_value = null)
     {
-        $params = $this->getQueryParams();
-
-        return $params[$name] ?? $defaultValue;
+        $params = $this->get_query_params();
+        return $params[$name] ?? $default_value;
     }
-
-    private ?string $_hostInfo = null;
-    private $_hostName;
-
+    private ?string $_host_info = null;
+    private $_host_name;
     /**
      * Returns the schema and host part of the current request URL.
      *
@@ -780,32 +716,29 @@ class Request extends \yii\base\Request
      * (e.g. `https://www.yiiframework.com`), null if can't be obtained from `$_SERVER` and wasn't set.
      * @see setHostInfo()
      */
-    public function getHostInfo()
+    public function get_host_info()
     {
-        if ($this->_hostInfo === null) {
-            $secure = $this->getIsSecureConnection();
+        if ($this->_host_info === null) {
+            $secure = $this->get_is_secure_connection();
             $http = $secure ? 'https' : 'http';
-
-            if ($this->getSecureForwardedHeaderTrustedPart('host') !== null) {
-                $this->_hostInfo = $http . '://' . $this->getSecureForwardedHeaderTrustedPart('host');
+            if ($this->get_secure_forwarded_header_trusted_part('host') !== null) {
+                $this->_host_info = $http . '://' . $this->get_secure_forwarded_header_trusted_part('host');
             } elseif ($this->headers->has('X-Forwarded-Host')) {
-                $this->_hostInfo = $http . '://' . trim(explode(',', $this->headers->get('X-Forwarded-Host'))[0]);
+                $this->_host_info = $http . '://' . trim(explode(',', $this->headers->get('X-Forwarded-Host'))[0]);
             } elseif ($this->headers->has('X-Original-Host')) {
-                $this->_hostInfo = $http . '://' . trim(explode(',', $this->headers->get('X-Original-Host'))[0]);
+                $this->_host_info = $http . '://' . trim(explode(',', $this->headers->get('X-Original-Host'))[0]);
             } elseif ($this->headers->has('Host')) {
-                $this->_hostInfo = $http . '://' . $this->headers->get('Host');
+                $this->_host_info = $http . '://' . $this->headers->get('Host');
             } elseif (isset($_SERVER['SERVER_NAME'])) {
-                $this->_hostInfo = $http . '://' . $_SERVER['SERVER_NAME'];
-                $port = $secure ? $this->getSecurePort() : $this->getPort();
-                if (($port !== 80 && !$secure) || ($port !== 443 && $secure)) {
-                    $this->_hostInfo .= ':' . $port;
+                $this->_host_info = $http . '://' . $_SERVER['SERVER_NAME'];
+                $port = $secure ? $this->get_secure_port() : $this->get_port();
+                if ($port !== 80 && !$secure || $port !== 443 && $secure) {
+                    $this->_host_info .= ':' . $port;
                 }
             }
         }
-
-        return $this->_hostInfo;
+        return $this->_host_info;
     }
-
     /**
      * Sets the schema and host part of the application URL.
      * This setter is provided in case the schema and hostname cannot be determined
@@ -813,12 +746,11 @@ class Request extends \yii\base\Request
      * @param string|null $value the schema and host part of the application URL. The trailing slashes will be removed.
      * @see getHostInfo() for security related notes on this property.
      */
-    public function setHostInfo($value): void
+    public function set_host_info($value): void
     {
-        $this->_hostName = null;
-        $this->_hostInfo = $value === null ? null : rtrim($value, '/');
+        $this->_host_name = null;
+        $this->_host_info = $value === null ? null : rtrim($value, '/');
     }
-
     /**
      * Returns the host part of the current request URL.
      * Value is calculated from current [[getHostInfo()|hostInfo]] property.
@@ -830,17 +762,14 @@ class Request extends \yii\base\Request
      * @see getHostInfo()
      * @since 2.0.10
      */
-    public function getHostName()
+    public function get_host_name()
     {
-        if ($this->_hostName === null) {
-            $this->_hostName = parse_url((string)$this->getHostInfo(), PHP_URL_HOST);
+        if ($this->_host_name === null) {
+            $this->_host_name = parse_url((string) $this->get_host_info(), PHP_URL_HOST);
         }
-
-        return $this->_hostName;
+        return $this->_host_name;
     }
-
-    private $_baseUrl;
-
+    private $_base_url;
     /**
      * Returns the relative URL for the application.
      * This is similar to [[scriptUrl]] except that it does not include the script file name,
@@ -848,89 +777,78 @@ class Request extends \yii\base\Request
      * @return string the relative URL for the application
      * @see setScriptUrl()
      */
-    public function getBaseUrl()
+    public function get_base_url()
     {
-        if ($this->_baseUrl === null) {
-            $this->_baseUrl = rtrim(dirname($this->getScriptUrl()), '\\/');
+        if ($this->_base_url === null) {
+            $this->_base_url = rtrim(dirname($this->get_script_url()), '\/');
         }
-
-        return $this->_baseUrl;
+        return $this->_base_url;
     }
-
     /**
      * Sets the relative URL for the application.
      * By default the URL is determined based on the entry script URL.
      * This setter is provided in case you want to change this behavior.
      * @param string $value the relative URL for the application
      */
-    public function setBaseUrl($value): void
+    public function set_base_url($value): void
     {
-        $this->_baseUrl = $value;
+        $this->_base_url = $value;
     }
-
-    private $_scriptUrl;
-
+    private $_script_url;
     /**
      * Returns the relative URL of the entry script.
      * The implementation of this method referenced Zend_Controller_Request_Http in Zend Framework.
      * @return string the relative URL of the entry script.
      * @throws InvalidConfigException if unable to determine the entry script URL
      */
-    public function getScriptUrl()
+    public function get_script_url()
     {
-        if ($this->_scriptUrl === null) {
-            $scriptFile = $this->getScriptFile();
-            $scriptName = basename($scriptFile);
-            if (isset($_SERVER['SCRIPT_NAME']) && basename($_SERVER['SCRIPT_NAME']) === $scriptName) {
-                $this->_scriptUrl = $_SERVER['SCRIPT_NAME'];
-            } elseif (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) === $scriptName) {
-                $this->_scriptUrl = $_SERVER['PHP_SELF'];
-            } elseif (isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME']) === $scriptName) {
-                $this->_scriptUrl = $_SERVER['ORIG_SCRIPT_NAME'];
-            } elseif (isset($_SERVER['PHP_SELF']) && ($pos = strpos($_SERVER['PHP_SELF'], '/' . $scriptName)) !== false) {
-                $this->_scriptUrl = substr($_SERVER['SCRIPT_NAME'], 0, $pos) . '/' . $scriptName;
-            } elseif (!empty($_SERVER['DOCUMENT_ROOT']) && strpos($scriptFile, (string) $_SERVER['DOCUMENT_ROOT']) === 0) {
-                $this->_scriptUrl = str_replace([$_SERVER['DOCUMENT_ROOT'], '\\'], ['', '/'], $scriptFile);
+        if ($this->_script_url === null) {
+            $script_file = $this->get_script_file();
+            $script_name = basename($script_file);
+            if (isset($_SERVER['SCRIPT_NAME']) && basename($_SERVER['SCRIPT_NAME']) === $script_name) {
+                $this->_script_url = $_SERVER['SCRIPT_NAME'];
+            } elseif (isset($_SERVER['PHP_SELF']) && basename($_SERVER['PHP_SELF']) === $script_name) {
+                $this->_script_url = $_SERVER['PHP_SELF'];
+            } elseif (isset($_SERVER['ORIG_SCRIPT_NAME']) && basename($_SERVER['ORIG_SCRIPT_NAME']) === $script_name) {
+                $this->_script_url = $_SERVER['ORIG_SCRIPT_NAME'];
+            } elseif (isset($_SERVER['PHP_SELF']) && ($pos = strpos($_SERVER['PHP_SELF'], '/' . $script_name)) !== false) {
+                $this->_script_url = substr($_SERVER['SCRIPT_NAME'], 0, $pos) . '/' . $script_name;
+            } elseif (!empty($_SERVER['DOCUMENT_ROOT']) && strpos($script_file, (string) $_SERVER['DOCUMENT_ROOT']) === 0) {
+                $this->_script_url = str_replace([$_SERVER['DOCUMENT_ROOT'], '\\'], ['', '/'], $script_file);
             } else {
-                throw new InvalidConfigException('Unable to determine the entry script URL.');
+                throw new Invalid_Config_Exception('Unable to determine the entry script URL.');
             }
         }
-
-        return $this->_scriptUrl;
+        return $this->_script_url;
     }
-
     /**
      * Sets the relative URL for the application entry script.
      * This setter is provided in case the entry script URL cannot be determined
      * on certain Web servers.
      * @param string $value the relative URL for the application entry script.
      */
-    public function setScriptUrl($value): void
+    public function set_script_url($value): void
     {
-        $this->_scriptUrl = $value === null ? null : '/' . trim($value, '/');
+        $this->_script_url = $value === null ? null : '/' . trim($value, '/');
     }
-
-    private $_scriptFile;
-
+    private $_script_file;
     /**
      * Returns the entry script file path.
      * The default implementation will simply return `$_SERVER['SCRIPT_FILENAME']`.
      * @return string the entry script file path
      * @throws InvalidConfigException
      */
-    public function getScriptFile()
+    public function get_script_file()
     {
-        if (isset($this->_scriptFile)) {
-            return $this->_scriptFile;
+        if (isset($this->_script_file)) {
+            return $this->_script_file;
         }
-
         if (isset($_SERVER['SCRIPT_FILENAME'])) {
             return $_SERVER['SCRIPT_FILENAME'];
         }
-
-        throw new InvalidConfigException('Unable to determine the entry script file path.');
+        throw new Invalid_Config_Exception('Unable to determine the entry script file path.');
     }
-
     /**
      * Sets the entry script file path.
      * The entry script file path normally can be obtained from `$_SERVER['SCRIPT_FILENAME']`.
@@ -938,13 +856,11 @@ class Request extends \yii\base\Request
      * this property to make it right.
      * @param string $value the entry script file path.
      */
-    public function setScriptFile($value): void
+    public function set_script_file($value): void
     {
-        $this->_scriptFile = $value;
+        $this->_script_file = $value;
     }
-
-    private $_pathInfo;
-
+    private $_path_info;
     /**
      * Returns the path info of the currently requested URL.
      * A path info refers to the part that is after the entry script and before the question mark (query string).
@@ -953,25 +869,22 @@ class Request extends \yii\base\Request
      * Note, the returned path info is already URL-decoded.
      * @throws InvalidConfigException if the path info cannot be determined due to unexpected server configuration
      */
-    public function getPathInfo()
+    public function get_path_info()
     {
-        if ($this->_pathInfo === null) {
-            $this->_pathInfo = $this->resolvePathInfo();
+        if ($this->_path_info === null) {
+            $this->_path_info = $this->resolve_path_info();
         }
-
-        return $this->_pathInfo;
+        return $this->_path_info;
     }
-
     /**
      * Sets the path info of the current request.
      * This method is mainly provided for testing purpose.
      * @param string $value the path info of the current request
      */
-    public function setPathInfo($value): void
+    public function set_path_info($value): void
     {
-        $this->_pathInfo = $value === null ? null : ltrim($value, '/');
+        $this->_path_info = $value === null ? null : ltrim($value, '/');
     }
-
     /**
      * Resolves the path info part of the currently requested URL.
      * A path info refers to the part that is after the entry script and before the question mark (query string).
@@ -980,20 +893,16 @@ class Request extends \yii\base\Request
      * Note, the returned path info is decoded.
      * @throws InvalidConfigException if the path info cannot be determined due to unexpected server configuration
      */
-    protected function resolvePathInfo(): string
+    protected function resolve_path_info(): string
     {
-        $pathInfo = $this->getUrl();
-
-        if (($pos = strpos($pathInfo, '?')) !== false) {
-            $pathInfo = substr($pathInfo, 0, $pos);
+        $path_info = $this->get_url();
+        if (($pos = strpos($path_info, '?')) !== false) {
+            $path_info = substr($path_info, 0, $pos);
         }
-
-        $pathInfo = urldecode($pathInfo);
-
+        $path_info = urldecode($path_info);
         // try to encode in UTF8 if not so
         // https://www.w3.org/International/questions/qa-forms-utf-8.en.html
-        if (
-            !preg_match('%^(?:
+        if (!preg_match('%^(?:
             [\x09\x0A\x0D\x20-\x7E]              # ASCII
             | [\xC2-\xDF][\x80-\xBF]             # non-overlong 2-byte
             | \xE0[\xA0-\xBF][\x80-\xBF]         # excluding overlongs
@@ -1002,30 +911,25 @@ class Request extends \yii\base\Request
             | \xF0[\x90-\xBF][\x80-\xBF]{2}      # planes 1-3
             | [\xF1-\xF3][\x80-\xBF]{3}          # planes 4-15
             | \xF4[\x80-\x8F][\x80-\xBF]{2}      # plane 16
-            )*$%xs', $pathInfo)
-        ) {
-            $pathInfo = $this->utf8Encode($pathInfo);
+            )*$%xs', $path_info)) {
+            $path_info = $this->utf8Encode($path_info);
         }
-
-        $scriptUrl = $this->getScriptUrl();
-        $baseUrl = $this->getBaseUrl();
-        if (strpos($pathInfo, $scriptUrl) === 0) {
-            $pathInfo = substr($pathInfo, strlen($scriptUrl));
-        } elseif ($baseUrl === '' || strpos($pathInfo, $baseUrl) === 0) {
-            $pathInfo = substr($pathInfo, strlen($baseUrl));
-        } elseif (isset($_SERVER['PHP_SELF']) && strpos($_SERVER['PHP_SELF'], $scriptUrl) === 0) {
-            $pathInfo = substr($_SERVER['PHP_SELF'], strlen($scriptUrl));
+        $script_url = $this->get_script_url();
+        $base_url = $this->get_base_url();
+        if (strpos($path_info, $script_url) === 0) {
+            $path_info = substr($path_info, strlen($script_url));
+        } elseif ($base_url === '' || strpos($path_info, $base_url) === 0) {
+            $path_info = substr($path_info, strlen($base_url));
+        } elseif (isset($_SERVER['PHP_SELF']) && strpos($_SERVER['PHP_SELF'], $script_url) === 0) {
+            $path_info = substr($_SERVER['PHP_SELF'], strlen($script_url));
         } else {
-            throw new InvalidConfigException('Unable to determine the path info of the current request.');
+            throw new Invalid_Config_Exception('Unable to determine the path info of the current request.');
         }
-
-        if (strncmp($pathInfo, '/', 1) === 0) {
-            return substr($pathInfo, 1);
+        if (strncmp($path_info, '/', 1) === 0) {
+            return substr($path_info, 1);
         }
-
-        return $pathInfo;
+        return $path_info;
     }
-
     /**
      * Encodes an ISO-8859-1 string to UTF-8
      * @return string the UTF-8 translation of `s`.
@@ -1039,31 +943,31 @@ class Request extends \yii\base\Request
         $len = \strlen($s);
         for ($i = $len >> 1, $j = 0; $i < $len; ++$i, ++$j) {
             switch (true) {
-                case $s[$i] < "\x80": $s[$j] = $s[$i];
+                case $s[$i] < "\x80":
+                    $s[$j] = $s[$i];
                     break;
-                case $s[$i] < "\xC0": $s[$j] = "\xC2";
+                case $s[$i] < "\xc0":
+                    $s[$j] = "\xc2";
                     $s[++$j] = $s[$i];
                     break;
-                default: $s[$j] = "\xC3";
+                default:
+                    $s[$j] = "\xc3";
                     $s[++$j] = \chr(\ord($s[$i]) - 64);
                     break;
             }
         }
         return substr($s, 0, $j);
     }
-
     /**
      * Returns the currently requested absolute URL.
      * This is a shortcut to the concatenation of [[hostInfo]] and [[url]].
      * @return string the currently requested absolute URL.
      */
-    public function getAbsoluteUrl(): string
+    public function get_absolute_url(): string
     {
-        return $this->getHostInfo() . $this->getUrl();
+        return $this->get_host_info() . $this->get_url();
     }
-
     private $_url;
-
     /**
      * Returns the currently requested relative URL.
      * This refers to the portion of the URL that is after the [[hostInfo]] part.
@@ -1071,26 +975,23 @@ class Request extends \yii\base\Request
      * @return string the currently requested relative URL. Note that the URI returned may be URL-encoded depending on the client.
      * @throws InvalidConfigException if the URL cannot be determined due to unusual server configuration
      */
-    public function getUrl()
+    public function get_url()
     {
         if ($this->_url === null) {
-            $this->_url = $this->resolveRequestUri();
+            $this->_url = $this->resolve_request_uri();
         }
-
         return $this->_url;
     }
-
     /**
      * Sets the currently requested relative URL.
      * The URI must refer to the portion that is after [[hostInfo]].
      * Note that the URI should be URL-encoded.
      * @param string $value the request URI to be set
      */
-    public function setUrl($value): void
+    public function set_url($value): void
     {
         $this->_url = $value;
     }
-
     /**
      * Resolves the request URI portion for the currently requested URL.
      * This refers to the portion that is after the [[hostInfo]] part. It includes the [[queryString]] part if any.
@@ -1099,72 +1000,66 @@ class Request extends \yii\base\Request
      * Note that the URI returned may be URL-encoded depending on the client.
      * @throws InvalidConfigException if the request URI cannot be determined due to unusual server configuration
      */
-    protected function resolveRequestUri()
+    protected function resolve_request_uri()
     {
-        if ($this->headers->has('X-Rewrite-Url')) { // IIS
-            $requestUri = $this->headers->get('X-Rewrite-Url');
+        if ($this->headers->has('X-Rewrite-Url')) {
+            // IIS
+            $request_uri = $this->headers->get('X-Rewrite-Url');
         } elseif (isset($_SERVER['REQUEST_URI'])) {
-            $requestUri = $_SERVER['REQUEST_URI'];
-            if ($requestUri !== '' && $requestUri[0] !== '/') {
-                $requestUri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $requestUri);
+            $request_uri = $_SERVER['REQUEST_URI'];
+            if ($request_uri !== '' && $request_uri[0] !== '/') {
+                $request_uri = preg_replace('/^(http|https):\/\/[^\/]+/i', '', $request_uri);
             }
-        } elseif (isset($_SERVER['ORIG_PATH_INFO'])) { // IIS 5.0 CGI
-            $requestUri = $_SERVER['ORIG_PATH_INFO'];
+        } elseif (isset($_SERVER['ORIG_PATH_INFO'])) {
+            // IIS 5.0 CGI
+            $request_uri = $_SERVER['ORIG_PATH_INFO'];
             if (!empty($_SERVER['QUERY_STRING'])) {
-                $requestUri .= '?' . $_SERVER['QUERY_STRING'];
+                $request_uri .= '?' . $_SERVER['QUERY_STRING'];
             }
         } else {
-            throw new InvalidConfigException('Unable to determine the request URI.');
+            throw new Invalid_Config_Exception('Unable to determine the request URI.');
         }
-
-        return $requestUri;
+        return $request_uri;
     }
-
     /**
      * Returns part of the request URL that is after the question mark.
      * @return string part of the request URL that is after the question mark
      */
-    public function getQueryString()
+    public function get_query_string()
     {
         return $_SERVER['QUERY_STRING'] ?? '';
     }
-
     /**
      * Return if the request is sent via secure channel (https).
      * @return bool if the request is sent via secure channel (https)
      */
-    public function getIsSecureConnection()
+    public function get_is_secure_connection()
     {
         if (isset($_SERVER['HTTPS']) && (strcasecmp($_SERVER['HTTPS'], 'on') === 0 || $_SERVER['HTTPS'] == 1)) {
             return true;
         }
-
-        if (($proto = $this->getSecureForwardedHeaderTrustedPart('proto')) !== null) {
+        if (($proto = $this->get_secure_forwarded_header_trusted_part('proto')) !== null) {
             return strcasecmp($proto, 'https') === 0;
         }
-
-        foreach ($this->secureProtocolHeaders as $header => $values) {
-            if (($headerValue = $this->headers->get($header)) !== null) {
+        foreach ($this->secure_protocol_headers as $header => $values) {
+            if (($header_value = $this->headers->get($header)) !== null) {
                 foreach ($values as $value) {
-                    if (strcasecmp($headerValue, $value) === 0) {
+                    if (strcasecmp($header_value, $value) === 0) {
                         return true;
                     }
                 }
             }
         }
-
         return false;
     }
-
     /**
      * Returns the server name.
      * @return string|null server name, null if not available
      */
-    public function getServerName()
+    public function get_server_name()
     {
         return $_SERVER['SERVER_NAME'] ?? null;
     }
-
     /**
      * Returns the server port number. If a port is specified via a forwarding header (e.g. 'X-Forwarded-Port')
      * and the remote host is a "trusted host" the that port will be used (see [[portHeaders]]),
@@ -1172,29 +1067,26 @@ class Request extends \yii\base\Request
      * @return int|null server port number, null if not available
      * @see portHeaders
      */
-    public function getServerPort(): ?int
+    public function get_server_port(): ?int
     {
-        foreach ($this->portHeaders as $portHeader) {
-            if ($this->headers->has($portHeader)) {
-                $port = $this->headers->get($portHeader);
+        foreach ($this->port_headers as $port_header) {
+            if ($this->headers->has($port_header)) {
+                $port = $this->headers->get($port_header);
                 if ($port !== null) {
                     return (int) $port;
                 }
             }
         }
-
         return isset($_SERVER['SERVER_PORT']) ? (int) $_SERVER['SERVER_PORT'] : null;
     }
-
     /**
      * Returns the URL referrer.
      * @return string|null URL referrer, null if not available
      */
-    public function getReferrer()
+    public function get_referrer()
     {
         return $this->headers->get('Referer');
     }
-
     /**
      * Returns the URL origin of a CORS request.
      *
@@ -1210,45 +1102,36 @@ class Request extends \yii\base\Request
      * @see getHeaders()
      * @since 2.0.13
      */
-    public function getOrigin()
+    public function get_origin()
     {
-        return $this->getHeaders()->get('origin');
+        return $this->get_headers()->get('origin');
     }
-
     /**
      * Returns the user agent.
      * @return string|null user agent, null if not available
      */
-    public function getUserAgent()
+    public function get_user_agent()
     {
         return $this->headers->get('User-Agent');
     }
-
     /**
      * Returns the user IP address from [[ipHeaders]].
      * @return string|null user IP address, null if not available
      * @see ipHeaders
      * @since 2.0.28
      */
-    protected function getUserIpFromIpHeaders()
+    protected function get_user_ip_from_ip_headers()
     {
-        $ip = $this->getSecureForwardedHeaderTrustedPart('for');
-        if (
-            $ip !== null && preg_match(
-                '/^\[?(?P<ip>(?:(?:(?:[0-9a-f]{1,4}:){1,6}(?:[0-9a-f]{1,4})?(?:(?::[0-9a-f]{1,4}){1,6}))|(?:\d{1,3}\.){3}\d{1,3}))\]?(?::(?P<port>\d+))?$/',
-                $ip,
-                $matches
-            )
-        ) {
-            $ip = $this->getUserIpFromIpHeader($matches['ip']);
+        $ip = $this->get_secure_forwarded_header_trusted_part('for');
+        if ($ip !== null && preg_match('/^\[?(?P<ip>(?:(?:(?:[0-9a-f]{1,4}:){1,6}(?:[0-9a-f]{1,4})?(?:(?::[0-9a-f]{1,4}){1,6}))|(?:\d{1,3}\.){3}\d{1,3}))\]?(?::(?P<port>\d+))?$/', $ip, $matches)) {
+            $ip = $this->get_user_ip_from_ip_header($matches['ip']);
             if ($ip !== null) {
                 return $ip;
             }
         }
-
-        foreach ($this->ipHeaders as $ipHeader) {
-            if ($this->headers->has($ipHeader)) {
-                $ip = $this->getUserIpFromIpHeader($this->headers->get($ipHeader));
+        foreach ($this->ip_headers as $ip_header) {
+            if ($this->headers->has($ip_header)) {
+                $ip = $this->get_user_ip_from_ip_header($this->headers->get($ip_header));
                 if ($ip !== null) {
                     return $ip;
                 }
@@ -1256,26 +1139,22 @@ class Request extends \yii\base\Request
         }
         return null;
     }
-
     private $_ip;
-
     /**
      * Returns the user IP address.
      * The IP is determined using headers and / or `$_SERVER` variables.
      * @return string|null user IP address, null if not available
      */
-    public function getUserIP()
+    public function get_user_ip()
     {
         if ($this->_ip === null) {
-            $this->_ip = $this->getUserIpFromIpHeaders();
+            $this->_ip = $this->get_user_ip_from_ip_headers();
             if ($this->_ip === null) {
-                $this->_ip = $this->getRemoteIP();
+                $this->_ip = $this->get_remote_ip();
             }
         }
-
         return $this->_ip;
     }
-
     /**
      * Return user IP's from IP header.
      *
@@ -1286,7 +1165,7 @@ class Request extends \yii\base\Request
      * @see getTrustedHeaders()
      * @since 2.0.28
      */
-    protected function getUserIpFromIpHeader($ips)
+    protected function get_user_ip_from_ip_header($ips)
     {
         $ips = trim($ips);
         if ($ips === '') {
@@ -1294,57 +1173,54 @@ class Request extends \yii\base\Request
         }
         $ips = preg_split('/\s*,\s*/', $ips, -1, PREG_SPLIT_NO_EMPTY);
         krsort($ips);
-        $validator = $this->getIpValidator();
-        $resultIp = null;
+        $validator = $this->get_ip_validator();
+        $result_ip = null;
         foreach ($ips as $ip) {
-            $validator->setRanges('any');
-            if (!$validator->validate($ip) /* checking IP format */) {
+            $validator->set_ranges('any');
+            if (!$validator->validate($ip)) {
                 break;
             }
-            $resultIp = $ip;
-            $isTrusted = false;
-            foreach ($this->trustedHosts as $trustedCidr => $trustedCidrOrHeaders) {
-                if (!is_array($trustedCidrOrHeaders)) {
-                    $trustedCidr = $trustedCidrOrHeaders;
+            $result_ip = $ip;
+            $is_trusted = false;
+            foreach ($this->trusted_hosts as $trusted_cidr => $trusted_cidr_or_headers) {
+                if (!is_array($trusted_cidr_or_headers)) {
+                    $trusted_cidr = $trusted_cidr_or_headers;
                 }
-                $validator->setRanges($trustedCidr);
-                if ($validator->validate($ip) /* checking trusted range */) {
-                    $isTrusted = true;
+                $validator->set_ranges($trusted_cidr);
+                if ($validator->validate($ip)) {
+                    $is_trusted = true;
                     break;
                 }
             }
-            if (!$isTrusted) {
+            if (!$is_trusted) {
                 break;
             }
         }
-        return $resultIp;
+        return $result_ip;
     }
-
     /**
      * Returns the user host name.
      * The HOST is determined using headers and / or `$_SERVER` variables.
      * @return string|null user host name, null if not available
      */
-    public function getUserHost()
+    public function get_user_host()
     {
-        $userIp = $this->getUserIpFromIpHeaders();
-        if ($userIp === null) {
-            return $this->getRemoteHost();
+        $user_ip = $this->get_user_ip_from_ip_headers();
+        if ($user_ip === null) {
+            return $this->get_remote_host();
         }
-        return gethostbyaddr($userIp);
+        return gethostbyaddr($user_ip);
     }
-
     /**
      * Returns the IP on the other end of this connection.
      * This is always the next hop, any headers are ignored.
      * @return string|null remote IP address, `null` if not available.
      * @since 2.0.13
      */
-    public function getRemoteIP()
+    public function get_remote_ip()
     {
         return $_SERVER['REMOTE_ADDR'] ?? null;
     }
-
     /**
      * Returns the host name of the other end of this connection.
      * This is always the next hop, any headers are ignored.
@@ -1353,29 +1229,26 @@ class Request extends \yii\base\Request
      * @see getRemoteIP()
      * @since 2.0.13
      */
-    public function getRemoteHost()
+    public function get_remote_host()
     {
         return $_SERVER['REMOTE_HOST'] ?? null;
     }
-
     /**
      * @return string|null the username sent via HTTP authentication, `null` if the username is not given
      * @see getAuthCredentials() to get both username and password in one call
      */
-    public function getAuthUser()
+    public function get_auth_user()
     {
-        return $this->getAuthCredentials()[0];
+        return $this->get_auth_credentials()[0];
     }
-
     /**
      * @return string|null the password sent via HTTP authentication, `null` if the password is not given
      * @see getAuthCredentials() to get both username and password in one call
      */
-    public function getAuthPassword()
+    public function get_auth_password()
     {
-        return $this->getAuthCredentials()[1];
+        return $this->get_auth_credentials()[1];
     }
-
     /**
      * @return array that contains exactly two elements:
      * - 0: the username sent via HTTP authentication, `null` if the username is not given
@@ -1384,14 +1257,13 @@ class Request extends \yii\base\Request
      * @see getAuthPassword() to get only password
      * @since 2.0.13
      */
-    public function getAuthCredentials(): array
+    public function get_auth_credentials(): array
     {
         $username = $_SERVER['PHP_AUTH_USER'] ?? null;
         $password = $_SERVER['PHP_AUTH_PW'] ?? null;
         if ($username !== null || $password !== null) {
             return [$username, $password];
         }
-
         /**
          * Apache with php-cgi does not pass HTTP Basic authentication to PHP by default.
          * To make it work, add one of the following lines to to your .htaccess file:
@@ -1400,23 +1272,17 @@ class Request extends \yii\base\Request
          * --OR--
          * RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
          */
-        $auth_token = $this->getHeaders()->get('Authorization');
-
+        $auth_token = $this->get_headers()->get('Authorization');
         if ($auth_token !== null && strncasecmp($auth_token, 'basic', 5) === 0) {
-            $parts = array_map(fn ($value) => strlen($value) === 0 ? null : $value, explode(':', base64_decode(mb_substr($auth_token, 6)), 2));
-
+            $parts = array_map(fn($value) => strlen($value) === 0 ? null : $value, explode(':', base64_decode(mb_substr($auth_token, 6)), 2));
             if (count($parts) < 2) {
                 return [$parts[0], null];
             }
-
             return $parts;
         }
-
         return [null, null];
     }
-
     private $_port;
-
     /**
      * Returns the port to use for insecure requests.
      * Defaults to 80, or the port specified by the server if the current
@@ -1424,32 +1290,28 @@ class Request extends \yii\base\Request
      * @return int port number for insecure requests.
      * @see setPort()
      */
-    public function getPort()
+    public function get_port()
     {
         if ($this->_port === null) {
-            $serverPort = $this->getServerPort();
-            $this->_port = !$this->getIsSecureConnection() && $serverPort !== null ? $serverPort : 80;
+            $server_port = $this->get_server_port();
+            $this->_port = !$this->get_is_secure_connection() && $server_port !== null ? $server_port : 80;
         }
-
         return $this->_port;
     }
-
     /**
      * Sets the port to use for insecure requests.
      * This setter is provided in case a custom port is necessary for certain
      * server configurations.
      * @param int $value port number.
      */
-    public function setPort($value): void
+    public function set_port($value): void
     {
         if ($value != $this->_port) {
             $this->_port = (int) $value;
-            $this->_hostInfo = null;
+            $this->_host_info = null;
         }
     }
-
-    private $_securePort;
-
+    private $_secure_port;
     /**
      * Returns the port to use for secure requests.
      * Defaults to 443, or the port specified by the server if the current
@@ -1457,32 +1319,28 @@ class Request extends \yii\base\Request
      * @return int port number for secure requests.
      * @see setSecurePort()
      */
-    public function getSecurePort()
+    public function get_secure_port()
     {
-        if ($this->_securePort === null) {
-            $serverPort = $this->getServerPort();
-            $this->_securePort = $this->getIsSecureConnection() && $serverPort !== null ? $serverPort : 443;
+        if ($this->_secure_port === null) {
+            $server_port = $this->get_server_port();
+            $this->_secure_port = $this->get_is_secure_connection() && $server_port !== null ? $server_port : 443;
         }
-
-        return $this->_securePort;
+        return $this->_secure_port;
     }
-
     /**
      * Sets the port to use for secure requests.
      * This setter is provided in case a custom port is necessary for certain
      * server configurations.
      * @param int $value port number.
      */
-    public function setSecurePort($value): void
+    public function set_secure_port($value): void
     {
-        if ($value != $this->_securePort) {
-            $this->_securePort = (int) $value;
-            $this->_hostInfo = null;
+        if ($value != $this->_secure_port) {
+            $this->_secure_port = (int) $value;
+            $this->_host_info = null;
         }
     }
-
-    private $_contentTypes;
-
+    private $_content_types;
     /**
      * Returns the content types acceptable by the end user.
      *
@@ -1504,19 +1362,17 @@ class Request extends \yii\base\Request
      * will be returned first. The array keys are the content types, while the array values
      * are the corresponding quality score and other parameters as given in the header.
      */
-    public function getAcceptableContentTypes()
+    public function get_acceptable_content_types()
     {
-        if ($this->_contentTypes === null) {
+        if ($this->_content_types === null) {
             if ($this->headers->get('Accept') !== null) {
-                $this->_contentTypes = $this->parseAcceptHeader($this->headers->get('Accept'));
+                $this->_content_types = $this->parse_accept_header($this->headers->get('Accept'));
             } else {
-                $this->_contentTypes = [];
+                $this->_content_types = [];
             }
         }
-
-        return $this->_contentTypes;
+        return $this->_content_types;
     }
-
     /**
      * Sets the acceptable content types.
      * Please refer to [[getAcceptableContentTypes()]] on the format of the parameter.
@@ -1525,11 +1381,10 @@ class Request extends \yii\base\Request
      * @see getAcceptableContentTypes()
      * @see parseAcceptHeader()
      */
-    public function setAcceptableContentTypes($value): void
+    public function set_acceptable_content_types($value): void
     {
-        $this->_contentTypes = $value;
+        $this->_content_types = $value;
     }
-
     /**
      * Returns request content-type
      * The Content-Type header field indicates the MIME type of the data
@@ -1540,42 +1395,37 @@ class Request extends \yii\base\Request
      * @link https://tools.ietf.org/html/rfc2616#section-14.17
      * HTTP 1.1 header field definitions
      */
-    public function getContentType()
+    public function get_content_type()
     {
         //fix bug https://bugs.php.net/bug.php?id=66606
         return $_SERVER['CONTENT_TYPE'] ?? ($this->headers->get('Content-Type') ?: '');
     }
-
     private $_languages;
-
     /**
      * Returns the languages acceptable by the end user.
      * This is determined by the `Accept-Language` HTTP header.
      * @return array the languages ordered by the preference level. The first element
      * represents the most preferred language.
      */
-    public function getAcceptableLanguages()
+    public function get_acceptable_languages()
     {
         if ($this->_languages === null) {
             if ($this->headers->has('Accept-Language')) {
-                $this->_languages = array_keys($this->parseAcceptHeader($this->headers->get('Accept-Language')));
+                $this->_languages = array_keys($this->parse_accept_header($this->headers->get('Accept-Language')));
             } else {
                 $this->_languages = [];
             }
         }
-
         return $this->_languages;
     }
-
     /**
      * @param array $value the languages that are acceptable by the end user. They should
      * be ordered by the preference level.
      */
-    public function setAcceptableLanguages($value): void
+    public function set_acceptable_languages($value): void
     {
         $this->_languages = $value;
     }
-
     /**
      * Parses the given `Accept` (or `Accept-Language`) header.
      *
@@ -1600,7 +1450,7 @@ class Request extends \yii\base\Request
      * @return array the acceptable values ordered by their quality score. The values with the highest scores
      * will be returned first.
      */
-    public function parseAcceptHeader($header): array
+    public function parse_accept_header($header): array
     {
         $accepts = [];
         foreach (explode(',', $header) as $i => $part) {
@@ -1608,9 +1458,7 @@ class Request extends \yii\base\Request
             if (empty($params)) {
                 continue;
             }
-            $values = [
-                'q' => [$i, array_shift($params), 1],
-            ];
+            $values = ['q' => [$i, array_shift($params), 1]];
             foreach ($params as $param) {
                 if (strpos($param, '=') !== false) {
                     [$key, $value] = explode('=', $param, 2);
@@ -1625,49 +1473,40 @@ class Request extends \yii\base\Request
             }
             $accepts[] = $values;
         }
-
         usort($accepts, function (array $a, array $b): int {
-            $a = $a['q']; // index, name, q
+            $a = $a['q'];
+            // index, name, q
             $b = $b['q'];
             if ($a[2] > $b[2]) {
                 return -1;
             }
-
             if ($a[2] < $b[2]) {
                 return 1;
             }
-
             if ($a[1] === $b[1]) {
                 return $a[0] > $b[0] ? 1 : -1;
             }
-
             if ($a[1] === '*/*') {
                 return 1;
             }
-
             if ($b[1] === '*/*') {
                 return -1;
             }
-
             $wa = $a[1][strlen($a[1]) - 1] === '*';
             $wb = $b[1][strlen($b[1]) - 1] === '*';
             if ($wa xor $wb) {
                 return $wa ? 1 : -1;
             }
-
             return $a[0] > $b[0] ? 1 : -1;
         });
-
         $result = [];
         foreach ($accepts as $accept) {
             $name = $accept['q'][1];
             $accept['q'] = $accept['q'][2];
             $result[$name] = $accept;
         }
-
         return $result;
     }
-
     /**
      * Returns the user-preferred language that should be used by this application.
      * The language resolution is based on the user preferred languages and the languages
@@ -1676,43 +1515,34 @@ class Request extends \yii\base\Request
      * application language will be returned without further processing.
      * @return string the language that the application should use.
      */
-    public function getPreferredLanguage(array $languages = [])
+    public function get_preferred_language(array $languages = [])
     {
         if (empty($languages)) {
             return Yii::$app->language;
         }
-        foreach ($this->getAcceptableLanguages() as $acceptableLanguage) {
-            $acceptableLanguage = str_replace('_', '-', strtolower($acceptableLanguage));
+        foreach ($this->get_acceptable_languages() as $acceptable_language) {
+            $acceptable_language = str_replace('_', '-', strtolower($acceptable_language));
             foreach ($languages as $language) {
-                $normalizedLanguage = str_replace('_', '-', strtolower($language));
-
-                if (
-                    $normalizedLanguage === $acceptableLanguage // en-us==en-us
-                    || strpos($acceptableLanguage, $normalizedLanguage . '-') === 0 // en==en-us
-                    || strpos($normalizedLanguage, $acceptableLanguage . '-') === 0 // en-us==en
-                ) {
+                $normalized_language = str_replace('_', '-', strtolower($language));
+                if ($normalized_language === $acceptable_language || strpos($acceptable_language, $normalized_language . '-') === 0 || strpos($normalized_language, $acceptable_language . '-') === 0) {
                     return $language;
                 }
             }
         }
-
         return reset($languages);
     }
-
     /**
      * Gets the Etags.
      *
      * @return array The entity tags
      */
-    public function getETags()
+    public function get_e_tags()
     {
         if ($this->headers->has('If-None-Match')) {
             return preg_split('/[\s,]+/', str_replace('-gzip', '', $this->headers->get('If-None-Match')), -1, PREG_SPLIT_NO_EMPTY);
         }
-
         return [];
     }
-
     /**
      * Returns the cookie collection.
      *
@@ -1730,34 +1560,30 @@ class Request extends \yii\base\Request
      *
      * @return CookieCollection the cookie collection.
      */
-    public function getCookies()
+    public function get_cookies()
     {
         if ($this->_cookies === null) {
-            $this->_cookies = new CookieCollection($this->loadCookies(), [
-                'readOnly' => true,
-            ]);
+            $this->_cookies = new Cookie_Collection($this->load_cookies(), ['readOnly' => true]);
         }
-
         return $this->_cookies;
     }
-
     /**
      * Converts `$_COOKIE` into an array of [[Cookie]].
      * @return array the cookies obtained from request
      * @throws InvalidConfigException if [[cookieValidationKey]] is not set when [[enableCookieValidation]] is true
      */
-    protected function loadCookies(): array
+    protected function load_cookies(): array
     {
         $cookies = [];
-        if ($this->enableCookieValidation) {
-            if ($this->cookieValidationKey == '') {
-                throw new InvalidConfigException(get_class($this) . '::cookieValidationKey must be configured with a secret key.');
+        if ($this->enable_cookie_validation) {
+            if ($this->cookie_validation_key == '') {
+                throw new Invalid_Config_Exception(get_class($this) . '::cookieValidationKey must be configured with a secret key.');
             }
             foreach ($_COOKIE as $name => $value) {
                 if (!is_string($value)) {
                     continue;
                 }
-                $data = Yii::$app->getSecurity()->validateData($value, $this->cookieValidationKey);
+                $data = Yii::$app->get_security()->validate_data($value, $this->cookie_validation_key);
                 if ($data === false) {
                     continue;
                 }
@@ -1767,30 +1593,17 @@ class Request extends \yii\base\Request
                     $data = @unserialize($data);
                 }
                 if (is_array($data) && isset($data[0], $data[1]) && $data[0] === $name) {
-                    $cookies[$name] = Yii::createObject([
-                        'class' => 'yii\web\Cookie',
-                        'name' => $name,
-                        'value' => $data[1],
-                        'expire' => null,
-                    ]);
+                    $cookies[$name] = Yii::create_object(['class' => 'yii\web\Cookie', 'name' => $name, 'value' => $data[1], 'expire' => null]);
                 }
             }
         } else {
             foreach ($_COOKIE as $name => $value) {
-                $cookies[$name] = Yii::createObject([
-                    'class' => 'yii\web\Cookie',
-                    'name' => $name,
-                    'value' => $value,
-                    'expire' => null,
-                ]);
+                $cookies[$name] = Yii::create_object(['class' => 'yii\web\Cookie', 'name' => $name, 'value' => $value, 'expire' => null]);
             }
         }
-
         return $cookies;
     }
-
-    private $_csrfToken;
-
+    private $_csrf_token;
     /**
      * Returns the token used to perform CSRF validation.
      *
@@ -1800,62 +1613,54 @@ class Request extends \yii\base\Request
      * this method is called, a new CSRF token will be generated and persisted (in session or cookie).
      * @return null|string the token used to perform CSRF validation. Null is returned if the [[validateCsrfHeaderOnly]] is true.
      */
-    public function getCsrfToken($regenerate = false)
+    public function get_csrf_token($regenerate = false)
     {
-        if ($this->validateCsrfHeaderOnly) {
+        if ($this->validate_csrf_header_only) {
             return null;
         }
-
-        if ($this->_csrfToken === null || $regenerate) {
-            $token = $this->loadCsrfToken();
+        if ($this->_csrf_token === null || $regenerate) {
+            $token = $this->load_csrf_token();
             if ($regenerate || empty($token)) {
-                $token = $this->generateCsrfToken();
+                $token = $this->generate_csrf_token();
             }
-            $this->_csrfToken = Yii::$app->security->maskToken($token);
+            $this->_csrf_token = Yii::$app->security->mask_token($token);
         }
-
-        return $this->_csrfToken;
+        return $this->_csrf_token;
     }
-
     /**
      * Loads the CSRF token from cookie or session.
      * @return string|null the CSRF token loaded from cookie or session. Null is returned if the cookie or session
      * does not have CSRF token.
      */
-    protected function loadCsrfToken()
+    protected function load_csrf_token()
     {
-        if ($this->enableCsrfCookie) {
-            return $this->getCookies()->getValue($this->csrfParam);
+        if ($this->enable_csrf_cookie) {
+            return $this->get_cookies()->get_value($this->csrf_param);
         }
-
-        return Yii::$app->getSession()->get($this->csrfParam);
+        return Yii::$app->get_session()->get($this->csrf_param);
     }
-
     /**
      * Generates an unmasked random token used to perform CSRF validation.
      * @return string the random token for CSRF validation.
      */
-    protected function generateCsrfToken()
+    protected function generate_csrf_token()
     {
-        $token = Yii::$app->getSecurity()->generateRandomString();
-        if ($this->enableCsrfCookie) {
-            $cookie = $this->createCsrfCookie($token);
-            Yii::$app->getResponse()->getCookies()->add($cookie);
+        $token = Yii::$app->get_security()->generate_random_string();
+        if ($this->enable_csrf_cookie) {
+            $cookie = $this->create_csrf_cookie($token);
+            Yii::$app->get_response()->get_cookies()->add($cookie);
         } else {
-            Yii::$app->getSession()->set($this->csrfParam, $token);
+            Yii::$app->get_session()->set($this->csrf_param, $token);
         }
-
         return $token;
     }
-
     /**
      * @return string|null the CSRF token sent via [[csrfHeader]] by browser. Null is returned if no such header is sent.
      */
-    public function getCsrfTokenFromHeader()
+    public function get_csrf_token_from_header()
     {
-        return $this->headers->get($this->csrfHeader);
+        return $this->headers->get($this->csrf_header);
     }
-
     /**
      * Creates a cookie with a randomly generated CSRF token.
      * Initial values specified in [[csrfCookie]] will be applied to the generated cookie.
@@ -1863,16 +1668,11 @@ class Request extends \yii\base\Request
      * @return Cookie the generated cookie
      * @see enableCsrfValidation
      */
-    protected function createCsrfCookie($token)
+    protected function create_csrf_cookie($token)
     {
-        $options = $this->csrfCookie;
-        return Yii::createObject(array_merge($options, [
-            'class' => 'yii\web\Cookie',
-            'name' => $this->csrfParam,
-            'value' => $token,
-        ]));
+        $options = $this->csrf_cookie;
+        return Yii::create_object(array_merge($options, ['class' => 'yii\web\Cookie', 'name' => $this->csrf_param, 'value' => $token]));
     }
-
     /**
      * Performs the CSRF validation.
      *
@@ -1887,31 +1687,24 @@ class Request extends \yii\base\Request
      * This parameter is available since version 2.0.4.
      * @return bool whether CSRF token is valid. If [[enableCsrfValidation]] is false, this method will return true.
      */
-    public function validateCsrfToken($clientSuppliedToken = null)
+    public function validate_csrf_token($client_supplied_token = null)
     {
-        $method = $this->getMethod();
-
-        if ($this->validateCsrfHeaderOnly) {
-            return in_array($method, $this->csrfHeaderUnsafeMethods, true)
-                ? $this->headers->has($this->csrfHeader)
-                : true;
+        $method = $this->get_method();
+        if ($this->validate_csrf_header_only) {
+            return in_array($method, $this->csrf_header_unsafe_methods, true) ? $this->headers->has($this->csrf_header) : true;
         }
-
-        if (!$this->enableCsrfValidation || in_array($method, $this->csrfTokenSafeMethods, true)) {
+        if (!$this->enable_csrf_validation || in_array($method, $this->csrf_token_safe_methods, true)) {
             return true;
         }
-
-        $trueToken = $this->getCsrfToken();
-
-        if ($clientSuppliedToken !== null) {
-            return $this->validateCsrfTokenInternal($clientSuppliedToken, $trueToken);
+        $true_token = $this->get_csrf_token();
+        if ($client_supplied_token !== null) {
+            return $this->validate_csrf_token_internal($client_supplied_token, $true_token);
         }
-        if ($this->validateCsrfTokenInternal($this->getBodyParam($this->csrfParam), $trueToken)) {
+        if ($this->validate_csrf_token_internal($this->get_body_param($this->csrf_param), $true_token)) {
             return true;
         }
-        return $this->validateCsrfTokenInternal($this->getCsrfTokenFromHeader(), $trueToken);
+        return $this->validate_csrf_token_internal($this->get_csrf_token_from_header(), $true_token);
     }
-
     /**
      * Validates CSRF token.
      *
@@ -1919,17 +1712,14 @@ class Request extends \yii\base\Request
      * @param string $trueToken The masked true token.
      * @return bool
      */
-    private function validateCsrfTokenInternal($clientSuppliedToken, $trueToken)
+    private function validate_csrf_token_internal($client_supplied_token, $true_token)
     {
-        if (!is_string($clientSuppliedToken)) {
+        if (!is_string($client_supplied_token)) {
             return false;
         }
-
         $security = Yii::$app->security;
-
-        return $security->compareString($security->unmaskToken($clientSuppliedToken), $security->unmaskToken($trueToken));
+        return $security->compare_string($security->unmask_token($client_supplied_token), $security->unmask_token($true_token));
     }
-
     /**
      * Gets first `Forwarded` header value for token
      *
@@ -1939,21 +1729,18 @@ class Request extends \yii\base\Request
      *
      * @since 2.0.31
      */
-    protected function getSecureForwardedHeaderTrustedPart($token)
+    protected function get_secure_forwarded_header_trusted_part($token)
     {
         $token = strtolower($token);
-
-        if ($parts = $this->getSecureForwardedHeaderTrustedParts()) {
-            $lastElement = array_pop($parts);
-            if ($lastElement && isset($lastElement[$token])) {
-                return $lastElement[$token];
+        if ($parts = $this->get_secure_forwarded_header_trusted_parts()) {
+            $last_element = array_pop($parts);
+            if ($last_element && isset($last_element[$token])) {
+                return $last_element[$token];
             }
         }
         return null;
     }
-
-    private ?array $_secureForwardedHeaderTrustedParts = null;
-
+    private ?array $_secure_forwarded_header_trusted_parts = null;
     /**
      * Gets only trusted `Forwarded` header parts
      *
@@ -1961,32 +1748,24 @@ class Request extends \yii\base\Request
      *
      * @since 2.0.31
      */
-    protected function getSecureForwardedHeaderTrustedParts()
+    protected function get_secure_forwarded_header_trusted_parts()
     {
-        if ($this->_secureForwardedHeaderTrustedParts !== null) {
-            return $this->_secureForwardedHeaderTrustedParts;
+        if ($this->_secure_forwarded_header_trusted_parts !== null) {
+            return $this->_secure_forwarded_header_trusted_parts;
         }
-
-        $validator = $this->getIpValidator();
-        $trustedHosts = [];
-        foreach ($this->trustedHosts as $trustedCidr => $trustedCidrOrHeaders) {
-            if (!is_array($trustedCidrOrHeaders)) {
-                $trustedCidr = $trustedCidrOrHeaders;
+        $validator = $this->get_ip_validator();
+        $trusted_hosts = [];
+        foreach ($this->trusted_hosts as $trusted_cidr => $trusted_cidr_or_headers) {
+            if (!is_array($trusted_cidr_or_headers)) {
+                $trusted_cidr = $trusted_cidr_or_headers;
             }
-            $trustedHosts[] = $trustedCidr;
+            $trusted_hosts[] = $trusted_cidr;
         }
-        $validator->setRanges($trustedHosts);
-
-        $this->_secureForwardedHeaderTrustedParts = array_filter(
-            $this->getSecureForwardedHeaderParts(),
-            fn (array $headerPart) => isset($headerPart['for']) ? !$validator->validate($headerPart['for']) : true
-        );
-
-        return $this->_secureForwardedHeaderTrustedParts;
+        $validator->set_ranges($trusted_hosts);
+        $this->_secure_forwarded_header_trusted_parts = array_filter($this->get_secure_forwarded_header_parts(), fn(array $header_part) => isset($header_part['for']) ? !$validator->validate($header_part['for']) : true);
+        return $this->_secure_forwarded_header_trusted_parts;
     }
-
-    private ?array $_secureForwardedHeaderParts = null;
-
+    private ?array $_secure_forwarded_header_parts = null;
     /**
      * Returns decoded forwarded header
      *
@@ -1994,13 +1773,13 @@ class Request extends \yii\base\Request
      *
      * @since 2.0.31
      */
-    protected function getSecureForwardedHeaderParts()
+    protected function get_secure_forwarded_header_parts()
     {
-        if ($this->_secureForwardedHeaderParts !== null) {
-            return $this->_secureForwardedHeaderParts;
+        if ($this->_secure_forwarded_header_parts !== null) {
+            return $this->_secure_forwarded_header_parts;
         }
-        if (count(preg_grep('/^forwarded$/i', $this->secureHeaders)) === 0) {
-            return $this->_secureForwardedHeaderParts = [];
+        if (count(preg_grep('/^forwarded$/i', $this->secure_headers)) === 0) {
+            return $this->_secure_forwarded_header_parts = [];
         }
         /*
          * First header is always correct, because proxy CAN add headers
@@ -2014,14 +1793,12 @@ class Request extends \yii\base\Request
          */
         $forwarded = $this->headers->get('Forwarded', '');
         if ($forwarded === '') {
-            return $this->_secureForwardedHeaderParts = [];
+            return $this->_secure_forwarded_header_parts = [];
         }
-
-        preg_match_all('/(?:[^",]++|"[^"]++")+/', $forwarded, $forwardedElements);
-
-        foreach ($forwardedElements[0] as $forwardedPairs) {
-            preg_match_all('/(?P<key>\w+)\s*=\s*(?:(?P<value>[^",;]*[^",;\s])|"(?P<value2>[^"]+)")/', $forwardedPairs, $matches, PREG_SET_ORDER);
-            $this->_secureForwardedHeaderParts[] = array_reduce($matches, function (array $carry, array $item): array {
+        preg_match_all('/(?:[^",]++|"[^"]++")+/', $forwarded, $forwarded_elements);
+        foreach ($forwarded_elements[0] as $forwarded_pairs) {
+            preg_match_all('/(?P<key>\w+)\s*=\s*(?:(?P<value>[^",;]*[^",;\s])|"(?P<value2>[^"]+)")/', $forwarded_pairs, $matches, PREG_SET_ORDER);
+            $this->_secure_forwarded_header_parts[] = array_reduce($matches, function (array $carry, array $item): array {
                 $value = $item['value'];
                 if (isset($item['value2']) && $item['value2'] !== '') {
                     $value = $item['value2'];
@@ -2030,6 +1807,6 @@ class Request extends \yii\base\Request
                 return $carry;
             }, []);
         }
-        return $this->_secureForwardedHeaderParts;
+        return $this->_secure_forwarded_header_parts;
     }
 }

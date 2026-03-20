@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\console;
 
 /**
@@ -24,12 +22,11 @@ namespace yii\console;
 class Request extends \yii\base\Request
 {
     private $_params;
-
     /**
      * Returns the command line arguments.
      * @return array the command line arguments. It does not include the entry script name.
      */
-    public function getParams()
+    public function get_params()
     {
         if ($this->_params === null) {
             if (isset($_SERVER['argv'])) {
@@ -39,19 +36,16 @@ class Request extends \yii\base\Request
                 $this->_params = [];
             }
         }
-
         return $this->_params;
     }
-
     /**
      * Sets the command line arguments.
      * @param array $params the command line arguments
      */
-    public function setParams($params): void
+    public function set_params($params): void
     {
         $this->_params = $params;
     }
-
     /**
      * Resolves the current request into a route and the associated parameters.
      * @return array the first element is the route, and the second is the associated parameters.
@@ -59,35 +53,32 @@ class Request extends \yii\base\Request
      */
     public function resolve(): array
     {
-        $rawParams = $this->getParams();
-        $endOfOptionsFound = false;
-        if (isset($rawParams[0])) {
-            $route = array_shift($rawParams);
-
+        $raw_params = $this->get_params();
+        $end_of_options_found = false;
+        if (isset($raw_params[0])) {
+            $route = array_shift($raw_params);
             if ($route === '--') {
-                $endOfOptionsFound = true;
-                $route = array_shift($rawParams);
+                $end_of_options_found = true;
+                $route = array_shift($raw_params);
             }
         } else {
             $route = '';
         }
-
         $params = [];
-        $prevOption = null;
-        foreach ($rawParams as $param) {
-            if ($endOfOptionsFound) {
+        $prev_option = null;
+        foreach ($raw_params as $param) {
+            if ($end_of_options_found) {
                 $params[] = $param;
             } elseif ($param === '--') {
-                $endOfOptionsFound = true;
+                $end_of_options_found = true;
             } elseif (preg_match('/^--([\w-]+)(?:=(.*))?$/', $param, $matches)) {
                 $name = $matches[1];
                 if (is_numeric(substr($name, 0, 1))) {
                     throw new Exception('Parameter "' . $name . '" is not valid');
                 }
-
                 if ($name !== Application::OPTION_APPCONFIG) {
                     $params[$name] = $matches[2] ?? true;
-                    $prevOption = &$params[$name];
+                    $prev_option =& $params[$name];
                 }
             } elseif (preg_match('/^-([\w-]+)(?:=(.*))?$/', $param, $matches)) {
                 $name = $matches[1];
@@ -95,16 +86,15 @@ class Request extends \yii\base\Request
                     $params[] = $param;
                 } else {
                     $params['_aliases'][$name] = $matches[2] ?? true;
-                    $prevOption = &$params['_aliases'][$name];
+                    $prev_option =& $params['_aliases'][$name];
                 }
-            } elseif ($prevOption === true) {
+            } elseif ($prev_option === true) {
                 // `--option value` syntax
-                $prevOption = $param;
+                $prev_option = $param;
             } else {
                 $params[] = $param;
             }
         }
-
         return [$route, $params];
     }
 }

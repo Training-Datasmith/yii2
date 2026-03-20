@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\pgsql;
 
 /**
@@ -18,13 +16,12 @@ namespace yii\db\pgsql;
  * @since 2.0.14
  * @phpcs:disable Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore
  */
-class ArrayParser
+class Array_Parser
 {
     /**
      * @var string Character used in array
      */
     private string $delimiter = ',';
-
     /**
      * Convert array from PostgreSQL to PHP
      *
@@ -36,75 +33,68 @@ class ArrayParser
         if ($value === null) {
             return null;
         }
-
         if ($value === '{}') {
             return [];
         }
-
-        return $this->parseArray($value);
+        return $this->parse_array($value);
     }
-
     /**
      * Pares PgSQL array encoded in string
      *
      * @param string $value
      * @param int $i parse starting position
      */
-    private function parseArray($value, &$i = 0): array
+    private function parse_array($value, &$i = 0): array
     {
         $result = [];
         $len = strlen($value);
         for (++$i; $i < $len; ++$i) {
             switch ($value[$i]) {
                 case '{':
-                    $result[] = $this->parseArray($value, $i);
+                    $result[] = $this->parse_array($value, $i);
                     break;
                 case '}':
                     break 2;
                 case $this->delimiter:
-                    if (empty($result)) { // `{}` case
+                    if (empty($result)) {
+                        // `{}` case
                         $result[] = null;
                     }
-                    if (in_array($value[$i + 1], [$this->delimiter, '}'], true)) { // `{,}` case
+                    if (in_array($value[$i + 1], [$this->delimiter, '}'], true)) {
+                        // `{,}` case
                         $result[] = null;
                     }
                     break;
                 default:
-                    $result[] = $this->parseString($value, $i);
+                    $result[] = $this->parse_string($value, $i);
             }
         }
-
         return $result;
     }
-
     /**
      * Parses PgSQL encoded string
      *
      * @param string $value
      * @param int $i parse starting position
      */
-    private function parseString($value, &$i): ?string
+    private function parse_string($value, &$i): ?string
     {
-        $isQuoted = $value[$i] === '"';
-        $stringEndChars = $isQuoted ? ['"'] : [$this->delimiter, '}'];
+        $is_quoted = $value[$i] === '"';
+        $string_end_chars = $is_quoted ? ['"'] : [$this->delimiter, '}'];
         $result = '';
         $len = strlen($value);
-        for ($i += $isQuoted ? 1 : 0; $i < $len; ++$i) {
+        for ($i += $is_quoted ? 1 : 0; $i < $len; ++$i) {
             if (in_array($value[$i], ['\\', '"'], true) && in_array($value[$i + 1], [$value[$i], '"'], true)) {
                 ++$i;
-            } elseif (in_array($value[$i], $stringEndChars, true)) {
+            } elseif (in_array($value[$i], $string_end_chars, true)) {
                 break;
             }
-
             $result .= $value[$i];
         }
-
-        $i -= $isQuoted ? 0 : 1;
-
-        if (!$isQuoted && $result === 'NULL') {
+        $i -= $is_quoted ? 0 : 1;
+        if (!$is_quoted && $result === 'NULL') {
             return null;
         }
-
         return $result;
     }
 }

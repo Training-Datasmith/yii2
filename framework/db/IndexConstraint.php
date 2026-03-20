@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -16,14 +14,14 @@ namespace yii\db;
  * @author Sergey Makinen <sergey@makinen.ru>
  * @since 2.0.13
  */
-class IndexConstraint extends Constraint
+class Index_Constraint extends Constraint
 {
     /**
      * @var bool whether the index is unique.
      */
-    public $isUnique;
+    public $is_unique;
     /**
      * @var bool whether the index was created for a primary key.
      */
-    public $isPrimary;
+    public $is_primary;
 }

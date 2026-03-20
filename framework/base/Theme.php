@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
-use yii\helpers\FileHelper;
-
+use yii\helpers\File_Helper;
 /**
  * Theme represents an application theme.
  *
@@ -82,49 +79,42 @@ class Theme extends Component
      * [Path aliases](guide:concept-aliases) can be used when specifying directories.
      * If this property is empty or not set, a mapping [[Application::basePath]] to [[basePath]] will be used.
      */
-    public $pathMap;
-
-    private ?string $_baseUrl = null;
-
+    public $path_map;
+    private ?string $_base_url = null;
     /**
      * @return string the base URL (without ending slash) for this theme. All resources of this theme are considered
      * to be under this base URL.
      */
-    public function getBaseUrl()
+    public function get_base_url()
     {
-        return $this->_baseUrl;
+        return $this->_base_url;
     }
-
     /**
      * @param string $url the base URL or [path alias](guide:concept-aliases) for this theme. All resources of this theme are considered
      * to be under this base URL.
      */
-    public function setBaseUrl($url): void
+    public function set_base_url($url): void
     {
-        $this->_baseUrl = $url === null ? null : rtrim(Yii::getAlias($url), '/');
+        $this->_base_url = $url === null ? null : rtrim(Yii::get_alias($url), '/');
     }
-
-    private $_basePath;
-
+    private $_base_path;
     /**
      * @return string the root path of this theme. All resources of this theme are located under this directory.
      * @see pathMap
      */
-    public function getBasePath()
+    public function get_base_path()
     {
-        return $this->_basePath;
+        return $this->_base_path;
     }
-
     /**
      * @param string $path the root path or [path alias](guide:concept-aliases) of this theme. All resources of this theme are located
      * under this directory.
      * @see pathMap
      */
-    public function setBasePath($path): void
+    public function set_base_path($path): void
     {
-        $this->_basePath = Yii::getAlias($path);
+        $this->_base_path = Yii::get_alias($path);
     }
-
     /**
      * Converts a file to a themed file if possible.
      * If there is no corresponding themed file, the original file will be returned.
@@ -132,22 +122,22 @@ class Theme extends Component
      * @return string the themed file, or the original file if the themed version is not available.
      * @throws InvalidConfigException if [[basePath]] is not set
      */
-    public function applyTo($path)
+    public function apply_to($path)
     {
-        $pathMap = $this->pathMap;
-        if (empty($pathMap)) {
-            if (($basePath = $this->getBasePath()) === null) {
-                throw new InvalidConfigException('The "basePath" property must be set.');
+        $path_map = $this->path_map;
+        if (empty($path_map)) {
+            if (($base_path = $this->get_base_path()) === null) {
+                throw new Invalid_Config_Exception('The "basePath" property must be set.');
             }
-            $pathMap = [Yii::$app->getBasePath() => [$basePath]];
+            $path_map = [Yii::$app->get_base_path() => [$base_path]];
         }
-        $path = FileHelper::normalizePath($path);
-        foreach ($pathMap as $from => $tos) {
-            $from = FileHelper::normalizePath(Yii::getAlias($from)) . DIRECTORY_SEPARATOR;
+        $path = File_Helper::normalize_path($path);
+        foreach ($path_map as $from => $tos) {
+            $from = File_Helper::normalize_path(Yii::get_alias($from)) . DIRECTORY_SEPARATOR;
             if (strpos($path, $from) === 0) {
                 $n = strlen($from);
                 foreach ((array) $tos as $to) {
-                    $to = FileHelper::normalizePath(Yii::getAlias($to)) . DIRECTORY_SEPARATOR;
+                    $to = File_Helper::normalize_path(Yii::get_alias($to)) . DIRECTORY_SEPARATOR;
                     $file = $to . substr($path, $n);
                     if (is_file($file)) {
                         return $file;
@@ -155,37 +145,32 @@ class Theme extends Component
                 }
             }
         }
-
         return $path;
     }
-
     /**
      * Converts a relative URL into an absolute URL using [[baseUrl]].
      * @param string $url the relative URL to be converted.
      * @return string the absolute URL
      * @throws InvalidConfigException if [[baseUrl]] is not set
      */
-    public function getUrl($url): string
+    public function get_url($url): string
     {
-        if (($baseUrl = $this->getBaseUrl()) !== null) {
-            return $baseUrl . '/' . ltrim($url, '/');
+        if (($base_url = $this->get_base_url()) !== null) {
+            return $base_url . '/' . ltrim($url, '/');
         }
-
-        throw new InvalidConfigException('The "baseUrl" property must be set.');
+        throw new Invalid_Config_Exception('The "baseUrl" property must be set.');
     }
-
     /**
      * Converts a relative file path into an absolute one using [[basePath]].
      * @param string $path the relative file path to be converted.
      * @return string the absolute file path
      * @throws InvalidConfigException if [[basePath]] is not set
      */
-    public function getPath($path): string
+    public function get_path($path): string
     {
-        if (($basePath = $this->getBasePath()) !== null) {
-            return $basePath . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
+        if (($base_path = $this->get_base_path()) !== null) {
+            return $base_path . DIRECTORY_SEPARATOR . ltrim($path, '/\\');
         }
-
-        throw new InvalidConfigException('The "basePath" property must be set.');
+        throw new Invalid_Config_Exception('The "basePath" property must be set.');
     }
 }

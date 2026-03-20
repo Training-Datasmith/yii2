@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rbac;
 
-use yii\base\BaseObject;
-
+use yii\base\Base_Object;
 /**
  * Rule represents a business constraint that may be associated with a role, permission or assignment.
  *
@@ -20,7 +17,7 @@ use yii\base\BaseObject;
  * @author Alexander Makarov <sam@rmcreative.ru>
  * @since 2.0
  */
-abstract class Rule extends BaseObject
+abstract class Rule extends Base_Object
 {
     /**
      * @var string name of the rule
@@ -29,12 +26,11 @@ abstract class Rule extends BaseObject
     /**
      * @var int UNIX timestamp representing the rule creation time
      */
-    public $createdAt;
+    public $created_at;
     /**
      * @var int UNIX timestamp representing the rule updating time
      */
-    public $updatedAt;
-
+    public $updated_at;
     /**
      * Executes the rule.
      *

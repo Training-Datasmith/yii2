@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\log;
 
 use Yii;
-use yii\base\InvalidConfigException;
-use yii\helpers\FileHelper;
-
+use yii\base\Invalid_Config_Exception;
+use yii\helpers\File_Helper;
 /**
  * FileTarget records log messages in a file.
  *
@@ -29,41 +26,42 @@ use yii\helpers\FileHelper;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class FileTarget extends Target
+class File_Target extends Target
 {
     /**
      * @var string|null log file path or [path alias](guide:concept-aliases). If not set, it will use the "@runtime/logs/app.log" file.
      * The directory containing the log files will be automatically created if not existing.
      */
-    public $logFile;
+    public $log_file;
     /**
      * @var bool whether log files should be rotated when they reach a certain [[maxFileSize|maximum size]].
      * Log rotation is enabled by default. This property allows you to disable it, when you have configured
      * an external tools for log rotation on your server.
      * @since 2.0.3
      */
-    public $enableRotation = true;
+    public $enable_rotation = true;
     /**
      * @var int maximum log file size, in kilo-bytes. Defaults to 10240, meaning 10MB.
      */
-    public $maxFileSize = 10240; // in KB
+    public $max_file_size = 10240;
+    // in KB
     /**
      * @var int number of log files used for rotation. Defaults to 5.
      */
-    public $maxLogFiles = 5;
+    public $max_log_files = 5;
     /**
      * @var int|null the permission to be set for newly created log files.
      * This value will be used by PHP chmod() function. No umask will be applied.
      * If not set, the permission will be determined by the current environment.
      */
-    public $fileMode;
+    public $file_mode;
     /**
      * @var int the permission to be set for newly created directories.
      * This value will be used by PHP chmod() function. No umask will be applied.
      * Defaults to 0775, meaning the directory is read-writable by owner and group,
      * but read-only for other users.
      */
-    public $dirMode = 0775;
+    public $dir_mode = 0775;
     /**
      * @var bool Whether to rotate log files by copy and truncate in contrast to rotation by
      * renaming files. Defaults to `true` to be more compatible with log tailers and windows
@@ -78,8 +76,7 @@ class FileTarget extends Target
      * @deprecated since 2.0.46 and setting it to false has no effect anymore
      * since rotating is now always done by copy.
      */
-    public $rotateByCopy = true;
-
+    public $rotate_by_copy = true;
     /**
      * Initializes the route.
      * This method is invoked after the route is created by the route manager.
@@ -87,19 +84,18 @@ class FileTarget extends Target
     public function init(): void
     {
         parent::init();
-        if ($this->logFile === null) {
-            $this->logFile = Yii::$app->getRuntimePath() . '/logs/app.log';
+        if ($this->log_file === null) {
+            $this->log_file = Yii::$app->get_runtime_path() . '/logs/app.log';
         } else {
-            $this->logFile = Yii::getAlias($this->logFile);
+            $this->log_file = Yii::get_alias($this->log_file);
         }
-        if ($this->maxLogFiles < 1) {
-            $this->maxLogFiles = 1;
+        if ($this->max_log_files < 1) {
+            $this->max_log_files = 1;
         }
-        if ($this->maxFileSize < 1) {
-            $this->maxFileSize = 1;
+        if ($this->max_file_size < 1) {
+            $this->max_file_size = 1;
         }
     }
-
     /**
      * Writes log messages to a file.
      * Starting from version 2.0.14, this method throws LogRuntimeException in case the log can not be exported.
@@ -109,95 +105,89 @@ class FileTarget extends Target
     public function export(): void
     {
         $text = implode("\n", array_map([$this, 'formatMessage'], $this->messages)) . "\n";
-
         if (trim($text) === '') {
-            return; // No messages to export, so we exit the function early
+            return;
+            // No messages to export, so we exit the function early
         }
-
-        if (strpos($this->logFile, '://') === false || strncmp($this->logFile, 'file://', 7) === 0) {
-            $logPath = dirname($this->logFile);
-            FileHelper::createDirectory($logPath, $this->dirMode, true);
+        if (strpos($this->log_file, '://') === false || strncmp($this->log_file, 'file://', 7) === 0) {
+            $log_path = dirname($this->log_file);
+            File_Helper::create_directory($log_path, $this->dir_mode, true);
         }
-
-        if (($fp = @fopen($this->logFile, 'a')) === false) {
-            throw new InvalidConfigException("Unable to append to log file: {$this->logFile}");
+        if (($fp = @fopen($this->log_file, 'a')) === false) {
+            throw new Invalid_Config_Exception("Unable to append to log file: {$this->log_file}");
         }
         @flock($fp, LOCK_EX);
-        if ($this->enableRotation) {
+        if ($this->enable_rotation) {
             // clear stat cache to ensure getting the real current file size and not a cached one
             // this may result in rotating twice when cached file size is used on subsequent calls
             clearstatcache();
         }
-        if ($this->enableRotation && @filesize($this->logFile) > $this->maxFileSize * 1024) {
-            $this->rotateFiles();
+        if ($this->enable_rotation && @filesize($this->log_file) > $this->max_file_size * 1024) {
+            $this->rotate_files();
         }
-        $writeResult = @fwrite($fp, $text);
-        if ($writeResult === false) {
-            $message = "Unable to export log through file ($this->logFile)!";
+        $write_result = @fwrite($fp, $text);
+        if ($write_result === false) {
+            $message = "Unable to export log through file ({$this->log_file})!";
             if ($error = error_get_last()) {
                 $message .= ": {$error['message']}";
             }
-            throw new LogRuntimeException($message);
+            throw new Log_Runtime_Exception($message);
         }
-        $textSize = strlen($text);
-        if ($writeResult < $textSize) {
-            throw new LogRuntimeException("Unable to export whole log through file ({$this->logFile})! Wrote $writeResult out of $textSize bytes.");
+        $text_size = strlen($text);
+        if ($write_result < $text_size) {
+            throw new Log_Runtime_Exception("Unable to export whole log through file ({$this->log_file})! Wrote {$write_result} out of {$text_size} bytes.");
         }
         @fflush($fp);
         @flock($fp, LOCK_UN);
         @fclose($fp);
-
-        if ($this->fileMode !== null) {
-            @chmod($this->logFile, $this->fileMode);
+        if ($this->file_mode !== null) {
+            @chmod($this->log_file, $this->file_mode);
         }
     }
-
     /**
      * Rotates log files.
      */
-    protected function rotateFiles()
+    protected function rotate_files()
     {
-        $file = $this->logFile;
-        for ($i = $this->maxLogFiles; $i >= 0; --$i) {
+        $file = $this->log_file;
+        for ($i = $this->max_log_files; $i >= 0; --$i) {
             // $i == 0 is the original log file
-            $rotateFile = $file . ($i === 0 ? '' : '.' . $i);
-            if (is_file($rotateFile)) {
+            $rotate_file = $file . ($i === 0 ? '' : '.' . $i);
+            if (is_file($rotate_file)) {
                 // suppress errors because it's possible multiple processes enter into this section
-                if ($i === $this->maxLogFiles) {
-                    @unlink($rotateFile);
+                if ($i === $this->max_log_files) {
+                    @unlink($rotate_file);
                     continue;
                 }
-                $newFile = $this->logFile . '.' . ($i + 1);
-                $this->rotateByCopy($rotateFile, $newFile);
+                $new_file = $this->log_file . '.' . ($i + 1);
+                $this->rotate_by_copy($rotate_file, $new_file);
                 if ($i === 0) {
-                    $this->clearLogFile($rotateFile);
+                    $this->clear_log_file($rotate_file);
                 }
             }
         }
     }
-
     /***
      * Clear log file without closing any other process open handles
      * @param string $rotateFile
      */
-    private function clearLogFile(string $rotateFile): void
+    private function clear_log_file(string $rotate_file): void
     {
-        if ($filePointer = @fopen($rotateFile, 'a')) {
-            @ftruncate($filePointer, 0);
-            @fclose($filePointer);
+        if ($file_pointer = @fopen($rotate_file, 'a')) {
+            @ftruncate($file_pointer, 0);
+            @fclose($file_pointer);
         }
     }
-
     /***
      * Copy rotated file into new file
      * @param string $rotateFile
      * @param string $newFile
      */
-    private function rotateByCopy(string $rotateFile, string $newFile): void
+    private function rotate_by_copy(string $rotate_file, string $new_file): void
     {
-        @copy($rotateFile, $newFile);
-        if ($this->fileMode !== null) {
-            @chmod($newFile, $this->fileMode);
+        @copy($rotate_file, $new_file);
+        if ($this->file_mode !== null) {
+            @chmod($new_file, $this->file_mode);
         }
     }
 }

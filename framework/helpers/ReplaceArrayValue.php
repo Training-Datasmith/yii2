@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\helpers;
 
-use yii\base\InvalidConfigException;
-
+use yii\base\Invalid_Config_Exception;
 /**
  * Object that represents the replacement of array value while performing [[ArrayHelper::merge()]].
  *
@@ -59,13 +56,12 @@ use yii\base\InvalidConfigException;
  * @author Robert Korulczyk <robert@korulczyk.pl>
  * @since 2.0.10
  */
-class ReplaceArrayValue
+class Replace_Array_Value
 {
     /**
      * @var mixed value used as replacement.
      */
     public $value;
-
     /**
      * Constructor.
      * @param mixed $value value used as replacement.
@@ -74,7 +70,6 @@ class ReplaceArrayValue
     {
         $this->value = $value;
     }
-
     /**
      * Restores class state after using `var_export()`.
      *
@@ -86,9 +81,8 @@ class ReplaceArrayValue
     public static function __set_state(array $state)
     {
         if (!isset($state['value'])) {
-            throw new InvalidConfigException('Failed to instantiate class "ReplaceArrayValue". Required parameter "value" is missing');
+            throw new Invalid_Config_Exception('Failed to instantiate class "ReplaceArrayValue". Required parameter "value" is missing');
         }
-
         return new self($state['value']);
     }
 }

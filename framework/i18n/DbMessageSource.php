@@ -1,23 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\i18n;
 
-use yii\base\InvalidConfigException;
-use yii\caching\CacheInterface;
+use yii\base\Invalid_Config_Exception;
+use yii\caching\Cache_Interface;
 use yii\db\Connection;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\di\Instance;
-use yii\helpers\ArrayHelper;
-
+use yii\helpers\Array_Helper;
 /**
  * DbMessageSource extends [[MessageSource]] and represents a message source that stores translated
  * messages in database.
@@ -39,7 +36,7 @@ use yii\helpers\ArrayHelper;
  * @author resurtm <resurtm@gmail.com>
  * @since 2.0
  */
-class DbMessageSource extends MessageSource
+class Db_Message_Source extends Message_Source
 {
     /**
      * Prefix which would be used when generating cache key.
@@ -71,22 +68,21 @@ class DbMessageSource extends MessageSource
     /**
      * @var string the name of the source message table.
      */
-    public $sourceMessageTable = '{{%source_message}}';
+    public $source_message_table = '{{%source_message}}';
     /**
      * @var string the name of the translated message table.
      */
-    public $messageTable = '{{%message}}';
+    public $message_table = '{{%message}}';
     /**
      * @var int the time in seconds that the messages can remain valid in cache.
      * Use 0 to indicate that the cached data will never expire.
      * @see enableCaching
      */
-    public $cachingDuration = 0;
+    public $caching_duration = 0;
     /**
      * @var bool whether to enable caching translated messages
      */
-    public $enableCaching = false;
-
+    public $enable_caching = false;
     /**
      * Initializes the DbMessageSource component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
@@ -96,12 +92,11 @@ class DbMessageSource extends MessageSource
     public function init(): void
     {
         parent::init();
-        $this->db = Instance::ensure($this->db, Connection::className());
-        if ($this->enableCaching) {
+        $this->db = Instance::ensure($this->db, Connection::class_name());
+        if ($this->enable_caching) {
             $this->cache = Instance::ensure($this->cache, 'yii\caching\CacheInterface');
         }
     }
-
     /**
      * Loads the message translation for the specified language and category.
      * If translation for specific locale code such as `en-US` isn't found it
@@ -112,26 +107,19 @@ class DbMessageSource extends MessageSource
      * @return array the loaded messages. The keys are original messages, and the values
      * are translated messages.
      */
-    protected function loadMessages($category, $language)
+    protected function load_messages($category, $language)
     {
-        if ($this->enableCaching) {
-            $key = [
-                self::class,
-                $category,
-                $language,
-            ];
+        if ($this->enable_caching) {
+            $key = [self::class, $category, $language];
             $messages = $this->cache->get($key);
             if ($messages === false) {
-                $messages = $this->loadMessagesFromDb($category, $language);
-                $this->cache->set($key, $messages, $this->cachingDuration);
+                $messages = $this->load_messages_from_db($category, $language);
+                $this->cache->set($key, $messages, $this->caching_duration);
             }
-
             return $messages;
         }
-
-        return $this->loadMessagesFromDb($category, $language);
+        return $this->load_messages_from_db($category, $language);
     }
-
     /**
      * Loads the messages from database.
      * You may override this method to customize the message storage in the database.
@@ -139,30 +127,19 @@ class DbMessageSource extends MessageSource
      * @param string $language the target language.
      * @return array the messages loaded from database.
      */
-    protected function loadMessagesFromDb($category, $language)
+    protected function load_messages_from_db($category, $language)
     {
-        $mainQuery = (new Query())->select(['message' => 't1.message', 'translation' => 't2.translation'])
-            ->from(['t1' => $this->sourceMessageTable, 't2' => $this->messageTable])
-            ->where([
-                't1.id' => new Expression('[[t2.id]]'),
-                't1.category' => $category,
-                't2.language' => $language,
-            ]);
-
-        $fallbackLanguage = substr($language, 0, 2);
-        $fallbackSourceLanguage = substr($this->sourceLanguage, 0, 2);
-
-        if ($fallbackLanguage !== $language) {
-            $mainQuery->union($this->createFallbackQuery($category, $language, $fallbackLanguage), true);
-        } elseif ($language === $fallbackSourceLanguage) {
-            $mainQuery->union($this->createFallbackQuery($category, $language, $fallbackSourceLanguage), true);
+        $main_query = (new Query())->select(['message' => 't1.message', 'translation' => 't2.translation'])->from(['t1' => $this->source_message_table, 't2' => $this->message_table])->where(['t1.id' => new Expression('[[t2.id]]'), 't1.category' => $category, 't2.language' => $language]);
+        $fallback_language = substr($language, 0, 2);
+        $fallback_source_language = substr($this->source_language, 0, 2);
+        if ($fallback_language !== $language) {
+            $main_query->union($this->create_fallback_query($category, $language, $fallback_language), true);
+        } elseif ($language === $fallback_source_language) {
+            $main_query->union($this->create_fallback_query($category, $language, $fallback_source_language), true);
         }
-
-        $messages = $mainQuery->createCommand($this->db)->queryAll();
-
-        return ArrayHelper::map($messages, 'message', 'translation');
+        $messages = $main_query->create_command($this->db)->query_all();
+        return Array_Helper::map($messages, 'message', 'translation');
     }
-
     /**
      * The method builds the [[Query]] object for the fallback language messages search.
      * Normally is called from [[loadMessagesFromDb]].
@@ -174,16 +151,8 @@ class DbMessageSource extends MessageSource
      * @see loadMessagesFromDb
      * @since 2.0.7
      */
-    protected function createFallbackQuery($category, $language, $fallbackLanguage)
+    protected function create_fallback_query($category, $language, $fallback_language)
     {
-        return (new Query())->select(['message' => 't1.message', 'translation' => 't2.translation'])
-            ->from(['t1' => $this->sourceMessageTable, 't2' => $this->messageTable])
-            ->where([
-                't1.id' => new Expression('[[t2.id]]'),
-                't1.category' => $category,
-                't2.language' => $fallbackLanguage,
-            ])->andWhere([
-                'NOT IN', 't2.id', (new Query())->select('[[id]]')->from($this->messageTable)->where(['language' => $language]),
-            ]);
+        return (new Query())->select(['message' => 't1.message', 'translation' => 't2.translation'])->from(['t1' => $this->source_message_table, 't2' => $this->message_table])->where(['t1.id' => new Expression('[[t2.id]]'), 't1.category' => $category, 't2.language' => $fallback_language])->and_where(['NOT IN', 't2.id', (new Query())->select('[[id]]')->from($this->message_table)->where(['language' => $language])]);
     }
 }

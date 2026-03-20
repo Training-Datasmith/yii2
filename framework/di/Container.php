@@ -1,24 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\di;
 
 use ReflectionClass;
-use ReflectionException;
+use Reflection_Exception;
 use ReflectionNamedType;
 use ReflectionParameter;
 use Yii;
 use yii\base\Component;
-use yii\base\InvalidConfigException;
-use yii\helpers\ArrayHelper;
-
+use yii\base\Invalid_Config_Exception;
+use yii\helpers\Array_Helper;
 /**
  * Container implements a [dependency injection](https://en.wikipedia.org/wiki/Dependency_injection) container.
  *
@@ -132,8 +129,7 @@ class Container extends Component
     /**
      * @var bool whether to attempt to resolve elements in array dependencies
      */
-    private bool $_resolveArrays = false;
-
+    private bool $_resolve_arrays = false;
     /**
      * Returns an instance of the requested class.
      *
@@ -176,19 +172,15 @@ class Container extends Component
         if (!isset($this->_definitions[$class])) {
             return $this->build($class, $params, $config);
         }
-
         $definition = $this->_definitions[$class];
-
         if (is_callable($definition, true)) {
-            $params = $this->resolveDependencies($this->mergeParams($class, $params));
+            $params = $this->resolve_dependencies($this->merge_params($class, $params));
             $object = call_user_func($definition, $this, $params, $config);
         } elseif (is_array($definition)) {
             $concrete = $definition['class'];
             unset($definition['class']);
-
             $config = array_merge($definition, $config);
-            $params = $this->mergeParams($class, $params);
-
+            $params = $this->merge_params($class, $params);
             if ($concrete === $class) {
                 $object = $this->build($class, $params, $config);
             } else {
@@ -197,17 +189,14 @@ class Container extends Component
         } elseif (is_object($definition)) {
             return $this->_singletons[$class] = $definition;
         } else {
-            throw new InvalidConfigException('Unexpected object definition type: ' . gettype($definition));
+            throw new Invalid_Config_Exception('Unexpected object definition type: ' . gettype($definition));
         }
-
         if (array_key_exists($class, $this->_singletons)) {
             // singleton
             $this->_singletons[$class] = $object;
         }
-
         return $object;
     }
-
     /**
      * Registers a class definition with this container.
      *
@@ -272,12 +261,11 @@ class Container extends Component
      */
     public function set($class, $definition = [], array $params = []): self
     {
-        $this->_definitions[$class] = $this->normalizeDefinition($class, $definition);
+        $this->_definitions[$class] = $this->normalize_definition($class, $definition);
         $this->_params[$class] = $params;
         unset($this->_singletons[$class]);
         return $this;
     }
-
     /**
      * Registers a class definition with this container and marks the class as a singleton class.
      *
@@ -291,14 +279,13 @@ class Container extends Component
      * @return $this the container itself
      * @see set()
      */
-    public function setSingleton($class, $definition = [], array $params = []): self
+    public function set_singleton($class, $definition = [], array $params = []): self
     {
-        $this->_definitions[$class] = $this->normalizeDefinition($class, $definition);
+        $this->_definitions[$class] = $this->normalize_definition($class, $definition);
         $this->_params[$class] = $params;
         $this->_singletons[$class] = null;
         return $this;
     }
-
     /**
      * Returns a value indicating whether the container has the definition of the specified name.
      * @param string $class class name, interface name or alias name
@@ -309,7 +296,6 @@ class Container extends Component
     {
         return isset($this->_definitions[$class]);
     }
-
     /**
      * Returns a value indicating whether the given name corresponds to a registered singleton.
      * @param string $class class name, interface name or alias name
@@ -317,11 +303,10 @@ class Container extends Component
      * @return bool whether the given name corresponds to a registered singleton. If `$checkInstance` is true,
      * the method should return a value indicating whether the singleton has been instantiated.
      */
-    public function hasSingleton($class, $checkInstance = false): bool
+    public function has_singleton($class, $check_instance = false): bool
     {
-        return $checkInstance ? isset($this->_singletons[$class]) : array_key_exists($class, $this->_singletons);
+        return $check_instance ? isset($this->_singletons[$class]) : array_key_exists($class, $this->_singletons);
     }
-
     /**
      * Removes the definition for the specified name.
      * @param string $class class name, interface name or alias name
@@ -330,7 +315,6 @@ class Container extends Component
     {
         unset($this->_definitions[$class], $this->_singletons[$class]);
     }
-
     /**
      * Normalizes the class definition.
      * @param string $class class name
@@ -338,7 +322,7 @@ class Container extends Component
      * @return array the normalized class definition
      * @throws InvalidConfigException if the definition is invalid.
      */
-    protected function normalizeDefinition($class, $definition)
+    protected function normalize_definition($class, $definition)
     {
         if (empty($definition)) {
             return ['class' => $class];
@@ -361,24 +345,21 @@ class Container extends Component
                 if (strpos($class, '\\') !== false) {
                     $definition['class'] = $class;
                 } else {
-                    throw new InvalidConfigException('A class definition requires a "class" member.');
+                    throw new Invalid_Config_Exception('A class definition requires a "class" member.');
                 }
             }
             return $definition;
         }
-
-        throw new InvalidConfigException("Unsupported definition type for \"$class\": " . gettype($definition));
+        throw new Invalid_Config_Exception("Unsupported definition type for \"{$class}\": " . gettype($definition));
     }
-
     /**
      * Returns the list of the object definitions or the loaded shared objects.
      * @return array the list of the object definitions or the loaded shared objects (type or ID => definition or instance).
      */
-    public function getDefinitions()
+    public function get_definitions()
     {
         return $this->_definitions;
     }
-
     /**
      * Creates an instance of the specified class.
      * This method will resolve dependencies of the specified class, instantiate them, and inject
@@ -395,97 +376,84 @@ class Container extends Component
     protected function build($class, $params, $config)
     {
         /** @var ReflectionClass<T> $reflection */
-        [$reflection, $dependencies] = $this->getDependencies($class);
-
-        $addDependencies = [];
+        [$reflection, $dependencies] = $this->get_dependencies($class);
+        $add_dependencies = [];
         if (isset($config['__construct()'])) {
-            $addDependencies = $config['__construct()'];
+            $add_dependencies = $config['__construct()'];
             unset($config['__construct()']);
         }
         foreach ($params as $index => $param) {
-            $addDependencies[$index] = $param;
+            $add_dependencies[$index] = $param;
         }
-
-        $this->validateDependencies($addDependencies);
-
-        if ($addDependencies && is_int(key($addDependencies))) {
+        $this->validate_dependencies($add_dependencies);
+        if ($add_dependencies && is_int(key($add_dependencies))) {
             $dependencies = array_values($dependencies);
-            $dependencies = $this->mergeDependencies($dependencies, $addDependencies);
+            $dependencies = $this->merge_dependencies($dependencies, $add_dependencies);
         } else {
-            $dependencies = $this->mergeDependencies($dependencies, $addDependencies);
+            $dependencies = $this->merge_dependencies($dependencies, $add_dependencies);
             $dependencies = array_values($dependencies);
         }
-
-        $dependencies = $this->resolveDependencies($dependencies, $reflection);
-        if (!$reflection->isInstantiable()) {
-            throw new NotInstantiableException($reflection->name);
+        $dependencies = $this->resolve_dependencies($dependencies, $reflection);
+        if (!$reflection->is_instantiable()) {
+            throw new Not_Instantiable_Exception($reflection->name);
         }
         if (empty($config)) {
-            return $reflection->newInstanceArgs($dependencies);
+            return $reflection->new_instance_args($dependencies);
         }
-
-        $config = $this->resolveDependencies($config);
-
-        if (!empty($dependencies) && $reflection->implementsInterface('yii\base\Configurable')) {
+        $config = $this->resolve_dependencies($config);
+        if (!empty($dependencies) && $reflection->implements_interface('yii\base\Configurable')) {
             // set $config as the last parameter (existing one will be overwritten)
             $dependencies[count($dependencies) - 1] = $config;
-            return $reflection->newInstanceArgs($dependencies);
+            return $reflection->new_instance_args($dependencies);
         }
-
-        $object = $reflection->newInstanceArgs($dependencies);
+        $object = $reflection->new_instance_args($dependencies);
         foreach ($config as $name => $value) {
-            $object->$name = $value;
+            $object->{$name} = $value;
         }
-
         return $object;
     }
-
     /**
      * @param array $b
      */
-    private function mergeDependencies(array $a, $b): array
+    private function merge_dependencies(array $a, $b): array
     {
         foreach ($b as $index => $dependency) {
             $a[$index] = $dependency;
         }
         return $a;
     }
-
     /**
      * @param array $parameters
      * @throws InvalidConfigException
      */
-    private function validateDependencies($parameters): void
+    private function validate_dependencies($parameters): void
     {
-        $hasStringParameter = false;
-        $hasIntParameter = false;
+        $has_string_parameter = false;
+        $has_int_parameter = false;
         foreach ($parameters as $index => $parameter) {
             if (is_string($index)) {
-                $hasStringParameter = true;
-                if ($hasIntParameter) {
+                $has_string_parameter = true;
+                if ($has_int_parameter) {
                     break;
                 }
             } else {
-                $hasIntParameter = true;
-                if ($hasStringParameter) {
+                $has_int_parameter = true;
+                if ($has_string_parameter) {
                     break;
                 }
             }
         }
-        if ($hasIntParameter && $hasStringParameter) {
-            throw new InvalidConfigException(
-                'Dependencies indexed by name and by position in the same array are not allowed.'
-            );
+        if ($has_int_parameter && $has_string_parameter) {
+            throw new Invalid_Config_Exception('Dependencies indexed by name and by position in the same array are not allowed.');
         }
     }
-
     /**
      * Merges the user-specified constructor parameters with the ones registered via [[set()]].
      * @param string $class class name, interface name or alias name
      * @param array $params the constructor parameters
      * @return array the merged parameters
      */
-    protected function mergeParams($class, $params)
+    protected function merge_params($class, $params)
     {
         if (empty($this->_params[$class])) {
             return $params;
@@ -493,15 +461,12 @@ class Container extends Component
         if (empty($params)) {
             return $this->_params[$class];
         }
-
         $ps = $this->_params[$class];
         foreach ($params as $index => $value) {
             $ps[$index] = $value;
         }
-
         return $ps;
     }
-
     /**
      * Returns the dependencies of the specified class.
      *
@@ -511,85 +476,67 @@ class Container extends Component
      * @return array{ReflectionClass<T>, array<string, mixed>} the dependencies of the specified class.
      * @throws NotInstantiableException if a dependency cannot be resolved or if a dependency cannot be fulfilled.
      */
-    protected function getDependencies(string $class): array
+    protected function get_dependencies(string $class): array
     {
         if (isset($this->_reflections[$class])) {
             return [$this->_reflections[$class], $this->_dependencies[$class]];
         }
-
         $dependencies = [];
         try {
             $reflection = new ReflectionClass($class);
-        } catch (\ReflectionException $e) {
-            throw new NotInstantiableException(
-                $class,
-                'Failed to instantiate component or class "' . $class . '".',
-                0,
-                $e
-            );
+        } catch (\Reflection_Exception $e) {
+            throw new Not_Instantiable_Exception($class, 'Failed to instantiate component or class "' . $class . '".', 0, $e);
         }
-
-        $constructor = $reflection->getConstructor();
+        $constructor = $reflection->get_constructor();
         if ($constructor !== null) {
-            foreach ($constructor->getParameters() as $param) {
-                if (PHP_VERSION_ID >= 50600 && $param->isVariadic()) {
+            foreach ($constructor->get_parameters() as $param) {
+                if (PHP_VERSION_ID >= 50600 && $param->is_variadic()) {
                     break;
                 }
-
                 if (PHP_VERSION_ID >= 80000) {
-                    $c = $param->getType();
-                    $isClass = false;
+                    $c = $param->get_type();
+                    $is_class = false;
                     if ($c instanceof ReflectionNamedType) {
-                        $isClass = !$c->isBuiltin();
+                        $is_class = !$c->is_builtin();
                     }
                 } else {
                     try {
-                        $c = $param->getClass();
-                    } catch (ReflectionException $e) {
-                        if (!$this->isNulledParam($param)) {
-                            $notInstantiableClass = null;
-                            $type = $param->getType();
+                        $c = $param->get_class();
+                    } catch (Reflection_Exception $e) {
+                        if (!$this->is_nulled_param($param)) {
+                            $not_instantiable_class = null;
+                            $type = $param->get_type();
                             if ($type instanceof ReflectionNamedType) {
-                                $notInstantiableClass = $type->getName();
+                                $not_instantiable_class = $type->get_name();
                             }
-                            throw new NotInstantiableException(
-                                $notInstantiableClass,
-                                $notInstantiableClass === null ? 'Can not instantiate unknown class.' : null
-                            );
+                            throw new Not_Instantiable_Exception($not_instantiable_class, $not_instantiable_class === null ? 'Can not instantiate unknown class.' : null);
                         }
                         $c = null;
                     }
-                    $isClass = $c !== null;
+                    $is_class = $c !== null;
                 }
-                $className = $isClass ? $c->getName() : null;
-
-                if ($className !== null) {
-                    $dependencies[$param->getName()] = Instance::of($className, $this->isNulledParam($param));
+                $class_name = $is_class ? $c->get_name() : null;
+                if ($class_name !== null) {
+                    $dependencies[$param->get_name()] = Instance::of($class_name, $this->is_nulled_param($param));
                 } else {
-                    $dependencies[$param->getName()] = $param->isDefaultValueAvailable()
-                        ? $param->getDefaultValue()
-                        : null;
+                    $dependencies[$param->get_name()] = $param->is_default_value_available() ? $param->get_default_value() : null;
                 }
             }
         }
-
         $this->_reflections[$class] = $reflection;
         $this->_dependencies[$class] = $dependencies;
-
         return [$reflection, $dependencies];
     }
-
     /**
      * @param ReflectionParameter $param
      */
-    private function isNulledParam($param): bool
+    private function is_nulled_param($param): bool
     {
-        if ($param->isOptional()) {
+        if ($param->is_optional()) {
             return true;
         }
-        return PHP_VERSION_ID >= 70100 && $param->getType()->allowsNull();
+        return PHP_VERSION_ID >= 70100 && $param->get_type()->allows_null();
     }
-
     /**
      * Resolves dependencies by replacing them with the actual object instances.
      * @param array $dependencies the dependencies
@@ -597,25 +544,23 @@ class Container extends Component
      * @return array the resolved dependencies
      * @throws InvalidConfigException if a dependency cannot be resolved or if a dependency cannot be fulfilled.
      */
-    protected function resolveDependencies(array $dependencies, $reflection = null): array
+    protected function resolve_dependencies(array $dependencies, $reflection = null): array
     {
         foreach ($dependencies as $index => $dependency) {
             if ($dependency instanceof Instance) {
                 if ($dependency->id !== null) {
                     $dependencies[$index] = $dependency->get($this);
                 } elseif ($reflection !== null) {
-                    $name = $reflection->getConstructor()->getParameters()[$index]->getName();
-                    $class = $reflection->getName();
-                    throw new InvalidConfigException("Missing required parameter \"$name\" when instantiating \"$class\".");
+                    $name = $reflection->get_constructor()->get_parameters()[$index]->get_name();
+                    $class = $reflection->get_name();
+                    throw new Invalid_Config_Exception("Missing required parameter \"{$name}\" when instantiating \"{$class}\".");
                 }
-            } elseif ($this->_resolveArrays && is_array($dependency)) {
-                $dependencies[$index] = $this->resolveDependencies($dependency, $reflection);
+            } elseif ($this->_resolve_arrays && is_array($dependency)) {
+                $dependencies[$index] = $this->resolve_dependencies($dependency, $reflection);
             }
         }
-
         return $dependencies;
     }
-
     /**
      * Invoke a callback with resolving dependencies in parameters.
      *
@@ -644,9 +589,8 @@ class Container extends Component
      */
     public function invoke(callable $callback, $params = [])
     {
-        return call_user_func_array($callback, $this->resolveCallableDependencies($callback, $params));
+        return call_user_func_array($callback, $this->resolve_callable_dependencies($callback, $params));
     }
-
     /**
      * Resolve dependencies for a function.
      *
@@ -660,7 +604,7 @@ class Container extends Component
      * @throws NotInstantiableException If resolved to an abstract class or an interface (since 2.0.9)
      * @since 2.0.7
      */
-    public function resolveCallableDependencies(callable $callback, array $params = []): array
+    public function resolve_callable_dependencies(callable $callback, array $params = []): array
     {
         if (is_array($callback)) {
             $reflection = new \ReflectionMethod($callback[0], $callback[1]);
@@ -669,56 +613,50 @@ class Container extends Component
         } else {
             $reflection = new \ReflectionFunction($callback);
         }
-
         $args = [];
-
-        $associative = ArrayHelper::isAssociative($params);
-
-        foreach ($reflection->getParameters() as $param) {
-            $name = $param->getName();
-
+        $associative = Array_Helper::is_associative($params);
+        foreach ($reflection->get_parameters() as $param) {
+            $name = $param->get_name();
             if (PHP_VERSION_ID >= 80000) {
-                $class = $param->getType();
-                if ($class instanceof \ReflectionUnionType || (PHP_VERSION_ID >= 80100 && $class instanceof \ReflectionIntersectionType)) {
-                    $isClass = false;
+                $class = $param->get_type();
+                if ($class instanceof \ReflectionUnionType || PHP_VERSION_ID >= 80100 && $class instanceof \ReflectionIntersectionType) {
+                    $is_class = false;
                     /** @var ReflectionNamedType $type */
-                    foreach ($class->getTypes() as $type) {
-                        if (!$type->isBuiltin()) {
+                    foreach ($class->get_types() as $type) {
+                        if (!$type->is_builtin()) {
                             $class = $type;
-                            $isClass = true;
+                            $is_class = true;
                             break;
                         }
                     }
                 } else {
                     /** @var ReflectionNamedType|null $class */
-                    $isClass = $class !== null && !$class->isBuiltin();
+                    $is_class = $class !== null && !$class->is_builtin();
                 }
             } else {
-                $class = $param->getClass();
-                $isClass = $class !== null;
+                $class = $param->get_class();
+                $is_class = $class !== null;
             }
-
-            if ($isClass) {
-                $className = $class->getName();
-                if (PHP_VERSION_ID >= 50600 && $param->isVariadic()) {
+            if ($is_class) {
+                $class_name = $class->get_name();
+                if (PHP_VERSION_ID >= 50600 && $param->is_variadic()) {
                     $args = array_merge($args, array_values($params));
                     break;
                 }
-
-                if ($associative && isset($params[$name]) && $params[$name] instanceof $className) {
+                if ($associative && isset($params[$name]) && $params[$name] instanceof $class_name) {
                     $args[] = $params[$name];
                     unset($params[$name]);
-                } elseif (!$associative && isset($params[0]) && $params[0] instanceof $className) {
+                } elseif (!$associative && isset($params[0]) && $params[0] instanceof $class_name) {
                     $args[] = array_shift($params);
-                } elseif (isset(Yii::$app) && Yii::$app->has($name) && ($obj = Yii::$app->get($name)) instanceof $className) {
+                } elseif (isset(Yii::$app) && Yii::$app->has($name) && ($obj = Yii::$app->get($name)) instanceof $class_name) {
                     $args[] = $obj;
                 } else {
                     // If the argument is optional we catch not instantiable exceptions
                     try {
-                        $args[] = $this->get($className);
-                    } catch (NotInstantiableException $e) {
-                        if ($param->isDefaultValueAvailable()) {
-                            $args[] = $param->getDefaultValue();
+                        $args[] = $this->get($class_name);
+                    } catch (Not_Instantiable_Exception $e) {
+                        if ($param->is_default_value_available()) {
+                            $args[] = $param->get_default_value();
                         } else {
                             throw $e;
                         }
@@ -729,21 +667,18 @@ class Container extends Component
                 unset($params[$name]);
             } elseif (!$associative && count($params)) {
                 $args[] = array_shift($params);
-            } elseif ($param->isDefaultValueAvailable()) {
-                $args[] = $param->getDefaultValue();
-            } elseif (!$param->isOptional()) {
-                $funcName = $reflection->getName();
-                throw new InvalidConfigException("Missing required parameter \"$name\" when calling \"$funcName\".");
+            } elseif ($param->is_default_value_available()) {
+                $args[] = $param->get_default_value();
+            } elseif (!$param->is_optional()) {
+                $func_name = $reflection->get_name();
+                throw new Invalid_Config_Exception("Missing required parameter \"{$name}\" when calling \"{$func_name}\".");
             }
         }
-
         foreach ($params as $value) {
             $args[] = $value;
         }
-
         return $args;
     }
-
     /**
      * Registers class definitions within this container.
      *
@@ -790,18 +725,16 @@ class Container extends Component
      * @see set() to know more about possible values of definitions
      * @since 2.0.11
      */
-    public function setDefinitions(array $definitions): void
+    public function set_definitions(array $definitions): void
     {
         foreach ($definitions as $class => $definition) {
             if (is_array($definition) && count($definition) === 2 && array_values($definition) === $definition && is_array($definition[1])) {
                 $this->set($class, $definition[0], $definition[1]);
                 continue;
             }
-
             $this->set($class, $definition);
         }
     }
-
     /**
      * Registers class definitions as singletons within this container by calling [[setSingleton()]].
      *
@@ -812,24 +745,22 @@ class Container extends Component
      * @see setSingleton() to know more about possible values of definitions
      * @since 2.0.11
      */
-    public function setSingletons(array $singletons): void
+    public function set_singletons(array $singletons): void
     {
         foreach ($singletons as $class => $definition) {
             if (is_array($definition) && count($definition) === 2 && array_values($definition) === $definition) {
-                $this->setSingleton($class, $definition[0], $definition[1]);
+                $this->set_singleton($class, $definition[0], $definition[1]);
                 continue;
             }
-
-            $this->setSingleton($class, $definition);
+            $this->set_singleton($class, $definition);
         }
     }
-
     /**
      * @param bool $value whether to attempt to resolve elements in array dependencies
      * @since 2.0.37
      */
-    public function setResolveArrays($value): void
+    public function set_resolve_arrays($value): void
     {
-        $this->_resolveArrays = (bool) $value;
+        $this->_resolve_arrays = (bool) $value;
     }
 }

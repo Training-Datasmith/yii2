@@ -1,23 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 use DateTime;
 use DateTimeZone;
 use Exception;
-use IntlDateFormatter;
+use Intl_Date_Formatter;
 use Yii;
-use yii\base\InvalidConfigException;
-use yii\helpers\FormatConverter;
-
+use yii\base\Invalid_Config_Exception;
+use yii\helpers\Format_Converter;
 /**
  * DateValidator verifies if the attribute represents a date, time or datetime in a proper [[format]].
  *
@@ -37,7 +34,7 @@ use yii\helpers\FormatConverter;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class DateValidator extends Validator
+class Date_Validator extends Validator
 {
     /**
      * Constant for specifying the validation [[type]] as a date value, used for validation with intl short format.
@@ -119,7 +116,7 @@ class DateValidator extends Validator
      * Refer to the [php manual](https://www.php.net/manual/en/timezones.php) for available timezones.
      * If this property is not set, [[\yii\base\Application::timeZone]] will be used.
      */
-    public $timeZone;
+    public $time_zone;
     /**
      * @var string|null the name of the attribute to receive the parsing result.
      * When this property is not null and the validation is successful, the named attribute will
@@ -137,7 +134,7 @@ class DateValidator extends Validator
      * @see timestampAttributeFormat
      * @see timestampAttributeTimeZone
      */
-    public $timestampAttribute;
+    public $timestamp_attribute;
     /**
      * @var string|null the format to use when populating the [[timestampAttribute]].
      * The format can be specified in the same way as for [[format]].
@@ -148,7 +145,7 @@ class DateValidator extends Validator
      * @see timestampAttribute
      * @since 2.0.4
      */
-    public $timestampAttributeFormat;
+    public $timestamp_attribute_format;
     /**
      * @var string the timezone to use when populating the [[timestampAttribute]] with [[timestampAttributeFormat]]. Defaults to `UTC`.
      *
@@ -160,7 +157,7 @@ class DateValidator extends Validator
      * @see timestampAttributeFormat
      * @since 2.0.4
      */
-    public $timestampAttributeTimeZone = 'UTC';
+    public $timestamp_attribute_time_zone = 'UTC';
     /**
      * @var int|string|null upper limit of the date. Defaults to null, meaning no upper limit.
      * This can be a unix timestamp or a string representing a date time value.
@@ -181,48 +178,49 @@ class DateValidator extends Validator
      * @var string user-defined error message used when the value is bigger than [[max]].
      * @since 2.0.4
      */
-    public $tooBig;
+    public $too_big;
     /**
      * @var string user-defined error message used when the value is smaller than [[min]].
      * @since 2.0.4
      */
-    public $tooSmall;
+    public $too_small;
     /**
      * @var string|null user friendly value of upper limit to display in the error message.
      * If this property is null, the value of [[max]] will be used (before parsing).
      * @since 2.0.4
      */
-    public $maxString;
+    public $max_string;
     /**
      * @var string|null user friendly value of lower limit to display in the error message.
      * If this property is null, the value of [[min]] will be used (before parsing).
      * @since 2.0.4
      */
-    public $minString;
+    public $min_string;
     /**
      * @var bool set this parameter to true if you need strict date format validation (e.g. only such dates pass
      * validation for the following format 'yyyy-MM-dd': '0011-03-25', '2019-04-30' etc. and not '18-05-15',
      * '2017-Mar-14' etc. which pass validation if this parameter is set to false)
      * @since 2.0.22
      */
-    public $strictDateFormat = false;
+    public $strict_date_format = false;
     /**
      * @var string the default timezone used for parsing when no time parts are provided in the format.
      * See [[timestampAttributeTimeZone]] for more description.
      * @since 2.0.39
      */
-    public $defaultTimeZone = 'UTC';
-
+    public $default_time_zone = 'UTC';
     /**
      * @var array map of short format names to IntlDateFormatter constant values.
      */
-    private array $_dateFormats = [
-        'short' => 3, // IntlDateFormatter::SHORT,
-        'medium' => 2, // IntlDateFormatter::MEDIUM,
-        'long' => 1, // IntlDateFormatter::LONG,
-        'full' => 0, // IntlDateFormatter::FULL,
+    private array $_date_formats = [
+        'short' => 3,
+        // IntlDateFormatter::SHORT,
+        'medium' => 2,
+        // IntlDateFormatter::MEDIUM,
+        'long' => 1,
+        // IntlDateFormatter::LONG,
+        'full' => 0,
     ];
-
     /**
      * {@inheritdoc}
      */
@@ -234,118 +232,112 @@ class DateValidator extends Validator
         }
         if ($this->format === null) {
             if ($this->type === self::TYPE_DATE) {
-                $this->format = Yii::$app->formatter->dateFormat;
+                $this->format = Yii::$app->formatter->date_format;
             } elseif ($this->type === self::TYPE_DATETIME) {
-                $this->format = Yii::$app->formatter->datetimeFormat;
+                $this->format = Yii::$app->formatter->datetime_format;
             } elseif ($this->type === self::TYPE_TIME) {
-                $this->format = Yii::$app->formatter->timeFormat;
+                $this->format = Yii::$app->formatter->time_format;
             } else {
-                throw new InvalidConfigException('Unknown validation type set for DateValidator::$type: ' . $this->type);
+                throw new Invalid_Config_Exception('Unknown validation type set for DateValidator::$type: ' . $this->type);
             }
         }
         if ($this->locale === null) {
             $this->locale = Yii::$app->language;
         }
-        if ($this->timeZone === null) {
-            $this->timeZone = Yii::$app->timeZone;
+        if ($this->time_zone === null) {
+            $this->time_zone = Yii::$app->time_zone;
         }
-        if ($this->min !== null && $this->tooSmall === null) {
-            $this->tooSmall = Yii::t('yii', '{attribute} must be no less than {min}.');
+        if ($this->min !== null && $this->too_small === null) {
+            $this->too_small = Yii::t('yii', '{attribute} must be no less than {min}.');
         }
-        if ($this->max !== null && $this->tooBig === null) {
-            $this->tooBig = Yii::t('yii', '{attribute} must be no greater than {max}.');
+        if ($this->max !== null && $this->too_big === null) {
+            $this->too_big = Yii::t('yii', '{attribute} must be no greater than {max}.');
         }
-        if ($this->maxString === null) {
-            $this->maxString = (string)$this->max;
+        if ($this->max_string === null) {
+            $this->max_string = (string) $this->max;
         }
-        if ($this->minString === null) {
-            $this->minString = (string)$this->min;
+        if ($this->min_string === null) {
+            $this->min_string = (string) $this->min;
         }
         if ($this->max !== null && is_string($this->max)) {
-            $timestamp = $this->parseDateValue($this->max);
+            $timestamp = $this->parse_date_value($this->max);
             if ($timestamp === false) {
-                throw new InvalidConfigException("Invalid max date value: {$this->max}");
+                throw new Invalid_Config_Exception("Invalid max date value: {$this->max}");
             }
             $this->max = $timestamp;
         }
         if ($this->min !== null && is_string($this->min)) {
-            $timestamp = $this->parseDateValue($this->min);
+            $timestamp = $this->parse_date_value($this->min);
             if ($timestamp === false) {
-                throw new InvalidConfigException("Invalid min date value: {$this->min}");
+                throw new Invalid_Config_Exception("Invalid min date value: {$this->min}");
             }
             $this->min = $timestamp;
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute): void
+    public function validate_attribute($model, $attribute): void
     {
-        $value = $model->$attribute;
-        if ($this->isEmpty($value)) {
-            if ($this->timestampAttribute !== null) {
-                $model->{$this->timestampAttribute} = null;
+        $value = $model->{$attribute};
+        if ($this->is_empty($value)) {
+            if ($this->timestamp_attribute !== null) {
+                $model->{$this->timestamp_attribute} = null;
             }
             return;
         }
-
-        $timestamp = $this->parseDateValue($value);
+        $timestamp = $this->parse_date_value($value);
         if ($timestamp === false) {
-            if ($this->timestampAttribute === $attribute) {
-                if ($this->timestampAttributeFormat === null) {
+            if ($this->timestamp_attribute === $attribute) {
+                if ($this->timestamp_attribute_format === null) {
                     if (is_int($value)) {
                         return;
                     }
-                } elseif ($this->parseDateValueFormat($value, $this->timestampAttributeFormat) !== false) {
+                } elseif ($this->parse_date_value_format($value, $this->timestamp_attribute_format) !== false) {
                     return;
                 }
             }
-            $this->addError($model, $attribute, $this->message, []);
+            $this->add_error($model, $attribute, $this->message, []);
         } elseif ($this->min !== null && $timestamp < $this->min) {
-            $this->addError($model, $attribute, $this->tooSmall, ['min' => $this->minString]);
+            $this->add_error($model, $attribute, $this->too_small, ['min' => $this->min_string]);
         } elseif ($this->max !== null && $timestamp > $this->max) {
-            $this->addError($model, $attribute, $this->tooBig, ['max' => $this->maxString]);
-        } elseif ($this->timestampAttribute !== null) {
-            if ($this->timestampAttributeFormat === null) {
-                $model->{$this->timestampAttribute} = $timestamp;
+            $this->add_error($model, $attribute, $this->too_big, ['max' => $this->max_string]);
+        } elseif ($this->timestamp_attribute !== null) {
+            if ($this->timestamp_attribute_format === null) {
+                $model->{$this->timestamp_attribute} = $timestamp;
             } else {
-                $model->{$this->timestampAttribute} = $this->formatTimestamp($timestamp, $this->timestampAttributeFormat);
+                $model->{$this->timestamp_attribute} = $this->format_timestamp($timestamp, $this->timestamp_attribute_format);
             }
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value): ?array
+    protected function validate_value($value): ?array
     {
-        $timestamp = $this->parseDateValue($value);
+        $timestamp = $this->parse_date_value($value);
         if ($timestamp === false) {
             return [$this->message, []];
         }
         if ($this->min !== null && $timestamp < $this->min) {
-            return [$this->tooSmall, ['min' => $this->minString]];
+            return [$this->too_small, ['min' => $this->min_string]];
         }
         if ($this->max !== null && $timestamp > $this->max) {
-            return [$this->tooBig, ['max' => $this->maxString]];
+            return [$this->too_big, ['max' => $this->max_string]];
         }
-
         return null;
     }
-
     /**
      * Parses date string into UNIX timestamp.
      *
      * @param mixed $value string representing date
      * @return int|false a UNIX timestamp or `false` on failure.
      */
-    protected function parseDateValue($value)
+    protected function parse_date_value($value)
     {
         // TODO consider merging these methods into single one at 2.1
-        return $this->parseDateValueFormat($value, $this->format);
+        return $this->parse_date_value_format($value, $this->format);
     }
-
     /**
      * Parses date string into UNIX timestamp.
      *
@@ -354,7 +346,7 @@ class DateValidator extends Validator
      * @return int|false a UNIX timestamp or `false` on failure.
      * @throws InvalidConfigException
      */
-    private function parseDateValueFormat($value, $format)
+    private function parse_date_value_format($value, $format)
     {
         if (is_array($value)) {
             return false;
@@ -363,16 +355,13 @@ class DateValidator extends Validator
             $format = substr($format, 4);
         } else {
             if (extension_loaded('intl')) {
-                return $this->parseDateValueIntl($value, $format);
+                return $this->parse_date_value_intl($value, $format);
             }
-
             // fallback to PHP if intl is not installed
-            $format = FormatConverter::convertDateIcuToPhp($format, 'date');
+            $format = Format_Converter::convert_date_icu_to_php($format, 'date');
         }
-
-        return $this->parseDateValuePHP($value, $format);
+        return $this->parse_date_value_php($value, $format);
     }
-
     /**
      * Parses a date value using the IntlDateFormatter::parse().
      * @param string $value string representing date
@@ -380,100 +369,90 @@ class DateValidator extends Validator
      * @return int|bool a UNIX timestamp or `false` on failure.
      * @throws InvalidConfigException
      */
-    private function parseDateValueIntl($value, $format)
+    private function parse_date_value_intl($value, $format)
     {
-        $formatter = $this->getIntlDateFormatter($format);
+        $formatter = $this->get_intl_date_formatter($format);
         // enable strict parsing to avoid getting invalid date values
-        $formatter->setLenient(false);
-
+        $formatter->set_lenient(false);
         // There should not be a warning thrown by parse() but this seems to be the case on windows so we suppress it here
         // See https://github.com/yiisoft/yii2/issues/5962 and https://bugs.php.net/bug.php?id=68528
-        $parsePos = 0;
-        $parsedDate = @$formatter->parse($value, $parsePos);
-        $valueLength = mb_strlen($value, Yii::$app ? Yii::$app->charset : 'UTF-8');
-        if ($parsedDate === false || $parsePos !== $valueLength || ($this->strictDateFormat && $formatter->format($parsedDate) !== $value)) {
+        $parse_pos = 0;
+        $parsed_date = @$formatter->parse($value, $parse_pos);
+        $value_length = mb_strlen($value, Yii::$app ? Yii::$app->charset : 'UTF-8');
+        if ($parsed_date === false || $parse_pos !== $value_length || $this->strict_date_format && $formatter->format($parsed_date) !== $value) {
             return false;
         }
-
-        return $parsedDate;
+        return $parsed_date;
     }
-
     /**
      * Creates IntlDateFormatter
      *
      * @param $format string date format
      * @throws InvalidConfigException
      */
-    private function getIntlDateFormatter($format): \IntlDateFormatter
+    private function get_intl_date_formatter($format): \Intl_Date_Formatter
     {
-        if (!isset($this->_dateFormats[$format])) {
+        if (!isset($this->_date_formats[$format])) {
             // if no time was provided in the format string set timezone to default one to match yii\i18n\Formatter::formatDateTimeValue()
-            $timezone = strpbrk($format, 'ahHkKmsSA') !== false ? $this->timeZone : $this->defaultTimeZone;
-            return new IntlDateFormatter($this->locale, IntlDateFormatter::NONE, IntlDateFormatter::NONE, $timezone, null, $format);
+            $timezone = strpbrk($format, 'ahHkKmsSA') !== false ? $this->time_zone : $this->default_time_zone;
+            return new Intl_Date_Formatter($this->locale, Intl_Date_Formatter::NONE, Intl_Date_Formatter::NONE, $timezone, null, $format);
         }
-
         if ($this->type === self::TYPE_DATE) {
-            $dateType = $this->_dateFormats[$format];
-            $timeType = IntlDateFormatter::NONE;
-            $timeZone = $this->defaultTimeZone;
+            $date_type = $this->_date_formats[$format];
+            $time_type = Intl_Date_Formatter::NONE;
+            $time_zone = $this->default_time_zone;
         } elseif ($this->type === self::TYPE_DATETIME) {
-            $dateType = $this->_dateFormats[$format];
-            $timeType = $this->_dateFormats[$format];
-            $timeZone = $this->timeZone;
+            $date_type = $this->_date_formats[$format];
+            $time_type = $this->_date_formats[$format];
+            $time_zone = $this->time_zone;
         } elseif ($this->type === self::TYPE_TIME) {
-            $dateType = IntlDateFormatter::NONE;
-            $timeType = $this->_dateFormats[$format];
-            $timeZone = $this->timeZone;
+            $date_type = Intl_Date_Formatter::NONE;
+            $time_type = $this->_date_formats[$format];
+            $time_zone = $this->time_zone;
         } else {
-            throw new InvalidConfigException('Unknown validation type set for DateValidator::$type: ' . $this->type);
+            throw new Invalid_Config_Exception('Unknown validation type set for DateValidator::$type: ' . $this->type);
         }
-
-        return new IntlDateFormatter($this->locale, $dateType, $timeType, $timeZone);
+        return new Intl_Date_Formatter($this->locale, $date_type, $time_type, $time_zone);
     }
-
     /**
      * Parses a date value using the DateTime::createFromFormat().
      * @param string $value string representing date
      * @param string $format the expected date format
      * @return int|bool a UNIX timestamp or `false` on failure.
      */
-    private function parseDateValuePHP($value, $format)
+    private function parse_date_value_php($value, $format)
     {
-        $hasTimeInfo = strpbrk($format, 'HhGgisU') !== false;
+        $has_time_info = strpbrk($format, 'HhGgisU') !== false;
         // if no time was provided in the format string set timezone to default one to match yii\i18n\Formatter::formatDateTimeValue()
-        $timezone = $hasTimeInfo ? $this->timeZone : $this->defaultTimeZone;
-        $date = DateTime::createFromFormat($format, $value, new DateTimeZone($timezone));
-        $errors = DateTime::getLastErrors(); // Before PHP 8.2 may return array instead of false (see https://github.com/php/php-src/issues/9431).
-        if ($date === false || ($errors !== false && ($errors['error_count'] || $errors['warning_count'])) || ($this->strictDateFormat && $date->format($format) !== $value)) {
+        $timezone = $has_time_info ? $this->time_zone : $this->default_time_zone;
+        $date = DateTime::create_from_format($format, $value, new DateTimeZone($timezone));
+        $errors = DateTime::get_last_errors();
+        // Before PHP 8.2 may return array instead of false (see https://github.com/php/php-src/issues/9431).
+        if ($date === false || $errors !== false && ($errors['error_count'] || $errors['warning_count']) || $this->strict_date_format && $date->format($format) !== $value) {
             return false;
         }
-
-        if (!$hasTimeInfo) {
+        if (!$has_time_info) {
             // if no time was provided in the format string set time to 0 to get a simple date timestamp
-            $date->setTime(0, 0, 0);
+            $date->set_time(0, 0, 0);
         }
-
-        return $date->getTimestamp();
+        return $date->get_timestamp();
     }
-
     /**
      * Formats a timestamp using the specified format.
      * @param int $timestamp
      * @param string $format
      * @throws Exception
      */
-    private function formatTimestamp($timestamp, $format): string
+    private function format_timestamp($timestamp, $format): string
     {
         if (strncmp($format, 'php:', 4) === 0) {
             $format = substr($format, 4);
         } else {
-            $format = FormatConverter::convertDateIcuToPhp($format, 'date');
+            $format = Format_Converter::convert_date_icu_to_php($format, 'date');
         }
-
         $date = new DateTime();
-        $date->setTimestamp($timestamp);
-        $date->setTimezone(new DateTimeZone($this->timestampAttributeTimeZone));
-
+        $date->set_timestamp($timestamp);
+        $date->set_timezone(new DateTimeZone($this->timestamp_attribute_time_zone));
         return $date->format($format);
     }
 }

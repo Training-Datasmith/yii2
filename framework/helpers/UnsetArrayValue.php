@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\helpers;
 
 /**
@@ -50,7 +48,7 @@ namespace yii\helpers;
  * @author Robert Korulczyk <robert@korulczyk.pl>
  * @since 2.0.10
  */
-class UnsetArrayValue
+class Unset_Array_Value
 {
     /**
      * Restores class state after using `var_export()`.

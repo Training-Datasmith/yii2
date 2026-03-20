@@ -1,20 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use Yii;
-use yii\base\BaseObject;
-use yii\helpers\ArrayHelper;
+use yii\base\Base_Object;
+use yii\helpers\Array_Helper;
 use yii\helpers\Url;
-
 /**
  * AssetBundle represents a collection of asset files, such as CSS, JS, images.
  *
@@ -34,7 +31,7 @@ use yii\helpers\Url;
  * @phpstan-import-type RegisterCssFileOptions from View
  * @phpstan-import-type PublishOptions from AssetManager
  */
-class AssetBundle extends BaseObject
+class Asset_Bundle extends Base_Object
 {
     /**
      * @var string|null the directory that contains the source asset files for this asset bundle.
@@ -49,7 +46,7 @@ class AssetBundle extends BaseObject
      * You can use either a directory or an alias of the directory.
      * @see publishOptions
      */
-    public $sourcePath;
+    public $source_path;
     /**
      * @var string|null the Web-accessible directory that contains the asset files in this bundle.
      *
@@ -58,7 +55,7 @@ class AssetBundle extends BaseObject
      *
      * You can use either a directory or an alias of the directory.
      */
-    public $basePath;
+    public $base_path;
     /**
      * @var string|null the base URL for the relative asset files listed in [[js]] and [[css]].
      *
@@ -67,7 +64,7 @@ class AssetBundle extends BaseObject
      *
      * You can use either a URL or an alias of the URL.
      */
-    public $baseUrl;
+    public $base_url;
     /**
      * @var class-string[] list of bundle class names that this bundle depends on.
      *
@@ -109,18 +106,17 @@ class AssetBundle extends BaseObject
      * @var RegisterJsFileOptions the options that will be passed to [[View::registerJsFile()]]
      * when registering the JS files in this bundle.
      */
-    public $jsOptions = [];
+    public $js_options = [];
     /**
      * @var RegisterCssFileOptions the options that will be passed to [[View::registerCssFile()]]
      * when registering the CSS files in this bundle.
      */
-    public $cssOptions = [];
+    public $css_options = [];
     /**
      * @var PublishOptions the options to be passed to [[AssetManager::publish()]] when the asset bundle
      * is being published. This property is used only when [[sourcePath]] is set.
      */
-    public $publishOptions = [];
-
+    public $publish_options = [];
     /**
      * Registers this asset bundle with a view.
      * @param View $view the view to be registered with
@@ -129,55 +125,51 @@ class AssetBundle extends BaseObject
     public static function register($view)
     {
         /** @var static $result */
-        $result = $view->registerAssetBundle(static::class);
-
+        $result = $view->register_asset_bundle(static::class);
         return $result;
     }
-
     /**
      * Initializes the bundle.
      * If you override this method, make sure you call the parent implementation in the last.
      */
     public function init(): void
     {
-        if ($this->sourcePath !== null) {
-            $this->sourcePath = rtrim(Yii::getAlias($this->sourcePath), '/\\');
+        if ($this->source_path !== null) {
+            $this->source_path = rtrim(Yii::get_alias($this->source_path), '/\\');
         }
-        if ($this->basePath !== null) {
-            $this->basePath = rtrim(Yii::getAlias($this->basePath), '/\\');
+        if ($this->base_path !== null) {
+            $this->base_path = rtrim(Yii::get_alias($this->base_path), '/\\');
         }
-        if ($this->baseUrl !== null) {
-            $this->baseUrl = rtrim(Yii::getAlias($this->baseUrl), '/');
+        if ($this->base_url !== null) {
+            $this->base_url = rtrim(Yii::get_alias($this->base_url), '/');
         }
     }
-
     /**
      * Registers the CSS and JS files with the given view.
      * @param \yii\web\View $view the view that the asset files are to be registered with.
      */
-    public function registerAssetFiles($view): void
+    public function register_asset_files($view): void
     {
-        $manager = $view->getAssetManager();
+        $manager = $view->get_asset_manager();
         foreach ($this->js as $js) {
             if (is_array($js)) {
                 $file = array_shift($js);
-                $options = ArrayHelper::merge($this->jsOptions, $js);
-                $view->registerJsFile($manager->getAssetUrl($this, $file, ArrayHelper::getValue($options, 'appendTimestamp')), $options);
+                $options = Array_Helper::merge($this->js_options, $js);
+                $view->register_js_file($manager->get_asset_url($this, $file, Array_Helper::get_value($options, 'appendTimestamp')), $options);
             } elseif ($js !== null) {
-                $view->registerJsFile($manager->getAssetUrl($this, $js), $this->jsOptions);
+                $view->register_js_file($manager->get_asset_url($this, $js), $this->js_options);
             }
         }
         foreach ($this->css as $css) {
             if (is_array($css)) {
                 $file = array_shift($css);
-                $options = ArrayHelper::merge($this->cssOptions, $css);
-                $view->registerCssFile($manager->getAssetUrl($this, $file, ArrayHelper::getValue($options, 'appendTimestamp')), $options);
+                $options = Array_Helper::merge($this->css_options, $css);
+                $view->register_css_file($manager->get_asset_url($this, $file, Array_Helper::get_value($options, 'appendTimestamp')), $options);
             } elseif ($css !== null) {
-                $view->registerCssFile($manager->getAssetUrl($this, $css), $this->cssOptions);
+                $view->register_css_file($manager->get_asset_url($this, $css), $this->css_options);
             }
         }
     }
-
     /**
      * Publishes the asset bundle if its source code is not under Web-accessible directory.
      * It will also try to convert non-CSS or JS files (e.g. LESS, Sass) into the corresponding
@@ -186,33 +178,32 @@ class AssetBundle extends BaseObject
      */
     public function publish($am): void
     {
-        if ($this->sourcePath !== null && !isset($this->basePath, $this->baseUrl)) {
-            [$this->basePath, $this->baseUrl] = $am->publish($this->sourcePath, $this->publishOptions);
+        if ($this->source_path !== null && !isset($this->base_path, $this->base_url)) {
+            [$this->base_path, $this->base_url] = $am->publish($this->source_path, $this->publish_options);
         }
-
-        if (isset($this->basePath, $this->baseUrl) && ($converter = $am->getConverter()) !== null) {
+        if (isset($this->base_path, $this->base_url) && ($converter = $am->get_converter()) !== null) {
             foreach ($this->js as $i => $js) {
                 if (is_array($js)) {
                     $file = array_shift($js);
-                    if (Url::isRelative($file)) {
-                        $js = ArrayHelper::merge($this->jsOptions, $js);
-                        array_unshift($js, $converter->convert($file, $this->basePath));
+                    if (Url::is_relative($file)) {
+                        $js = Array_Helper::merge($this->js_options, $js);
+                        array_unshift($js, $converter->convert($file, $this->base_path));
                         $this->js[$i] = $js;
                     }
-                } elseif (Url::isRelative($js)) {
-                    $this->js[$i] = $converter->convert($js, $this->basePath);
+                } elseif (Url::is_relative($js)) {
+                    $this->js[$i] = $converter->convert($js, $this->base_path);
                 }
             }
             foreach ($this->css as $i => $css) {
                 if (is_array($css)) {
                     $file = array_shift($css);
-                    if (Url::isRelative($file)) {
-                        $css = ArrayHelper::merge($this->cssOptions, $css);
-                        array_unshift($css, $converter->convert($file, $this->basePath));
+                    if (Url::is_relative($file)) {
+                        $css = Array_Helper::merge($this->css_options, $css);
+                        array_unshift($css, $converter->convert($file, $this->base_path));
                         $this->css[$i] = $css;
                     }
-                } elseif (Url::isRelative($css)) {
-                    $this->css[$i] = $converter->convert($css, $this->basePath);
+                } elseif (Url::is_relative($css)) {
+                    $this->css[$i] = $converter->convert($css, $this->base_path);
                 }
             }
         }

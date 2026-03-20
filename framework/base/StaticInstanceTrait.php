@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
-
 /**
  * StaticInstanceTrait provides methods to satisfy [[StaticInstanceInterface]] interface.
  *
@@ -20,13 +17,12 @@ use Yii;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0.13
  */
-trait StaticInstanceTrait
+trait Static_Instance_Trait
 {
     /**
      * @var static[] static instances in format: `[className => object]`
      */
     private static $_instances = [];
-
     /**
      * Returns static class instance, which can be used to obtain meta information.
      * @param bool $refresh whether to re-create static instance even, if it is already cached.
@@ -34,10 +30,10 @@ trait StaticInstanceTrait
      */
     public static function instance($refresh = false)
     {
-        $className = static::class;
-        if ($refresh || !isset(self::$_instances[$className])) {
-            self::$_instances[$className] = Yii::createObject($className);
+        $class_name = static::class;
+        if ($refresh || !isset(self::$_instances[$class_name])) {
+            self::$_instances[$class_name] = Yii::create_object($class_name);
         }
-        return self::$_instances[$className];
+        return self::$_instances[$class_name];
     }
 }

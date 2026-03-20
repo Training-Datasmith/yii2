@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\conditions;
 
 use yii\base\InvalidArgumentException;
-
 /**
  * Condition that inverts passed [[condition]].
  *
@@ -19,13 +16,12 @@ use yii\base\InvalidArgumentException;
  * @since 2.0.14
  * @phpcs:disable Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore
  */
-class NotCondition implements ConditionInterface
+class Not_Condition implements Condition_Interface
 {
     /**
      * @var mixed the condition to be negated
      */
     private $condition;
-
     /**
      * NotCondition constructor.
      *
@@ -35,25 +31,22 @@ class NotCondition implements ConditionInterface
     {
         $this->condition = $condition;
     }
-
     /**
      * @return mixed
      */
-    public function getCondition()
+    public function get_condition()
     {
         return $this->condition;
     }
-
     /**
      * {@inheritdoc}
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands): self
+    public static function from_array_definition($operator, $operands): self
     {
         if (count($operands) !== 1) {
-            throw new InvalidArgumentException("Operator '$operator' requires exactly one operand.");
+            throw new InvalidArgumentException("Operator '{$operator}' requires exactly one operand.");
         }
-
         return new static(array_shift($operands));
     }
 }

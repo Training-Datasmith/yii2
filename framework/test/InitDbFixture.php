@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\test;
 
 use Yii;
-
 /**
  * InitDbFixture represents the initial state needed for DB-related tests.
  *
@@ -29,14 +26,14 @@ use Yii;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class InitDbFixture extends DbFixture
+class Init_Db_Fixture extends Db_Fixture
 {
     /**
      * @var string the init script file that should be executed when loading this fixture.
      * This should be either a file path or [path alias](guide:concept-aliases). Note that if the file does not exist,
      * no error will be raised.
      */
-    public $initScript = '@app/tests/fixtures/initdb.php';
+    public $init_script = '@app/tests/fixtures/initdb.php';
     /**
      * @var array list of database schemas that the test tables may reside in. Defaults to
      * `['']`, meaning using the default schema (an empty string refers to the
@@ -44,66 +41,58 @@ class InitDbFixture extends DbFixture
      * so that fixture data can be populated into the database without causing problem.
      */
     public $schemas = [''];
-
     /**
      * {@inheritdoc}
      */
-    public function beforeLoad()
+    public function before_load()
     {
-        $this->checkIntegrity(false);
+        $this->check_integrity(false);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function afterLoad()
+    public function after_load()
     {
-        $this->checkIntegrity(true);
+        $this->check_integrity(true);
     }
-
     /**
      * {@inheritdoc}
      */
     public function load()
     {
-        $file = Yii::getAlias($this->initScript);
+        $file = Yii::get_alias($this->init_script);
         if (is_file($file)) {
             require $file;
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    public function beforeUnload()
+    public function before_unload()
     {
-        $this->checkIntegrity(false);
+        $this->check_integrity(false);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function afterUnload()
+    public function after_unload()
     {
-        $this->checkIntegrity(true);
+        $this->check_integrity(true);
     }
-
     /**
      * Toggles the DB integrity check.
      * @param bool $check whether to turn on or off the integrity check.
      */
-    public function checkIntegrity($check)
+    public function check_integrity($check)
     {
         if (!$this->db instanceof \yii\db\Connection) {
             return;
         }
-
-        if ($this->db->getDriverName() === 'oci') {
+        if ($this->db->get_driver_name() === 'oci') {
             return;
         }
-
         foreach ($this->schemas as $schema) {
-            $this->db->createCommand()->checkIntegrity($check, $schema)->execute();
+            $this->db->create_command()->check_integrity($check, $schema)->execute();
         }
     }
 }

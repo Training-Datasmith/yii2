@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
-use yii\base\InvalidConfigException;
-
+use yii\base\Invalid_Config_Exception;
 /**
  * ApcCache provides APC caching in terms of an application component.
  *
@@ -26,7 +23,7 @@ use yii\base\InvalidConfigException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ApcCache extends Cache
+class Apc_Cache extends Cache
 {
     /**
      * @var bool whether to use apcu or apc as the underlying caching extension.
@@ -35,8 +32,7 @@ class ApcCache extends Cache
      * Defaults to false.
      * @since 2.0.7
      */
-    public $useApcu = false;
-
+    public $use_apcu = false;
     /**
      * Initializes this application component.
      * It checks if extension required is loaded.
@@ -44,12 +40,11 @@ class ApcCache extends Cache
     public function init(): void
     {
         parent::init();
-        $extension = $this->useApcu ? 'apcu' : 'apc';
+        $extension = $this->use_apcu ? 'apcu' : 'apc';
         if (!extension_loaded($extension)) {
-            throw new InvalidConfigException("ApcCache requires PHP $extension extension to be loaded.");
+            throw new Invalid_Config_Exception("ApcCache requires PHP {$extension} extension to be loaded.");
         }
     }
-
     /**
      * Checks whether a specified key exists in the cache.
      * This can be faster than getting the value from the cache if the data is big.
@@ -62,33 +57,29 @@ class ApcCache extends Cache
      */
     public function exists($key)
     {
-        $key = $this->buildKey($key);
-
-        return $this->useApcu ? apcu_exists($key) : apc_exists($key);
+        $key = $this->build_key($key);
+        return $this->use_apcu ? apcu_exists($key) : apc_exists($key);
     }
-
     /**
      * Retrieves a value from cache with a specified key.
      * This is the implementation of the method declared in the parent class.
      * @param string $key a unique key identifying the cached value
      * @return mixed|false the value stored in cache, false if the value is not in the cache or expired.
      */
-    protected function getValue($key)
+    protected function get_value($key)
     {
-        return $this->useApcu ? apcu_fetch($key) : apc_fetch($key);
+        return $this->use_apcu ? apcu_fetch($key) : apc_fetch($key);
     }
-
     /**
      * Retrieves multiple values from cache with the specified keys.
      * @param array $keys a list of keys identifying the cached values
      * @return array a list of cached values indexed by the keys
      */
-    protected function getValues($keys): array
+    protected function get_values($keys): array
     {
-        $values = $this->useApcu ? apcu_fetch($keys) : apc_fetch($keys);
+        $values = $this->use_apcu ? apcu_fetch($keys) : apc_fetch($keys);
         return is_array($values) ? $values : [];
     }
-
     /**
      * Stores a value identified by a key in cache.
      * This is the implementation of the method declared in the parent class.
@@ -99,23 +90,21 @@ class ApcCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise.
      */
-    protected function setValue($key, $value, $duration)
+    protected function set_value($key, $value, $duration)
     {
-        return $this->useApcu ? apcu_store($key, $value, $duration) : apc_store($key, $value, $duration);
+        return $this->use_apcu ? apcu_store($key, $value, $duration) : apc_store($key, $value, $duration);
     }
-
     /**
      * Stores multiple key-value pairs in cache.
      * @param array $data array where key corresponds to cache key while value
      * @param int $duration the number of seconds in which the cached values will expire. 0 means never expire.
      * @return array array of failed keys
      */
-    protected function setValues($data, $duration)
+    protected function set_values($data, $duration)
     {
-        $result = $this->useApcu ? apcu_store($data, null, $duration) : apc_store($data, null, $duration);
+        $result = $this->use_apcu ? apcu_store($data, null, $duration) : apc_store($data, null, $duration);
         return is_array($result) ? array_keys($result) : [];
     }
-
     /**
      * Stores a value identified by a key into cache if the cache does not contain this key.
      * This is the implementation of the method declared in the parent class.
@@ -125,41 +114,38 @@ class ApcCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function addValue($key, $value, $duration)
+    protected function add_value($key, $value, $duration)
     {
-        return $this->useApcu ? apcu_add($key, $value, $duration) : apc_add($key, $value, $duration);
+        return $this->use_apcu ? apcu_add($key, $value, $duration) : apc_add($key, $value, $duration);
     }
-
     /**
      * Adds multiple key-value pairs to cache.
      * @param array $data array where key corresponds to cache key while value is the value stored
      * @param int $duration the number of seconds in which the cached values will expire. 0 means never expire.
      * @return array array of failed keys
      */
-    protected function addValues($data, $duration)
+    protected function add_values($data, $duration)
     {
-        $result = $this->useApcu ? apcu_add($data, null, $duration) : apc_add($data, null, $duration);
+        $result = $this->use_apcu ? apcu_add($data, null, $duration) : apc_add($data, null, $duration);
         return is_array($result) ? array_keys($result) : [];
     }
-
     /**
      * Deletes a value with the specified key from cache
      * This is the implementation of the method declared in the parent class.
      * @param string $key the key of the value to be deleted
      * @return bool if no error happens during deletion
      */
-    protected function deleteValue($key)
+    protected function delete_value($key)
     {
-        return $this->useApcu ? apcu_delete($key) : apc_delete($key);
+        return $this->use_apcu ? apcu_delete($key) : apc_delete($key);
     }
-
     /**
      * Deletes all values from cache.
      * This is the implementation of the method declared in the parent class.
      * @return bool whether the flush operation was successful.
      */
-    protected function flushValues(): bool
+    protected function flush_values(): bool
     {
-        return $this->useApcu ? apcu_clear_cache() : apc_clear_cache('user');
+        return $this->use_apcu ? apcu_clear_cache() : apc_clear_cache('user');
     }
 }

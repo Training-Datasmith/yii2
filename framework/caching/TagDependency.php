@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
 /**
@@ -29,45 +27,40 @@ namespace yii\caching;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class TagDependency extends Dependency
+class Tag_Dependency extends Dependency
 {
     /**
      * @var string|array a list of tag names for this dependency. For a single tag, you may specify it as a string.
      */
     public $tags = [];
-
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method does nothing in this class.
      * @param CacheInterface $cache the cache component that is currently evaluating this dependency
      * @return mixed the data needed to determine if dependency has been changed.
      */
-    protected function generateDependencyData($cache)
+    protected function generate_dependency_data($cache)
     {
-        $timestamps = $this->getTimestamps($cache, (array) $this->tags);
-
-        $newKeys = [];
+        $timestamps = $this->get_timestamps($cache, (array) $this->tags);
+        $new_keys = [];
         foreach ($timestamps as $key => $timestamp) {
             if ($timestamp === false) {
-                $newKeys[] = $key;
+                $new_keys[] = $key;
             }
         }
-        if (!empty($newKeys)) {
-            return array_merge($timestamps, static::touchKeys($cache, $newKeys));
+        if (!empty($new_keys)) {
+            return array_merge($timestamps, static::touch_keys($cache, $new_keys));
         }
-
         return $timestamps;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function isChanged($cache): bool
+    public function is_changed($cache): bool
     {
-        $timestamps = $this->getTimestamps($cache, (array) $this->tags);
+        $timestamps = $this->get_timestamps($cache, (array) $this->tags);
         return $timestamps !== $this->data;
     }
-
     /**
      * Invalidates all of the cached data items that are associated with any of the specified [[tags]].
      * @param CacheInterface $cache the cache component that caches the data items
@@ -77,45 +70,41 @@ class TagDependency extends Dependency
     {
         $keys = [];
         foreach ((array) $tags as $tag) {
-            $keys[] = $cache->buildKey([self::class, $tag]);
+            $keys[] = $cache->build_key([self::class, $tag]);
         }
-        static::touchKeys($cache, $keys);
+        static::touch_keys($cache, $keys);
     }
-
     /**
      * Generates the timestamp for the specified cache keys.
      * @param CacheInterface $cache
      * @param string[] $keys
      * @return array the timestamp indexed by cache keys
      */
-    protected static function touchKeys($cache, $keys): array
+    protected static function touch_keys($cache, $keys): array
     {
         $items = [];
         $time = microtime();
         foreach ($keys as $key) {
             $items[$key] = $time;
         }
-        $cache->multiSet($items);
+        $cache->multi_set($items);
         return $items;
     }
-
     /**
      * Returns the timestamps for the specified tags.
      * @param CacheInterface $cache
      * @param string[] $tags
      * @return array the timestamps indexed by the specified tags.
      */
-    protected function getTimestamps($cache, $tags)
+    protected function get_timestamps($cache, $tags)
     {
         if (empty($tags)) {
             return [];
         }
-
         $keys = [];
         foreach ($tags as $tag) {
-            $keys[] = $cache->buildKey([self::class, $tag]);
+            $keys[] = $cache->build_key([self::class, $tag]);
         }
-
-        return $cache->multiGet($keys);
+        return $cache->multi_get($keys);
     }
 }

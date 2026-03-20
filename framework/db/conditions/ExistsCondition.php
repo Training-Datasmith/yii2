@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\conditions;
 
 use yii\base\InvalidArgumentException;
 use yii\db\Query;
-
 /**
  * Condition that represents `EXISTS` operator.
  *
@@ -20,7 +17,7 @@ use yii\db\Query;
  * @since 2.0.14
  * @phpcs:disable Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore
  */
-class ExistsCondition implements ConditionInterface
+class Exists_Condition implements Condition_Interface
 {
     /**
      * @var string $operator the operator to use (e.g. `EXISTS` or `NOT EXISTS`)
@@ -30,7 +27,6 @@ class ExistsCondition implements ConditionInterface
      * @var Query the [[Query]] object representing the sub-query.
      */
     private $query;
-
     /**
      * ExistsCondition constructor.
      *
@@ -42,31 +38,27 @@ class ExistsCondition implements ConditionInterface
         $this->operator = $operator;
         $this->query = $query;
     }
-
     /**
      * {@inheritdoc}
      */
-    public static function fromArrayDefinition($operator, $operands): self
+    public static function from_array_definition($operator, $operands): self
     {
         if (!isset($operands[0]) || !$operands[0] instanceof Query) {
             throw new InvalidArgumentException('Subquery for EXISTS operator must be a Query object.');
         }
-
         return new static($operator, $operands[0]);
     }
-
     /**
      * @return string
      */
-    public function getOperator()
+    public function get_operator()
     {
         return $this->operator;
     }
-
     /**
      * @return Query
      */
-    public function getQuery()
+    public function get_query()
     {
         return $this->query;
     }

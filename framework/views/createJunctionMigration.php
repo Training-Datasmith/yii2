@@ -13,7 +13,6 @@
  * @var string $field_first the name field first
  * @var string $field_second the name field second
  */
-
 echo "<?php\n";
 if (!empty($namespace)) {
     echo "\nnamespace {$namespace};\n";
@@ -23,48 +22,94 @@ if (!empty($namespace)) {
 use yii\db\Migration;
 
 /**
- * Handles the creation of table `<?= $table ?>` which is a junction between
- * table `<?= $field_first ?>` and table `<?= $field_second ?>`.
+ * Handles the creation of table `<?php 
+echo $table;
+?>` which is a junction between
+ * table `<?php 
+echo $field_first;
+?>` and table `<?php 
+echo $field_second;
+?>`.
  */
-class <?= $className ?> extends Migration
+class <?php 
+echo $class_name;
+?> extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-        $this->createTable('<?= $table ?>', [
-            '<?= $field_first ?>_id' => $this->integer(),
-            '<?= $field_second ?>_id' => $this->integer(),
-            'PRIMARY KEY(<?= $field_first ?>_id, <?= $field_second ?>_id)',
+        $this->createTable('<?php 
+echo $table;
+?>', [
+            '<?php 
+echo $field_first;
+?>_id' => $this->integer(),
+            '<?php 
+echo $field_second;
+?>_id' => $this->integer(),
+            'PRIMARY KEY(<?php 
+echo $field_first;
+?>_id, <?php 
+echo $field_second;
+?>_id)',
         ]);
 
         $this->createIndex(
-            'idx-<?= $table . '-' . $field_first ?>_id',
-            '<?= $table ?>',
-            '<?= $field_first ?>_id'
+            'idx-<?php 
+echo $table . '-' . $field_first;
+?>_id',
+            '<?php 
+echo $table;
+?>',
+            '<?php 
+echo $field_first;
+?>_id'
         );
 
         $this->createIndex(
-            'idx-<?= $table . '-' . $field_second ?>_id',
-            '<?= $table ?>',
-            '<?= $field_second ?>_id'
+            'idx-<?php 
+echo $table . '-' . $field_second;
+?>_id',
+            '<?php 
+echo $table;
+?>',
+            '<?php 
+echo $field_second;
+?>_id'
         );
 
         $this->addForeignKey(
-            'fk-<?= $table . '-' . $field_first ?>_id',
-            '<?= $table ?>',
-            '<?= $field_first ?>_id',
-            '<?= $field_first ?>',
+            'fk-<?php 
+echo $table . '-' . $field_first;
+?>_id',
+            '<?php 
+echo $table;
+?>',
+            '<?php 
+echo $field_first;
+?>_id',
+            '<?php 
+echo $field_first;
+?>',
             'id',
             'CASCADE'
         );
 
         $this->addForeignKey(
-            'fk-<?= $table . '-' . $field_second ?>_id',
-            '<?= $table ?>',
-            '<?= $field_second ?>_id',
-            '<?= $field_second ?>',
+            'fk-<?php 
+echo $table . '-' . $field_second;
+?>_id',
+            '<?php 
+echo $table;
+?>',
+            '<?php 
+echo $field_second;
+?>_id',
+            '<?php 
+echo $field_second;
+?>',
             'id',
             'CASCADE'
         );
@@ -75,6 +120,8 @@ class <?= $className ?> extends Migration
      */
     public function safeDown()
     {
-        $this->dropTable('<?= $table ?>');
+        $this->dropTable('<?php 
+echo $table;
+?>');
     }
 }

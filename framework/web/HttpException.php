@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
-use yii\base\UserException;
-
+use yii\base\User_Exception;
 /**
  * HttpException represents an exception caused by an improper request of the end-user.
  *
@@ -30,13 +27,12 @@ use yii\base\UserException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class HttpException extends UserException
+class Http_Exception extends User_Exception
 {
     /**
      * @var int HTTP status code, such as 403, 404, 500, etc.
      */
-    public $statusCode;
-
+    public $status_code;
     /**
      * Constructor.
      * @param int $status HTTP status code, such as 404, 500, etc.
@@ -46,15 +42,14 @@ class HttpException extends UserException
      */
     public function __construct($status, $message = null, $code = 0, $previous = null)
     {
-        $this->statusCode = $status;
-        parent::__construct((string)$message, $code, $previous);
+        $this->status_code = $status;
+        parent::__construct((string) $message, $code, $previous);
     }
-
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName(): string
+    public function get_name(): string
     {
-        return Response::$httpStatuses[$this->statusCode] ?? 'Error';
+        return Response::$http_statuses[$this->status_code] ?? 'Error';
     }
 }

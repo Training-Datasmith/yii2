@@ -1,28 +1,25 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\filters\auth;
 
-use yii\web\IdentityInterface;
+use yii\web\Identity_Interface;
 use yii\web\Request;
 use yii\web\Response;
-use yii\web\UnauthorizedHttpException;
+use yii\web\Unauthorized_Http_Exception;
 use yii\web\User;
-
 /**
  * AuthInterface is the interface that should be implemented by auth method classes.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-interface AuthInterface
+interface Auth_Interface
 {
     /**
      * Authenticates the current user.
@@ -33,19 +30,17 @@ interface AuthInterface
      * @throws UnauthorizedHttpException if authentication information is provided but is invalid.
      */
     public function authenticate($user, $request, $response);
-
     /**
      * Generates challenges upon authentication failure.
      * For example, some appropriate HTTP headers may be generated.
      * @param Response $response
      */
     public function challenge($response);
-
     /**
      * Handles authentication failure.
      * The implementation should normally throw UnauthorizedHttpException to indicate authentication failure.
      * @param Response $response
      * @throws UnauthorizedHttpException
      */
-    public function handleFailure($response);
+    public function handle_failure($response);
 }

@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -17,7 +15,7 @@ namespace yii\db;
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14
  */
-interface ExpressionBuilderInterface
+interface Expression_Builder_Interface
 {
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
@@ -27,5 +25,5 @@ interface ExpressionBuilderInterface
      * @param array $params the binding parameters.
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = []);
+    public function build(Expression_Interface $expression, array &$params = []);
 }

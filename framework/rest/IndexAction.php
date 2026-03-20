@@ -1,22 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rest;
 
 use Yii;
-use yii\data\ActiveDataProvider;
-use yii\data\DataFilter;
+use yii\data\Active_Data_Provider;
+use yii\data\Data_Filter;
 use yii\data\Pagination;
 use yii\data\Sort;
-use yii\helpers\ArrayHelper;
-
+use yii\helpers\Array_Helper;
 /**
  * IndexAction implements the API endpoint for listing multiple models.
  *
@@ -28,7 +25,7 @@ use yii\helpers\ArrayHelper;
  * @template T of Controller = Controller
  * @extends Action<T>
  */
-class IndexAction extends Action
+class Index_Action extends Action
 {
     /**
      * @var callable|null a PHP callable that will be called to prepare a data provider that
@@ -53,7 +50,7 @@ class IndexAction extends Action
      * }
      * ```
      */
-    public $prepareDataProvider;
+    public $prepare_data_provider;
     /**
      * @var callable a PHP callable that will be called to prepare query in prepareDataProvider.
      * Should return $query.
@@ -69,7 +66,7 @@ class IndexAction extends Action
      *
      * @since 2.0.42
      */
-    public $prepareSearchQuery;
+    public $prepare_search_query;
     /**
      * @var DataFilter|null data filter to be used for the search filter composition.
      * You must set up this field explicitly in order to enable filter processing.
@@ -92,7 +89,7 @@ class IndexAction extends Action
      *
      * @since 2.0.13
      */
-    public $dataFilter;
+    public $data_filter;
     /**
      * @var array|Pagination|false The pagination to be used by [[prepareDataProvider()]].
      * If this is `false`, it means pagination is disabled.
@@ -109,89 +106,64 @@ class IndexAction extends Action
      * @since 2.0.45
      */
     public $sort = [];
-
     /**
      * @return ActiveDataProvider
      */
     public function run()
     {
-        if ($this->checkAccess) {
-            call_user_func($this->checkAccess, $this->id);
+        if ($this->check_access) {
+            call_user_func($this->check_access, $this->id);
         }
-
-        return $this->prepareDataProvider();
+        return $this->prepare_data_provider();
     }
-
     /**
      * Prepares the data provider that should return the requested collection of the models.
      * @return ActiveDataProvider
      */
-    protected function prepareDataProvider()
+    protected function prepare_data_provider()
     {
-        $requestParams = Yii::$app->getRequest()->getBodyParams();
-        if (empty($requestParams)) {
-            $requestParams = Yii::$app->getRequest()->getQueryParams();
+        $request_params = Yii::$app->get_request()->get_body_params();
+        if (empty($request_params)) {
+            $request_params = Yii::$app->get_request()->get_query_params();
         }
-
         $filter = null;
-        if ($this->dataFilter !== null) {
-            $this->dataFilter = Yii::createObject($this->dataFilter);
-            if ($this->dataFilter->load($requestParams)) {
-                $filter = $this->dataFilter->build();
+        if ($this->data_filter !== null) {
+            $this->data_filter = Yii::create_object($this->data_filter);
+            if ($this->data_filter->load($request_params)) {
+                $filter = $this->data_filter->build();
                 if ($filter === false) {
-                    return $this->dataFilter;
+                    return $this->data_filter;
                 }
             }
         }
-
-        if ($this->prepareDataProvider !== null) {
-            return call_user_func($this->prepareDataProvider, $this, $filter);
+        if ($this->prepare_data_provider !== null) {
+            return call_user_func($this->prepare_data_provider, $this, $filter);
         }
-
         /** @var \yii\db\BaseActiveRecord $modelClass */
-        $modelClass = $this->modelClass;
-
-        $query = $modelClass::find();
+        $model_class = $this->model_class;
+        $query = $model_class::find();
         if (!empty($filter)) {
-            $query->andWhere($filter);
+            $query->and_where($filter);
         }
-        if (is_callable($this->prepareSearchQuery)) {
-            $query = call_user_func($this->prepareSearchQuery, $query, $requestParams);
+        if (is_callable($this->prepare_search_query)) {
+            $query = call_user_func($this->prepare_search_query, $query, $request_params);
         }
-
         if (is_array($this->pagination)) {
-            $pagination = ArrayHelper::merge(
-                [
-                    'params' => $requestParams,
-                ],
-                $this->pagination
-            );
+            $pagination = Array_Helper::merge(['params' => $request_params], $this->pagination);
         } else {
             $pagination = $this->pagination;
             if ($this->pagination instanceof Pagination) {
-                $pagination->params = $requestParams;
+                $pagination->params = $request_params;
             }
         }
-
         if (is_array($this->sort)) {
-            $sort = ArrayHelper::merge(
-                [
-                    'params' => $requestParams,
-                ],
-                $this->sort
-            );
+            $sort = Array_Helper::merge(['params' => $request_params], $this->sort);
         } else {
             $sort = $this->sort;
             if ($this->sort instanceof Sort) {
-                $sort->params = $requestParams;
+                $sort->params = $request_params;
             }
         }
-
-        return Yii::createObject([
-            'class' => ActiveDataProvider::className(),
-            'query' => $query,
-            'pagination' => $pagination,
-            'sort' => $sort,
-        ]);
+        return Yii::create_object(['class' => Active_Data_Provider::class_name(), 'query' => $query, 'pagination' => $pagination, 'sort' => $sort]);
     }
 }

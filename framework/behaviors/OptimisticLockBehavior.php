@@ -1,21 +1,18 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\behaviors;
 
 use Yii;
-use yii\base\InvalidCallException;
-use yii\db\BaseActiveRecord;
-use yii\helpers\ArrayHelper;
-use yii\validators\NumberValidator;
-
+use yii\base\Invalid_Call_Exception;
+use yii\db\Base_Active_Record;
+use yii\helpers\Array_Helper;
+use yii\validators\Number_Validator;
 /**
  * OptimisticLockBehavior automatically upgrades a model's lock version using the column name
  * returned by [[\yii\db\BaseActiveRecord::optimisticLock()|optimisticLock()]].
@@ -68,7 +65,7 @@ use yii\validators\NumberValidator;
  * @template T of BaseActiveRecord = BaseActiveRecord
  * @extends AttributeBehavior<T>
  */
-class OptimisticLockBehavior extends AttributeBehavior
+class Optimistic_Lock_Behavior extends Attribute_Behavior
 {
     /**
      * {@inheritdoc}
@@ -79,80 +76,67 @@ class OptimisticLockBehavior extends AttributeBehavior
     /**
      * {@inheritdoc}
      */
-    public $skipUpdateOnClean = false;
-
+    public $skip_update_on_clean = false;
     /**
      * @var string the attribute name holding the version value.
      */
-    private $_lockAttribute;
-
+    private $_lock_attribute;
     /**
      * {@inheritdoc}
      */
     public function attach($owner): void
     {
         parent::attach($owner);
-
         if (empty($this->attributes)) {
-            $lock = $this->getLockAttribute();
+            $lock = $this->get_lock_attribute();
             $this->attributes = array_fill_keys(array_keys($this->events()), $lock);
         }
     }
-
     /**
      * {@inheritdoc}
      */
     public function events()
     {
-        return Yii::$app->request instanceof \yii\web\Request ? [
-            BaseActiveRecord::EVENT_BEFORE_INSERT => 'evaluateAttributes',
-            BaseActiveRecord::EVENT_BEFORE_UPDATE => 'evaluateAttributes',
-            BaseActiveRecord::EVENT_BEFORE_DELETE => 'evaluateAttributes',
-        ] : [];
+        return Yii::$app->request instanceof \yii\web\Request ? [Base_Active_Record::EVENT_BEFORE_INSERT => 'evaluateAttributes', Base_Active_Record::EVENT_BEFORE_UPDATE => 'evaluateAttributes', Base_Active_Record::EVENT_BEFORE_DELETE => 'evaluateAttributes'] : [];
     }
-
     /**
      * Returns the column name to hold the version value as defined in [[\yii\db\BaseActiveRecord::optimisticLock()|optimisticLock()]].
      * @return string the property name.
      * @throws InvalidCallException if [[\yii\db\BaseActiveRecord::optimisticLock()|optimisticLock()]] is not properly configured.
      * @since 2.0.16
      */
-    protected function getLockAttribute()
+    protected function get_lock_attribute()
     {
-        if ($this->_lockAttribute) {
-            return $this->_lockAttribute;
+        if ($this->_lock_attribute) {
+            return $this->_lock_attribute;
         }
-
         /** @var BaseActiveRecord $owner */
         $owner = $this->owner;
-        $lock = $owner->optimisticLock();
-        if ($lock === null || $owner->hasAttribute($lock) === false) {
-            throw new InvalidCallException("Unable to get the optimistic lock attribute. Probably 'optimisticLock()' method is misconfigured.");
+        $lock = $owner->optimistic_lock();
+        if ($lock === null || $owner->has_attribute($lock) === false) {
+            throw new Invalid_Call_Exception("Unable to get the optimistic lock attribute. Probably 'optimisticLock()' method is misconfigured.");
         }
-        $this->_lockAttribute = $lock;
+        $this->_lock_attribute = $lock;
         return $lock;
     }
-
     /**
      * {@inheritdoc}
      *
      * In case of `null`, value will be parsed from [[\yii\web\Request::getBodyParam()|getBodyParam()]] or set to 0.
      */
-    protected function getValue($event)
+    protected function get_value($event)
     {
         if ($this->value === null) {
-            $request = Yii::$app->getRequest();
-            $lock = $this->getLockAttribute();
-            $formName = $this->owner->formName();
-            $formValue = $formName ? ArrayHelper::getValue($request->getBodyParams(), $formName . '.' . $lock) : null;
-            $input = $formValue ?: $request->getBodyParam($lock);
-            $isValid = $input && (new NumberValidator())->validate($input);
-            return $isValid ? $input : 0;
+            $request = Yii::$app->get_request();
+            $lock = $this->get_lock_attribute();
+            $form_name = $this->owner->form_name();
+            $form_value = $form_name ? Array_Helper::get_value($request->get_body_params(), $form_name . '.' . $lock) : null;
+            $input = $form_value ?: $request->get_body_param($lock);
+            $is_valid = $input && (new Number_Validator())->validate($input);
+            return $is_valid ? $input : 0;
         }
-
-        return parent::getValue($event);
+        return parent::get_value($event);
     }
-
     /**
      * Upgrades the version value by one and stores it to database.
      *
@@ -166,11 +150,11 @@ class OptimisticLockBehavior extends AttributeBehavior
     {
         /** @var BaseActiveRecord $owner */
         $owner = $this->owner;
-        if ($owner->getIsNewRecord()) {
-            throw new InvalidCallException('Upgrading the model version is not possible on a new record.');
+        if ($owner->get_is_new_record()) {
+            throw new Invalid_Call_Exception('Upgrading the model version is not possible on a new record.');
         }
-        $lock = $this->getLockAttribute();
-        $version = $owner->$lock ?: 0;
-        $owner->updateAttributes([$lock => $version + 1]);
+        $lock = $this->get_lock_attribute();
+        $version = $owner->{$lock} ?: 0;
+        $owner->update_attributes([$lock => $version + 1]);
     }
 }

@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\behaviors;
 
 use Yii;
-use yii\db\BaseActiveRecord;
-
+use yii\db\Base_Active_Record;
 /**
  * BlameableBehavior automatically fills the specified attributes with the current user ID.
  *
@@ -60,18 +57,18 @@ use yii\db\BaseActiveRecord;
  * @template T of BaseActiveRecord = BaseActiveRecord
  * @extends AttributeBehavior<T>
  */
-class BlameableBehavior extends AttributeBehavior
+class Blameable_Behavior extends Attribute_Behavior
 {
     /**
      * @var string the attribute that will receive current user ID value
      * Set this property to false if you do not want to record the creator ID.
      */
-    public $createdByAttribute = 'created_by';
+    public $created_by_attribute = 'created_by';
     /**
      * @var string the attribute that will receive current user ID value
      * Set this property to false if you do not want to record the updater ID.
      */
-    public $updatedByAttribute = 'updated_by';
+    public $updated_by_attribute = 'updated_by';
     /**
      * {@inheritdoc}
      *
@@ -82,56 +79,47 @@ class BlameableBehavior extends AttributeBehavior
      * @var mixed Default value for cases when the user is guest
      * @since 2.0.14
      */
-    public $defaultValue;
-
+    public $default_value;
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         parent::init();
-
         if (empty($this->attributes)) {
-            $this->attributes = [
-                BaseActiveRecord::EVENT_BEFORE_INSERT => [$this->createdByAttribute, $this->updatedByAttribute],
-                BaseActiveRecord::EVENT_BEFORE_UPDATE => $this->updatedByAttribute,
-            ];
+            $this->attributes = [Base_Active_Record::EVENT_BEFORE_INSERT => [$this->created_by_attribute, $this->updated_by_attribute], Base_Active_Record::EVENT_BEFORE_UPDATE => $this->updated_by_attribute];
         }
     }
-
     /**
      * {@inheritdoc}
      *
      * In case, when the [[value]] property is `null`, the value of [[defaultValue]] will be used as the value.
      */
-    protected function getValue($event)
+    protected function get_value($event)
     {
         if ($this->value === null && Yii::$app->has('user')) {
-            $userId = Yii::$app->get('user')->id;
-            if ($userId === null) {
-                return $this->getDefaultValue($event);
+            $user_id = Yii::$app->get('user')->id;
+            if ($user_id === null) {
+                return $this->get_default_value($event);
             }
-            return $userId;
+            return $user_id;
         }
         if ($this->value === null) {
-            return $this->getDefaultValue($event);
+            return $this->get_default_value($event);
         }
-
-        return parent::getValue($event);
+        return parent::get_value($event);
     }
-
     /**
      * Get default value
      * @param \yii\base\Event $event
      * @return array|mixed
      * @since 2.0.14
      */
-    protected function getDefaultValue($event)
+    protected function get_default_value($event)
     {
-        if ($this->defaultValue instanceof \Closure || (is_array($this->defaultValue) && is_callable($this->defaultValue))) {
-            return call_user_func($this->defaultValue, $event);
+        if ($this->default_value instanceof \Closure || is_array($this->default_value) && is_callable($this->default_value)) {
+            return call_user_func($this->default_value, $event);
         }
-
-        return $this->defaultValue;
+        return $this->default_value;
     }
 }

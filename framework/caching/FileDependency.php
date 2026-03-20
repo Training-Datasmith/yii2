@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
 use Yii;
-use yii\base\InvalidConfigException;
-
+use yii\base\Invalid_Config_Exception;
 /**
  * FileDependency represents a dependency based on a file's last modification time.
  *
@@ -24,14 +21,13 @@ use yii\base\InvalidConfigException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class FileDependency extends Dependency
+class File_Dependency extends Dependency
 {
     /**
      * @var string the file path or [path alias](guide:concept-aliases) whose last modification time is used to
      * check if the dependency has been changed.
      */
-    public $fileName;
-
+    public $file_name;
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method returns the file's last modification time.
@@ -39,15 +35,13 @@ class FileDependency extends Dependency
      * @return mixed the data needed to determine if dependency has been changed.
      * @throws InvalidConfigException if [[fileName]] is not set
      */
-    protected function generateDependencyData($cache)
+    protected function generate_dependency_data($cache)
     {
-        if ($this->fileName === null) {
-            throw new InvalidConfigException('FileDependency::fileName must be set');
+        if ($this->file_name === null) {
+            throw new Invalid_Config_Exception('FileDependency::fileName must be set');
         }
-
-        $fileName = Yii::getAlias($this->fileName);
-
-        clearstatcache(false, $fileName);
-        return @filemtime($fileName);
+        $file_name = Yii::get_alias($this->file_name);
+        clearstatcache(false, $file_name);
+        return @filemtime($file_name);
     }
 }

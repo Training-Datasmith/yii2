@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -17,20 +15,18 @@ namespace yii\db;
  * @author Bob Olde Hampsink <b.oldehampsink@nerds.company>
  * @since 2.0.12
  */
-trait ViewFinderTrait
+trait View_Finder_Trait
 {
     /**
      * @var array list of ALL view names in the database
      */
-    private $_viewNames = [];
-
+    private $_view_names = [];
     /**
      * Returns all views names in the database.
      * @param string $schema the schema of the views. Defaults to empty string, meaning the current or default schema.
      * @return array all views names in the database. The names have NO schema name prefix.
      */
-    abstract protected function findViewNames($schema = '');
-
+    abstract protected function find_view_names($schema = '');
     /**
      * Returns all view names in the database.
      * @param string $schema the schema of the views. Defaults to empty string, meaning the current or default schema name.
@@ -39,12 +35,11 @@ trait ViewFinderTrait
      * view names fetched previously (if available) will be returned.
      * @return string[] all view names in the database.
      */
-    public function getViewNames($schema = '', $refresh = false)
+    public function get_view_names($schema = '', $refresh = false)
     {
-        if (!isset($this->_viewNames[$schema]) || $refresh) {
-            $this->_viewNames[$schema] = $this->findViewNames($schema);
+        if (!isset($this->_view_names[$schema]) || $refresh) {
+            $this->_view_names[$schema] = $this->find_view_names($schema);
         }
-
-        return $this->_viewNames[$schema];
+        return $this->_view_names[$schema];
     }
 }

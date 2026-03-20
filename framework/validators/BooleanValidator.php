@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 use Yii;
 use yii\helpers\Json;
-
 /**
  * BooleanValidator checks if the attribute value is a boolean value.
  *
@@ -22,23 +19,22 @@ use yii\helpers\Json;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class BooleanValidator extends Validator
+class Boolean_Validator extends Validator
 {
     /**
      * @var mixed the value representing true status. Defaults to '1'.
      */
-    public $trueValue = '1';
+    public $true_value = '1';
     /**
      * @var mixed the value representing false status. Defaults to '0'.
      */
-    public $falseValue = '0';
+    public $false_value = '0';
     /**
      * @var bool whether the comparison to [[trueValue]] and [[falseValue]] is strict.
      * When this is true, the attribute value and type must both match those of [[trueValue]] or [[falseValue]].
      * Defaults to false, meaning only the value needs to be matched.
      */
     public $strict = false;
-
     /**
      * {@inheritdoc}
      */
@@ -49,60 +45,42 @@ class BooleanValidator extends Validator
             $this->message = Yii::t('yii', '{attribute} must be either "{true}" or "{false}".');
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value): ?array
+    protected function validate_value($value): ?array
     {
         if ($this->strict) {
-            $valid = $value === $this->trueValue || $value === $this->falseValue;
+            $valid = $value === $this->true_value || $value === $this->false_value;
         } else {
-            $valid = $value == $this->trueValue || $value == $this->falseValue;
+            $valid = $value == $this->true_value || $value == $this->false_value;
         }
-
         if (!$valid) {
-            return [$this->message, [
-                'true' => $this->trueValue === true ? 'true' : $this->trueValue,
-                'false' => $this->falseValue === false ? 'false' : $this->falseValue,
-            ]];
+            return [$this->message, ['true' => $this->true_value === true ? 'true' : $this->true_value, 'false' => $this->false_value === false ? 'false' : $this->false_value]];
         }
-
         return null;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view): string
+    public function client_validate_attribute($model, $attribute, $view): string
     {
-        ValidationAsset::register($view);
-        $options = $this->getClientOptions($model, $attribute);
-
-        return 'yii.validation.boolean(value, messages, ' . Json::htmlEncode($options) . ');';
+        Validation_Asset::register($view);
+        $options = $this->get_client_options($model, $attribute);
+        return 'yii.validation.boolean(value, messages, ' . Json::html_encode($options) . ');';
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute): array
+    public function get_client_options($model, $attribute): array
     {
-        $options = [
-            'trueValue' => $this->trueValue,
-            'falseValue' => $this->falseValue,
-            'message' => $this->formatMessage($this->message, [
-                'attribute' => $model->getAttributeLabel($attribute),
-                'true' => $this->trueValue === true ? 'true' : $this->trueValue,
-                'false' => $this->falseValue === false ? 'false' : $this->falseValue,
-            ]),
-        ];
-        if ($this->skipOnEmpty) {
+        $options = ['trueValue' => $this->true_value, 'falseValue' => $this->false_value, 'message' => $this->format_message($this->message, ['attribute' => $model->get_attribute_label($attribute), 'true' => $this->true_value === true ? 'true' : $this->true_value, 'false' => $this->false_value === false ? 'false' : $this->false_value])];
+        if ($this->skip_on_empty) {
             $options['skipOnEmpty'] = 1;
         }
         if ($this->strict) {
             $options['strict'] = 1;
         }
-
         return $options;
     }
 }

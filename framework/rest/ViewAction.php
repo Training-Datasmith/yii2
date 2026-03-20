@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rest;
 
 /**
@@ -21,7 +19,7 @@ namespace yii\rest;
  * @template T of Controller = Controller
  * @extends Action<T>
  */
-class ViewAction extends Action
+class View_Action extends Action
 {
     /**
      * Displays a model.
@@ -30,11 +28,10 @@ class ViewAction extends Action
      */
     public function run($id)
     {
-        $model = $this->findModel($id);
-        if ($this->checkAccess) {
-            call_user_func($this->checkAccess, $this->id, $model);
+        $model = $this->find_model($id);
+        if ($this->check_access) {
+            call_user_func($this->check_access, $this->id, $model);
         }
-
         return $model;
     }
 }

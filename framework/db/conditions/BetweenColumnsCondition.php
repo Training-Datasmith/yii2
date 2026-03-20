@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\conditions;
 
 use yii\base\InvalidArgumentException;
-use yii\db\ExpressionInterface;
+use yii\db\Expression_Interface;
 use yii\db\Query;
-
 /**
  * Class BetweenColumnCondition represents a `BETWEEN` condition where
  * values is between two columns. For example:
@@ -42,7 +39,7 @@ use yii\db\Query;
  * @since 2.0.14
  * @phpcs:disable Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore
  */
-class BetweenColumnsCondition implements ConditionInterface
+class Between_Columns_Condition implements Condition_Interface
 {
     /**
      * @var string $operator the operator to use (e.g. `BETWEEN` or `NOT BETWEEN`)
@@ -55,12 +52,11 @@ class BetweenColumnsCondition implements ConditionInterface
     /**
      * @var string|ExpressionInterface|Query the column name or expression that is a beginning of the interval
      */
-    private $intervalStartColumn;
+    private $interval_start_column;
     /**
      * @var string|ExpressionInterface|Query the column name or expression that is an end of the interval
      */
-    private $intervalEndColumn;
-
+    private $interval_end_column;
     /**
      * Creates a condition with the `BETWEEN` operator.
      *
@@ -69,56 +65,50 @@ class BetweenColumnsCondition implements ConditionInterface
      * @param string|ExpressionInterface $intervalStartColumn the column name or expression that is a beginning of the interval
      * @param string|ExpressionInterface $intervalEndColumn the column name or expression that is an end of the interval
      */
-    public function __construct($value, $operator, $intervalStartColumn, $intervalEndColumn)
+    public function __construct($value, $operator, $interval_start_column, $interval_end_column)
     {
         $this->value = $value;
         $this->operator = $operator;
-        $this->intervalStartColumn = $intervalStartColumn;
-        $this->intervalEndColumn = $intervalEndColumn;
+        $this->interval_start_column = $interval_start_column;
+        $this->interval_end_column = $interval_end_column;
     }
-
     /**
      * @return string
      */
-    public function getOperator()
+    public function get_operator()
     {
         return $this->operator;
     }
-
     /**
      * @return mixed
      */
-    public function getValue()
+    public function get_value()
     {
         return $this->value;
     }
-
     /**
      * @return string|ExpressionInterface|Query
      */
-    public function getIntervalStartColumn()
+    public function get_interval_start_column()
     {
-        return $this->intervalStartColumn;
+        return $this->interval_start_column;
     }
-
     /**
      * @return string|ExpressionInterface|Query
      */
-    public function getIntervalEndColumn()
+    public function get_interval_end_column()
     {
-        return $this->intervalEndColumn;
+        return $this->interval_end_column;
     }
-
     /**
      * {@inheritdoc}
      * @throws InvalidArgumentException if wrong number of operands have been given.
      */
-    public static function fromArrayDefinition($operator, $operands): self
+    public static function from_array_definition($operator, $operands): self
     {
         if (!isset($operands[0], $operands[1], $operands[2])) {
-            throw new InvalidArgumentException("Operator '$operator' requires three operands.");
+            throw new InvalidArgumentException("Operator '{$operator}' requires three operands.");
         }
-
         return new static($operands[0], $operator, $operands[1], $operands[2]);
     }
 }

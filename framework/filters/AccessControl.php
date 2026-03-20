@@ -1,22 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\filters;
 
 use Yii;
-use yii\base\ActionFilter;
+use yii\base\Action_Filter;
 use yii\base\Component;
 use yii\di\Instance;
-use yii\web\ForbiddenHttpException;
+use yii\web\Forbidden_Http_Exception;
 use yii\web\User;
-
 /**
  * AccessControl provides simple access control based on a set of rules.
  *
@@ -60,7 +57,7 @@ use yii\web\User;
  * @template T of Component = Component
  * @extends ActionFilter<T>
  */
-class AccessControl extends ActionFilter
+class Access_Control extends Action_Filter
 {
     /**
      * @var User|array|string|false the user object representing the authentication status or the ID of the user application component.
@@ -83,12 +80,12 @@ class AccessControl extends ActionFilter
      * where `$rule` is the rule that denies the user, and `$action` is the current [[Action|action]] object.
      * `$rule` can be `null` if access is denied because none of the rules matched.
      */
-    public $denyCallback;
+    public $deny_callback;
     /**
      * @var array the default configuration of access rules. Individual rule configurations
      * specified via [[rules]] will take precedence when the same property of the rule is configured.
      */
-    public $ruleConfig = ['class' => 'yii\filters\AccessRule'];
+    public $rule_config = ['class' => 'yii\filters\AccessRule'];
     /**
      * @var array a list of access rule objects or configuration arrays for creating the rule objects.
      * If a rule is specified via a configuration array, it will be merged with [[ruleConfig]] first
@@ -96,7 +93,6 @@ class AccessControl extends ActionFilter
      * @see ruleConfig
      */
     public $rules = [];
-
     /**
      * Initializes the [[rules]] array by instantiating rule objects from configurations.
      */
@@ -104,47 +100,44 @@ class AccessControl extends ActionFilter
     {
         parent::init();
         if ($this->user !== false) {
-            $this->user = Instance::ensure($this->user, User::className());
+            $this->user = Instance::ensure($this->user, User::class_name());
         }
         foreach ($this->rules as $i => $rule) {
             if (is_array($rule)) {
-                $this->rules[$i] = Yii::createObject(array_merge($this->ruleConfig, $rule));
+                $this->rules[$i] = Yii::create_object(array_merge($this->rule_config, $rule));
             }
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action): bool
+    public function before_action($action): bool
     {
         $user = $this->user;
-        $request = Yii::$app->getRequest();
+        $request = Yii::$app->get_request();
         /** @var AccessRule $rule */
         foreach ($this->rules as $rule) {
             if ($allow = $rule->allows($action, $user, $request)) {
                 return true;
             }
             if ($allow === false) {
-                if (isset($rule->denyCallback)) {
-                    call_user_func($rule->denyCallback, $rule, $action);
-                } elseif ($this->denyCallback !== null) {
-                    call_user_func($this->denyCallback, $rule, $action);
+                if (isset($rule->deny_callback)) {
+                    call_user_func($rule->deny_callback, $rule, $action);
+                } elseif ($this->deny_callback !== null) {
+                    call_user_func($this->deny_callback, $rule, $action);
                 } else {
-                    $this->denyAccess($user);
+                    $this->deny_access($user);
                 }
                 return false;
             }
         }
-        if ($this->denyCallback !== null) {
-            call_user_func($this->denyCallback, null, $action);
+        if ($this->deny_callback !== null) {
+            call_user_func($this->deny_callback, null, $action);
         } else {
-            $this->denyAccess($user);
+            $this->deny_access($user);
         }
-
         return false;
     }
-
     /**
      * Denies the access of the user.
      * The default implementation will redirect the user to the login page if he is a guest;
@@ -152,12 +145,12 @@ class AccessControl extends ActionFilter
      * @param User|false $user the current user or boolean `false` in case of detached User component
      * @throws ForbiddenHttpException if the user is already logged in or in case of detached User component.
      */
-    protected function denyAccess($user)
+    protected function deny_access($user)
     {
-        if ($user !== false && $user->getIsGuest()) {
-            $user->loginRequired();
+        if ($user !== false && $user->get_is_guest()) {
+            $user->login_required();
         } else {
-            throw new ForbiddenHttpException(Yii::t('yii', 'You are not allowed to perform this action.'));
+            throw new Forbidden_Http_Exception(Yii::t('yii', 'You are not allowed to perform this action.'));
         }
     }
 }

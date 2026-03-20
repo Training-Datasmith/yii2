@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -18,13 +16,12 @@ namespace yii\base;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ExitException extends \Exception
+class Exit_Exception extends \Exception
 {
     /**
      * @var int the exit status code
      */
-    public $statusCode;
-
+    public $status_code;
     /**
      * Constructor.
      * @param int $status the exit status code
@@ -34,11 +31,11 @@ class ExitException extends \Exception
      */
     public function __construct($status = 0, $message = null, $code = 0, $previous = null)
     {
-        $this->statusCode = $status;
+        $this->status_code = $status;
         if ($previous === null) {
-            parent::__construct((string)$message, $code);
+            parent::__construct((string) $message, $code);
         } else {
-            parent::__construct((string)$message, $code, $previous);
+            parent::__construct((string) $message, $code, $previous);
         }
     }
 }

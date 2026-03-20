@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
-use yii\di\ServiceLocator;
-
+use yii\di\Service_Locator;
 /**
  * Module is the base class for module and application classes.
  *
@@ -41,7 +38,7 @@ use yii\di\ServiceLocator;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Module extends ServiceLocator
+class Module extends Service_Locator
 {
     /**
      * @event ActionEvent an event raised before executing a controller action.
@@ -89,7 +86,7 @@ class Module extends ServiceLocator
      * ]
      * ```
      */
-    public $controllerMap = [];
+    public $controller_map = [];
     /**
      * @var string|null the namespace that controller classes are in.
      * This namespace will be used to load controller classes by prepending it to the controller
@@ -102,7 +99,7 @@ class Module extends ServiceLocator
      * See also the [guide section on autoloading](guide:concept-autoloading) to learn more about
      * defining namespaces and how classes are loaded.
      */
-    public $controllerNamespace;
+    public $controller_namespace;
     /**
      * @var string the default route of this module. Defaults to `default`.
      * The route may consist of child module ID, controller ID, and/or action ID.
@@ -110,24 +107,23 @@ class Module extends ServiceLocator
      * If action ID is not given, it will take the default value as specified in
      * [[Controller::defaultAction]].
      */
-    public $defaultRoute = 'default';
-
+    public $default_route = 'default';
     /**
      * @var string the root directory of the module.
      */
-    private ?string $_basePath = null;
+    private ?string $_base_path = null;
     /**
      * @var string The root directory that contains the controller classes for this module.
      */
-    private $_controllerPath;
+    private $_controller_path;
     /**
      * @var string the root directory that contains view files for this module
      */
-    private $_viewPath;
+    private $_view_path;
     /**
      * @var string the root directory that contains layout view files for this module.
      */
-    private $_layoutPath;
+    private $_layout_path;
     /**
      * @var array child modules of this module
      */
@@ -148,7 +144,6 @@ class Module extends ServiceLocator
      * @since 2.0.11
      */
     private $_version;
-
     /**
      * Constructor.
      * @param string $id the ID of this module.
@@ -161,33 +156,30 @@ class Module extends ServiceLocator
         $this->module = $parent;
         parent::__construct($config);
     }
-
     /**
      * Returns the currently requested instance of this module class.
      * If the module class is not currently requested, `null` will be returned.
      * This method is provided so that you access the module instance from anywhere within the module.
      * @return static|null the currently requested instance of this module class, or `null` if the module class is not requested.
      */
-    public static function getInstance()
+    public static function get_instance()
     {
         $class = static::class;
-        return Yii::$app->loadedModules[$class] ?? null;
+        return Yii::$app->loaded_modules[$class] ?? null;
     }
-
     /**
      * Sets the currently requested instance of this module class.
      * @param Module|null $instance the currently requested instance of this module class.
      * If it is `null`, the instance of the calling class will be removed, if any.
      */
-    public static function setInstance($instance): void
+    public static function set_instance($instance): void
     {
         if ($instance === null) {
-            unset(Yii::$app->loadedModules[static::class]);
+            unset(Yii::$app->loaded_modules[static::class]);
         } else {
-            Yii::$app->loadedModules[get_class($instance)] = $instance;
+            Yii::$app->loaded_modules[get_class($instance)] = $instance;
         }
     }
-
     /**
      * Initializes the module.
      *
@@ -199,56 +191,51 @@ class Module extends ServiceLocator
      */
     public function init(): void
     {
-        if ($this->controllerNamespace === null) {
+        if ($this->controller_namespace === null) {
             $class = get_class($this);
             if (($pos = strrpos($class, '\\')) !== false) {
-                $this->controllerNamespace = substr($class, 0, $pos) . '\\controllers';
+                $this->controller_namespace = substr($class, 0, $pos) . '\controllers';
             }
         }
     }
-
     /**
      * Returns an ID that uniquely identifies this module among all modules within the current application.
      * Note that if the module is an application, an empty string will be returned.
      * @return string the unique ID of the module.
      */
-    public function getUniqueId()
+    public function get_unique_id()
     {
-        return $this->module ? ltrim($this->module->getUniqueId() . '/' . $this->id, '/') : $this->id;
+        return $this->module ? ltrim($this->module->get_unique_id() . '/' . $this->id, '/') : $this->id;
     }
-
     /**
      * Returns the root directory of the module.
      * It defaults to the directory containing the module class file.
      * @return string the root directory of the module.
      */
-    public function getBasePath()
+    public function get_base_path()
     {
-        if ($this->_basePath === null) {
+        if ($this->_base_path === null) {
             $class = new \ReflectionClass($this);
-            $this->_basePath = dirname($class->getFileName());
+            $this->_base_path = dirname($class->get_file_name());
         }
-
-        return $this->_basePath;
+        return $this->_base_path;
     }
-
     /**
      * Sets the root directory of the module.
      * This method can only be invoked at the beginning of the constructor.
      * @param string $path the root directory of the module. This can be either a directory name or a [path alias](guide:concept-aliases).
      * @throws InvalidArgumentException if the directory does not exist.
      */
-    public function setBasePath($path): void
+    public function set_base_path($path): void
     {
-        $path = Yii::getAlias($path);
+        $path = Yii::get_alias($path);
         $p = strncmp($path, 'phar://', 7) === 0 ? $path : realpath($path);
         if (is_string($p) && is_dir($p)) {
-            $this->_basePath = $p;
+            $this->_base_path = $p;
         } else {
-            throw new InvalidArgumentException("The directory does not exist: $path");
+            throw new InvalidArgumentException("The directory does not exist: {$path}");
         }
     }
-
     /**
      * Returns the directory that contains the controller classes according to [[controllerNamespace]].
      * Note that in order for this method to return a value, you must define
@@ -256,91 +243,78 @@ class Module extends ServiceLocator
      * @return string the directory that contains the controller classes.
      * @throws InvalidArgumentException if there is no alias defined for the root namespace of [[controllerNamespace]].
      */
-    public function getControllerPath()
+    public function get_controller_path()
     {
-        if ($this->_controllerPath === null) {
-            $this->_controllerPath = Yii::getAlias('@' . str_replace('\\', '/', $this->controllerNamespace));
+        if ($this->_controller_path === null) {
+            $this->_controller_path = Yii::get_alias('@' . str_replace('\\', '/', $this->controller_namespace));
         }
-
-        return $this->_controllerPath;
+        return $this->_controller_path;
     }
-
     /**
      * Sets the directory that contains the controller classes.
      * @param string $path the root directory that contains the controller classes.
      * @throws InvalidArgumentException if the directory is invalid.
      * @since 2.0.44
      */
-    public function setControllerPath($path): void
+    public function set_controller_path($path): void
     {
-        $this->_controllerPath = Yii::getAlias($path);
+        $this->_controller_path = Yii::get_alias($path);
     }
-
     /**
      * Returns the directory that contains the view files for this module.
      * @return string the root directory of view files. Defaults to "[[basePath]]/views".
      */
-    public function getViewPath()
+    public function get_view_path()
     {
-        if ($this->_viewPath === null) {
-            $this->_viewPath = $this->getBasePath() . DIRECTORY_SEPARATOR . 'views';
+        if ($this->_view_path === null) {
+            $this->_view_path = $this->get_base_path() . DIRECTORY_SEPARATOR . 'views';
         }
-
-        return $this->_viewPath;
+        return $this->_view_path;
     }
-
     /**
      * Sets the directory that contains the view files.
      * @param string $path the root directory of view files.
      * @throws InvalidArgumentException if the directory is invalid.
      */
-    public function setViewPath($path): void
+    public function set_view_path($path): void
     {
-        $this->_viewPath = Yii::getAlias($path);
+        $this->_view_path = Yii::get_alias($path);
     }
-
     /**
      * Returns the directory that contains layout view files for this module.
      * @return string the root directory of layout files. Defaults to "[[viewPath]]/layouts".
      */
-    public function getLayoutPath()
+    public function get_layout_path()
     {
-        if ($this->_layoutPath === null) {
-            $this->_layoutPath = $this->getViewPath() . DIRECTORY_SEPARATOR . 'layouts';
+        if ($this->_layout_path === null) {
+            $this->_layout_path = $this->get_view_path() . DIRECTORY_SEPARATOR . 'layouts';
         }
-
-        return $this->_layoutPath;
+        return $this->_layout_path;
     }
-
     /**
      * Sets the directory that contains the layout files.
      * @param string $path the root directory or [path alias](guide:concept-aliases) of layout files.
      * @throws InvalidArgumentException if the directory is invalid
      */
-    public function setLayoutPath($path): void
+    public function set_layout_path($path): void
     {
-        $this->_layoutPath = Yii::getAlias($path);
+        $this->_layout_path = Yii::get_alias($path);
     }
-
     /**
      * Returns current module version.
      * If version is not explicitly set, [[defaultVersion()]] method will be used to determine its value.
      * @return string the version of this module.
      * @since 2.0.11
      */
-    public function getVersion()
+    public function get_version()
     {
         if ($this->_version === null) {
-            $this->_version = $this->defaultVersion();
-        } else {
-            if (!is_scalar($this->_version)) {
-                $this->_version = call_user_func($this->_version, $this);
-            }
+            $this->_version = $this->default_version();
+        } else if (!is_scalar($this->_version)) {
+            $this->_version = call_user_func($this->_version, $this);
         }
-
         return $this->_version;
     }
-
     /**
      * Sets current module version.
      * @param string|callable|null $version the version of this module.
@@ -355,26 +329,23 @@ class Module extends ServiceLocator
      *
      * @since 2.0.11
      */
-    public function setVersion($version): void
+    public function set_version($version): void
     {
         $this->_version = $version;
     }
-
     /**
      * Returns default module version.
      * Child class may override this method to provide more specific version detection.
      * @return string the version of this module.
      * @since 2.0.11
      */
-    protected function defaultVersion()
+    protected function default_version()
     {
         if ($this->module === null) {
             return '1.0';
         }
-
-        return $this->module->getVersion();
+        return $this->module->get_version();
     }
-
     /**
      * Defines path aliases.
      * This method calls [[Yii::setAlias()]] to register the path aliases.
@@ -390,13 +361,12 @@ class Module extends ServiceLocator
      * ]
      * ```
      */
-    public function setAliases($aliases): void
+    public function set_aliases($aliases): void
     {
         foreach ($aliases as $name => $alias) {
-            Yii::setAlias($name, $alias);
+            Yii::set_alias($name, $alias);
         }
     }
-
     /**
      * Checks whether the child module of the specified ID exists.
      * This method supports checking the existence of both child and grand child modules.
@@ -404,18 +374,15 @@ class Module extends ServiceLocator
      * @return bool whether the named module exists. Both loaded and unloaded modules
      * are considered.
      */
-    public function hasModule($id)
+    public function has_module($id)
     {
         if (($pos = strpos($id, '/')) !== false) {
             // sub-module
-            $module = $this->getModule(substr($id, 0, $pos));
-
-            return $module === null ? false : $module->hasModule(substr($id, $pos + 1));
+            $module = $this->get_module(substr($id, 0, $pos));
+            return $module === null ? false : $module->has_module(substr($id, $pos + 1));
         }
-
         return isset($this->_modules[$id]);
     }
-
     /**
      * Retrieves the child module of the specified ID.
      * This method supports retrieving both child modules and grand child modules.
@@ -425,31 +392,27 @@ class Module extends ServiceLocator
      * @return Module|null the module instance, `null` if the module does not exist.
      * @see hasModule()
      */
-    public function getModule($id, $load = true)
+    public function get_module($id, $load = true)
     {
         if (($pos = strpos($id, '/')) !== false) {
             // sub-module
-            $module = $this->getModule(substr($id, 0, $pos));
-
-            return $module === null ? null : $module->getModule(substr($id, $pos + 1), $load);
+            $module = $this->get_module(substr($id, 0, $pos));
+            return $module === null ? null : $module->get_module(substr($id, $pos + 1), $load);
         }
-
         if (isset($this->_modules[$id])) {
             if ($this->_modules[$id] instanceof self) {
                 return $this->_modules[$id];
             }
             if ($load) {
-                Yii::debug("Loading module: $id", __METHOD__);
+                Yii::debug("Loading module: {$id}", __METHOD__);
                 /** @var self $module */
-                $module = Yii::createObject($this->_modules[$id], [$id, $this]);
-                $module::setInstance($module);
+                $module = Yii::create_object($this->_modules[$id], [$id, $this]);
+                $module::set_instance($module);
                 return $this->_modules[$id] = $module;
             }
         }
-
         return null;
     }
-
     /**
      * Adds a sub-module to this module.
      * @param string $id module ID.
@@ -461,7 +424,7 @@ class Module extends ServiceLocator
      *   will be used to instantiate the sub-module
      * - `null`: the named sub-module will be removed from this module
      */
-    public function setModule($id, $module): void
+    public function set_module($id, $module): void
     {
         if ($module === null) {
             unset($this->_modules[$id]);
@@ -472,7 +435,6 @@ class Module extends ServiceLocator
             }
         }
     }
-
     /**
      * Returns the sub-modules in this module.
      * @param bool $loadedOnly whether to return the loaded sub-modules only. If this is set `false`,
@@ -480,22 +442,19 @@ class Module extends ServiceLocator
      * Loaded modules will be returned as objects, while unloaded modules as configuration arrays.
      * @return array the modules (indexed by their IDs).
      */
-    public function getModules($loadedOnly = false)
+    public function get_modules($loaded_only = false)
     {
-        if ($loadedOnly) {
+        if ($loaded_only) {
             $modules = [];
             foreach ($this->_modules as $module) {
                 if ($module instanceof self) {
                     $modules[] = $module;
                 }
             }
-
             return $modules;
         }
-
         return $this->_modules;
     }
-
     /**
      * Registers sub-modules in the current module.
      *
@@ -520,7 +479,7 @@ class Module extends ServiceLocator
      *
      * @param array $modules modules (id => module configuration or instances).
      */
-    public function setModules($modules): void
+    public function set_modules($modules): void
     {
         foreach ($modules as $id => $module) {
             $this->_modules[$id] = $module;
@@ -529,7 +488,6 @@ class Module extends ServiceLocator
             }
         }
     }
-
     /**
      * Runs a controller action specified by a route.
      * This method parses the specified route and creates the corresponding child module(s), controller and action
@@ -540,25 +498,22 @@ class Module extends ServiceLocator
      * @return mixed the result of the action.
      * @throws InvalidRouteException if the requested route cannot be resolved into an action successfully.
      */
-    public function runAction(string $route, $params = [])
+    public function run_action(string $route, $params = [])
     {
-        $parts = $this->createController($route);
+        $parts = $this->create_controller($route);
         if (is_array($parts)) {
-            [$controller, $actionID] = $parts;
-            $oldController = Yii::$app->controller;
+            [$controller, $action_id] = $parts;
+            $old_controller = Yii::$app->controller;
             Yii::$app->controller = $controller;
-            $result = $controller->runAction($actionID, $params);
-            if ($oldController !== null) {
-                Yii::$app->controller = $oldController;
+            $result = $controller->run_action($action_id, $params);
+            if ($old_controller !== null) {
+                Yii::$app->controller = $old_controller;
             }
-
             return $result;
         }
-
-        $id = $this->getUniqueId();
-        throw new InvalidRouteException('Unable to resolve the request "' . ($id === '' ? $route : $id . '/' . $route) . '".');
+        $id = $this->get_unique_id();
+        throw new Invalid_Route_Exception('Unable to resolve the request "' . ($id === '' ? $route : $id . '/' . $route) . '".');
     }
-
     /**
      * Creates a controller instance based on the given route.
      *
@@ -584,49 +539,42 @@ class Module extends ServiceLocator
      * @phpstan-return array{Controller<static>, string}|false
      * @psalm-return array{Controller<self>, string}|false
      */
-    public function createController($route)
+    public function create_controller($route)
     {
         if ($route === '') {
-            $route = $this->defaultRoute;
+            $route = $this->default_route;
         }
-
         // double slashes or leading/ending slashes may cause substr problem
         $route = trim($route, '/');
         if (strpos($route, '//') !== false) {
             return false;
         }
-
         if (strpos($route, '/') !== false) {
             [$id, $route] = explode('/', $route, 2);
         } else {
             $id = $route;
             $route = '';
         }
-
         // module and controller map take precedence
-        if (isset($this->controllerMap[$id])) {
-            $controller = Yii::createObject($this->controllerMap[$id], [$id, $this]);
+        if (isset($this->controller_map[$id])) {
+            $controller = Yii::create_object($this->controller_map[$id], [$id, $this]);
             return [$controller, $route];
         }
-        $module = $this->getModule($id);
+        $module = $this->get_module($id);
         if ($module !== null) {
-            return $module->createController($route);
+            return $module->create_controller($route);
         }
-
         if (($pos = strrpos($route, '/')) !== false) {
             $id .= '/' . substr($route, 0, $pos);
             $route = substr($route, $pos + 1);
         }
-
-        $controller = $this->createControllerByID($id);
+        $controller = $this->create_controller_by_id($id);
         if ($controller === null && $route !== '') {
-            $controller = $this->createControllerByID($id . '/' . $route);
+            $controller = $this->create_controller_by_id($id . '/' . $route);
             $route = '';
         }
-
         return $controller === null ? false : [$controller, $route];
     }
-
     /**
      * Creates a controller based on the given controller ID.
      *
@@ -643,52 +591,45 @@ class Module extends ServiceLocator
      * @phpstan-return Controller<static>|null
      * @psalm-return Controller<self>|null
      */
-    public function createControllerByID($id): ?\yii\base\Controller
+    public function create_controller_by_id($id): ?\yii\base\Controller
     {
         $pos = strrpos($id, '/');
         if ($pos === false) {
             $prefix = '';
-            $className = $id;
+            $class_name = $id;
         } else {
             $prefix = substr($id, 0, $pos + 1);
-            $className = substr($id, $pos + 1);
+            $class_name = substr($id, $pos + 1);
         }
-
-        if ($this->isIncorrectClassNameOrPrefix($className, $prefix)) {
+        if ($this->is_incorrect_class_name_or_prefix($class_name, $prefix)) {
             return null;
         }
-
-        $className = preg_replace_callback('%-([a-z0-9_])%i', fn ($matches) => ucfirst($matches[1]), ucfirst($className)) . 'Controller';
-        $className = ltrim($this->controllerNamespace . '\\' . str_replace('/', '\\', $prefix) . $className, '\\');
-        if (strpos($className, '-') !== false || !class_exists($className)) {
+        $class_name = preg_replace_callback('%-([a-z0-9_])%i', fn($matches) => ucfirst($matches[1]), ucfirst($class_name)) . 'Controller';
+        $class_name = ltrim($this->controller_namespace . '\\' . str_replace('/', '\\', $prefix) . $class_name, '\\');
+        if (strpos($class_name, '-') !== false || !class_exists($class_name)) {
             return null;
         }
-
-        if (is_subclass_of($className, 'yii\base\Controller')) {
-            $controller = Yii::createObject($className, [$id, $this]);
-            return get_class($controller) === $className ? $controller : null;
+        if (is_subclass_of($class_name, 'yii\base\Controller')) {
+            $controller = Yii::create_object($class_name, [$id, $this]);
+            return get_class($controller) === $class_name ? $controller : null;
         }
-
-        throw new InvalidConfigException('Controller class must extend from \\yii\\base\\Controller.');
+        throw new Invalid_Config_Exception('Controller class must extend from \yii\base\Controller.');
     }
-
     /**
      * Checks if class name or prefix is incorrect
      *
      * @param string $className
      */
-    private function isIncorrectClassNameOrPrefix($className, string $prefix): bool
+    private function is_incorrect_class_name_or_prefix($class_name, string $prefix): bool
     {
-        if (!preg_match('%^[a-z][a-z0-9\\-_]*$%', $className)) {
+        if (!preg_match('%^[a-z][a-z0-9\-_]*$%', $class_name)) {
             return true;
         }
         if ($prefix !== '' && !preg_match('%^[a-z0-9_/]+$%i', $prefix)) {
             return true;
         }
-
         return false;
     }
-
     /**
      * This method is invoked right before an action within this module is executed.
      *
@@ -719,13 +660,12 @@ class Module extends ServiceLocator
      * @phpstan-param Action<Controller<static>> $action
      * @psalm-param Action<Controller<self>> $action
      */
-    public function beforeAction($action)
+    public function before_action($action)
     {
-        $event = new ActionEvent($action);
+        $event = new Action_Event($action);
         $this->trigger(self::EVENT_BEFORE_ACTION, $event);
-        return $event->isValid;
+        return $event->is_valid;
     }
-
     /**
      * This method is invoked right after an action within this module is executed.
      *
@@ -750,44 +690,41 @@ class Module extends ServiceLocator
      * @phpstan-param Action<Controller<static>> $action
      * @psalm-param Action<Controller<self>> $action
      */
-    public function afterAction($action, $result)
+    public function after_action($action, $result)
     {
-        $event = new ActionEvent($action);
+        $event = new Action_Event($action);
         $event->result = $result;
         $this->trigger(self::EVENT_AFTER_ACTION, $event);
         return $event->result;
     }
-
     /**
      * {@inheritdoc}
      *
      * Since version 2.0.13, if a component isn't defined in the module, it will be looked up in the parent module.
      * The parent module may be the application.
      */
-    public function get($id, $throwException = true)
+    public function get($id, $throw_exception = true)
     {
         if (!isset($this->module)) {
-            return parent::get($id, $throwException);
+            return parent::get($id, $throw_exception);
         }
-
         $component = parent::get($id, false);
         if ($component === null) {
-            return $this->module->get($id, $throwException);
+            return $this->module->get($id, $throw_exception);
         }
         return $component;
     }
-
     /**
      * {@inheritdoc}
      *
      * Since version 2.0.13, if a component isn't defined in the module, it will be looked up in the parent module.
      * The parent module may be the application.
      */
-    public function has($id, $checkInstance = false): bool
+    public function has($id, $check_instance = false): bool
     {
-        if (parent::has($id, $checkInstance)) {
+        if (parent::has($id, $check_instance)) {
             return true;
         }
-        return isset($this->module) && $this->module->has($id, $checkInstance);
+        return isset($this->module) && $this->module->has($id, $check_instance);
     }
 }

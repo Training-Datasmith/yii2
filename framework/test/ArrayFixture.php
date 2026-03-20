@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\test;
 
-use yii\base\ArrayAccessTrait;
-use yii\base\InvalidConfigException;
-
+use yii\base\Array_Access_Trait;
+use yii\base\Invalid_Config_Exception;
 /**
  * ArrayFixture represents arbitrary fixture that can be loaded from PHP files.
  *
@@ -24,16 +21,14 @@ use yii\base\InvalidConfigException;
  * @implements \IteratorAggregate<string, array<string, mixed>>
  * @implements \ArrayAccess<string, array<string, mixed>|null>
  */
-class ArrayFixture extends Fixture implements \IteratorAggregate, \ArrayAccess, \Countable
+class Array_Fixture extends Fixture implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-    use ArrayAccessTrait;
-    use FileFixtureTrait;
-
+    use Array_Access_Trait;
+    use File_Fixture_Trait;
     /**
      * @var array<string, array<string, mixed>> the data rows. Each array element represents one row of data (column name => column value).
      */
     public $data = [];
-
     /**
      * Loads the fixture.
      *
@@ -42,9 +37,8 @@ class ArrayFixture extends Fixture implements \IteratorAggregate, \ArrayAccess, 
      */
     public function load()
     {
-        $this->data = $this->getData();
+        $this->data = $this->get_data();
     }
-
     /**
      * Returns the fixture data.
      *
@@ -54,11 +48,10 @@ class ArrayFixture extends Fixture implements \IteratorAggregate, \ArrayAccess, 
      * @return array<string, array<string, mixed>> the data to be put into the database
      * @throws InvalidConfigException if the specified data file does not exist.
      */
-    protected function getData()
+    protected function get_data()
     {
-        return $this->loadData($this->dataFile);
+        return $this->load_data($this->data_file);
     }
-
     /**
      * {@inheritdoc}
      */

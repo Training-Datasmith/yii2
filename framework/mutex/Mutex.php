@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\mutex;
 
 use yii\base\Component;
-
 /**
  * The Mutex component allows mutual execution of concurrent processes in order to prevent "race conditions".
  *
@@ -40,20 +37,18 @@ abstract class Mutex extends Component
      * before finishing script execution. Defaults to true. Setting this property to true means that all locks
      * acquired in this process must be released (regardless of errors or exceptions).
      */
-    public $autoRelease = true;
-
+    public $auto_release = true;
     /**
      * @var string[] names of the locks acquired by the current PHP process.
      */
     private $_locks = [];
-
     /**
      * Initializes the Mutex component.
      */
     public function init(): void
     {
-        if ($this->autoRelease) {
-            $locks = &$this->_locks;
+        if ($this->auto_release) {
+            $locks =& $this->_locks;
             register_shutdown_function(function () use (&$locks): void {
                 foreach ($locks as $lock) {
                     $this->release($lock);
@@ -61,7 +56,6 @@ abstract class Mutex extends Component
             });
         }
     }
-
     /**
      * Acquires a lock by name.
      * @param string $name of the lock to be acquired. Must be unique.
@@ -71,15 +65,12 @@ abstract class Mutex extends Component
      */
     public function acquire($name, $timeout = 0)
     {
-        if (!in_array($name, $this->_locks, true) && $this->acquireLock($name, $timeout)) {
+        if (!in_array($name, $this->_locks, true) && $this->acquire_lock($name, $timeout)) {
             $this->_locks[] = $name;
-
             return true;
         }
-
         return false;
     }
-
     /**
      * Releases acquired lock. This method will return false in case the lock was not found.
      * @param string $name of the lock to be released. This lock must already exist.
@@ -87,18 +78,15 @@ abstract class Mutex extends Component
      */
     public function release($name)
     {
-        if ($this->releaseLock($name)) {
+        if ($this->release_lock($name)) {
             $index = array_search($name, $this->_locks);
             if ($index !== false) {
                 unset($this->_locks[$index]);
             }
-
             return true;
         }
-
         return false;
     }
-
     /**
      * Checks if a lock is acquired by the current process.
      * Note that it returns false if the mutex is acquired in another process.
@@ -107,23 +95,21 @@ abstract class Mutex extends Component
      * @return bool Returns true if currently acquired.
      * @since 2.0.36
      */
-    public function isAcquired($name)
+    public function is_acquired($name)
     {
         return in_array($name, $this->_locks, true);
     }
-
     /**
      * This method should be extended by a concrete Mutex implementations. Acquires lock by name.
      * @param string $name of the lock to be acquired.
      * @param int $timeout time (in seconds) to wait for the lock to be released.
      * @return bool acquiring result.
      */
-    abstract protected function acquireLock($name, $timeout = 0);
-
+    abstract protected function acquire_lock($name, $timeout = 0);
     /**
      * This method should be extended by a concrete Mutex implementations. Releases lock by given name.
      * @param string $name of the lock to be released.
      * @return bool release result.
      */
-    abstract protected function releaseLock($name);
+    abstract protected function release_lock($name);
 }

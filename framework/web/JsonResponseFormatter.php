@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use Yii;
 use yii\base\Component;
 use yii\helpers\Json;
-
 /**
  * JsonResponseFormatter formats the given data into a JSON or JSONP response content.
  *
@@ -39,7 +36,7 @@ use yii\helpers\Json;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class JsonResponseFormatter extends Component implements ResponseFormatterInterface
+class Json_Response_Formatter extends Component implements Response_Formatter_Interface
 {
     /**
      * JSON Content Type
@@ -61,13 +58,13 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      * When equals `null` default content type will be used based on the `useJsonp` property.
      * @since 2.0.14
      */
-    public $contentType;
+    public $content_type;
     /**
      * @var bool whether to use JSONP response format. When this is true, the [[Response::data|response data]]
      * must be an array consisting of `data` and `callback` members. The latter should be a JavaScript
      * function name while the former will be passed to this function as a parameter.
      */
-    public $useJsonp = false;
+    public $use_jsonp = false;
     /**
      * @var int the encoding options passed to [[Json::encode()]]. For more details please refer to
      * <https://www.php.net/manual/en/function.json-encode.php>.
@@ -75,7 +72,7 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      * This property has no effect, when [[useJsonp]] is `true`.
      * @since 2.0.7
      */
-    public $encodeOptions = 320;
+    public $encode_options = 320;
     /**
      * @var bool whether to format the output in a readable "pretty" format. This can be useful for debugging purpose.
      * If this is true, `JSON_PRETTY_PRINT` will be added to [[encodeOptions]].
@@ -83,84 +80,65 @@ class JsonResponseFormatter extends Component implements ResponseFormatterInterf
      * This property has no effect, when [[useJsonp]] is `true`.
      * @since 2.0.7
      */
-    public $prettyPrint = false;
+    public $pretty_print = false;
     /**
      * @var bool Avoids objects with zero-indexed keys to be encoded as array
      * Json::encode((object)['test']) will be encoded as an object not array. This matches the behaviour of json_encode().
      * Defaults to Json::$keepObjectType value
      * @since 2.0.44
      */
-    public $keepObjectType;
-
+    public $keep_object_type;
     /**
      * Formats the specified response.
      * @param Response $response the response to be formatted.
      */
     public function format($response): void
     {
-        if ($this->contentType === null) {
-            $this->contentType = $this->useJsonp
-                ? self::CONTENT_TYPE_JSONP
-                : self::CONTENT_TYPE_JSON;
-        } elseif (strpos($this->contentType, 'charset') === false) {
-            $this->contentType .= '; charset=UTF-8';
+        if ($this->content_type === null) {
+            $this->content_type = $this->use_jsonp ? self::CONTENT_TYPE_JSONP : self::CONTENT_TYPE_JSON;
+        } elseif (strpos($this->content_type, 'charset') === false) {
+            $this->content_type .= '; charset=UTF-8';
         }
-        $response->getHeaders()->set('Content-Type', $this->contentType);
-
-        if ($this->useJsonp) {
-            $this->formatJsonp($response);
+        $response->get_headers()->set('Content-Type', $this->content_type);
+        if ($this->use_jsonp) {
+            $this->format_jsonp($response);
         } else {
-            $this->formatJson($response);
+            $this->format_json($response);
         }
     }
-
     /**
      * Formats response data in JSON format.
      * @param Response $response
      */
-    protected function formatJson($response)
+    protected function format_json($response)
     {
         if ($response->data !== null) {
-            $options = $this->encodeOptions;
-            if ($this->prettyPrint) {
+            $options = $this->encode_options;
+            if ($this->pretty_print) {
                 $options |= JSON_PRETTY_PRINT;
             }
-
-            $default = Json::$keepObjectType;
-            if ($this->keepObjectType !== null) {
-                Json::$keepObjectType = $this->keepObjectType;
+            $default = Json::$keep_object_type;
+            if ($this->keep_object_type !== null) {
+                Json::$keep_object_type = $this->keep_object_type;
             }
-
             $response->content = Json::encode($response->data, $options);
-
             // Restore default value to avoid any unexpected behaviour
-            Json::$keepObjectType = $default;
+            Json::$keep_object_type = $default;
         } elseif ($response->content === null) {
             $response->content = 'null';
         }
     }
-
     /**
      * Formats response data in JSONP format.
      * @param Response $response
      */
-    protected function formatJsonp($response)
+    protected function format_jsonp($response)
     {
-        if (
-            is_array($response->data)
-            && isset($response->data['data'], $response->data['callback'])
-        ) {
-            $response->content = sprintf(
-                '%s(%s);',
-                $response->data['callback'],
-                Json::htmlEncode($response->data['data'])
-            );
+        if (is_array($response->data) && isset($response->data['data'], $response->data['callback'])) {
+            $response->content = sprintf('%s(%s);', $response->data['callback'], Json::html_encode($response->data['data']));
         } elseif ($response->data !== null) {
             $response->content = '';
-            Yii::warning(
-                "The 'jsonp' response requires that the data be an array consisting of both 'data' and 'callback' elements.",
-                __METHOD__
-            );
+            Yii::warning("The 'jsonp' response requires that the data be an array consisting of both 'data' and 'callback' elements.", __METHOD__);
         }
     }
 }

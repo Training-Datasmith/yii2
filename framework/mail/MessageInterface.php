@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\mail;
 
 /**
@@ -33,27 +31,24 @@ namespace yii\mail;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0
  */
-interface MessageInterface
+interface Message_Interface
 {
     /**
      * Returns the character set of this message.
      * @return string the character set of this message.
      */
-    public function getCharset();
-
+    public function get_charset();
     /**
      * Sets the character set of this message.
      * @param string $charset character set name.
      * @return $this self reference.
      */
-    public function setCharset($charset);
-
+    public function set_charset($charset);
     /**
      * Returns the message sender.
      * @return string|array the sender
      */
-    public function getFrom();
-
+    public function get_from();
     /**
      * Sets the message sender.
      * @param string|array $from sender email address.
@@ -62,14 +57,12 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setFrom($from);
-
+    public function set_from($from);
     /**
      * Returns the message recipient(s).
      * @return string|array the message recipients
      */
-    public function getTo();
-
+    public function get_to();
     /**
      * Sets the message recipient(s).
      * @param string|array $to receiver email address.
@@ -78,14 +71,12 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setTo($to);
-
+    public function set_to($to);
     /**
      * Returns the reply-to address of this message.
      * @return string|array the reply-to address of this message.
      */
-    public function getReplyTo();
-
+    public function get_reply_to();
     /**
      * Sets the reply-to address of this message.
      * @param string|array $replyTo the reply-to address.
@@ -94,14 +85,12 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setReplyTo($replyTo);
-
+    public function set_reply_to($reply_to);
     /**
      * Returns the Cc (additional copy receiver) addresses of this message.
      * @return string|array the Cc (additional copy receiver) addresses of this message.
      */
-    public function getCc();
-
+    public function get_cc();
     /**
      * Sets the Cc (additional copy receiver) addresses of this message.
      * @param string|array $cc copy receiver email address.
@@ -110,14 +99,12 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setCc($cc);
-
+    public function set_cc($cc);
     /**
      * Returns the Bcc (hidden copy receiver) addresses of this message.
      * @return string|array the Bcc (hidden copy receiver) addresses of this message.
      */
-    public function getBcc();
-
+    public function get_bcc();
     /**
      * Sets the Bcc (hidden copy receiver) addresses of this message.
      * @param string|array $bcc hidden copy receiver email address.
@@ -126,35 +113,30 @@ interface MessageInterface
      * `[email => name]`.
      * @return $this self reference.
      */
-    public function setBcc($bcc);
-
+    public function set_bcc($bcc);
     /**
      * Returns the message subject.
      * @return string the message subject
      */
-    public function getSubject();
-
+    public function get_subject();
     /**
      * Sets the message subject.
      * @param string $subject message subject
      * @return $this self reference.
      */
-    public function setSubject($subject);
-
+    public function set_subject($subject);
     /**
      * Sets message plain text content.
      * @param string $text message plain text content.
      * @return $this self reference.
      */
-    public function setTextBody($text);
-
+    public function set_text_body($text);
     /**
      * Sets message HTML content.
      * @param string $html message HTML content.
      * @return $this self reference.
      */
-    public function setHtmlBody($html);
-
+    public function set_html_body($html);
     /**
      * Attaches existing file to the email message.
      * @param string $fileName full file name
@@ -165,8 +147,7 @@ interface MessageInterface
      *
      * @return $this self reference.
      */
-    public function attach($fileName, array $options = []);
-
+    public function attach($file_name, array $options = []);
     /**
      * Attach specified content as file for the email message.
      * @param string $content attachment file content.
@@ -177,8 +158,7 @@ interface MessageInterface
      *
      * @return $this self reference.
      */
-    public function attachContent($content, array $options = []);
-
+    public function attach_content($content, array $options = []);
     /**
      * Attach a file and return it's CID source.
      * This method should be used when embedding images or other data in a message.
@@ -190,8 +170,7 @@ interface MessageInterface
      *
      * @return string attachment CID.
      */
-    public function embed($fileName, array $options = []);
-
+    public function embed($file_name, array $options = []);
     /**
      * Attach a content as file and return it's CID source.
      * This method should be used when embedding images or other data in a message.
@@ -203,19 +182,17 @@ interface MessageInterface
      *
      * @return string attachment CID.
      */
-    public function embedContent($content, array $options = []);
-
+    public function embed_content($content, array $options = []);
     /**
      * Sends this email message.
      * @param MailerInterface|null $mailer the mailer that should be used to send this message.
      * If null, the "mailer" application component will be used instead.
      * @return bool whether this message is sent successfully.
      */
-    public function send(?MailerInterface $mailer = null);
-
+    public function send(?Mailer_Interface $mailer = null);
     /**
      * Returns string representation of this message.
      * @return string the string representation of this message.
      */
-    public function toString();
+    public function to_string();
 }

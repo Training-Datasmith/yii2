@@ -5,11 +5,16 @@
  *
  * @var array $foreignKeys the foreign keys
  */
-
-if (!empty($foreignKeys)):?>
+if (!empty($foreign_keys)) {
+    ?>
  * Has foreign keys to the tables:
  *
-<?php foreach ($foreignKeys as $fkData): ?>
- * - `<?= $fkData['relatedTable'] ?>`
-<?php endforeach;
-endif;
+<?php 
+    foreach ($foreign_keys as $fk_data) {
+        ?>
+ * - `<?php 
+        echo $fk_data['relatedTable'];
+        ?>`
+<?php 
+    }
+}

@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\log;
 
 use Yii;
 use yii\base\Component;
-use yii\base\ErrorHandler;
-
+use yii\base\Error_Handler;
 /**
  * Dispatcher manages a set of [[Target|log targets]].
  *
@@ -70,12 +67,10 @@ class Dispatcher extends Component
      * or the configuration for creating the log target instance.
      */
     public $targets = [];
-
     /**
      * @var Logger|null the logger.
      */
     private $_logger;
-
     /**
      * {@inheritdoc}
      */
@@ -83,43 +78,37 @@ class Dispatcher extends Component
     {
         // ensure logger gets set before any other config option
         if (isset($config['logger'])) {
-            $this->setLogger($config['logger']);
+            $this->set_logger($config['logger']);
             unset($config['logger']);
         }
         // connect logger and dispatcher
-        $this->getLogger();
-
+        $this->get_logger();
         parent::__construct($config);
     }
-
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         parent::init();
-
         foreach ($this->targets as $name => $target) {
             if (!$target instanceof Target) {
-                $this->targets[$name] = Yii::createObject($target);
+                $this->targets[$name] = Yii::create_object($target);
             }
         }
     }
-
     /**
      * Gets the connected logger.
      * If not set, [[Yii::getLogger()]] will be used.
      * @return Logger the logger.
      */
-    public function getLogger()
+    public function get_logger()
     {
         if ($this->_logger === null) {
-            $this->setLogger(Yii::getLogger());
+            $this->set_logger(Yii::get_logger());
         }
-
         return $this->_logger;
     }
-
     /**
      * Sets the connected logger.
      * @param Logger|string|array $value the logger to be used. This can either be a logger instance
@@ -127,45 +116,40 @@ class Dispatcher extends Component
      * If you are providing custom logger configuration and would like it to be used for the whole application
      * and not just for the dispatcher you should use [[Yii::setLogger()]] instead.
      */
-    public function setLogger($value): void
+    public function set_logger($value): void
     {
         if (is_string($value) || is_array($value)) {
-            $value = Yii::createObject($value);
+            $value = Yii::create_object($value);
         }
-
         $this->_logger = $value;
         $this->_logger->dispatcher = $this;
     }
-
     /**
      * @return int how many application call stacks should be logged together with each message.
      * This method returns the value of [[Logger::traceLevel]]. Defaults to 0.
      */
-    public function getTraceLevel()
+    public function get_trace_level()
     {
-        return $this->getLogger()->traceLevel;
+        return $this->get_logger()->trace_level;
     }
-
     /**
      * @param int $value how many application call stacks should be logged together with each message.
      * This method will set the value of [[Logger::traceLevel]]. If the value is greater than 0,
      * at most that number of call stacks will be logged. Note that only application call stacks are counted.
      * Defaults to 0.
      */
-    public function setTraceLevel($value): void
+    public function set_trace_level($value): void
     {
-        $this->getLogger()->traceLevel = $value;
+        $this->get_logger()->trace_level = $value;
     }
-
     /**
      * @return int how many messages should be logged before they are sent to targets.
      * This method returns the value of [[Logger::flushInterval]].
      */
-    public function getFlushInterval()
+    public function get_flush_interval()
     {
-        return $this->getLogger()->flushInterval;
+        return $this->get_logger()->flush_interval;
     }
-
     /**
      * @param int $value how many messages should be logged before they are sent to targets.
      * This method will set the value of [[Logger::flushInterval]].
@@ -174,11 +158,10 @@ class Dispatcher extends Component
      * This property mainly affects how much memory will be taken by the logged messages.
      * A smaller value means less memory, but will increase the execution time due to the overhead of [[Logger::flush()]].
      */
-    public function setFlushInterval($value): void
+    public function set_flush_interval($value): void
     {
-        $this->getLogger()->flushInterval = $value;
+        $this->get_logger()->flush_interval = $value;
     }
-
     /**
      * Dispatches the logged messages to [[targets]].
      * @param array $messages the logged messages
@@ -186,7 +169,7 @@ class Dispatcher extends Component
      */
     public function dispatch($messages, $final): void
     {
-        $targetErrors = [];
+        $target_errors = [];
         foreach ($this->targets as $target) {
             if (!$target->enabled) {
                 continue;
@@ -195,18 +178,16 @@ class Dispatcher extends Component
                 $target->collect($messages, $final);
             } catch (\Throwable $t) {
                 $target->enabled = false;
-                $targetErrors[] = $this->generateTargetFailErrorMessage($target, $t, __METHOD__);
+                $target_errors[] = $this->generate_target_fail_error_message($target, $t, __METHOD__);
             } catch (\Exception $e) {
                 $target->enabled = false;
-                $targetErrors[] = $this->generateTargetFailErrorMessage($target, $e, __METHOD__);
+                $target_errors[] = $this->generate_target_fail_error_message($target, $e, __METHOD__);
             }
         }
-
-        if (!empty($targetErrors)) {
-            $this->dispatch($targetErrors, true);
+        if (!empty($target_errors)) {
+            $this->dispatch($target_errors, true);
         }
     }
-
     /**
      * Generate target error message
      *
@@ -216,14 +197,8 @@ class Dispatcher extends Component
      * @return array generated error message data
      * @since 2.0.32
      */
-    protected function generateTargetFailErrorMessage($target, $throwable, $method): array
+    protected function generate_target_fail_error_message($target, $throwable, $method): array
     {
-        return [
-            'Unable to send log via ' . get_class($target) . ': ' . ErrorHandler::convertExceptionToVerboseString($throwable),
-            Logger::LEVEL_WARNING,
-            $method,
-            microtime(true),
-            [],
-        ];
+        return ['Unable to send log via ' . get_class($target) . ': ' . Error_Handler::convert_exception_to_verbose_string($throwable), Logger::LEVEL_WARNING, $method, microtime(true), []];
     }
 }

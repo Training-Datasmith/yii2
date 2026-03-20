@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -30,7 +28,7 @@ namespace yii\web;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0.6
  */
-abstract class MultiFieldSession extends Session
+abstract class Multi_Field_Session extends Session
 {
     /**
      * @var callable a callback that will be called during session data reading.
@@ -53,7 +51,7 @@ abstract class MultiFieldSession extends Session
      * }
      * ```
      */
-    public $readCallback;
+    public $read_callback;
     /**
      * @var callable|null a callback that will be called during session data writing.
      * The signature of the callback should be as follows:
@@ -77,27 +75,25 @@ abstract class MultiFieldSession extends Session
      * }
      * ```
      */
-    public $writeCallback;
-
+    public $write_callback;
     /**
      * Returns a value indicating whether to use custom session storage.
      * This method overrides the parent implementation and always returns true.
      * @return bool whether to use custom storage.
      */
-    public function getUseCustomStorage()
+    public function get_use_custom_storage()
     {
         return true;
     }
-
     /**
      * Composes storage field set for session writing.
      * @param string|null $id Optional session id
      * @param string|null $data Optional session data
      * @return array storage fields
      */
-    protected function composeFields($id = null, $data = null)
+    protected function compose_fields($id = null, $data = null)
     {
-        $fields = $this->writeCallback ? call_user_func($this->writeCallback, $this) : [];
+        $fields = $this->write_callback ? call_user_func($this->write_callback, $this) : [];
         if ($id !== null) {
             $fields['id'] = $id;
         }
@@ -106,28 +102,25 @@ abstract class MultiFieldSession extends Session
         }
         return $fields;
     }
-
     /**
      * Extracts session data from storage field set.
      * @param array $fields storage fields.
      * @return string session data.
      */
-    protected function extractData(array $fields)
+    protected function extract_data(array $fields)
     {
-        if ($this->readCallback !== null) {
+        if ($this->read_callback !== null) {
             if (!isset($fields['data'])) {
                 $fields['data'] = '';
             }
-            $extraData = call_user_func($this->readCallback, $fields);
-            if (!empty($extraData)) {
+            $extra_data = call_user_func($this->read_callback, $fields);
+            if (!empty($extra_data)) {
                 session_decode($fields['data']);
-                $_SESSION = array_merge($_SESSION, (array) $extraData);
+                $_SESSION = array_merge($_SESSION, (array) $extra_data);
                 return session_encode();
             }
-
             return $fields['data'];
         }
-
         return $fields['data'] ?? '';
     }
 }

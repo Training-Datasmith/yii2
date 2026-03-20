@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\mutex;
 
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\db\Connection;
 use yii\di\Instance;
-
 /**
  * DbMutex is the base class for classes, which relies on database while implementing mutex "lock" mechanism.
  *
@@ -22,7 +19,7 @@ use yii\di\Instance;
  * @author resurtm <resurtm@gmail.com>
  * @since 2.0
  */
-abstract class DbMutex extends Mutex
+abstract class Db_Mutex extends Mutex
 {
     /**
      * @var Connection|array|string the DB connection object or the application component ID of the DB connection.
@@ -31,7 +28,6 @@ abstract class DbMutex extends Mutex
      * Starting from version 2.0.2, this can also be a configuration array for creating the object.
      */
     public $db = 'db';
-
     /**
      * Initializes generic database table based mutex implementation.
      * @throws InvalidConfigException if [[db]] is invalid.
@@ -39,6 +35,6 @@ abstract class DbMutex extends Mutex
     public function init(): void
     {
         parent::init();
-        $this->db = Instance::ensure($this->db, Connection::className());
+        $this->db = Instance::ensure($this->db, Connection::class_name());
     }
 }

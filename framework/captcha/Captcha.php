@@ -1,21 +1,18 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\captcha;
 
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\helpers\Html;
 use yii\helpers\Json;
 use yii\helpers\Url;
-use yii\widgets\InputWidget;
-
+use yii\widgets\Input_Widget;
 /**
  * Captcha renders a CAPTCHA image and an input field that takes user-entered verification code.
  *
@@ -60,19 +57,19 @@ use yii\widgets\InputWidget;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Captcha extends InputWidget
+class Captcha extends Input_Widget
 {
     /**
      * @var string|array the route of the action that generates the CAPTCHA images.
      * The action represented by this route must be an action of [[CaptchaAction]].
      * Please refer to [[\yii\helpers\Url::toRoute()]] for acceptable formats.
      */
-    public $captchaAction = 'site/captcha';
+    public $captcha_action = 'site/captcha';
     /**
      * @var array HTML attributes to be applied to the CAPTCHA image tag.
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $imageOptions = [];
+    public $image_options = [];
     /**
      * @var string the template for arranging the CAPTCHA image tag and the text input tag.
      * In this template, the token `{image}` will be replaced with the actual image tag,
@@ -84,93 +81,79 @@ class Captcha extends InputWidget
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
     public $options = ['class' => 'form-control'];
-
     /**
      * Initializes the widget.
      */
     public function init(): void
     {
         parent::init();
-
-        static::checkRequirements();
-
-        if (!isset($this->imageOptions['id'])) {
-            $this->imageOptions['id'] = $this->options['id'] . '-image';
+        static::check_requirements();
+        if (!isset($this->image_options['id'])) {
+            $this->image_options['id'] = $this->options['id'] . '-image';
         }
     }
-
     /**
      * Renders the widget.
      */
     public function run(): void
     {
-        $this->registerClientScript();
-        $input = $this->renderInputHtml('text');
-        $route = $this->captchaAction;
+        $this->register_client_script();
+        $input = $this->render_input_html('text');
+        $route = $this->captcha_action;
         if (is_array($route)) {
             $route['v'] = uniqid('', true);
         } else {
             $route = [$route, 'v' => uniqid('', true)];
         }
-        $image = Html::img($route, $this->imageOptions);
-        echo strtr($this->template, [
-            '{input}' => $input,
-            '{image}' => $image,
-        ]);
+        $image = Html::img($route, $this->image_options);
+        echo strtr($this->template, ['{input}' => $input, '{image}' => $image]);
     }
-
     /**
      * Registers the needed JavaScript.
      */
-    public function registerClientScript(): void
+    public function register_client_script(): void
     {
-        $options = $this->getClientOptions();
-        $options = empty($options) ? '' : Json::htmlEncode($options);
-        $id = $this->imageOptions['id'];
-        $view = $this->getView();
-        CaptchaAsset::register($view);
-        $view->registerJs("jQuery('#$id').yiiCaptcha($options);");
+        $options = $this->get_client_options();
+        $options = empty($options) ? '' : Json::html_encode($options);
+        $id = $this->image_options['id'];
+        $view = $this->get_view();
+        Captcha_Asset::register($view);
+        $view->register_js("jQuery('#{$id}').yiiCaptcha({$options});");
     }
-
     /**
      * Returns the options for the captcha JS widget.
      * @return array the options
      */
-    protected function getClientOptions(): array
+    protected function get_client_options(): array
     {
-        $route = $this->captchaAction;
+        $route = $this->captcha_action;
         if (is_array($route)) {
-            $route[CaptchaAction::REFRESH_GET_VAR] = 1;
+            $route[Captcha_Action::REFRESH_GET_VAR] = 1;
         } else {
-            $route = [$route, CaptchaAction::REFRESH_GET_VAR => 1];
+            $route = [$route, Captcha_Action::REFRESH_GET_VAR => 1];
         }
-
-        return [
-            'refreshUrl' => Url::toRoute($route),
-            'hashKey' => 'yiiCaptcha/' . trim($route[0], '/'),
-        ];
+        return ['refreshUrl' => Url::to_route($route), 'hashKey' => 'yiiCaptcha/' . trim($route[0], '/')];
     }
-
     /**
      * Checks if there is graphic extension available to generate CAPTCHA images.
      * This method will check the existence of ImageMagick and GD extensions.
      * @return string the name of the graphic extension, either "imagick" or "gd".
      * @throws InvalidConfigException if neither ImageMagick nor GD is installed.
      */
-    public static function checkRequirements(): string
+    public static function check_requirements(): string
     {
         if (extension_loaded('imagick')) {
-            $imagickFormats = (new \Imagick())->queryFormats('PNG');
-            if (in_array('PNG', $imagickFormats, true)) {
+            $imagick_formats = (new \Imagick())->query_formats('PNG');
+            if (in_array('PNG', $imagick_formats, true)) {
                 return 'imagick';
             }
         }
         if (extension_loaded('gd')) {
-            $gdInfo = gd_info();
-            if (!empty($gdInfo['FreeType Support'])) {
+            $gd_info = gd_info();
+            if (!empty($gd_info['FreeType Support'])) {
                 return 'gd';
             }
         }
-        throw new InvalidConfigException('Either GD PHP extension with FreeType support or ImageMagick PHP extension with PNG support is required.');
+        throw new Invalid_Config_Exception('Either GD PHP extension with FreeType support or ImageMagick PHP extension with PNG support is required.');
     }
 }

@@ -1,23 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 use yii\helpers\Json;
-
 /**
  * This class converts the attribute value(s) to string(s) and strip characters.
  *
  * @since 2.0.46
  */
-class TrimValidator extends Validator
+class Trim_Validator extends Validator
 {
     /**
      * @var string The list of characters to strip, with `..` can specify a range of characters.
@@ -28,59 +25,47 @@ class TrimValidator extends Validator
      * @var bool Whether the filter should be skipped if an array input is given.
      * If true and an array input is given, the filter will not be applied.
      */
-    public $skipOnArray = false;
+    public $skip_on_array = false;
     /**
      * @inheritDoc
      */
-    public $skipOnEmpty = false;
-
+    public $skip_on_empty = false;
     /**
      * @inheritDoc
      */
-    public function validateAttribute($model, $attribute): void
+    public function validate_attribute($model, $attribute): void
     {
-        $value = $model->$attribute;
-        if (!$this->skipOnArray || !is_array($value)) {
-            $model->$attribute = is_array($value)
-                ? array_map([$this, 'trimValue'], $value)
-                : $this->trimValue($value);
+        $value = $model->{$attribute};
+        if (!$this->skip_on_array || !is_array($value)) {
+            $model->{$attribute} = is_array($value) ? array_map([$this, 'trimValue'], $value) : $this->trim_value($value);
         }
     }
-
     /**
      * Converts given value to string and strips declared characters.
      *
      * @param mixed $value the value to strip
      */
-    protected function trimValue($value): string
+    protected function trim_value($value): string
     {
-        return $this->isEmpty($value) ? '' : trim((string) $value, $this->chars ?: " \n\r\t\v\x00");
+        return $this->is_empty($value) ? '' : trim((string) $value, $this->chars ?: " \n\r\t\v\x00");
     }
-
     /**
      * @inheritDoc
      */
-    public function clientValidateAttribute($model, $attribute, $view): ?string
+    public function client_validate_attribute($model, $attribute, $view): ?string
     {
-        if ($this->skipOnArray && is_array($model->$attribute)) {
+        if ($this->skip_on_array && is_array($model->{$attribute})) {
             return null;
         }
-
-        ValidationAsset::register($view);
-        $options = $this->getClientOptions($model, $attribute);
-
-        return 'value = yii.validation.trim($form, attribute, ' . Json::htmlEncode($options) . ', value);';
+        Validation_Asset::register($view);
+        $options = $this->get_client_options($model, $attribute);
+        return 'value = yii.validation.trim($form, attribute, ' . Json::html_encode($options) . ', value);';
     }
-
     /**
      * @inheritDoc
      */
-    public function getClientOptions($model, $attribute): array
+    public function get_client_options($model, $attribute): array
     {
-        return [
-            'skipOnArray' => (bool) $this->skipOnArray,
-            'skipOnEmpty' => (bool) $this->skipOnEmpty,
-            'chars' => $this->chars ?: false,
-        ];
+        return ['skipOnArray' => (bool) $this->skip_on_array, 'skipOnEmpty' => (bool) $this->skip_on_empty, 'chars' => $this->chars ?: false];
     }
 }

@@ -1,24 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rest;
 
 use Yii;
 use yii\base\Module;
-use yii\filters\auth\CompositeAuth;
-use yii\filters\ContentNegotiator;
-use yii\filters\RateLimiter;
-use yii\filters\VerbFilter;
+use yii\filters\auth\Composite_Auth;
+use yii\filters\Content_Negotiator;
+use yii\filters\Rate_Limiter;
+use yii\filters\Verb_Filter;
 use yii\web\Controller as WebController;
 use yii\web\Response;
-
 /**
  * Controller is the base class for RESTful API controller classes.
  *
@@ -38,7 +35,7 @@ use yii\web\Response;
  * @template T of Module = Module
  * @extends WebController<T>
  */
-class Controller extends WebController
+class Controller extends Web_Controller
 {
     /**
      * @var string|array the configuration for creating the serializer that formats the response data.
@@ -47,43 +44,22 @@ class Controller extends WebController
     /**
      * {@inheritdoc}
      */
-    public $enableCsrfValidation = false;
-
+    public $enable_csrf_validation = false;
     /**
      * {@inheritdoc}
      */
     public function behaviors(): array
     {
-        return [
-            'contentNegotiator' => [
-                'class' => ContentNegotiator::className(),
-                'formats' => [
-                    'application/json' => Response::FORMAT_JSON,
-                    'application/xml' => Response::FORMAT_XML,
-                ],
-            ],
-            'verbFilter' => [
-                'class' => VerbFilter::className(),
-                'actions' => $this->verbs(),
-            ],
-            'authenticator' => [
-                'class' => CompositeAuth::className(),
-            ],
-            'rateLimiter' => [
-                'class' => RateLimiter::className(),
-            ],
-        ];
+        return ['contentNegotiator' => ['class' => Content_Negotiator::class_name(), 'formats' => ['application/json' => Response::FORMAT_JSON, 'application/xml' => Response::FORMAT_XML]], 'verbFilter' => ['class' => Verb_Filter::class_name(), 'actions' => $this->verbs()], 'authenticator' => ['class' => Composite_Auth::class_name()], 'rateLimiter' => ['class' => Rate_Limiter::class_name()]];
     }
-
     /**
      * {@inheritdoc}
      */
-    public function afterAction($action, $result)
+    public function after_action($action, $result)
     {
-        $result = parent::afterAction($action, $result);
-        return $this->serializeData($result);
+        $result = parent::after_action($action, $result);
+        return $this->serialize_data($result);
     }
-
     /**
      * Declares the allowed HTTP verbs.
      * Please refer to [[VerbFilter::actions]] on how to declare the allowed verbs.
@@ -93,7 +69,6 @@ class Controller extends WebController
     {
         return [];
     }
-
     /**
      * Serializes the specified data.
      * The default implementation will create a serializer based on the configuration given by [[serializer]].
@@ -101,8 +76,8 @@ class Controller extends WebController
      * @param mixed $data the data to be serialized
      * @return mixed the serialized data.
      */
-    protected function serializeData($data)
+    protected function serialize_data($data)
     {
-        return Yii::createObject($this->serializer)->serialize($data);
+        return Yii::create_object($this->serializer)->serialize($data);
     }
 }

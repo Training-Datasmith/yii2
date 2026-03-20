@@ -1,22 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rest;
 
 use Yii;
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\helpers\Inflector;
-use yii\web\CompositeUrlRule;
-use yii\web\UrlRule as WebUrlRule;
-use yii\web\UrlRuleInterface;
-
+use yii\web\Composite_Url_Rule;
+use yii\web\Url_Rule as WebUrlRule;
+use yii\web\Url_Rule_Interface;
 /**
  * UrlRule is provided to simplify the creation of URL rules for RESTful API support.
  *
@@ -62,7 +59,7 @@ use yii\web\UrlRuleInterface;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class UrlRule extends CompositeUrlRule
+class Url_Rule extends Composite_Url_Rule
 {
     /**
      * @var string|null the common prefix string shared by all patterns.
@@ -102,15 +99,13 @@ class UrlRule extends CompositeUrlRule
      * The keys are the patterns and the values are the corresponding action IDs.
      * These extra patterns will take precedence over [[patterns]].
      */
-    public $extraPatterns = [];
+    public $extra_patterns = [];
     /**
      * @var array list of tokens that should be replaced for each pattern. The keys are the token names,
      * and the values are the corresponding replacements.
      * @see patterns
      */
-    public $tokens = [
-        '{id}' => '<id:\\d[\\d,]*>',
-    ];
+    public $tokens = ['{id}' => '<id:\d[\d,]*>'];
     /**
      * @var array list of possible patterns and the corresponding actions for creating the URL rules.
      * The keys are the patterns and the values are the corresponding actions.
@@ -119,21 +114,11 @@ class UrlRule extends CompositeUrlRule
      * `Pattern` is optional. It will be prefixed with [[prefix]]/[[controller]]/,
      * and tokens in it will be replaced by [[tokens]].
      */
-    public $patterns = [
-        'PUT,PATCH {id}' => 'update',
-        'DELETE {id}' => 'delete',
-        'GET,HEAD {id}' => 'view',
-        'POST' => 'create',
-        'GET,HEAD' => 'index',
-        '{id}' => 'options',
-        '' => 'options',
-    ];
+    public $patterns = ['PUT,PATCH {id}' => 'update', 'DELETE {id}' => 'delete', 'GET,HEAD {id}' => 'view', 'POST' => 'create', 'GET,HEAD' => 'index', '{id}' => 'options', '' => 'options'];
     /**
      * @var array the default configuration for creating each URL rule contained by this rule.
      */
-    public $ruleConfig = [
-        'class' => 'yii\web\UrlRule',
-    ];
+    public $rule_config = ['class' => 'yii\web\UrlRule'];
     /**
      * @var bool whether to automatically pluralize the URL names for controllers.
      * If true, a controller ID will appear in plural form in URLs. For example, `user` controller
@@ -141,135 +126,112 @@ class UrlRule extends CompositeUrlRule
      * @see controller
      */
     public $pluralize = true;
-
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         if (empty($this->controller)) {
-            throw new InvalidConfigException('"controller" must be set.');
+            throw new Invalid_Config_Exception('"controller" must be set.');
         }
-
         $controllers = [];
-        foreach ((array) $this->controller as $urlName => $controller) {
-            if (is_int($urlName)) {
-                $urlName = $this->pluralize ? Inflector::pluralize($controller) : $controller;
+        foreach ((array) $this->controller as $url_name => $controller) {
+            if (is_int($url_name)) {
+                $url_name = $this->pluralize ? Inflector::pluralize($controller) : $controller;
             }
-            $controllers[$urlName] = $controller;
+            $controllers[$url_name] = $controller;
         }
         $this->controller = $controllers;
-
-        $this->prefix = trim((string)$this->prefix, '/');
-
+        $this->prefix = trim((string) $this->prefix, '/');
         parent::init();
     }
-
     /**
      * {@inheritdoc}
      * @return non-empty-list[]
      */
-    protected function createRules(): array
+    protected function create_rules(): array
     {
         $only = array_flip($this->only);
         $except = array_flip($this->except);
-        $patterns = $this->extraPatterns + $this->patterns;
+        $patterns = $this->extra_patterns + $this->patterns;
         $rules = [];
-        foreach ($this->controller as $urlName => $controller) {
-            $prefix = trim($this->prefix . '/' . $urlName, '/');
+        foreach ($this->controller as $url_name => $controller) {
+            $prefix = trim($this->prefix . '/' . $url_name, '/');
             foreach ($patterns as $pattern => $action) {
                 if (!isset($except[$action]) && (empty($only) || isset($only[$action]))) {
-                    $rules[$urlName][] = $this->createRule($pattern, $prefix, $controller . '/' . $action);
+                    $rules[$url_name][] = $this->create_rule($pattern, $prefix, $controller . '/' . $action);
                 }
             }
         }
-
         return $rules;
     }
-
     /**
      * Creates a URL rule using the given pattern and action.
      * @param string $pattern
      * @param string $action
      * @return UrlRuleInterface
      */
-    protected function createRule($pattern, string $prefix, $action)
+    protected function create_rule($pattern, string $prefix, $action)
     {
         $verbs = 'GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS';
-        if (preg_match("/^((?:($verbs),)*($verbs))(?:\\s+(.*))?$/", $pattern, $matches)) {
+        if (preg_match("/^((?:({$verbs}),)*({$verbs}))(?:\\s+(.*))?\$/", $pattern, $matches)) {
             $verbs = explode(',', $matches[1]);
             $pattern = $matches[4] ?? '';
         } else {
             $verbs = [];
         }
-
-        $config = $this->ruleConfig;
+        $config = $this->rule_config;
         $config['verb'] = $verbs;
         $config['pattern'] = rtrim($prefix . '/' . strtr($pattern, $this->tokens), '/');
         $config['route'] = $action;
         $config['suffix'] = $this->suffix;
-
-        return Yii::createObject($config);
+        return Yii::create_object($config);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function parseRequest($manager, $request)
+    public function parse_request($manager, $request)
     {
-        $pathInfo = $request->getPathInfo();
-        if (
-            $this->prefix !== ''
-            && strpos($this->prefix, '<') === false
-            && strpos($pathInfo . '/', $this->prefix . '/') !== 0
-        ) {
+        $path_info = $request->get_path_info();
+        if ($this->prefix !== '' && strpos($this->prefix, '<') === false && strpos($path_info . '/', $this->prefix . '/') !== 0) {
             return false;
         }
-
-        foreach ($this->rules as $urlName => $rules) {
-            if (strpos($pathInfo, (string) $urlName) !== false) {
+        foreach ($this->rules as $url_name => $rules) {
+            if (strpos($path_info, (string) $url_name) !== false) {
                 foreach ($rules as $rule) {
                     /** @var WebUrlRule $rule */
-                    $result = $rule->parseRequest($manager, $request);
-                    Yii::debug([
-                        'rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule),
-                        'match' => $result !== false,
-                        'parent' => self::className(),
-                    ], __METHOD__);
+                    $result = $rule->parse_request($manager, $request);
+                    Yii::debug(['rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule), 'match' => $result !== false, 'parent' => self::class_name()], __METHOD__);
                     if ($result !== false) {
                         return $result;
                     }
                 }
             }
         }
-
         return false;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function createUrl($manager, $route, $params)
+    public function create_url($manager, $route, $params)
     {
-        $this->createStatus = WebUrlRule::CREATE_STATUS_SUCCESS;
-        foreach ($this->controller as $urlName => $controller) {
+        $this->create_status = Web_Url_Rule::CREATE_STATUS_SUCCESS;
+        foreach ($this->controller as $url_name => $controller) {
             if (strpos($route, (string) $controller) !== false) {
                 /** @var UrlRuleInterface[] $rules */
-                $rules = $this->rules[$urlName];
-                $url = $this->iterateRules($rules, $manager, $route, $params);
+                $rules = $this->rules[$url_name];
+                $url = $this->iterate_rules($rules, $manager, $route, $params);
                 if ($url !== false) {
                     return $url;
                 }
             } else {
-                $this->createStatus |= WebUrlRule::CREATE_STATUS_ROUTE_MISMATCH;
+                $this->create_status |= Web_Url_Rule::CREATE_STATUS_ROUTE_MISMATCH;
             }
         }
-
-        if ($this->createStatus === WebUrlRule::CREATE_STATUS_SUCCESS) {
+        if ($this->create_status === Web_Url_Rule::CREATE_STATUS_SUCCESS) {
             // create status was not changed - there is no rules configured
-            $this->createStatus = WebUrlRule::CREATE_STATUS_PARSING_ONLY;
+            $this->create_status = Web_Url_Rule::CREATE_STATUS_PARSING_ONLY;
         }
-
         return false;
     }
 }

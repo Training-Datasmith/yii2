@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\oci;
 
 /**
@@ -22,17 +20,17 @@ class Command extends \yii\db\Command
     /**
      * {@inheritdoc}
      */
-    protected function bindPendingParams()
+    protected function bind_pending_params()
     {
-        $paramsPassedByReference = [];
-        foreach ($this->pendingParams as $name => $value) {
+        $params_passed_by_reference = [];
+        foreach ($this->pending_params as $name => $value) {
             if (\PDO::PARAM_STR === $value[1]) {
-                $paramsPassedByReference[$name] = $value[0];
-                $this->pdoStatement->bindParam($name, $paramsPassedByReference[$name], $value[1], strlen($value[0]));
+                $params_passed_by_reference[$name] = $value[0];
+                $this->pdo_statement->bind_param($name, $params_passed_by_reference[$name], $value[1], strlen($value[0]));
             } else {
-                $this->pdoStatement->bindValue($name, $value[0], $value[1]);
+                $this->pdo_statement->bind_value($name, $value[0], $value[1]);
             }
         }
-        $this->pendingParams = [];
+        $this->pending_params = [];
     }
 }

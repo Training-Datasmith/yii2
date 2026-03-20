@@ -1,33 +1,30 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\filters;
 
 use Closure;
 use yii\base\Action;
 use yii\base\Component;
 use yii\base\Controller;
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\base\Module;
-use yii\helpers\IpHelper;
-use yii\helpers\StringHelper;
+use yii\helpers\Ip_Helper;
+use yii\helpers\String_Helper;
 use yii\web\Request;
 use yii\web\User;
-
 /**
  * This class represents an access rule defined by the [[AccessControl]] action filter.
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class AccessRule extends Component
+class Access_Rule extends Component
 {
     /**
      * @var bool whether this is an 'allow' rule or 'deny' rule.
@@ -113,7 +110,7 @@ class AccessRule extends Component
      * @see roles
      * @since 2.0.12
      */
-    public $roleParams = [];
+    public $role_params = [];
     /**
      * @var array|null list of user IP addresses that this rule applies to. An IP address
      * can contain the wildcard `*` at the end so that it matches IP addresses with the same prefix.
@@ -142,7 +139,7 @@ class AccessRule extends Component
      * where `$rule` is this rule, and `$action` is the current [[Action|action]] object.
      * The callback should return a boolean value indicating whether this rule should be applied.
      */
-    public $matchCallback;
+    public $match_callback;
     /**
      * @var callable|null a callback that will be called if this rule determines the access to
      * the current action should be denied. This is the case when this rule matches
@@ -161,8 +158,7 @@ class AccessRule extends Component
      * where `$rule` is this rule, and `$action` is the current [[Action|action]] object.
      * @see AccessControl::$denyCallback
      */
-    public $denyCallback;
-
+    public $deny_callback;
     /**
      * Checks whether the Web user is allowed to perform the specified action.
      * @param Action $action the action to be performed
@@ -172,137 +168,103 @@ class AccessRule extends Component
      */
     public function allows($action, $user, $request): ?bool
     {
-        if (
-            $this->matchAction($action)
-            && $this->matchRole($user)
-            && $this->matchIP($request->getUserIP())
-            && $this->matchVerb($request->getMethod())
-            && $this->matchController($action->controller)
-            && $this->matchCustom($action)
-        ) {
+        if ($this->match_action($action) && $this->match_role($user) && $this->match_ip($request->get_user_ip()) && $this->match_verb($request->get_method()) && $this->match_controller($action->controller) && $this->match_custom($action)) {
             return $this->allow ? true : false;
         }
-
         return null;
     }
-
     /**
      * @param Action $action the action
      * @return bool whether the rule applies to the action
      */
-    protected function matchAction($action): bool
+    protected function match_action($action): bool
     {
         return empty($this->actions) || in_array($action->id, $this->actions, true);
     }
-
     /**
      * @param Controller $controller the controller
      * @return bool whether the rule applies to the controller
      */
-    protected function matchController($controller): bool
+    protected function match_controller($controller): bool
     {
         if (empty($this->controllers)) {
             return true;
         }
-
-        $id = $controller->getUniqueId();
+        $id = $controller->get_unique_id();
         foreach ($this->controllers as $pattern) {
-            if (StringHelper::matchWildcard($pattern, $id)) {
+            if (String_Helper::match_wildcard($pattern, $id)) {
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * @param User $user the user object
      * @return bool whether the rule applies to the role
      * @throws InvalidConfigException if User component is detached
      */
-    protected function matchRole($user): bool
+    protected function match_role($user): bool
     {
         $items = empty($this->roles) ? [] : $this->roles;
-
         if (!empty($this->permissions)) {
             $items = array_merge($items, $this->permissions);
         }
-
         if (empty($items)) {
             return true;
         }
-
         if ($user === false) {
-            throw new InvalidConfigException('The user application component must be available to specify roles in AccessRule.');
+            throw new Invalid_Config_Exception('The user application component must be available to specify roles in AccessRule.');
         }
-
         foreach ($items as $item) {
             if ($item === '?') {
-                if ($user->getIsGuest()) {
+                if ($user->get_is_guest()) {
                     return true;
                 }
             } elseif ($item === '@') {
-                if (!$user->getIsGuest()) {
+                if (!$user->get_is_guest()) {
                     return true;
                 }
             } else {
-                if (!isset($roleParams)) {
-                    $roleParams = !is_array($this->roleParams) && is_callable($this->roleParams) ? call_user_func($this->roleParams, $this) : $this->roleParams;
+                if (!isset($role_params)) {
+                    $role_params = !is_array($this->role_params) && is_callable($this->role_params) ? call_user_func($this->role_params, $this) : $this->role_params;
                 }
-                if ($user->can($item, $roleParams)) {
+                if ($user->can($item, $role_params)) {
                     return true;
                 }
             }
         }
-
         return false;
     }
-
     /**
      * @param string|null $ip the IP address
      * @return bool whether the rule applies to the IP address
      */
-    protected function matchIP($ip): bool
+    protected function match_ip($ip): bool
     {
         if (empty($this->ips)) {
             return true;
         }
         foreach ($this->ips as $rule) {
-            if (
-                $rule === '*'
-                || $rule === $ip
-                || (
-                    $ip !== null
-                    && ($pos = strpos($rule, '*')) !== false
-                    && strncmp($ip, $rule, $pos) === 0
-                )
-                || (
-                    strpos($rule, '/') !== false
-                    && IpHelper::inRange($ip, $rule) === true
-                )
-            ) {
+            if ($rule === '*' || $rule === $ip || $ip !== null && ($pos = strpos($rule, '*')) !== false && strncmp($ip, $rule, $pos) === 0 || strpos($rule, '/') !== false && Ip_Helper::in_range($ip, $rule) === true) {
                 return true;
             }
         }
-
         return false;
     }
-
     /**
      * @param string $verb the request method.
      * @return bool whether the rule applies to the request
      */
-    protected function matchVerb($verb): bool
+    protected function match_verb($verb): bool
     {
         return empty($this->verbs) || in_array(strtoupper($verb), array_map('strtoupper', $this->verbs), true);
     }
-
     /**
      * @param Action $action the action to be performed
      * @return bool whether the rule should be applied
      */
-    protected function matchCustom($action): bool
+    protected function match_custom($action): bool
     {
-        return empty($this->matchCallback) || call_user_func($this->matchCallback, $this, $action);
+        return empty($this->match_callback) || call_user_func($this->match_callback, $this, $action);
     }
 }

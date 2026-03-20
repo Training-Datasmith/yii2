@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -16,7 +14,7 @@ namespace yii\web;
  * @author Dan Schmidt <danschmidt5189@gmail.com>
  * @since 2.0
  */
-interface RequestParserInterface
+interface Request_Parser_Interface
 {
     /**
      * Parses a HTTP request body.
@@ -24,5 +22,5 @@ interface RequestParserInterface
      * @param string $contentType the content type specified for the request body.
      * @return array|object parameters parsed from the request body
      */
-    public function parse($rawBody, $contentType);
+    public function parse($raw_body, $content_type);
 }

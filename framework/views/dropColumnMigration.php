@@ -12,7 +12,6 @@
  * @var array $fields the fields
  * @var array $foreignKeys
  */
-
 echo "<?php\n";
 if (!empty($namespace)) {
     echo "\nnamespace {$namespace};\n";
@@ -22,23 +21,24 @@ if (!empty($namespace)) {
 use yii\db\Migration;
 
 /**
- * Handles dropping columns from table `<?= $table ?>`.
-<?= $this->render('_foreignTables', [
-    'foreignKeys' => $foreignKeys,
-]) ?>
+ * Handles dropping columns from table `<?php 
+echo $table;
+?>`.
+<?php 
+echo $this->render('_foreignTables', ['foreignKeys' => $foreign_keys]);
+?>
  */
-class <?= $className ?> extends Migration
+class <?php 
+echo $class_name;
+?> extends Migration
 {
     /**
      * {@inheritdoc}
      */
     public function safeUp()
     {
-<?= $this->render('_dropColumns', [
-    'table' => $table,
-    'fields' => $fields,
-    'foreignKeys' => $foreignKeys,
-])
+<?php 
+echo $this->render('_dropColumns', ['table' => $table, 'fields' => $fields, 'foreignKeys' => $foreign_keys]);
 ?>
     }
 
@@ -47,11 +47,8 @@ class <?= $className ?> extends Migration
      */
     public function safeDown()
     {
-<?= $this->render('_addColumns', [
-    'table' => $table,
-    'fields' => $fields,
-    'foreignKeys' => $foreignKeys,
-])
+<?php 
+echo $this->render('_addColumns', ['table' => $table, 'fields' => $fields, 'foreignKeys' => $foreign_keys]);
 ?>
     }
 }

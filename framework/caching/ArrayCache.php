@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
 /**
@@ -25,44 +23,39 @@ namespace yii\caching;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class ArrayCache extends Cache
+class Array_Cache extends Cache
 {
     private array $_cache = [];
-
     /**
      * {@inheritdoc}
      */
     public function exists($key): bool
     {
-        $key = $this->buildKey($key);
+        $key = $this->build_key($key);
         return isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true));
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function getValue($key)
+    protected function get_value($key)
     {
         if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
             return $this->_cache[$key][0];
         }
-
         return false;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function setValue($key, $value, $duration): bool
+    protected function set_value($key, $value, $duration): bool
     {
         $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
         return true;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function addValue($key, $value, $duration): bool
+    protected function add_value($key, $value, $duration): bool
     {
         if (isset($this->_cache[$key]) && ($this->_cache[$key][1] === 0 || $this->_cache[$key][1] > microtime(true))) {
             return false;
@@ -70,20 +63,18 @@ class ArrayCache extends Cache
         $this->_cache[$key] = [$value, $duration === 0 ? 0 : microtime(true) + $duration];
         return true;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function deleteValue($key): bool
+    protected function delete_value($key): bool
     {
         unset($this->_cache[$key]);
         return true;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function flushValues(): bool
+    protected function flush_values(): bool
     {
         $this->_cache = [];
         return true;

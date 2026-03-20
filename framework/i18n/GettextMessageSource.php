@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\i18n;
 
 use Yii;
 use yii\base\InvalidArgumentException;
-
 /**
  * GettextMessageSource represents a message source that is based on GNU Gettext.
  *
@@ -30,14 +27,14 @@ use yii\base\InvalidArgumentException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class GettextMessageSource extends MessageSource
+class Gettext_Message_Source extends Message_Source
 {
     public const MO_FILE_EXT = '.mo';
     public const PO_FILE_EXT = '.po';
     /**
      * @var string base directory of messages files
      */
-    public $basePath = '@app/messages';
+    public $base_path = '@app/messages';
     /**
      * @var string sub-directory of messages files
      */
@@ -45,12 +42,11 @@ class GettextMessageSource extends MessageSource
     /**
      * @var bool whether to use generated MO files
      */
-    public $useMoFile = true;
+    public $use_mo_file = true;
     /**
      * @var bool whether to use big-endian when reading and writing an integer
      */
-    public $useBigEndian = false;
-
+    public $use_big_endian = false;
     /**
      * Loads the message translation for the specified $language and $category.
      * If translation for specific locale code such as `en-US` isn't found it
@@ -66,25 +62,21 @@ class GettextMessageSource extends MessageSource
      * @see loadFallbackMessages
      * @see sourceLanguage
      */
-    protected function loadMessages($category, $language): array
+    protected function load_messages($category, $language): array
     {
-        $messageFile = $this->getMessageFilePath($language);
-        $messages = $this->loadMessagesFromFile($messageFile, $category);
-
-        $fallbackLanguage = substr($language, 0, 2);
-        $fallbackSourceLanguage = substr($this->sourceLanguage, 0, 2);
-
-        if ($fallbackLanguage !== '' && $fallbackLanguage !== $language) {
-            $messages = $this->loadFallbackMessages($category, $fallbackLanguage, $messages, $messageFile);
-        } elseif ($fallbackSourceLanguage !== '' && $language === $fallbackSourceLanguage) {
-            $messages = $this->loadFallbackMessages($category, $this->sourceLanguage, $messages, $messageFile);
+        $message_file = $this->get_message_file_path($language);
+        $messages = $this->load_messages_from_file($message_file, $category);
+        $fallback_language = substr($language, 0, 2);
+        $fallback_source_language = substr($this->source_language, 0, 2);
+        if ($fallback_language !== '' && $fallback_language !== $language) {
+            $messages = $this->load_fallback_messages($category, $fallback_language, $messages, $message_file);
+        } elseif ($fallback_source_language !== '' && $language === $fallback_source_language) {
+            $messages = $this->load_fallback_messages($category, $this->source_language, $messages, $message_file);
         } elseif ($messages === null) {
-            Yii::error("The message file for category '$category' does not exist: $messageFile", __METHOD__);
+            Yii::error("The message file for category '{$category}' does not exist: {$message_file}", __METHOD__);
         }
-
         return (array) $messages;
     }
-
     /**
      * The method is normally called by [[loadMessages]] to load the fallback messages for the language.
      * Method tries to load the $category messages for the $fallbackLanguage and adds them to the $messages array.
@@ -98,53 +90,43 @@ class GettextMessageSource extends MessageSource
      * @return array the loaded messages. The keys are original messages, and the values are the translated messages.
      * @since 2.0.7
      */
-    protected function loadFallbackMessages($category, $fallbackLanguage, $messages, $originalMessageFile)
+    protected function load_fallback_messages($category, $fallback_language, $messages, $original_message_file)
     {
-        $fallbackMessageFile = $this->getMessageFilePath($fallbackLanguage);
-        $fallbackMessages = $this->loadMessagesFromFile($fallbackMessageFile, $category);
-
-        if (
-            $messages === null && $fallbackMessages === null
-            && $fallbackLanguage !== $this->sourceLanguage
-            && strpos($this->sourceLanguage, $fallbackLanguage) !== 0
-        ) {
-            Yii::error("The message file for category '$category' does not exist: $originalMessageFile "
-                . "Fallback file does not exist as well: $fallbackMessageFile", __METHOD__);
+        $fallback_message_file = $this->get_message_file_path($fallback_language);
+        $fallback_messages = $this->load_messages_from_file($fallback_message_file, $category);
+        if ($messages === null && $fallback_messages === null && $fallback_language !== $this->source_language && strpos($this->source_language, $fallback_language) !== 0) {
+            Yii::error("The message file for category '{$category}' does not exist: {$original_message_file} " . "Fallback file does not exist as well: {$fallback_message_file}", __METHOD__);
         } elseif (empty($messages)) {
-            return $fallbackMessages;
-        } elseif (!empty($fallbackMessages)) {
-            foreach ($fallbackMessages as $key => $value) {
+            return $fallback_messages;
+        } elseif (!empty($fallback_messages)) {
+            foreach ($fallback_messages as $key => $value) {
                 if (!empty($value) && empty($messages[$key])) {
                     $messages[$key] = $value;
                 }
             }
         }
-
         return (array) $messages;
     }
-
     /**
      * Returns message file path for the specified language and category.
      *
      * @param string $language the target language
      * @return string path to message file
      */
-    protected function getMessageFilePath($language): string
+    protected function get_message_file_path($language): string
     {
         $language = (string) $language;
         if ($language !== '' && !preg_match('/^[a-z0-9_-]+$/i', $language)) {
             throw new InvalidArgumentException(sprintf('Invalid language code: "%s".', $language));
         }
-        $messageFile = Yii::getAlias($this->basePath) . '/' . $language . '/' . $this->catalog;
-        if ($this->useMoFile) {
-            $messageFile .= self::MO_FILE_EXT;
+        $message_file = Yii::get_alias($this->base_path) . '/' . $language . '/' . $this->catalog;
+        if ($this->use_mo_file) {
+            $message_file .= self::MO_FILE_EXT;
         } else {
-            $messageFile .= self::PO_FILE_EXT;
+            $message_file .= self::PO_FILE_EXT;
         }
-
-        return $messageFile;
+        return $message_file;
     }
-
     /**
      * Loads the message translation for the specified language and category or returns null if file doesn't exist.
      *
@@ -152,22 +134,20 @@ class GettextMessageSource extends MessageSource
      * @param string $category the message category
      * @return array|null array of messages or null if file not found
      */
-    protected function loadMessagesFromFile($messageFile, $category): ?array
+    protected function load_messages_from_file($message_file, $category): ?array
     {
-        if (is_file($messageFile)) {
-            if ($this->useMoFile) {
-                $gettextFile = new GettextMoFile(['useBigEndian' => $this->useBigEndian]);
+        if (is_file($message_file)) {
+            if ($this->use_mo_file) {
+                $gettext_file = new Gettext_Mo_File(['useBigEndian' => $this->use_big_endian]);
             } else {
-                $gettextFile = new GettextPoFile();
+                $gettext_file = new Gettext_Po_File();
             }
-            $messages = $gettextFile->load($messageFile, $category);
+            $messages = $gettext_file->load($message_file, $category);
             if (!is_array($messages)) {
                 return [];
             }
-
             return $messages;
         }
-
         return null;
     }
 }

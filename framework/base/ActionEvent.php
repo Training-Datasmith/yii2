@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -20,7 +18,7 @@ namespace yii\base;
  *
  * @template T of Action = Action
  */
-class ActionEvent extends Event
+class Action_Event extends Event
 {
     /**
      * @var T the action currently being executed
@@ -35,8 +33,7 @@ class ActionEvent extends Event
      * [[Controller::EVENT_BEFORE_ACTION]] may set this property to decide whether
      * to continue running the current action.
      */
-    public $isValid = true;
-
+    public $is_valid = true;
     /**
      * Constructor.
      * @param T $action the action associated with this action event.

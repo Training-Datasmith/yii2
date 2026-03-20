@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 use Traversable;
-use yii\base\InvalidConfigException;
-
+use yii\base\Invalid_Config_Exception;
 /**
  * Class ArrayExpression represents an array SQL expression.
  *
@@ -32,7 +29,7 @@ use yii\base\InvalidConfigException;
  * @implements \ArrayAccess<array-key, mixed>
  * @implements \IteratorAggregate<array-key, mixed>
  */
-class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, \IteratorAggregate
+class Array_Expression implements Expression_Interface, \ArrayAccess, \Countable, \IteratorAggregate
 {
     /**
      * @var string|null the type of the array elements. Defaults to `null` which means the type is
@@ -51,7 +48,6 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @var int the number of indices needed to select an element
      */
     private $dimension;
-
     /**
      * ArrayExpression constructor.
      *
@@ -65,38 +61,33 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
     public function __construct($value, $type = null, $dimension = 1)
     {
         if ($value instanceof self) {
-            $value = $value->getValue();
+            $value = $value->get_value();
         }
-
         $this->value = $value;
         $this->type = $type;
         $this->dimension = $dimension;
     }
-
     /**
      * @return string|null
      */
-    public function getType()
+    public function get_type()
     {
         return $this->type;
     }
-
     /**
      * @return array|mixed|QueryInterface
      */
-    public function getValue()
+    public function get_value()
     {
         return $this->value;
     }
-
     /**
      * @return int the number of indices needed to select an element
      */
-    public function getDimension()
+    public function get_dimension()
     {
         return $this->dimension;
     }
-
     /**
      * Whether a offset exists
      *
@@ -110,12 +101,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * The return value will be casted to boolean if non-boolean was returned.
      * @since 2.0.14
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetExists($offset)
     {
         return isset($this->value[$offset]);
     }
-
     /**
      * Offset to retrieve
      *
@@ -126,12 +116,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @return mixed Can return all value types.
      * @since 2.0.14
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetGet($offset)
     {
         return $this->value[$offset];
     }
-
     /**
      * Offset to set
      *
@@ -144,12 +133,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * </p>
      * @since 2.0.14
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetSet($offset, $value): void
     {
         $this->value[$offset] = $value;
     }
-
     /**
      * Offset to unset
      *
@@ -159,12 +147,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * </p>
      * @since 2.0.14
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetUnset($offset): void
     {
         unset($this->value[$offset]);
     }
-
     /**
      * Count elements of an object
      *
@@ -175,12 +162,11 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * The return value is cast to an integer.
      * @since 2.0.14
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function count()
     {
         return count($this->value);
     }
-
     /**
      * Retrieve an external iterator
      *
@@ -190,17 +176,16 @@ class ArrayExpression implements ExpressionInterface, \ArrayAccess, \Countable, 
      * @since 2.0.14.1
      * @throws InvalidConfigException when ArrayExpression contains QueryInterface object
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function getIterator()
     {
-        $value = $this->getValue();
-        if ($value instanceof QueryInterface) {
-            throw new InvalidConfigException('The ArrayExpression class can not be iterated when the value is a QueryInterface object');
+        $value = $this->get_value();
+        if ($value instanceof Query_Interface) {
+            throw new Invalid_Config_Exception('The ArrayExpression class can not be iterated when the value is a QueryInterface object');
         }
         if ($value === null) {
             $value = [];
         }
-
         return new \ArrayIterator($value);
     }
 }

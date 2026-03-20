@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -16,12 +14,12 @@ namespace yii\base;
  * @author Alexander Makarov
  * @since 2.0.10
  */
-class ViewNotFoundException extends InvalidArgumentException
+class View_Not_Found_Exception extends InvalidArgumentException
 {
     /**
      * @return string the user-friendly name of this exception
      */
-    public function getName(): string
+    public function get_name(): string
     {
         return 'View not Found';
     }

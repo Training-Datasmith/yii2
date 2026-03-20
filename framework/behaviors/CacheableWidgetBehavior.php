@@ -1,23 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\behaviors;
 
 use yii\base\Behavior;
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\base\Widget;
-use yii\base\WidgetEvent;
-use yii\caching\CacheInterface;
+use yii\base\Widget_Event;
+use yii\caching\Cache_Interface;
 use yii\caching\Dependency;
 use yii\di\Instance;
-
 /**
  * Cacheable widget behavior automatically caches widget contents according to duration and dependencies specified.
  *
@@ -50,7 +47,7 @@ use yii\di\Instance;
  * @template T of Widget = Widget
  * @extends Behavior<Widget>
  */
-class CacheableWidgetBehavior extends Behavior
+class Cacheable_Widget_Behavior extends Behavior
 {
     /**
      * @var CacheInterface|string|array a cache object or a cache component ID
@@ -63,7 +60,7 @@ class CacheableWidgetBehavior extends Behavior
      * Set to `0` to indicate that the cached data will never expire.
      * Defaults to 60 seconds or 1 minute.
      */
-    public $cacheDuration = 60;
+    public $cache_duration = 60;
     /**
      * @var Dependency|array|null a cache dependency or a configuration array
      * for creating a cache dependency or `null` meaning no cache dependency.
@@ -80,7 +77,7 @@ class CacheableWidgetBehavior extends Behavior
      * would make the widget cache depend on the last modified time of all posts.
      * If any post has its modification time changed, the cached content would be invalidated.
      */
-    public $cacheDependency;
+    public $cache_dependency;
     /**
      * @var string[]|string an array of strings or a single string which would cause
      * the variation of the content being cached (e.g. an application language, a GET parameter).
@@ -94,7 +91,7 @@ class CacheableWidgetBehavior extends Behavior
      * ]
      * ```
      */
-    public $cacheKeyVariations = [];
+    public $cache_key_variations = [];
     /**
      * @var bool whether to enable caching or not. Allows to turn the widget caching
      * on and off according to specific conditions.
@@ -104,98 +101,78 @@ class CacheableWidgetBehavior extends Behavior
      * empty(Yii::$app->request->get('disable-caching'))
      * ```
      */
-    public $cacheEnabled = true;
-
+    public $cache_enabled = true;
     /**
      * {@inheritdoc}
      */
     public function attach($owner): void
     {
         parent::attach($owner);
-
-        $this->initializeEventHandlers();
+        $this->initialize_event_handlers();
     }
-
     /**
      * Begins fragment caching. Prevents owner widget from execution
      * if its contents can be retrieved from the cache.
      *
      * @param WidgetEvent $event `Widget::EVENT_BEFORE_RUN` event.
      */
-    public function beforeRun($event): void
+    public function before_run($event): void
     {
-        $cacheKey = $this->getCacheKey();
-        $fragmentCacheConfiguration = $this->getFragmentCacheConfiguration();
-
-        if (!$this->owner->view->beginCache($cacheKey, $fragmentCacheConfiguration)) {
-            $event->isValid = false;
+        $cache_key = $this->get_cache_key();
+        $fragment_cache_configuration = $this->get_fragment_cache_configuration();
+        if (!$this->owner->view->begin_cache($cache_key, $fragment_cache_configuration)) {
+            $event->is_valid = false;
         }
     }
-
     /**
      * Outputs widget contents and ends fragment caching.
      *
      * @param WidgetEvent $event `Widget::EVENT_AFTER_RUN` event.
      */
-    public function afterRun($event): void
+    public function after_run($event): void
     {
         echo $event->result;
         $event->result = null;
-
-        $this->owner->view->endCache();
+        $this->owner->view->end_cache();
     }
-
     /**
      * Initializes widget event handlers.
      */
-    private function initializeEventHandlers(): void
+    private function initialize_event_handlers(): void
     {
         $this->owner->on(Widget::EVENT_BEFORE_RUN, [$this, 'beforeRun']);
         $this->owner->on(Widget::EVENT_AFTER_RUN, [$this, 'afterRun']);
     }
-
     /**
      * Returns the cache instance.
      *
      * @return CacheInterface cache instance.
      * @throws InvalidConfigException if cache instance instantiation fails.
      */
-    private function getCacheInstance()
+    private function get_cache_instance()
     {
-        $cacheInterface = 'yii\caching\CacheInterface';
-        return Instance::ensure($this->cache, $cacheInterface);
+        $cache_interface = 'yii\caching\CacheInterface';
+        return Instance::ensure($this->cache, $cache_interface);
     }
-
     /**
      * Returns the widget cache key.
      *
      * @return string[] an array of strings representing the cache key.
      */
-    private function getCacheKey(): array
+    private function get_cache_key(): array
     {
         // `$cacheKeyVariations` may be a `string` and needs to be cast to an `array`.
-        $cacheKey = array_merge(
-            (array)($this->owner !== null ? get_class($this->owner) : self::class),
-            (array)$this->cacheKeyVariations
-        );
-
-        return $cacheKey;
+        $cache_key = array_merge((array) ($this->owner !== null ? get_class($this->owner) : self::class), (array) $this->cache_key_variations);
+        return $cache_key;
     }
-
     /**
      * Returns a fragment cache widget configuration array.
      *
      * @return array a fragment cache widget configuration array.
      */
-    private function getFragmentCacheConfiguration(): array
+    private function get_fragment_cache_configuration(): array
     {
-        $cache = $this->getCacheInstance();
-
-        return [
-            'cache' => $cache,
-            'duration' => $this->cacheDuration,
-            'dependency' => $this->cacheDependency,
-            'enabled' => $this->cacheEnabled,
-        ];
+        $cache = $this->get_cache_instance();
+        return ['cache' => $cache, 'duration' => $this->cache_duration, 'dependency' => $this->cache_dependency, 'enabled' => $this->cache_enabled];
     }
 }

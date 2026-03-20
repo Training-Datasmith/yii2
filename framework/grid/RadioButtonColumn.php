@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\grid;
 
 use Closure;
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\helpers\Html;
-
 /**
  * RadioButtonColumn displays a column of radio buttons in a grid view.
  *
@@ -37,7 +34,7 @@ use yii\helpers\Html;
  * @author Kirk Hansen <hanski07@luther.edu>
  * @since 2.0.11
  */
-class RadioButtonColumn extends Column
+class Radio_Button_Column extends Column
 {
     /**
      * @var string the name of the input radio button input fields.
@@ -63,8 +60,7 @@ class RadioButtonColumn extends Column
      *
      * @see \yii\helpers\Html::renderTagAttributes() for details on how attributes are being rendered.
      */
-    public $radioOptions = [];
-
+    public $radio_options = [];
     /**
      * {@inheritdoc}
      * @throws \yii\base\InvalidConfigException if [[name]] is not set.
@@ -73,23 +69,21 @@ class RadioButtonColumn extends Column
     {
         parent::init();
         if (empty($this->name)) {
-            throw new InvalidConfigException('The "name" property must be set.');
+            throw new Invalid_Config_Exception('The "name" property must be set.');
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function renderDataCellContent($model, $key, $index)
+    protected function render_data_cell_content($model, $key, $index)
     {
         if ($this->content !== null) {
-            return parent::renderDataCellContent($model, $key, $index);
+            return parent::render_data_cell_content($model, $key, $index);
         }
-
-        if ($this->radioOptions instanceof Closure) {
-            $options = call_user_func($this->radioOptions, $model, $key, $index, $this);
+        if ($this->radio_options instanceof Closure) {
+            $options = call_user_func($this->radio_options, $model, $key, $index, $this);
         } else {
-            $options = $this->radioOptions;
+            $options = $this->radio_options;
             if (!isset($options['value'])) {
                 $options['value'] = is_array($key) ? json_encode($key, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) : $key;
             }

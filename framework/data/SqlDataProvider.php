@@ -1,21 +1,18 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\data;
 
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\db\Connection;
 use yii\db\Expression;
 use yii\db\Query;
 use yii\di\Instance;
-
 /**
  * SqlDataProvider implements a data provider based on a plain SQL statement.
  *
@@ -66,7 +63,7 @@ use yii\di\Instance;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class SqlDataProvider extends BaseDataProvider
+class Sql_Data_Provider extends Base_Data_Provider
 {
     /**
      * @var Connection|array|string the DB connection object or the application component ID of the DB connection.
@@ -88,7 +85,6 @@ class SqlDataProvider extends BaseDataProvider
      * If this is not set, the keys of the [[models]] array will be used.
      */
     public $key;
-
     /**
      * Initializes the DB connection component.
      * This method will initialize the [[db]] property to make sure it refers to a valid DB connection.
@@ -97,52 +93,45 @@ class SqlDataProvider extends BaseDataProvider
     public function init(): void
     {
         parent::init();
-        $this->db = Instance::ensure($this->db, Connection::className());
+        $this->db = Instance::ensure($this->db, Connection::class_name());
         if ($this->sql === null) {
-            throw new InvalidConfigException('The "sql" property must be set.');
+            throw new Invalid_Config_Exception('The "sql" property must be set.');
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function prepareModels()
+    protected function prepare_models()
     {
-        $sort = $this->getSort();
-        $pagination = $this->getPagination();
+        $sort = $this->get_sort();
+        $pagination = $this->get_pagination();
         if ($pagination === false && $sort === false) {
-            return $this->db->createCommand($this->sql, $this->params)->queryAll();
+            return $this->db->create_command($this->sql, $this->params)->query_all();
         }
-
         $sql = $this->sql;
         $orders = [];
         $limit = $offset = null;
-
         if ($sort !== false) {
-            $orders = $sort->getOrders();
+            $orders = $sort->get_orders();
             $pattern = '/\s+order\s+by\s+([\w\s,\."`\[\]]+)$/i';
             if (preg_match($pattern, $sql, $matches)) {
                 array_unshift($orders, new Expression($matches[1]));
                 $sql = preg_replace($pattern, '', $sql);
             }
         }
-
         if ($pagination !== false) {
-            $pagination->totalCount = $this->getTotalCount();
-            $limit = $pagination->getLimit();
-            $offset = $pagination->getOffset();
+            $pagination->total_count = $this->get_total_count();
+            $limit = $pagination->get_limit();
+            $offset = $pagination->get_offset();
         }
-
-        $sql = $this->db->getQueryBuilder()->buildOrderByAndLimit($sql, $orders, $limit, $offset);
-
-        return $this->db->createCommand($sql, $this->params)->queryAll();
+        $sql = $this->db->get_query_builder()->build_order_by_and_limit($sql, $orders, $limit, $offset);
+        return $this->db->create_command($sql, $this->params)->query_all();
     }
-
     /**
      * {@inheritdoc}
      * @return mixed[]
      */
-    protected function prepareKeys($models): array
+    protected function prepare_keys($models): array
     {
         $keys = [];
         if ($this->key !== null) {
@@ -153,21 +142,15 @@ class SqlDataProvider extends BaseDataProvider
                     $keys[] = call_user_func($this->key, $model);
                 }
             }
-
             return $keys;
         }
-
         return array_keys($models);
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function prepareTotalCount()
+    protected function prepare_total_count()
     {
-        return (new Query([
-            'from' => ['sub' => "({$this->sql})"],
-            'params' => $this->params,
-        ]))->count('*', $this->db);
+        return (new Query(['from' => ['sub' => "({$this->sql})"], 'params' => $this->params]))->count('*', $this->db);
     }
 }

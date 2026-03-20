@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -17,12 +15,12 @@ namespace yii\db;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-trait ActiveQueryTrait
+trait Active_Query_Trait
 {
     /**
      * @var class-string<ActiveRecordInterface> the name of the ActiveRecord class.
      */
-    public $modelClass;
+    public $model_class;
     /**
      * @var array|null a list of relations that this query should be performed with
      */
@@ -31,19 +29,17 @@ trait ActiveQueryTrait
      * @var bool whether to return each record as an array. If false (default), an object
      * of [[modelClass]] will be created to represent each record.
      */
-    public $asArray;
-
+    public $as_array;
     /**
      * Sets the [[asArray]] property.
      * @param bool $value whether to return the query results in terms of arrays instead of Active Records.
      * @return $this the query object itself
      */
-    public function asArray($value = true)
+    public function as_array($value = true)
     {
-        $this->asArray = $value;
+        $this->as_array = $value;
         return $this;
     }
-
     /**
      * Specifies the relations with which this query should be performed.
      *
@@ -88,7 +84,6 @@ trait ActiveQueryTrait
             // the parameter is given as an array
             $with = $with[0];
         }
-
         if (empty($this->with)) {
             $this->with = $with;
         } elseif (!empty($with)) {
@@ -101,68 +96,63 @@ trait ActiveQueryTrait
                 }
             }
         }
-
         return $this;
     }
-
     /**
      * Converts found rows into model instances.
      * @param array $rows
      * @return array|ActiveRecord[]
      * @since 2.0.11
      */
-    protected function createModels($rows)
+    protected function create_models($rows)
     {
-        if ($this->asArray) {
+        if ($this->as_array) {
             return $rows;
         }
         $models = [];
         /** @var ActiveRecord $class */
-        $class = $this->modelClass;
+        $class = $this->model_class;
         foreach ($rows as $row) {
             $model = $class::instantiate($row);
-            $modelClass = get_class($model);
-            $modelClass::populateRecord($model, $row);
+            $model_class = get_class($model);
+            $model_class::populate_record($model, $row);
             $models[] = $model;
         }
         return $models;
     }
-
     /**
      * Finds records corresponding to one or multiple relations and populates them into the primary models.
      * @param array $with a list of relations that this query should be performed with. Please
      * refer to [[with()]] for details about specifying this parameter.
      * @param array|ActiveRecord[] $models the primary models (can be either AR instances or arrays)
      */
-    public function findWith($with, &$models): void
+    public function find_with($with, &$models): void
     {
         if (empty($models)) {
             return;
         }
-
-        $primaryModel = reset($models);
-        if (!$primaryModel instanceof ActiveRecordInterface) {
+        $primary_model = reset($models);
+        if (!$primary_model instanceof Active_Record_Interface) {
             /** @var ActiveRecordInterface $modelClass */
-            $modelClass = $this->modelClass;
-            $primaryModel = $modelClass::instance();
+            $model_class = $this->model_class;
+            $primary_model = $model_class::instance();
         }
-        $relations = $this->normalizeRelations($primaryModel, $with);
+        $relations = $this->normalize_relations($primary_model, $with);
         /** @var ActiveQuery $relation */
         foreach ($relations as $name => $relation) {
-            if ($relation->asArray === null) {
+            if ($relation->as_array === null) {
                 // inherit asArray from primary query
-                $relation->asArray($this->asArray);
+                $relation->as_array($this->as_array);
             }
-            $relation->populateRelation($name, $models);
+            $relation->populate_relation($name, $models);
         }
     }
-
     /**
      * @param ActiveRecord $model
      * @param array $with
      * @return ActiveQueryInterface[]
      */
-    private function normalizeRelations($model, $with): array
+    private function normalize_relations($model, $with): array
     {
         $relations = [];
         foreach ($with as $name => $callback) {
@@ -172,27 +162,24 @@ trait ActiveQueryTrait
             }
             if (($pos = strpos($name, '.')) !== false) {
                 // with sub-relations
-                $childName = substr($name, $pos + 1);
+                $child_name = substr($name, $pos + 1);
                 $name = substr($name, 0, $pos);
             } else {
-                $childName = null;
+                $child_name = null;
             }
-
             if (!isset($relations[$name])) {
-                $relation = $model->getRelation($name);
-                $relation->primaryModel = null;
+                $relation = $model->get_relation($name);
+                $relation->primary_model = null;
                 $relations[$name] = $relation;
             } else {
                 $relation = $relations[$name];
             }
-
-            if (isset($childName)) {
-                $relation->with[$childName] = $callback;
+            if (isset($child_name)) {
+                $relation->with[$child_name] = $callback;
             } elseif ($callback !== null) {
                 call_user_func($callback, $relation);
             }
         }
-
         return $relations;
     }
 }

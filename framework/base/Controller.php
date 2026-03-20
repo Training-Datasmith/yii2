@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 use Yii;
 use yii\di\Instance;
-use yii\di\NotInstantiableException;
-
+use yii\di\Not_Instantiable_Exception;
 /**
  * Controller is the base class for classes containing controller logic.
  *
@@ -30,7 +27,7 @@ use yii\di\NotInstantiableException;
  *
  * @template T of Module = Module
  */
-class Controller extends Component implements ViewContextInterface
+class Controller extends Component implements View_Context_Interface
 {
     /**
      * @event ActionEvent an event raised right before executing a controller action.
@@ -53,7 +50,7 @@ class Controller extends Component implements ViewContextInterface
      * @var string the ID of the action that is used when the action ID is not specified
      * in the request. Defaults to 'index'.
      */
-    public $defaultAction = 'index';
+    public $default_action = 'index';
     /**
      * @var string|null|false the name of the layout to be applied to this controller's views.
      * This property mainly affects the behavior of [[render()]].
@@ -79,7 +76,6 @@ class Controller extends Component implements ViewContextInterface
      * @since 2.0.36
      */
     public $response = 'response';
-
     /**
      * @var View|null the view object that can be used to render views or view files.
      */
@@ -87,8 +83,7 @@ class Controller extends Component implements ViewContextInterface
     /**
      * @var string|null the root directory that contains view files for this controller.
      */
-    private $_viewPath;
-
+    private $_view_path;
     /**
      * @param string $id the ID of this controller.
      * @param T $module the module that this controller belongs to.
@@ -100,7 +95,6 @@ class Controller extends Component implements ViewContextInterface
         $this->module = $module;
         parent::__construct($config);
     }
-
     /**
      * {@inheritdoc}
      * @since 2.0.36
@@ -108,10 +102,9 @@ class Controller extends Component implements ViewContextInterface
     public function init(): void
     {
         parent::init();
-        $this->request = Instance::ensure($this->request, Request::className());
-        $this->response = Instance::ensure($this->response, Response::className());
+        $this->request = Instance::ensure($this->request, Request::class_name());
+        $this->response = Instance::ensure($this->response, Response::class_name());
     }
-
     /**
      * Declares external actions for the controller.
      *
@@ -138,7 +131,6 @@ class Controller extends Component implements ViewContextInterface
     {
         return [];
     }
-
     /**
      * Runs an action within this controller with the specified action ID and parameters.
      * If the action ID is empty, the method will use [[defaultAction]].
@@ -148,57 +140,45 @@ class Controller extends Component implements ViewContextInterface
      * @throws InvalidRouteException if the requested action ID cannot be resolved into an action successfully.
      * @see createAction()
      */
-    public function runAction(string $id, $params = [])
+    public function run_action(string $id, $params = [])
     {
-        $action = $this->createAction($id);
+        $action = $this->create_action($id);
         if ($action === null) {
-            throw new InvalidRouteException('Unable to resolve the request: ' . $this->getUniqueId() . '/' . $id);
+            throw new Invalid_Route_Exception('Unable to resolve the request: ' . $this->get_unique_id() . '/' . $id);
         }
-
-        Yii::debug('Route to run: ' . $action->getUniqueId(), __METHOD__);
-
-        if (Yii::$app->requestedAction === null) {
-            Yii::$app->requestedAction = $action;
+        Yii::debug('Route to run: ' . $action->get_unique_id(), __METHOD__);
+        if (Yii::$app->requested_action === null) {
+            Yii::$app->requested_action = $action;
         }
-
-        $oldAction = $this->action;
+        $old_action = $this->action;
         $this->action = $action;
-
         $modules = [];
-        $runAction = true;
-
+        $run_action = true;
         // call beforeAction on modules
-        foreach ($this->getModules() as $module) {
-            if ($module->beforeAction($action)) {
+        foreach ($this->get_modules() as $module) {
+            if ($module->before_action($action)) {
                 array_unshift($modules, $module);
             } else {
-                $runAction = false;
+                $run_action = false;
                 break;
             }
         }
-
         $result = null;
-
-        if ($runAction && $this->beforeAction($action)) {
+        if ($run_action && $this->before_action($action)) {
             // run the action
-            $result = $action->runWithParams($params);
-
-            $result = $this->afterAction($action, $result);
-
+            $result = $action->run_with_params($params);
+            $result = $this->after_action($action, $result);
             // call afterAction on modules
             foreach ($modules as $module) {
                 /** @var Module $module */
-                $result = $module->afterAction($action, $result);
+                $result = $module->after_action($action, $result);
             }
         }
-
-        if ($oldAction !== null) {
-            $this->action = $oldAction;
+        if ($old_action !== null) {
+            $this->action = $old_action;
         }
-
         return $result;
     }
-
     /**
      * Runs a request specified in terms of a route.
      * The route can be either an ID of an action within this controller or a complete route consisting
@@ -213,15 +193,13 @@ class Controller extends Component implements ViewContextInterface
     {
         $pos = strpos($route, '/');
         if ($pos === false) {
-            return $this->runAction($route, $params);
+            return $this->run_action($route, $params);
         }
         if ($pos > 0) {
-            return $this->module->runAction($route, $params);
+            return $this->module->run_action($route, $params);
         }
-
-        return Yii::$app->runAction(ltrim($route, '/'), $params);
+        return Yii::$app->run_action(ltrim($route, '/'), $params);
     }
-
     /**
      * Binds the parameters to the action.
      * This method is invoked by [[Action]] when it begins to run with the given parameters.
@@ -232,11 +210,10 @@ class Controller extends Component implements ViewContextInterface
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function bindActionParams($action, $params): array
+    public function bind_action_params($action, $params): array
     {
         return [];
     }
-
     /**
      * Creates an action based on the given action ID.
      * The method first checks if the action ID has been declared in [[actions()]]. If so,
@@ -250,30 +227,26 @@ class Controller extends Component implements ViewContextInterface
      * @phpstan-return Action<covariant static>|null
      * @psalm-return Action<self>|null
      */
-    public function createAction($id)
+    public function create_action($id)
     {
         if ($id === '') {
-            $id = $this->defaultAction;
+            $id = $this->default_action;
         }
-
-        $actionMap = $this->actions();
-        if (isset($actionMap[$id])) {
-            return Yii::createObject($actionMap[$id], [$id, $this]);
+        $action_map = $this->actions();
+        if (isset($action_map[$id])) {
+            return Yii::create_object($action_map[$id], [$id, $this]);
         }
-
         if (preg_match('/^(?:[a-z0-9_]+-)*[a-z0-9_]+$/', $id)) {
-            $methodName = 'action' . str_replace(' ', '', ucwords(str_replace('-', ' ', $id)));
-            if (method_exists($this, $methodName)) {
-                $method = new \ReflectionMethod($this, $methodName);
-                if ($method->isPublic() && $method->getName() === $methodName) {
-                    return new InlineAction($id, $this, $methodName);
+            $method_name = 'action' . str_replace(' ', '', ucwords(str_replace('-', ' ', $id)));
+            if (method_exists($this, $method_name)) {
+                $method = new \ReflectionMethod($this, $method_name);
+                if ($method->is_public() && $method->get_name() === $method_name) {
+                    return new Inline_Action($id, $this, $method_name);
                 }
             }
         }
-
         return null;
     }
-
     /**
      * This method is invoked right before an action is executed.
      *
@@ -307,13 +280,12 @@ class Controller extends Component implements ViewContextInterface
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function beforeAction($action)
+    public function before_action($action)
     {
-        $event = new ActionEvent($action);
+        $event = new Action_Event($action);
         $this->trigger(self::EVENT_BEFORE_ACTION, $event);
-        return $event->isValid;
+        return $event->is_valid;
     }
-
     /**
      * This method is invoked right after an action is executed.
      *
@@ -338,21 +310,20 @@ class Controller extends Component implements ViewContextInterface
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function afterAction($action, $result)
+    public function after_action($action, $result)
     {
-        $event = new ActionEvent($action);
+        $event = new Action_Event($action);
         $event->result = $result;
         $this->trigger(self::EVENT_AFTER_ACTION, $event);
         return $event->result;
     }
-
     /**
      * Returns all ancestor modules of this controller.
      * The first module in the array is the outermost one (i.e., the application instance),
      * while the last is the innermost one.
      * @return Module[] all ancestor modules that this controller is located within.
      */
-    public function getModules(): array
+    public function get_modules(): array
     {
         $modules = [$this->module];
         $module = $this->module;
@@ -360,28 +331,24 @@ class Controller extends Component implements ViewContextInterface
             array_unshift($modules, $module->module);
             $module = $module->module;
         }
-
         return $modules;
     }
-
     /**
      * Returns the unique ID of the controller.
      * @return string the controller ID that is prefixed with the module ID (if any).
      */
-    public function getUniqueId()
+    public function get_unique_id()
     {
-        return $this->module instanceof Application ? $this->id : $this->module->getUniqueId() . '/' . $this->id;
+        return $this->module instanceof Application ? $this->id : $this->module->get_unique_id() . '/' . $this->id;
     }
-
     /**
      * Returns the route of the current request.
      * @return string the route (module ID, controller ID and action ID) of the current request.
      */
-    public function getRoute()
+    public function get_route()
     {
-        return $this->action !== null ? $this->action->getUniqueId() : $this->getUniqueId();
+        return $this->action !== null ? $this->action->get_unique_id() : $this->get_unique_id();
     }
-
     /**
      * Renders a view and applies layout if available.
      *
@@ -423,10 +390,9 @@ class Controller extends Component implements ViewContextInterface
      */
     public function render($view, $params = [])
     {
-        $content = $this->getView()->render($view, $params, $this);
-        return $this->renderContent($content);
+        $content = $this->get_view()->render($view, $params, $this);
+        return $this->render_content($content);
     }
-
     /**
      * Renders a static string by applying a layout.
      * @param string $content the static string being rendered
@@ -434,16 +400,14 @@ class Controller extends Component implements ViewContextInterface
      * If the layout is disabled, the string will be returned back.
      * @since 2.0.1
      */
-    public function renderContent($content)
+    public function render_content($content)
     {
-        $layoutFile = $this->findLayoutFile($this->getView());
-        if ($layoutFile !== false) {
-            return $this->getView()->renderFile($layoutFile, ['content' => $content], $this);
+        $layout_file = $this->find_layout_file($this->get_view());
+        if ($layout_file !== false) {
+            return $this->get_view()->render_file($layout_file, ['content' => $content], $this);
         }
-
         return $content;
     }
-
     /**
      * Renders a view without applying layout.
      * This method differs from [[render()]] in that it does not apply any layout.
@@ -452,11 +416,10 @@ class Controller extends Component implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file does not exist.
      */
-    public function renderPartial($view, $params = [])
+    public function render_partial($view, $params = [])
     {
-        return $this->getView()->render($view, $params, $this);
+        return $this->get_view()->render($view, $params, $this);
     }
-
     /**
      * Renders a view file.
      * @param string $file the view file to be rendered. This can be either a file path or a [path alias](guide:concept-aliases).
@@ -464,11 +427,10 @@ class Controller extends Component implements ViewContextInterface
      * @return string the rendering result.
      * @throws InvalidArgumentException if the view file does not exist.
      */
-    public function renderFile($file, $params = [])
+    public function render_file($file, $params = [])
     {
-        return $this->getView()->renderFile($file, $params, $this);
+        return $this->get_view()->render_file($file, $params, $this);
     }
-
     /**
      * Returns the view object that can be used to render views or view files.
      * The [[render()]], [[renderPartial()]] and [[renderFile()]] methods will use
@@ -476,50 +438,44 @@ class Controller extends Component implements ViewContextInterface
      * If not set, it will default to the "view" application component.
      * @return View|\yii\web\View the view object that can be used to render views or view files.
      */
-    public function getView()
+    public function get_view()
     {
         if ($this->_view === null) {
-            $this->_view = Yii::$app->getView();
+            $this->_view = Yii::$app->get_view();
         }
-
         return $this->_view;
     }
-
     /**
      * Sets the view object to be used by this controller.
      * @param View|\yii\web\View $view the view object that can be used to render views or view files.
      */
-    public function setView($view): void
+    public function set_view($view): void
     {
         $this->_view = $view;
     }
-
     /**
      * Returns the directory containing view files for this controller.
      * The default implementation returns the directory named as controller [[id]] under the [[module]]'s
      * [[viewPath]] directory.
      * @return string the directory containing the view files for this controller.
      */
-    public function getViewPath()
+    public function get_view_path()
     {
-        if ($this->_viewPath === null) {
-            $this->_viewPath = $this->module->getViewPath() . DIRECTORY_SEPARATOR . $this->id;
+        if ($this->_view_path === null) {
+            $this->_view_path = $this->module->get_view_path() . DIRECTORY_SEPARATOR . $this->id;
         }
-
-        return $this->_viewPath;
+        return $this->_view_path;
     }
-
     /**
      * Sets the directory that contains the view files.
      * @param string $path the root directory of view files.
      * @throws InvalidArgumentException if the directory is invalid
      * @since 2.0.7
      */
-    public function setViewPath($path): void
+    public function set_view_path($path): void
     {
-        $this->_viewPath = Yii::getAlias($path);
+        $this->_view_path = Yii::get_alias($path);
     }
-
     /**
      * Finds the applicable layout file.
      * @param View $view the view object to render the layout file.
@@ -527,7 +483,7 @@ class Controller extends Component implements ViewContextInterface
      * Please refer to [[render()]] on how to specify this parameter.
      * @throws InvalidArgumentException if an invalid path alias is used to specify the layout.
      */
-    public function findLayoutFile($view)
+    public function find_layout_file($view)
     {
         $module = $this->module;
         $layout = null;
@@ -541,30 +497,25 @@ class Controller extends Component implements ViewContextInterface
                 $layout = $module->layout;
             }
         }
-
         if ($layout === null) {
             return false;
         }
-
         if (strncmp($layout, '@', 1) === 0) {
-            $file = Yii::getAlias($layout);
+            $file = Yii::get_alias($layout);
         } elseif (strncmp($layout, '/', 1) === 0) {
-            $file = Yii::$app->getLayoutPath() . DIRECTORY_SEPARATOR . substr($layout, 1);
+            $file = Yii::$app->get_layout_path() . DIRECTORY_SEPARATOR . substr($layout, 1);
         } else {
-            $file = $module->getLayoutPath() . DIRECTORY_SEPARATOR . $layout;
+            $file = $module->get_layout_path() . DIRECTORY_SEPARATOR . $layout;
         }
-
         if (pathinfo($file, PATHINFO_EXTENSION) !== '') {
             return $file;
         }
-        $path = $file . '.' . $view->defaultExtension;
-        if ($view->defaultExtension !== 'php' && !is_file($path)) {
+        $path = $file . '.' . $view->default_extension;
+        if ($view->default_extension !== 'php' && !is_file($path)) {
             return $file . '.php';
         }
-
         return $path;
     }
-
     /**
      * Fills parameters based on types and names in action method signature.
      * @param \ReflectionNamedType $type The reflected type of the action parameter.
@@ -577,22 +528,22 @@ class Controller extends Component implements ViewContextInterface
      * (for example an interface type hint) without a proper definition in the container.
      * @since 2.0.36
      */
-    final protected function bindInjectedParams(\ReflectionNamedType $type, string $name, &$args, array &$requestedParams)
+    final protected function bind_injected_params(\ReflectionNamedType $type, string $name, &$args, array &$requested_params)
     {
         // Since it is not a builtin type it must be DI injection.
-        $typeName = $type->getName();
-        if (($component = $this->module->get($name, false)) instanceof $typeName) {
+        $type_name = $type->get_name();
+        if (($component = $this->module->get($name, false)) instanceof $type_name) {
             $args[] = $component;
-            $requestedParams[$name] = 'Component: ' . get_class($component) . " \$$name";
-        } elseif ($this->module->has($typeName) && ($service = $this->module->get($typeName)) instanceof $typeName) {
+            $requested_params[$name] = 'Component: ' . get_class($component) . " \${$name}";
+        } elseif ($this->module->has($type_name) && ($service = $this->module->get($type_name)) instanceof $type_name) {
             $args[] = $service;
-            $requestedParams[$name] = 'Module ' . get_class($this->module) . " DI: $typeName \$$name";
-        } elseif (\Yii::$container->has($typeName) && ($service = \Yii::$container->get($typeName)) instanceof $typeName) {
+            $requested_params[$name] = 'Module ' . get_class($this->module) . " DI: {$type_name} \${$name}";
+        } elseif (\Yii::$container->has($type_name) && ($service = \Yii::$container->get($type_name)) instanceof $type_name) {
             $args[] = $service;
-            $requestedParams[$name] = "Container DI: $typeName \$$name";
-        } elseif ($type->allowsNull()) {
+            $requested_params[$name] = "Container DI: {$type_name} \${$name}";
+        } elseif ($type->allows_null()) {
             $args[] = null;
-            $requestedParams[$name] = "Unavailable service: $name";
+            $requested_params[$name] = "Unavailable service: {$name}";
         } else {
             throw new Exception('Could not load required service: ' . $name);
         }

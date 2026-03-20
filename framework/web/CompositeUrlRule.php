@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use Yii;
-use yii\base\BaseObject;
-
+use yii\base\Base_Object;
 /**
  * CompositeUrlRule is the base class for URL rule classes that consist of multiple simpler rules.
  *
@@ -22,7 +19,7 @@ use yii\base\BaseObject;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
+abstract class Composite_Url_Rule extends Base_Object implements Url_Rule_Interface
 {
     /**
      * @var UrlRuleInterface[]|UrlRuleInterface[][]|array[]|string[] the URL rules contained in this composite rule.
@@ -33,63 +30,51 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
      * @var int|null status of the URL creation after the last [[createUrl()]] call.
      * @since 2.0.12
      */
-    protected $createStatus;
-
+    protected $create_status;
     /**
      * Creates the URL rules that should be contained within this composite rule.
      * @return UrlRuleInterface[]|UrlRuleInterface[][] the URL rules
      */
-    abstract protected function createRules();
-
+    abstract protected function create_rules();
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         parent::init();
-        $this->rules = $this->createRules();
+        $this->rules = $this->create_rules();
     }
-
     /**
      * {@inheritdoc}
      */
-    public function parseRequest($manager, $request)
+    public function parse_request($manager, $request)
     {
         foreach ($this->rules as $rule) {
             /** @var UrlRule $rule */
-            $result = $rule->parseRequest($manager, $request);
-            Yii::debug([
-                'rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule),
-                'match' => $result !== false,
-                'parent' => self::className(),
-            ], __METHOD__);
+            $result = $rule->parse_request($manager, $request);
+            Yii::debug(['rule' => method_exists($rule, '__toString') ? $rule->__toString() : get_class($rule), 'match' => $result !== false, 'parent' => self::class_name()], __METHOD__);
             if ($result !== false) {
                 return $result;
             }
         }
-
         return false;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function createUrl($manager, $route, $params)
+    public function create_url($manager, $route, $params)
     {
-        $this->createStatus = UrlRule::CREATE_STATUS_SUCCESS;
-        $url = $this->iterateRules($this->rules, $manager, $route, $params);
+        $this->create_status = Url_Rule::CREATE_STATUS_SUCCESS;
+        $url = $this->iterate_rules($this->rules, $manager, $route, $params);
         if ($url !== false) {
             return $url;
         }
-
-        if ($this->createStatus === UrlRule::CREATE_STATUS_SUCCESS) {
+        if ($this->create_status === Url_Rule::CREATE_STATUS_SUCCESS) {
             // create status was not changed - there is no rules configured
-            $this->createStatus = UrlRule::CREATE_STATUS_PARSING_ONLY;
+            $this->create_status = Url_Rule::CREATE_STATUS_PARSING_ONLY;
         }
-
         return false;
     }
-
     /**
      * Iterates through specified rules and calls [[createUrl()]] for each of them.
      *
@@ -101,29 +86,23 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
      * @see createUrl()
      * @since 2.0.12
      */
-    protected function iterateRules($rules, $manager, $route, $params)
+    protected function iterate_rules($rules, $manager, $route, $params)
     {
         /** @var UrlRule $rule */
         foreach ($rules as $rule) {
-            $url = $rule->createUrl($manager, $route, $params);
+            $url = $rule->create_url($manager, $route, $params);
             if ($url !== false) {
-                $this->createStatus = UrlRule::CREATE_STATUS_SUCCESS;
+                $this->create_status = Url_Rule::CREATE_STATUS_SUCCESS;
                 return $url;
             }
-            if (
-                $this->createStatus === null
-                || !method_exists($rule, 'getCreateUrlStatus')
-                || $rule->getCreateUrlStatus() === null
-            ) {
-                $this->createStatus = null;
+            if ($this->create_status === null || !method_exists($rule, 'getCreateUrlStatus') || $rule->get_create_url_status() === null) {
+                $this->create_status = null;
             } else {
-                $this->createStatus |= $rule->getCreateUrlStatus();
+                $this->create_status |= $rule->get_create_url_status();
             }
         }
-
         return false;
     }
-
     /**
      * Returns status of the URL creation after the last [[createUrl()]] call.
      *
@@ -136,8 +115,8 @@ abstract class CompositeUrlRule extends BaseObject implements UrlRuleInterface
      * @see https://www.php.net/manual/en/language.operators.bitwise.php
      * @since 2.0.12
      */
-    public function getCreateUrlStatus()
+    public function get_create_url_status()
     {
-        return $this->createStatus;
+        return $this->create_status;
     }
 }

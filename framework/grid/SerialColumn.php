@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\grid;
 
 /**
@@ -30,23 +28,21 @@ namespace yii\grid;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class SerialColumn extends Column
+class Serial_Column extends Column
 {
     /**
      * {@inheritdoc}
      */
     public $header = '#';
-
     /**
      * {@inheritdoc}
      */
-    protected function renderDataCellContent($model, $key, $index): string
+    protected function render_data_cell_content($model, $key, $index): string
     {
-        $pagination = $this->grid->dataProvider->getPagination();
+        $pagination = $this->grid->data_provider->get_pagination();
         if ($pagination !== false) {
-            return (string) ($pagination->getOffset() + $index + 1);
+            return (string) ($pagination->get_offset() + $index + 1);
         }
-
         return (string) ($index + 1);
     }
 }

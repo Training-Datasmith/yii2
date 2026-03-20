@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\data;
 
-use yii\helpers\ArrayHelper;
-
+use yii\helpers\Array_Helper;
 /**
  * ArrayDataProvider implements a data provider based on a data array.
  *
@@ -53,7 +50,7 @@ use yii\helpers\ArrayHelper;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ArrayDataProvider extends BaseDataProvider
+class Array_Data_Provider extends Base_Data_Provider
 {
     /**
      * @var string|array|callable|null the column that is used as the key of the data models.
@@ -68,71 +65,61 @@ class ArrayDataProvider extends BaseDataProvider
      * this property usually contains more elements than [[models]].
      * The array elements must use zero-based integer keys.
      */
-    public $allModels;
+    public $all_models;
     /**
      * @var string the name of the [[\yii\base\Model|Model]] class that will be represented.
      * This property is used to get columns' names.
      * @since 2.0.9
      */
-    public $modelClass;
-
+    public $model_class;
     /**
      * {@inheritdoc}
      */
-    protected function prepareModels()
+    protected function prepare_models()
     {
-        if (($models = $this->allModels) === null) {
+        if (($models = $this->all_models) === null) {
             return [];
         }
-
-        if (($sort = $this->getSort()) !== false) {
-            $models = $this->sortModels($models, $sort);
+        if (($sort = $this->get_sort()) !== false) {
+            $models = $this->sort_models($models, $sort);
         }
-
-        if (($pagination = $this->getPagination()) !== false) {
-            $pagination->totalCount = $this->getTotalCount();
-
-            if ($pagination->getPageSize() > 0) {
-                $models = array_slice($models, $pagination->getOffset(), $pagination->getLimit(), true);
+        if (($pagination = $this->get_pagination()) !== false) {
+            $pagination->total_count = $this->get_total_count();
+            if ($pagination->get_page_size() > 0) {
+                $models = array_slice($models, $pagination->get_offset(), $pagination->get_limit(), true);
             }
         }
-
         return $models;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function prepareKeys($models)
+    protected function prepare_keys($models)
     {
         if ($this->key !== null) {
-            return ArrayHelper::getColumn($models, $this->key, false);
+            return Array_Helper::get_column($models, $this->key, false);
         }
-
         return array_keys($models);
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function prepareTotalCount(): int
+    protected function prepare_total_count(): int
     {
-        return is_array($this->allModels) ? count($this->allModels) : 0;
+        return is_array($this->all_models) ? count($this->all_models) : 0;
     }
-
     /**
      * Sorts the data models according to the given sort definition.
      * @param array $models the models to be sorted
      * @param Sort $sort the sort definition
      * @return array the sorted data models
      */
-    protected function sortModels($models, $sort)
+    protected function sort_models($models, $sort)
     {
-        $orders = $sort->getOrders();
+        $orders = $sort->get_orders();
         if (!empty($orders)) {
-            ArrayHelper::multisort($models, array_keys($orders), array_values($orders), $sort->sortFlags);
+            Array_Helper::multisort($models, array_keys($orders), array_values($orders), $sort->sort_flags);
         }
-
         return $models;
     }
 }

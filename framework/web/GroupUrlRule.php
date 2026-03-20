@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use Yii;
-use yii\base\InvalidConfigException;
-
+use yii\base\Invalid_Config_Exception;
 /**
  * GroupUrlRule represents a collection of URL rules sharing the same prefix in their patterns and routes.
  *
@@ -48,7 +45,7 @@ use yii\base\InvalidConfigException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class GroupUrlRule extends CompositeUrlRule
+class Group_Url_Rule extends Composite_Url_Rule
 {
     /**
      * @var UrlRuleInterface[]|array[]|string[] the rules contained within this composite rule. Please refer to [[UrlManager::rules]]
@@ -67,81 +64,69 @@ class GroupUrlRule extends CompositeUrlRule
      * The prefix and the route will be separated with a slash.
      * If this property is not set, it will take the value of [[prefix]].
      */
-    public $routePrefix;
+    public $route_prefix;
     /**
      * @var array the default configuration of URL rules. Individual rule configurations
      * specified via [[rules]] will take precedence when the same property of the rule is configured.
      */
-    public $ruleConfig = ['class' => 'yii\web\UrlRule'];
-
+    public $rule_config = ['class' => 'yii\web\UrlRule'];
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
-        $this->prefix = trim((string)$this->prefix, '/');
-        $this->routePrefix = $this->routePrefix === null ? $this->prefix : trim($this->routePrefix, '/');
+        $this->prefix = trim((string) $this->prefix, '/');
+        $this->route_prefix = $this->route_prefix === null ? $this->prefix : trim($this->route_prefix, '/');
         parent::init();
     }
-
     /**
      * {@inheritdoc}
      * @return \yii\web\UrlRuleInterface[]
      */
-    protected function createRules(): array
+    protected function create_rules(): array
     {
         $rules = [];
         foreach ($this->rules as $key => $rule) {
             if (!is_array($rule)) {
                 $verbs = 'GET|HEAD|POST|PUT|PATCH|DELETE|OPTIONS';
                 $verb = null;
-                if (preg_match("/^((?:(?:$verbs),)*(?:$verbs))\\s+(.*)$/", $key, $matches)) {
+                if (preg_match("/^((?:(?:{$verbs}),)*(?:{$verbs}))\\s+(.*)\$/", $key, $matches)) {
                     $verb = explode(',', $matches[1]);
                     $key = $matches[2];
                 }
-                $rule = [
-                    'pattern' => ltrim($this->prefix . '/' . $key, '/'),
-                    'route' => ltrim($this->routePrefix . '/' . $rule, '/'),
-                    'verb' => $verb,
-                ];
+                $rule = ['pattern' => ltrim($this->prefix . '/' . $key, '/'), 'route' => ltrim($this->route_prefix . '/' . $rule, '/'), 'verb' => $verb];
             } elseif (isset($rule['pattern'], $rule['route'])) {
                 $rule['pattern'] = ltrim($this->prefix . '/' . $rule['pattern'], '/');
-                $rule['route'] = ltrim($this->routePrefix . '/' . $rule['route'], '/');
+                $rule['route'] = ltrim($this->route_prefix . '/' . $rule['route'], '/');
             }
-
-            $rule = Yii::createObject(array_merge($this->ruleConfig, $rule));
-            if (!$rule instanceof UrlRuleInterface) {
-                throw new InvalidConfigException('URL rule class must implement UrlRuleInterface.');
+            $rule = Yii::create_object(array_merge($this->rule_config, $rule));
+            if (!$rule instanceof Url_Rule_Interface) {
+                throw new Invalid_Config_Exception('URL rule class must implement UrlRuleInterface.');
             }
             $rules[] = $rule;
         }
-
         return $rules;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function parseRequest($manager, $request)
+    public function parse_request($manager, $request)
     {
-        $pathInfo = $request->getPathInfo();
-        if ($this->prefix === '' || strpos($pathInfo . '/', $this->prefix . '/') === 0) {
-            return parent::parseRequest($manager, $request);
+        $path_info = $request->get_path_info();
+        if ($this->prefix === '' || strpos($path_info . '/', $this->prefix . '/') === 0) {
+            return parent::parse_request($manager, $request);
         }
-
         return false;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function createUrl($manager, $route, $params)
+    public function create_url($manager, $route, $params)
     {
-        if ($this->routePrefix === '' || strpos($route, $this->routePrefix . '/') === 0) {
-            return parent::createUrl($manager, $route, $params);
+        if ($this->route_prefix === '' || strpos($route, $this->route_prefix . '/') === 0) {
+            return parent::create_url($manager, $route, $params);
         }
-
-        $this->createStatus = UrlRule::CREATE_STATUS_ROUTE_MISMATCH;
+        $this->create_status = Url_Rule::CREATE_STATUS_ROUTE_MISMATCH;
         return false;
     }
 }

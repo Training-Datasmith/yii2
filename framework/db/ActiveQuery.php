@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
-use yii\base\InvalidConfigException;
-
+use yii\base\Invalid_Config_Exception;
 /**
  * ActiveQuery represents a DB query associated with an Active Record class.
  *
@@ -83,11 +80,10 @@ use yii\base\InvalidConfigException;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-class ActiveQuery extends Query implements ActiveQueryInterface
+class Active_Query extends Query implements Active_Query_Interface
 {
-    use ActiveQueryTrait;
-    use ActiveRelationTrait;
-
+    use Active_Query_Trait;
+    use Active_Relation_Trait;
     /**
      * @event Event an event that is triggered when the query is initialized via [[init()]].
      */
@@ -108,19 +104,17 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     /**
      * @var array|null a list of relations that this query should be joined with
      */
-    public $joinWith;
-
+    public $join_with;
     /**
      * Constructor.
      * @param class-string<ActiveRecordInterface> $modelClass the model class associated with this query
      * @param array $config configurations to be applied to the newly created query object
      */
-    public function __construct($modelClass, $config = [])
+    public function __construct($model_class, $config = [])
     {
-        $this->modelClass = $modelClass;
+        $this->model_class = $model_class;
         parent::__construct($config);
     }
-
     /**
      * Initializes the object.
      * This method is called at the end of the constructor. The default implementation will trigger
@@ -132,7 +126,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
         parent::init();
         $this->trigger(self::EVENT_INIT);
     }
-
     /**
      * Executes query and returns all results as an array.
      * @param Connection|null $db the DB connection used to create the DB command.
@@ -143,7 +136,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     {
         return parent::all($db);
     }
-
     /**
      * {@inheritdoc}
      */
@@ -153,71 +145,64 @@ class ActiveQuery extends Query implements ActiveQueryInterface
         // (e.g. by ActiveDataProvider, one for count query, the other for row data query,
         // it is important to make sure the same ActiveQuery can be used to build SQL statements
         // multiple times.
-        if (!empty($this->joinWith)) {
-            $this->buildJoinWith();
-            $this->joinWith = null;    // clean it up to avoid issue https://github.com/yiisoft/yii2/issues/2687
+        if (!empty($this->join_with)) {
+            $this->build_join_with();
+            $this->join_with = null;
+            // clean it up to avoid issue https://github.com/yiisoft/yii2/issues/2687
         }
-
         if (empty($this->from)) {
-            $this->from = [$this->getPrimaryTableName()];
+            $this->from = [$this->get_primary_table_name()];
         }
-
         if (empty($this->select) && !empty($this->join)) {
-            list(, $alias) = $this->getTableNameAndAlias();
-            $this->select = ["$alias.*"];
+            list(, $alias) = $this->get_table_name_and_alias();
+            $this->select = ["{$alias}.*"];
         }
-
-        if ($this->primaryModel === null) {
+        if ($this->primary_model === null) {
             // eager loading
             $query = Query::create($this);
         } else {
             // lazy loading of a relation
             $where = $this->where;
-
             if ($this->via instanceof self) {
                 // via junction table
-                $viaModels = $this->via->findJunctionRows([$this->primaryModel]);
-                $this->filterByModels($viaModels);
+                $via_models = $this->via->find_junction_rows([$this->primary_model]);
+                $this->filter_by_models($via_models);
             } elseif (is_array($this->via)) {
                 // via relation
                 /** @var self<ActiveRecord|array<string, mixed>> $viaQuery */
-                list($viaName, $viaQuery, $viaCallableUsed) = $this->via;
-                if ($viaQuery->multiple) {
-                    if ($viaCallableUsed) {
-                        $viaModels = $viaQuery->all();
-                    } elseif ($this->primaryModel->isRelationPopulated($viaName)) {
-                        $viaModels = $this->primaryModel->$viaName;
+                list($via_name, $via_query, $via_callable_used) = $this->via;
+                if ($via_query->multiple) {
+                    if ($via_callable_used) {
+                        $via_models = $via_query->all();
+                    } elseif ($this->primary_model->is_relation_populated($via_name)) {
+                        $via_models = $this->primary_model->{$via_name};
                     } else {
-                        $viaModels = $viaQuery->all();
-                        $this->primaryModel->populateRelation($viaName, $viaModels);
+                        $via_models = $via_query->all();
+                        $this->primary_model->populate_relation($via_name, $via_models);
                     }
                 } else {
-                    if ($viaCallableUsed) {
-                        $model = $viaQuery->one();
-                    } elseif ($this->primaryModel->isRelationPopulated($viaName)) {
-                        $model = $this->primaryModel->$viaName;
+                    if ($via_callable_used) {
+                        $model = $via_query->one();
+                    } elseif ($this->primary_model->is_relation_populated($via_name)) {
+                        $model = $this->primary_model->{$via_name};
                     } else {
-                        $model = $viaQuery->one();
-                        $this->primaryModel->populateRelation($viaName, $model);
+                        $model = $via_query->one();
+                        $this->primary_model->populate_relation($via_name, $model);
                     }
-                    $viaModels = $model === null ? [] : [$model];
+                    $via_models = $model === null ? [] : [$model];
                 }
-                $this->filterByModels($viaModels);
+                $this->filter_by_models($via_models);
             } else {
-                $this->filterByModels([$this->primaryModel]);
+                $this->filter_by_models([$this->primary_model]);
             }
-
             $query = Query::create($this);
             $this->where = $where;
         }
-
         if (!empty($this->on)) {
-            $query->andWhere($this->on);
+            $query->and_where($this->on);
         }
-
         return $query;
     }
-
     /**
      * {@inheritdoc}
      */
@@ -226,28 +211,23 @@ class ActiveQuery extends Query implements ActiveQueryInterface
         if (empty($rows)) {
             return [];
         }
-
-        $models = $this->createModels($rows);
-        if (!empty($this->join) && $this->indexBy === null) {
-            $models = $this->removeDuplicatedModels($models);
+        $models = $this->create_models($rows);
+        if (!empty($this->join) && $this->index_by === null) {
+            $models = $this->remove_duplicated_models($models);
         }
         if (!empty($this->with)) {
-            $this->findWith($this->with, $models);
+            $this->find_with($this->with, $models);
         }
-
-        if ($this->inverseOf !== null) {
-            $this->addInverseRelations($models);
+        if ($this->inverse_of !== null) {
+            $this->add_inverse_relations($models);
         }
-
-        if (!$this->asArray) {
+        if (!$this->as_array) {
             foreach ($models as $model) {
-                $model->afterFind();
+                $model->after_find();
             }
         }
-
         return parent::populate($models);
     }
-
     /**
      * Removes duplicated models by checking their primary key values.
      * This method is mainly called when a join query is performed, which may cause duplicated rows being returned.
@@ -255,13 +235,12 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @throws InvalidConfigException if model primary key is empty
      * @return array the distinctive models
      */
-    private function removeDuplicatedModels($models)
+    private function remove_duplicated_models($models)
     {
         $hash = [];
         /** @var class-string<ActiveRecord> $class */
-        $class = $this->modelClass;
-        $pks = $class::primaryKey();
-
+        $class = $this->model_class;
+        $pks = $class::primary_key();
         if (count($pks) > 1) {
             // composite primary key
             foreach ($models as $i => $model) {
@@ -281,7 +260,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
                 }
             }
         } elseif (empty($pks)) {
-            throw new InvalidConfigException("Primary key of '{$class}' can not be empty.");
+            throw new Invalid_Config_Exception("Primary key of '{$class}' can not be empty.");
         } else {
             // single column primary key
             $pk = reset($pks);
@@ -298,10 +277,8 @@ class ActiveQuery extends Query implements ActiveQueryInterface
                 }
             }
         }
-
         return array_values($models);
     }
-
     /**
      * Executes query and returns a single row of result.
      * @param Connection|null $db the DB connection used to create the DB command.
@@ -317,61 +294,48 @@ class ActiveQuery extends Query implements ActiveQueryInterface
             $models = $this->populate([$row]);
             return reset($models) ?: null;
         }
-
         return null;
     }
-
     /**
      * Creates a DB command that can be used to execute this query.
      * @param Connection|null $db the DB connection used to create the DB command.
      * If `null`, the DB connection returned by [[modelClass]] will be used.
      * @return Command the created DB command instance.
      */
-    public function createCommand($db = null)
+    public function create_command($db = null)
     {
         /** @var ActiveRecord $modelClass */
-        $modelClass = $this->modelClass;
+        $model_class = $this->model_class;
         if ($db === null) {
-            $db = $modelClass::getDb();
+            $db = $model_class::get_db();
         }
-
         if ($this->sql === null) {
-            list($sql, $params) = $db->getQueryBuilder()->build($this);
+            list($sql, $params) = $db->get_query_builder()->build($this);
         } else {
             $sql = $this->sql;
             $params = $this->params;
         }
-
-        $command = $db->createCommand($sql, $params);
-        $this->setCommandCache($command);
-
+        $command = $db->create_command($sql, $params);
+        $this->set_command_cache($command);
         return $command;
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function queryScalar($selectExpression, $db)
+    protected function query_scalar($select_expression, $db)
     {
         /** @var ActiveRecord $modelClass */
-        $modelClass = $this->modelClass;
+        $model_class = $this->model_class;
         if ($db === null) {
-            $db = $modelClass::getDb();
+            $db = $model_class::get_db();
         }
-
         if ($this->sql === null) {
-            return parent::queryScalar($selectExpression, $db);
+            return parent::query_scalar($select_expression, $db);
         }
-
-        $command = (new Query())->select([$selectExpression])
-            ->from(['c' => "({$this->sql})"])
-            ->params($this->params)
-            ->createCommand($db);
-        $this->setCommandCache($command);
-
-        return $command->queryScalar();
+        $command = (new Query())->select([$select_expression])->from(['c' => "({$this->sql})"])->params($this->params)->create_command($db);
+        $this->set_command_cache($command);
+        return $command->query_scalar();
     }
-
     /**
      * Joins with the specified relations.
      *
@@ -428,7 +392,7 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * in the format of `relationName => joinType` to specify different join types for different relations.
      * @return $this the query object itself
      */
-    public function joinWith($with, $eagerLoading = true, $joinType = 'LEFT JOIN')
+    public function join_with($with, $eager_loading = true, $join_type = 'LEFT JOIN')
     {
         $relations = [];
         foreach ((array) $with as $name => $callback) {
@@ -436,7 +400,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
                 $name = $callback;
                 $callback = null;
             }
-
             if (preg_match('/^(.*?)(?:\s+AS\s+|\s+)(\w+)$/i', $name, $matches)) {
                 // relation is defined with an alias, adjust callback to apply alias
                 list(, $relation, $alias) = $matches;
@@ -449,71 +412,62 @@ class ActiveQuery extends Query implements ActiveQueryInterface
                     }
                 };
             }
-
             if ($callback === null) {
                 $relations[] = $name;
             } else {
                 $relations[$name] = $callback;
             }
         }
-        $this->joinWith[] = [$relations, $eagerLoading, $joinType];
+        $this->join_with[] = [$relations, $eager_loading, $join_type];
         return $this;
     }
-
-    private function buildJoinWith()
+    private function build_join_with()
     {
         $join = $this->join;
         $this->join = [];
-
         /** @var ActiveRecordInterface $modelClass */
-        $modelClass = $this->modelClass;
-        $model = $modelClass::instance();
-        foreach ($this->joinWith as $config) {
-            list($with, $eagerLoading, $joinType) = $config;
-            $this->joinWithRelations($model, $with, $joinType);
-
-            if (is_array($eagerLoading)) {
+        $model_class = $this->model_class;
+        $model = $model_class::instance();
+        foreach ($this->join_with as $config) {
+            list($with, $eager_loading, $join_type) = $config;
+            $this->join_with_relations($model, $with, $join_type);
+            if (is_array($eager_loading)) {
                 foreach ($with as $name => $callback) {
                     if (is_int($name)) {
-                        if (!in_array($callback, $eagerLoading, true)) {
+                        if (!in_array($callback, $eager_loading, true)) {
                             unset($with[$name]);
                         }
-                    } elseif (!in_array($name, $eagerLoading, true)) {
+                    } elseif (!in_array($name, $eager_loading, true)) {
                         unset($with[$name]);
                     }
                 }
-            } elseif (!$eagerLoading) {
+            } elseif (!$eager_loading) {
                 $with = [];
             }
-
             $this->with($with);
         }
-
         // remove duplicated joins added by joinWithRelations that may be added
         // e.g. when joining a relation and a via relation at the same time
-        $uniqueJoins = [];
+        $unique_joins = [];
         foreach ($this->join as $j) {
-            $uniqueJoins[serialize($j)] = $j;
+            $unique_joins[serialize($j)] = $j;
         }
-        $this->join = array_values($uniqueJoins);
-
+        $this->join = array_values($unique_joins);
         // https://github.com/yiisoft/yii2/issues/16092
-        $uniqueJoinsByTableName = [];
+        $unique_joins_by_table_name = [];
         foreach ($this->join as $config) {
-            $tableName = serialize($config[1]);
-            if (!array_key_exists($tableName, $uniqueJoinsByTableName)) {
-                $uniqueJoinsByTableName[$tableName] = $config;
+            $table_name = serialize($config[1]);
+            if (!array_key_exists($table_name, $unique_joins_by_table_name)) {
+                $unique_joins_by_table_name[$table_name] = $config;
             }
         }
-        $this->join = array_values($uniqueJoinsByTableName);
-
+        $this->join = array_values($unique_joins_by_table_name);
         if (!empty($join)) {
             // append explicit join to joinWith()
             // https://github.com/yiisoft/yii2/issues/2880
             $this->join = empty($this->join) ? $join : array_merge($this->join, $join);
         }
     }
-
     /**
      * Inner joins with the specified relations.
      * This is a shortcut method to [[joinWith()]] with the join type set as "INNER JOIN".
@@ -526,106 +480,96 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @return $this the query object itself
      * @see joinWith()
      */
-    public function innerJoinWith($with, $eagerLoading = true)
+    public function inner_join_with($with, $eager_loading = true)
     {
-        return $this->joinWith($with, $eagerLoading, 'INNER JOIN');
+        return $this->join_with($with, $eager_loading, 'INNER JOIN');
     }
-
     /**
      * Modifies the current query by adding join fragments based on the given relations.
      * @param ActiveRecord $model the primary model
      * @param array $with the relations to be joined
      * @param string|array $joinType the join type
      */
-    private function joinWithRelations($model, $with, $joinType)
+    private function join_with_relations($model, $with, $join_type)
     {
         $relations = [];
-
         foreach ($with as $name => $callback) {
             if (is_int($name)) {
                 $name = $callback;
                 $callback = null;
             }
-
-            $primaryModel = $model;
+            $primary_model = $model;
             $parent = $this;
             $prefix = '';
             while (($pos = strpos($name, '.')) !== false) {
-                $childName = substr($name, $pos + 1);
+                $child_name = substr($name, $pos + 1);
                 $name = substr($name, 0, $pos);
-                $fullName = $prefix === '' ? $name : "$prefix.$name";
-                if (!isset($relations[$fullName])) {
-                    $relations[$fullName] = $relation = $primaryModel->getRelation($name);
-                    $this->joinWithRelation($parent, $relation, $this->getJoinType($joinType, $fullName));
+                $full_name = $prefix === '' ? $name : "{$prefix}.{$name}";
+                if (!isset($relations[$full_name])) {
+                    $relations[$full_name] = $relation = $primary_model->get_relation($name);
+                    $this->join_with_relation($parent, $relation, $this->get_join_type($join_type, $full_name));
                 } else {
-                    $relation = $relations[$fullName];
+                    $relation = $relations[$full_name];
                 }
                 /** @var ActiveRecordInterface $relationModelClass */
-                $relationModelClass = $relation->modelClass;
-                $primaryModel = $relationModelClass::instance();
+                $relation_model_class = $relation->model_class;
+                $primary_model = $relation_model_class::instance();
                 $parent = $relation;
-                $prefix = $fullName;
-                $name = $childName;
+                $prefix = $full_name;
+                $name = $child_name;
             }
-
-            $fullName = $prefix === '' ? $name : "$prefix.$name";
-            if (!isset($relations[$fullName])) {
-                $relations[$fullName] = $relation = $primaryModel->getRelation($name);
+            $full_name = $prefix === '' ? $name : "{$prefix}.{$name}";
+            if (!isset($relations[$full_name])) {
+                $relations[$full_name] = $relation = $primary_model->get_relation($name);
                 if ($callback !== null) {
                     call_user_func($callback, $relation);
                 }
-                if (!empty($relation->joinWith)) {
-                    $relation->buildJoinWith();
+                if (!empty($relation->join_with)) {
+                    $relation->build_join_with();
                 }
-                $this->joinWithRelation($parent, $relation, $this->getJoinType($joinType, $fullName));
+                $this->join_with_relation($parent, $relation, $this->get_join_type($join_type, $full_name));
             }
         }
     }
-
     /**
      * Returns the join type based on the given join type parameter and the relation name.
      * @param string|array $joinType the given join type(s)
      * @param string $name relation name
      * @return string the real join type
      */
-    private function getJoinType($joinType, $name)
+    private function get_join_type($join_type, $name)
     {
-        if (is_array($joinType) && isset($joinType[$name])) {
-            return $joinType[$name];
+        if (is_array($join_type) && isset($join_type[$name])) {
+            return $join_type[$name];
         }
-
-        return is_string($joinType) ? $joinType : 'INNER JOIN';
+        return is_string($join_type) ? $join_type : 'INNER JOIN';
     }
-
     /**
      * Returns the table name and the table alias for [[modelClass]].
      * @return array the table name and the table alias.
      * @since 2.0.16
      */
-    protected function getTableNameAndAlias()
+    protected function get_table_name_and_alias()
     {
         if (empty($this->from)) {
-            $tableName = $this->getPrimaryTableName();
+            $table_name = $this->get_primary_table_name();
         } else {
-            $tableName = '';
+            $table_name = '';
             // if the first entry in "from" is an alias-tablename-pair return it directly
-            foreach ($this->from as $alias => $tableName) {
+            foreach ($this->from as $alias => $table_name) {
                 if (is_string($alias)) {
-                    return [$tableName, $alias];
+                    return [$table_name, $alias];
                 }
                 break;
             }
         }
-
-        if (preg_match('/^(.*?)\s+({{\w+}}|\w+)$/', $tableName, $matches)) {
+        if (preg_match('/^(.*?)\s+({{\w+}}|\w+)$/', $table_name, $matches)) {
             $alias = $matches[2];
         } else {
-            $alias = $tableName;
+            $alias = $table_name;
         }
-
-        return [$tableName, $alias];
+        return [$table_name, $alias];
     }
-
     /**
      * Joins a parent query with a child query.
      * The current query object will be modified accordingly.
@@ -633,36 +577,33 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @param ActiveQuery $child
      * @param string $joinType
      */
-    private function joinWithRelation($parent, $child, $joinType)
+    private function join_with_relation($parent, $child, $join_type)
     {
         $via = $child->via;
         $child->via = null;
         if ($via instanceof self) {
             // via table
-            $this->joinWithRelation($parent, $via, $joinType);
-            $this->joinWithRelation($via, $child, $joinType);
+            $this->join_with_relation($parent, $via, $join_type);
+            $this->join_with_relation($via, $child, $join_type);
             return;
         } elseif (is_array($via)) {
             // via relation
-            $this->joinWithRelation($parent, $via[1], $joinType);
-            $this->joinWithRelation($via[1], $child, $joinType);
+            $this->join_with_relation($parent, $via[1], $join_type);
+            $this->join_with_relation($via[1], $child, $join_type);
             return;
         }
-
-        list($parentTable, $parentAlias) = $parent->getTableNameAndAlias();
-        list($childTable, $childAlias) = $child->getTableNameAndAlias();
-
+        list($parent_table, $parent_alias) = $parent->get_table_name_and_alias();
+        list($child_table, $child_alias) = $child->get_table_name_and_alias();
         if (!empty($child->link)) {
-            if (strpos($parentAlias, '{{') === false) {
-                $parentAlias = '{{' . $parentAlias . '}}';
+            if (strpos($parent_alias, '{{') === false) {
+                $parent_alias = '{{' . $parent_alias . '}}';
             }
-            if (strpos($childAlias, '{{') === false) {
-                $childAlias = '{{' . $childAlias . '}}';
+            if (strpos($child_alias, '{{') === false) {
+                $child_alias = '{{' . $child_alias . '}}';
             }
-
             $on = [];
-            foreach ($child->link as $childColumn => $parentColumn) {
-                $on[] = "$parentAlias.[[$parentColumn]] = $childAlias.[[$childColumn]]";
+            foreach ($child->link as $child_column => $parent_column) {
+                $on[] = "{$parent_alias}.[[{$parent_column}]] = {$child_alias}.[[{$child_column}]]";
             }
             $on = implode(' AND ', $on);
             if (!empty($child->on)) {
@@ -671,22 +612,21 @@ class ActiveQuery extends Query implements ActiveQueryInterface
         } else {
             $on = $child->on;
         }
-        $this->join($joinType, empty($child->from) ? $childTable : $child->from, $on);
-
+        $this->join($join_type, empty($child->from) ? $child_table : $child->from, $on);
         if (!empty($child->where)) {
-            $this->andWhere($child->where);
+            $this->and_where($child->where);
         }
         if (!empty($child->having)) {
-            $this->andHaving($child->having);
+            $this->and_having($child->having);
         }
-        if (!empty($child->orderBy)) {
-            $this->addOrderBy($child->orderBy);
+        if (!empty($child->order_by)) {
+            $this->add_order_by($child->order_by);
         }
-        if (!empty($child->groupBy)) {
-            $this->addGroupBy($child->groupBy);
+        if (!empty($child->group_by)) {
+            $this->add_group_by($child->group_by);
         }
         if (!empty($child->params)) {
-            $this->addParams($child->params);
+            $this->add_params($child->params);
         }
         if (!empty($child->join)) {
             foreach ($child->join as $join) {
@@ -699,7 +639,6 @@ class ActiveQuery extends Query implements ActiveQueryInterface
             }
         }
     }
-
     /**
      * Sets the ON condition for a relational query.
      * The condition will be used in the ON part when [[ActiveQuery::joinWith()]] is called.
@@ -723,13 +662,12 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @param array $params the parameters (name => value) to be bound to the query.
      * @return $this the query object itself
      */
-    public function onCondition($condition, $params = [])
+    public function on_condition($condition, $params = [])
     {
         $this->on = $condition;
-        $this->addParams($params);
+        $this->add_params($params);
         return $this;
     }
-
     /**
      * Adds an additional ON condition to the existing one.
      * The new condition and the existing one will be joined using the 'AND' operator.
@@ -740,17 +678,16 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @see onCondition()
      * @see orOnCondition()
      */
-    public function andOnCondition($condition, $params = [])
+    public function and_on_condition($condition, $params = [])
     {
         if ($this->on === null) {
             $this->on = $condition;
         } else {
             $this->on = ['and', $this->on, $condition];
         }
-        $this->addParams($params);
+        $this->add_params($params);
         return $this;
     }
-
     /**
      * Adds an additional ON condition to the existing one.
      * The new condition and the existing one will be joined using the 'OR' operator.
@@ -761,17 +698,16 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @see onCondition()
      * @see andOnCondition()
      */
-    public function orOnCondition($condition, $params = [])
+    public function or_on_condition($condition, $params = [])
     {
         if ($this->on === null) {
             $this->on = $condition;
         } else {
             $this->on = ['or', $this->on, $condition];
         }
-        $this->addParams($params);
+        $this->add_params($params);
         return $this;
     }
-
     /**
      * Specifies the junction table for a relational query.
      *
@@ -795,23 +731,16 @@ class ActiveQuery extends Query implements ActiveQueryInterface
      * @throws InvalidConfigException when query is not initialized properly
      * @see via()
      */
-    public function viaTable($tableName, $link, ?callable $callable = null)
+    public function via_table($table_name, $link, ?callable $callable = null)
     {
-        $modelClass = $this->primaryModel ? get_class($this->primaryModel) : $this->modelClass;
-        $relation = new self($modelClass, [
-            'from' => [$tableName],
-            'link' => $link,
-            'multiple' => true,
-            'asArray' => true,
-        ]);
+        $model_class = $this->primary_model ? get_class($this->primary_model) : $this->model_class;
+        $relation = new self($model_class, ['from' => [$table_name], 'link' => $link, 'multiple' => true, 'asArray' => true]);
         $this->via = $relation;
         if ($callable !== null) {
             call_user_func($callable, $relation);
         }
-
         return $this;
     }
-
     /**
      * Define an alias for the table defined in [[modelClass]].
      *
@@ -825,43 +754,38 @@ class ActiveQuery extends Query implements ActiveQueryInterface
     public function alias($alias)
     {
         if (empty($this->from) || count($this->from) < 2) {
-            list($tableName) = $this->getTableNameAndAlias();
-            $this->from = [$alias => $tableName];
+            list($table_name) = $this->get_table_name_and_alias();
+            $this->from = [$alias => $table_name];
         } else {
-            $tableName = $this->getPrimaryTableName();
-
+            $table_name = $this->get_primary_table_name();
             foreach ($this->from as $key => $table) {
-                if ($table === $tableName) {
+                if ($table === $table_name) {
                     unset($this->from[$key]);
-                    $this->from[$alias] = $tableName;
+                    $this->from[$alias] = $table_name;
                 }
             }
         }
-
         return $this;
     }
-
     /**
      * {@inheritdoc}
      * @since 2.0.12
      */
-    public function getTablesUsedInFrom()
+    public function get_tables_used_in_from()
     {
         if (empty($this->from)) {
-            return $this->cleanUpTableNames([$this->getPrimaryTableName()]);
+            return $this->clean_up_table_names([$this->get_primary_table_name()]);
         }
-
-        return parent::getTablesUsedInFrom();
+        return parent::get_tables_used_in_from();
     }
-
     /**
      * @return string primary table name
      * @since 2.0.12
      */
-    protected function getPrimaryTableName()
+    protected function get_primary_table_name()
     {
         /** @var ActiveRecord $modelClass */
-        $modelClass = $this->modelClass;
-        return $modelClass::tableName();
+        $model_class = $this->model_class;
+        return $model_class::table_name();
     }
 }

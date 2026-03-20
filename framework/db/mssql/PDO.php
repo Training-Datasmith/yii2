@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\mssql;
 
 /**
@@ -24,51 +22,44 @@ class PDO extends \PDO
      * @param string|null $sequence the sequence name. Defaults to null.
      * @return string|false last inserted ID value.
      */
-    #[\ReturnTypeWillChange]
-    public function lastInsertId($sequence = null)
+    #[\Return_Type_Will_Change]
+    public function last_insert_id($sequence = null)
     {
-        return $this->query('SELECT CAST(COALESCE(SCOPE_IDENTITY(), @@IDENTITY) AS bigint)')->fetchColumn();
+        return $this->query('SELECT CAST(COALESCE(SCOPE_IDENTITY(), @@IDENTITY) AS bigint)')->fetch_column();
     }
-
     /**
      * Starts a transaction. It is necessary to override PDO's method as MSSQL PDO driver does not
      * natively support transactions.
      * @return bool the result of a transaction start.
      */
-    #[\ReturnTypeWillChange]
-    public function beginTransaction()
+    #[\Return_Type_Will_Change]
+    public function begin_transaction()
     {
         $this->exec('BEGIN TRANSACTION');
-
         return true;
     }
-
     /**
      * Commits a transaction. It is necessary to override PDO's method as MSSQL PDO driver does not
      * natively support transactions.
      * @return bool the result of a transaction commit.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function commit()
     {
         $this->exec('COMMIT TRANSACTION');
-
         return true;
     }
-
     /**
      * Rollbacks a transaction. It is necessary to override PDO's method as MSSQL PDO driver does not
      * natively support transactions.
      * @return bool the result of a transaction roll back.
      */
-    #[\ReturnTypeWillChange]
-    public function rollBack()
+    #[\Return_Type_Will_Change]
+    public function roll_back()
     {
         $this->exec('ROLLBACK TRANSACTION');
-
         return true;
     }
-
     /**
      * Retrieve a database connection attribute.
      *
@@ -78,15 +69,15 @@ class PDO extends \PDO
      * @return mixed A successful call returns the value of the requested PDO attribute.
      * An unsuccessful call returns null.
      */
-    #[\ReturnTypeWillChange]
-    public function getAttribute($attribute)
+    #[\Return_Type_Will_Change]
+    public function get_attribute($attribute)
     {
         try {
-            return parent::getAttribute($attribute);
+            return parent::get_attribute($attribute);
         } catch (\PDOException $e) {
             switch ($attribute) {
                 case self::ATTR_SERVER_VERSION:
-                    return $this->query("SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR)")->fetchColumn();
+                    return $this->query("SELECT CAST(SERVERPROPERTY('productversion') AS VARCHAR)")->fetch_column();
                 default:
                     throw $e;
             }

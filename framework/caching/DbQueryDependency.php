@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
-use yii\base\InvalidConfigException;
-use yii\db\QueryInterface;
+use yii\base\Invalid_Config_Exception;
+use yii\db\Query_Interface;
 use yii\di\Instance;
-
 /**
  * DbQueryDependency represents a dependency based on the query result of an [[QueryInterface]] instance.
  *
@@ -30,7 +27,7 @@ use yii\di\Instance;
  * @author Paul Klimov <klimov.paul@gmail.com>
  * @since 2.0.12
  */
-class DbQueryDependency extends Dependency
+class Db_Query_Dependency extends Dependency
 {
     /**
      * @var string|array|object the application component ID of the database connection, connection object or
@@ -60,7 +57,6 @@ class DbQueryDependency extends Dependency
      * If not set - [[QueryInterface::one()]] will be used.
      */
     public $method;
-
     /**
      * Generates the data needed to determine if dependency is changed.
      *
@@ -69,37 +65,33 @@ class DbQueryDependency extends Dependency
      * @return mixed the data needed to determine if dependency has been changed.
      * @throws InvalidConfigException on invalid configuration.
      */
-    protected function generateDependencyData($cache)
+    protected function generate_dependency_data($cache)
     {
         $db = $this->db;
         if ($db !== null) {
             $db = Instance::ensure($db);
         }
-
-        if (!$this->query instanceof QueryInterface) {
-            throw new InvalidConfigException('"' . get_class($this) . '::$query" should be an instance of "yii\db\QueryInterface".');
+        if (!$this->query instanceof Query_Interface) {
+            throw new Invalid_Config_Exception('"' . get_class($this) . '::$query" should be an instance of "yii\db\QueryInterface".');
         }
-
-        if (!empty($db->enableQueryCache)) {
+        if (!empty($db->enable_query_cache)) {
             // temporarily disable and re-enable query caching
-            $originEnableQueryCache = $db->enableQueryCache;
-            $db->enableQueryCache = false;
-            $result = $this->executeQuery($this->query, $db);
-            $db->enableQueryCache = $originEnableQueryCache;
+            $origin_enable_query_cache = $db->enable_query_cache;
+            $db->enable_query_cache = false;
+            $result = $this->execute_query($this->query, $db);
+            $db->enable_query_cache = $origin_enable_query_cache;
         } else {
-            $result = $this->executeQuery($this->query, $db);
+            $result = $this->execute_query($this->query, $db);
         }
-
         return $result;
     }
-
     /**
      * Executes the query according to [[method]] specification.
      * @param QueryInterface $query query to be executed.
      * @param mixed $db connection.
      * @return mixed query result.
      */
-    private function executeQuery(\yii\db\QueryInterface $query, $db)
+    private function execute_query(\yii\db\Query_Interface $query, $db)
     {
         if ($this->method === null) {
             return $query->one($db);
@@ -107,7 +99,6 @@ class DbQueryDependency extends Dependency
         if (is_string($this->method)) {
             return call_user_func([$query, $this->method], $db);
         }
-
         return call_user_func($this->method, $query, $db);
     }
 }

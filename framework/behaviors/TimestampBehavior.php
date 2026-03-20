@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\behaviors;
 
-use yii\base\InvalidCallException;
-use yii\db\BaseActiveRecord;
-
+use yii\base\Invalid_Call_Exception;
+use yii\db\Base_Active_Record;
 /**
  * TimestampBehavior automatically fills the specified attributes with the current timestamp.
  *
@@ -75,18 +72,18 @@ use yii\db\BaseActiveRecord;
  * @template T of BaseActiveRecord = BaseActiveRecord
  * @extends AttributeBehavior<T>
  */
-class TimestampBehavior extends AttributeBehavior
+class Timestamp_Behavior extends Attribute_Behavior
 {
     /**
      * @var string the attribute that will receive timestamp value
      * Set this property to false if you do not want to record the creation time.
      */
-    public $createdAtAttribute = 'created_at';
+    public $created_at_attribute = 'created_at';
     /**
      * @var string the attribute that will receive timestamp value.
      * Set this property to false if you do not want to record the update time.
      */
-    public $updatedAtAttribute = 'updated_at';
+    public $updated_at_attribute = 'updated_at';
     /**
      * {@inheritdoc}
      *
@@ -94,37 +91,29 @@ class TimestampBehavior extends AttributeBehavior
      * will be used as value.
      */
     public $value;
-
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         parent::init();
-
         if (empty($this->attributes)) {
-            $this->attributes = [
-                BaseActiveRecord::EVENT_BEFORE_INSERT => [$this->createdAtAttribute, $this->updatedAtAttribute],
-                BaseActiveRecord::EVENT_BEFORE_UPDATE => $this->updatedAtAttribute,
-            ];
+            $this->attributes = [Base_Active_Record::EVENT_BEFORE_INSERT => [$this->created_at_attribute, $this->updated_at_attribute], Base_Active_Record::EVENT_BEFORE_UPDATE => $this->updated_at_attribute];
         }
     }
-
     /**
      * {@inheritdoc}
      *
      * In case, when the [[value]] is `null`, the result of the PHP function [time()](https://www.php.net/manual/en/function.time.php)
      * will be used as value.
      */
-    protected function getValue($event)
+    protected function get_value($event)
     {
         if ($this->value === null) {
             return time();
         }
-
-        return parent::getValue($event);
+        return parent::get_value($event);
     }
-
     /**
      * Updates a timestamp attribute to the current timestamp.
      *
@@ -138,9 +127,9 @@ class TimestampBehavior extends AttributeBehavior
     {
         /** @var BaseActiveRecord $owner */
         $owner = $this->owner;
-        if ($owner->getIsNewRecord()) {
-            throw new InvalidCallException('Updating the timestamp is not possible on a new record.');
+        if ($owner->get_is_new_record()) {
+            throw new Invalid_Call_Exception('Updating the timestamp is not possible on a new record.');
         }
-        $owner->updateAttributes(array_fill_keys((array) $attribute, $this->getValue(null)));
+        $owner->update_attributes(array_fill_keys((array) $attribute, $this->get_value(null)));
     }
 }

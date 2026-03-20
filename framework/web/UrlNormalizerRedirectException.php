@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -17,7 +15,7 @@ namespace yii\web;
  * @author Robert Korulczyk <robert@korulczyk.pl>
  * @since 2.0.10
  */
-class UrlNormalizerRedirectException extends \yii\base\Exception
+class Url_Normalizer_Redirect_Exception extends \yii\base\Exception
 {
     /**
      * @var array|string the parameter to be used to generate a valid URL for redirection
@@ -32,8 +30,7 @@ class UrlNormalizerRedirectException extends \yii\base\Exception
     /**
      * @var int the HTTP status code
      */
-    public $statusCode;
-
+    public $status_code;
     /**
      * @param array|string $url the parameter to be used to generate a valid URL for redirection.
      * This will be used as first parameter for [[\yii\helpers\Url::to()]]
@@ -44,11 +41,11 @@ class UrlNormalizerRedirectException extends \yii\base\Exception
      * @param int $code the error code
      * @param \Throwable|null $previous the previous exception used for the exception chaining
      */
-    public function __construct($url, $statusCode = 302, $scheme = false, $message = null, $code = 0, $previous = null)
+    public function __construct($url, $status_code = 302, $scheme = false, $message = null, $code = 0, $previous = null)
     {
         $this->url = $url;
         $this->scheme = $scheme;
-        $this->statusCode = $statusCode;
-        parent::__construct((string)$message, $code, $previous);
+        $this->status_code = $status_code;
+        parent::__construct((string) $message, $code, $previous);
     }
 }

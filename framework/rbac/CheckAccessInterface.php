@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rbac;
 
 /**
@@ -16,7 +14,7 @@ namespace yii\rbac;
  * @author Sam Mousa <sam@mousa.nl>
  * @since 2.0.9
  */
-interface CheckAccessInterface
+interface Check_Access_Interface
 {
     /**
      * Checks if the user has the specified permission.
@@ -28,5 +26,5 @@ interface CheckAccessInterface
      * @return bool whether the user has the specified permission.
      * @throws \yii\base\InvalidParamException if $permissionName does not refer to an existing permission
      */
-    public function checkAccess($userId, $permissionName, $params = []);
+    public function check_access($user_id, $permission_name, $params = []);
 }

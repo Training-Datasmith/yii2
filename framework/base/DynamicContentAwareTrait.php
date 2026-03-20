@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -17,43 +15,38 @@ namespace yii\base;
  * @author Sergey Makinen <sergey@makinen.ru>
  * @since 2.0.14
  */
-trait DynamicContentAwareTrait
+trait Dynamic_Content_Aware_Trait
 {
     /**
      * @var string[] a list of placeholders for dynamic content
      */
-    private $_dynamicPlaceholders;
-
+    private $_dynamic_placeholders;
     /**
      * Returns the view object that can be used to render views or view files using dynamic contents.
      * @return View the view object that can be used to render views or view files.
      */
-    abstract protected function getView();
-
+    abstract protected function get_view();
     /**
      * {@inheritdoc}
      */
-    public function getDynamicPlaceholders()
+    public function get_dynamic_placeholders()
     {
-        return $this->_dynamicPlaceholders;
+        return $this->_dynamic_placeholders;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function setDynamicPlaceholders($placeholders): void
+    public function set_dynamic_placeholders($placeholders): void
     {
-        $this->_dynamicPlaceholders = $placeholders;
+        $this->_dynamic_placeholders = $placeholders;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function addDynamicPlaceholder($name, $statements): void
+    public function add_dynamic_placeholder($name, $statements): void
     {
-        $this->_dynamicPlaceholders[$name] = $statements;
+        $this->_dynamic_placeholders[$name] = $statements;
     }
-
     /**
      * Replaces placeholders in $content with results of evaluated dynamic statements.
      * @param string $content content to be parsed.
@@ -61,26 +54,24 @@ trait DynamicContentAwareTrait
      * @param bool $isRestoredFromCache whether content is going to be restored from cache.
      * @return string final content.
      */
-    protected function updateDynamicContent($content, $placeholders, $isRestoredFromCache = false)
+    protected function update_dynamic_content($content, $placeholders, $is_restored_from_cache = false)
     {
         if (empty($placeholders) || !is_array($placeholders)) {
             return $content;
         }
-
-        if (count($this->getView()->getDynamicContents()) === 0) {
+        if (count($this->get_view()->get_dynamic_contents()) === 0) {
             // outermost cache: replace placeholder with dynamic content
             foreach ($placeholders as $name => $statements) {
-                $placeholders[$name] = $this->getView()->evaluateDynamicContent($statements);
+                $placeholders[$name] = $this->get_view()->evaluate_dynamic_content($statements);
             }
             $content = strtr($content, $placeholders);
         }
-        if ($isRestoredFromCache) {
-            $view = $this->getView();
+        if ($is_restored_from_cache) {
+            $view = $this->get_view();
             foreach ($placeholders as $name => $statements) {
-                $view->addDynamicPlaceholder($name, $statements);
+                $view->add_dynamic_placeholder($name, $statements);
             }
         }
-
         return $content;
     }
 }

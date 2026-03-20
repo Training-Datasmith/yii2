@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\i18n;
 
 use Closure;
@@ -15,18 +13,17 @@ use DateInterval;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
-use IntlDateFormatter;
-use NumberFormatter;
+use Intl_Date_Formatter;
+use Number_Formatter;
 use Yii;
 use yii\base\Component;
 use yii\base\InvalidArgumentException;
-use yii\base\InvalidConfigException;
-use yii\helpers\ArrayHelper;
-use yii\helpers\FormatConverter;
+use yii\base\Invalid_Config_Exception;
+use yii\helpers\Array_Helper;
+use yii\helpers\Format_Converter;
 use yii\helpers\Html;
-use yii\helpers\HtmlPurifier;
+use yii\helpers\Html_Purifier;
 use yii\helpers\Url;
-
 /**
  * Formatter provides a set of commonly used data formatting methods.
  *
@@ -85,14 +82,14 @@ class Formatter extends Component
      * Defaults to `'<span class="not-set">(not set)</span>'`, where `(not set)`
      * will be translated according to [[locale]].
      */
-    public $nullDisplay;
+    public $null_display;
     /**
      * @var array the text to be displayed when formatting a boolean value. The first element corresponds
      * to the text displayed for `false`, the second element for `true`.
      * Defaults to `['No', 'Yes']`, where `Yes` and `No`
      * will be translated according to [[locale]].
      */
-    public $booleanFormat;
+    public $boolean_format;
     /**
      * @var string|null the locale ID that is used to localize the date and number formatting.
      * For number and date formatting this is only effective when the
@@ -118,7 +115,7 @@ class Formatter extends Component
      * Note that the default time zone for input data is assumed to be UTC by default if no time zone is included in the input date value.
      * If you store your data in a different time zone in the database, you have to adjust [[defaultTimeZone]] accordingly.
      */
-    public $timeZone;
+    public $time_zone;
     /**
      * @var string the time zone that is assumed for input values if they do not include a time zone explicitly.
      *
@@ -132,7 +129,7 @@ class Formatter extends Component
      *
      * @since 2.0.1
      */
-    public $defaultTimeZone = 'UTC';
+    public $default_time_zone = 'UTC';
     /**
      * @var string the default format string to be used to format a [[asDate()|date]].
      * This can be "short", "medium", "long", or "full", which represents a preset format of different lengths.
@@ -148,7 +145,7 @@ class Formatter extends Component
      * 'php:m/d/Y' // the same date in PHP format
      * ```
      */
-    public $dateFormat = 'medium';
+    public $date_format = 'medium';
     /**
      * @var string the default format string to be used to format a [[asTime()|time]].
      * This can be "short", "medium", "long", or "full", which represents a preset format of different lengths.
@@ -164,7 +161,7 @@ class Formatter extends Component
      * 'php:H:i:s' // the same time in PHP format
      * ```
      */
-    public $timeFormat = 'medium';
+    public $time_format = 'medium';
     /**
      * @var string the default format string to be used to format a [[asDatetime()|date and time]].
      * This can be "short", "medium", "long", or "full", which represents a preset format of different lengths.
@@ -181,7 +178,7 @@ class Formatter extends Component
      * 'php:m/d/Y H:i:s' // the same date and time in PHP format
      * ```
      */
-    public $datetimeFormat = 'medium';
+    public $datetime_format = 'medium';
     /**
      * @var \IntlCalendar|int|null the calendar to be used for date formatting. The value of this property will be directly
      * passed to the [constructor of the `IntlDateFormatter` class](https://www.php.net/manual/en/intldateformatter.create.php).
@@ -218,20 +215,20 @@ class Formatter extends Component
      * If not set, the decimal separator corresponding to [[locale]] will be used.
      * If [PHP intl extension](https://www.php.net/manual/en/book.intl.php) is not available, the default value is '.'.
      */
-    public $decimalSeparator;
+    public $decimal_separator;
     /**
      * @var string|null the character displayed as the decimal point when formatting a currency.
      * If not set, the currency decimal separator corresponding to [[locale]] will be used.
      * If [PHP intl extension](https://www.php.net/manual/en/book.intl.php) is not available, setting this property will have no effect.
      * @since 2.0.35
      */
-    public $currencyDecimalSeparator;
+    public $currency_decimal_separator;
     /**
      * @var string|null the character displayed as the thousands separator (also called grouping separator) character when formatting a number.
      * If not set, the thousand separator corresponding to [[locale]] will be used.
      * If [PHP intl extension](https://www.php.net/manual/en/book.intl.php) is not available, the default value is ','.
      */
-    public $thousandSeparator;
+    public $thousand_separator;
     /**
      * @var array a list of name value pairs that are passed to the
      * intl [NumberFormatter::setAttribute()](https://www.php.net/manual/en/numberformatter.setattribute.php) method of all
@@ -250,7 +247,7 @@ class Formatter extends Component
      * ]
      * ```
      */
-    public $numberFormatterOptions = [];
+    public $number_formatter_options = [];
     /**
      * @var array a list of name value pairs that are passed to the
      * intl [NumberFormatter::setTextAttribute()](https://www.php.net/manual/en/numberformatter.settextattribute.php) method of all
@@ -268,7 +265,7 @@ class Formatter extends Component
      * ]
      * ```
      */
-    public $numberFormatterTextOptions = [];
+    public $number_formatter_text_options = [];
     /**
      * @var array a list of name value pairs that are passed to the
      * intl [NumberFormatter::setSymbol()](https://www.php.net/manual/en/numberformatter.setsymbol.php) method of all
@@ -288,19 +285,19 @@ class Formatter extends Component
      *
      * @since 2.0.4
      */
-    public $numberFormatterSymbols = [];
+    public $number_formatter_symbols = [];
     /**
      * @var string|null the 3-letter ISO 4217 currency code indicating the default currency to use for [[asCurrency]].
      * If not set, the currency code corresponding to [[locale]] will be used.
      * Note that in this case the [[locale]] has to be specified with a country code, e.g. `en-US` otherwise it
      * is not possible to determine the default currency.
      */
-    public $currencyCode;
+    public $currency_code;
     /**
      * @var int the base at which a kilobyte is calculated (1000 or 1024 bytes per kilobyte), used by [[asSize]] and [[asShortSize]].
      * Defaults to 1024.
      */
-    public $sizeFormatBase = 1024;
+    public $size_format_base = 1024;
     /**
      * @var string default system of measure units. Defaults to [[UNIT_SYSTEM_METRIC]].
      * Possible values:
@@ -311,7 +308,7 @@ class Formatter extends Component
      * @see asWeight
      * @since 2.0.13
      */
-    public $systemOfUnits = self::UNIT_SYSTEM_METRIC;
+    public $system_of_units = self::UNIT_SYSTEM_METRIC;
     /**
      * @var array configuration of weight and length measurement units.
      * This array contains the most usable measurement units, but you can change it
@@ -328,76 +325,39 @@ class Formatter extends Component
      * @see asWeight
      * @since 2.0.13
      */
-    public $measureUnits = [
-        self::UNIT_LENGTH => [
-            self::UNIT_SYSTEM_IMPERIAL => [
-                'inch' => 1,
-                'foot' => 12,
-                'yard' => 36,
-                'chain' => 792,
-                'furlong' => 7920,
-                'mile' => 63360,
-            ],
-            self::UNIT_SYSTEM_METRIC => [
-                'millimeter' => 1,
-                'centimeter' => 10,
-                'meter' => 1000,
-                'kilometer' => 1000000,
-            ],
-        ],
-        self::UNIT_WEIGHT => [
-            self::UNIT_SYSTEM_IMPERIAL => [
-                'grain' => 1,
-                'drachm' => 27.34375,
-                'ounce' => 437.5,
-                'pound' => 7000,
-                'stone' => 98000,
-                'quarter' => 196000,
-                'hundredweight' => 784000,
-                'ton' => 15680000,
-            ],
-            self::UNIT_SYSTEM_METRIC => [
-                'gram' => 1,
-                'kilogram' => 1000,
-                'ton' => 1000000,
-            ],
-        ],
-    ];
+    public $measure_units = [self::UNIT_LENGTH => [self::UNIT_SYSTEM_IMPERIAL => ['inch' => 1, 'foot' => 12, 'yard' => 36, 'chain' => 792, 'furlong' => 7920, 'mile' => 63360], self::UNIT_SYSTEM_METRIC => ['millimeter' => 1, 'centimeter' => 10, 'meter' => 1000, 'kilometer' => 1000000]], self::UNIT_WEIGHT => [self::UNIT_SYSTEM_IMPERIAL => ['grain' => 1, 'drachm' => 27.34375, 'ounce' => 437.5, 'pound' => 7000, 'stone' => 98000, 'quarter' => 196000, 'hundredweight' => 784000, 'ton' => 15680000], self::UNIT_SYSTEM_METRIC => ['gram' => 1, 'kilogram' => 1000, 'ton' => 1000000]]];
     /**
      * @var array The base units that are used as multipliers for smallest possible unit from [[measureUnits]].
      * @since 2.0.13
      */
-    public $baseUnits = [
-        self::UNIT_LENGTH => [
-            self::UNIT_SYSTEM_IMPERIAL => 12, // 1 feet = 12 inches
-            self::UNIT_SYSTEM_METRIC => 1000, // 1 meter = 1000 millimeters
-        ],
-        self::UNIT_WEIGHT => [
-            self::UNIT_SYSTEM_IMPERIAL => 7000, // 1 pound = 7000 grains
-            self::UNIT_SYSTEM_METRIC => 1000, // 1 kilogram = 1000 grams
-        ],
-    ];
-
+    public $base_units = [self::UNIT_LENGTH => [
+        self::UNIT_SYSTEM_IMPERIAL => 12,
+        // 1 feet = 12 inches
+        self::UNIT_SYSTEM_METRIC => 1000,
+    ], self::UNIT_WEIGHT => [
+        self::UNIT_SYSTEM_IMPERIAL => 7000,
+        // 1 pound = 7000 grains
+        self::UNIT_SYSTEM_METRIC => 1000,
+    ]];
     /**
      * @var bool whether the [PHP intl extension](https://www.php.net/manual/en/book.intl.php) is loaded.
      */
-    private $_intlLoaded = false;
+    private $_intl_loaded = false;
     /**
      * @var \ResourceBundle cached ResourceBundle object used to read unit translations
      */
-    private ?\ResourceBundle $_resourceBundle = null;
+    private ?\Resource_Bundle $_resource_bundle = null;
     /**
      * @var array cached unit translation patterns
      */
-    private array $_unitMessages = [];
-
+    private array $_unit_messages = [];
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
-        if ($this->timeZone === null) {
-            $this->timeZone = Yii::$app->timeZone;
+        if ($this->time_zone === null) {
+            $this->time_zone = Yii::$app->time_zone;
         }
         if ($this->locale === null) {
             $this->locale = Yii::$app->language;
@@ -405,23 +365,22 @@ class Formatter extends Component
         if ($this->language === null) {
             $this->language = strtok($this->locale, '@');
         }
-        if ($this->booleanFormat === null) {
-            $this->booleanFormat = [Yii::t('yii', 'No', [], $this->language), Yii::t('yii', 'Yes', [], $this->language)];
+        if ($this->boolean_format === null) {
+            $this->boolean_format = [Yii::t('yii', 'No', [], $this->language), Yii::t('yii', 'Yes', [], $this->language)];
         }
-        if ($this->nullDisplay === null) {
-            $this->nullDisplay = '<span class="not-set">' . Yii::t('yii', '(not set)', [], $this->language) . '</span>';
+        if ($this->null_display === null) {
+            $this->null_display = '<span class="not-set">' . Yii::t('yii', '(not set)', [], $this->language) . '</span>';
         }
-        $this->_intlLoaded = extension_loaded('intl');
-        if (!$this->_intlLoaded) {
-            if ($this->decimalSeparator === null) {
-                $this->decimalSeparator = '.';
+        $this->_intl_loaded = extension_loaded('intl');
+        if (!$this->_intl_loaded) {
+            if ($this->decimal_separator === null) {
+                $this->decimal_separator = '.';
             }
-            if ($this->thousandSeparator === null) {
-                $this->thousandSeparator = ',';
+            if ($this->thousand_separator === null) {
+                $this->thousand_separator = ',';
             }
         }
     }
-
     /**
      * Formats the value based on the given format type.
      * This method will call one of the "as" methods available in this class to do the formatting.
@@ -460,15 +419,12 @@ class Formatter extends Component
             $params = [$value];
         }
         $method = 'as' . $format;
-        if ($this->hasMethod($method)) {
+        if ($this->has_method($method)) {
             return call_user_func_array([$this, $method], array_values($params));
         }
-
-        throw new InvalidArgumentException("Unknown format type: $format");
+        throw new InvalidArgumentException("Unknown format type: {$format}");
     }
-
     // simple formats
-
     /**
      * Formats the value as is without any formatting.
      * This method simply returns back the parameter without any format.
@@ -476,43 +432,37 @@ class Formatter extends Component
      * @param mixed $value the value to be formatted.
      * @return string the formatted result.
      */
-    public function asRaw($value)
+    public function as_raw($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         return $value;
     }
-
     /**
      * Formats the value as an HTML-encoded plain text.
      * @param string|null $value the value to be formatted.
      * @return string the formatted result.
      */
-    public function asText($value)
+    public function as_text($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         return Html::encode($value);
     }
-
     /**
      * Formats the value as an HTML-encoded plain text with newlines converted into breaks.
      * @param string|null $value the value to be formatted.
      * @return string the formatted result.
      */
-    public function asNtext($value)
+    public function as_ntext($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         return nl2br(Html::encode($value));
     }
-
     /**
      * Formats the value as HTML-encoded text paragraphs.
      * Each text paragraph is enclosed within a `<p>` tag.
@@ -520,15 +470,13 @@ class Formatter extends Component
      * @param string|null $value the value to be formatted.
      * @return string the formatted result.
      */
-    public function asParagraphs($value)
+    public function as_paragraphs($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         return str_replace('<p></p>', '', '<p>' . preg_replace('/\R{2,}/u', "</p>\n<p>", Html::encode($value)) . '</p>');
     }
-
     /**
      * Formats the value as HTML text.
      * The value will be purified using [[HtmlPurifier]] to avoid XSS attacks.
@@ -537,45 +485,39 @@ class Formatter extends Component
      * @param array|null $config the configuration for the HTMLPurifier class.
      * @return string the formatted result.
      */
-    public function asHtml($value, $config = null)
+    public function as_html($value, $config = null)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        return HtmlPurifier::process($value, $config);
+        return Html_Purifier::process($value, $config);
     }
-
     /**
      * Formats the value as a mailto link.
      * @param string|null $value the value to be formatted.
      * @param array $options the tag options in terms of name-value pairs. See [[Html::mailto()]].
      * @return string the formatted result.
      */
-    public function asEmail($value, $options = [])
+    public function as_email($value, $options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         return Html::mailto(Html::encode($value), $value, $options);
     }
-
     /**
      * Formats the value as an image tag.
      * @param mixed $value the value to be formatted.
      * @param array $options the tag options in terms of name-value pairs. See [[Html::img()]].
      * @return string the formatted result.
      */
-    public function asImage($value, $options = [])
+    public function as_image($value, $options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         return Html::img($value, $options);
     }
-
     /**
      * Formats the value as a hyperlink.
      * @param mixed $value the value to be formatted.
@@ -586,41 +528,36 @@ class Formatter extends Component
      * not found in the $value.
      * @return string the formatted result.
      */
-    public function asUrl($value, $options = [])
+    public function as_url($value, $options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
         $url = $value;
-        $scheme = ArrayHelper::remove($options, 'scheme');
+        $scheme = Array_Helper::remove($options, 'scheme');
         if ($scheme === null) {
             if (strpos($url, '://') === false) {
                 $url = 'http://' . $url;
             }
         } else {
-            $url = Url::ensureScheme($url, $scheme);
+            $url = Url::ensure_scheme($url, $scheme);
         }
-
         return Html::a(Html::encode($value), $url, $options);
     }
-
     /**
      * Formats the value as a boolean.
      * @param mixed $value the value to be formatted.
      * @return string the formatted result.
      * @see booleanFormat
      */
-    public function asBoolean($value)
+    public function as_boolean($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        return $value ? $this->booleanFormat[1] : $this->booleanFormat[0];
+        return $value ? $this->boolean_format[1] : $this->boolean_format[0];
     }
-
     // date and time formats
-
     /**
      * Formats the value as a date.
      * @param int|string|DateTime|DateTimeInterface|null $value the value to be formatted. The following
@@ -650,15 +587,13 @@ class Formatter extends Component
      * @throws InvalidConfigException if the date format is invalid.
      * @see dateFormat
      */
-    public function asDate($value, $format = null)
+    public function as_date($value, $format = null)
     {
         if ($format === null) {
-            $format = $this->dateFormat;
+            $format = $this->date_format;
         }
-
-        return $this->formatDateTimeValue($value, $format, 'date');
+        return $this->format_date_time_value($value, $format, 'date');
     }
-
     /**
      * Formats the value as a time.
      * @param int|string|DateTime|DateTimeInterface|null $value the value to be formatted. The following
@@ -687,15 +622,13 @@ class Formatter extends Component
      * @throws InvalidConfigException if the date format is invalid.
      * @see timeFormat
      */
-    public function asTime($value, $format = null)
+    public function as_time($value, $format = null)
     {
         if ($format === null) {
-            $format = $this->timeFormat;
+            $format = $this->time_format;
         }
-
-        return $this->formatDateTimeValue($value, $format, 'time');
+        return $this->format_date_time_value($value, $format, 'time');
     }
-
     /**
      * Formats the value as a datetime.
      * @param int|string|DateTime|DateTimeInterface|null $value the value to be formatted. The following
@@ -724,25 +657,25 @@ class Formatter extends Component
      * @throws InvalidConfigException if the date format is invalid.
      * @see datetimeFormat
      */
-    public function asDatetime($value, $format = null)
+    public function as_datetime($value, $format = null)
     {
         if ($format === null) {
-            $format = $this->datetimeFormat;
+            $format = $this->datetime_format;
         }
-
-        return $this->formatDateTimeValue($value, $format, 'datetime');
+        return $this->format_date_time_value($value, $format, 'datetime');
     }
-
     /**
      * @var array map of short format names to IntlDateFormatter constant values.
      */
-    private array $_dateFormats = [
-        'short' => 3, // IntlDateFormatter::SHORT,
-        'medium' => 2, // IntlDateFormatter::MEDIUM,
-        'long' => 1, // IntlDateFormatter::LONG,
-        'full' => 0, // IntlDateFormatter::FULL,
+    private array $_date_formats = [
+        'short' => 3,
+        // IntlDateFormatter::SHORT,
+        'medium' => 2,
+        // IntlDateFormatter::MEDIUM,
+        'long' => 1,
+        // IntlDateFormatter::LONG,
+        'full' => 0,
     ];
-
     /**
      * @param int|string|DateTime|DateTimeInterface|null $value the value to be formatted. The following
      * types of value are supported:
@@ -757,89 +690,58 @@ class Formatter extends Component
      * @throws InvalidConfigException if the date format is invalid.
      * @return string the formatted result.
      */
-    private function formatDateTimeValue($value, $format, string $type)
+    private function format_date_time_value($value, $format, string $type)
     {
-        $timeZone = $this->timeZone;
+        $time_zone = $this->time_zone;
         // avoid time zone conversion for date-only and time-only values
         if ($type === 'date' || $type === 'time') {
-            [$timestamp, $hasTimeInfo, $hasDateInfo] = $this->normalizeDatetimeValue($value, true);
-            if (($type === 'date' && !$hasTimeInfo) || ($type === 'time' && !$hasDateInfo)) {
-                $timeZone = $this->defaultTimeZone;
+            [$timestamp, $has_time_info, $has_date_info] = $this->normalize_datetime_value($value, true);
+            if ($type === 'date' && !$has_time_info || $type === 'time' && !$has_date_info) {
+                $time_zone = $this->default_time_zone;
             }
         } else {
-            $timestamp = $this->normalizeDatetimeValue($value);
+            $timestamp = $this->normalize_datetime_value($value);
         }
         if ($timestamp === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         // intl does not work with dates >=2038 or <=1901 on 32bit machines, fall back to PHP
         $year = $timestamp->format('Y');
-        if ($this->_intlLoaded && !(PHP_INT_SIZE === 4 && ($year <= 1901 || $year >= 2038))) {
+        if ($this->_intl_loaded && !(PHP_INT_SIZE === 4 && ($year <= 1901 || $year >= 2038))) {
             if (strncmp($format, 'php:', 4) === 0) {
-                $format = FormatConverter::convertDatePhpToIcu(substr($format, 4));
+                $format = Format_Converter::convert_date_php_to_icu(substr($format, 4));
             }
-            if (isset($this->_dateFormats[$format])) {
+            if (isset($this->_date_formats[$format])) {
                 if ($type === 'date') {
-                    $formatter = new IntlDateFormatter(
-                        $this->locale,
-                        $this->_dateFormats[$format],
-                        IntlDateFormatter::NONE,
-                        $timeZone,
-                        $this->calendar
-                    );
+                    $formatter = new Intl_Date_Formatter($this->locale, $this->_date_formats[$format], Intl_Date_Formatter::NONE, $time_zone, $this->calendar);
                 } elseif ($type === 'time') {
-                    $formatter = new IntlDateFormatter(
-                        $this->locale,
-                        IntlDateFormatter::NONE,
-                        $this->_dateFormats[$format],
-                        $timeZone,
-                        $this->calendar
-                    );
+                    $formatter = new Intl_Date_Formatter($this->locale, Intl_Date_Formatter::NONE, $this->_date_formats[$format], $time_zone, $this->calendar);
                 } else {
-                    $formatter = new IntlDateFormatter(
-                        $this->locale,
-                        $this->_dateFormats[$format],
-                        $this->_dateFormats[$format],
-                        $timeZone,
-                        $this->calendar
-                    );
+                    $formatter = new Intl_Date_Formatter($this->locale, $this->_date_formats[$format], $this->_date_formats[$format], $time_zone, $this->calendar);
                 }
             } else {
-                $formatter = new IntlDateFormatter(
-                    $this->locale,
-                    IntlDateFormatter::NONE,
-                    IntlDateFormatter::NONE,
-                    $timeZone,
-                    $this->calendar,
-                    $format
-                );
+                $formatter = new Intl_Date_Formatter($this->locale, Intl_Date_Formatter::NONE, Intl_Date_Formatter::NONE, $time_zone, $this->calendar, $format);
             }
-
             // make IntlDateFormatter work with DateTimeImmutable
             if ($timestamp instanceof \DateTimeImmutable) {
-                $timestamp = new DateTime($timestamp->format(DateTime::ISO8601), $timestamp->getTimezone());
+                $timestamp = new DateTime($timestamp->format(DateTime::ISO8601), $timestamp->get_timezone());
             }
-
             return $formatter->format($timestamp);
         }
-
         if (strncmp($format, 'php:', 4) === 0) {
             $format = substr($format, 4);
         } else {
-            $format = FormatConverter::convertDateIcuToPhp($format, $type, $this->locale);
+            $format = Format_Converter::convert_date_icu_to_php($format, $type, $this->locale);
         }
-        if ($timeZone != null) {
+        if ($time_zone != null) {
             if ($timestamp instanceof \DateTimeImmutable) {
-                $timestamp = $timestamp->setTimezone(new DateTimeZone($timeZone));
+                $timestamp = $timestamp->set_timezone(new DateTimeZone($time_zone));
             } else {
-                $timestamp->setTimezone(new DateTimeZone($timeZone));
+                $timestamp->set_timezone(new DateTimeZone($time_zone));
             }
         }
-
         return $timestamp->format($format);
     }
-
     /**
      * Normalizes the given datetime value as a DateTime object that can be taken by various date/time formatting methods.
      *
@@ -864,61 +766,41 @@ class Formatter extends Component
      * or it is just a time value.
      * @throws InvalidArgumentException if the input value can not be evaluated as a date value.
      */
-    protected function normalizeDatetimeValue($value, $checkDateTimeInfo = false)
+    protected function normalize_datetime_value($value, $check_date_time_info = false)
     {
         // checking for DateTime and DateTimeInterface is not redundant, DateTimeInterface is only in PHP>5.5
         if ($value === null || $value instanceof DateTime || $value instanceof DateTimeInterface) {
             // skip any processing
-            return $checkDateTimeInfo ? [$value, true, true] : $value;
+            return $check_date_time_info ? [$value, true, true] : $value;
         }
         if (empty($value)) {
             $value = 0;
         }
         try {
-            if (is_numeric($value)) { // process as unix timestamp, which is always in UTC
+            if (is_numeric($value)) {
+                // process as unix timestamp, which is always in UTC
                 $timestamp = new DateTime('@' . (int) $value, new DateTimeZone('UTC'));
-                return $checkDateTimeInfo ? [$timestamp, true, true] : $timestamp;
+                return $check_date_time_info ? [$timestamp, true, true] : $timestamp;
             }
-            if (
-                (
-                    $timestamp = DateTime::createFromFormat(
-                        'Y-m-d|',
-                        $value,
-                        new DateTimeZone($this->defaultTimeZone)
-                    )
-                ) !== false
-            ) { // try Y-m-d format (support invalid dates like 2012-13-01)
-                return $checkDateTimeInfo ? [$timestamp, false, true] : $timestamp;
+            if (($timestamp = DateTime::create_from_format('Y-m-d|', $value, new DateTimeZone($this->default_time_zone))) !== false) {
+                // try Y-m-d format (support invalid dates like 2012-13-01)
+                return $check_date_time_info ? [$timestamp, false, true] : $timestamp;
             }
-            if (
-                (
-                    $timestamp = DateTime::createFromFormat(
-                        'Y-m-d H:i:s',
-                        $value,
-                        new DateTimeZone($this->defaultTimeZone)
-                    )
-                ) !== false
-            ) { // try Y-m-d H:i:s format (support invalid dates like 2012-13-01 12:63:12)
-                return $checkDateTimeInfo ? [$timestamp, true, true] : $timestamp;
+            if (($timestamp = DateTime::create_from_format('Y-m-d H:i:s', $value, new DateTimeZone($this->default_time_zone))) !== false) {
+                // try Y-m-d H:i:s format (support invalid dates like 2012-13-01 12:63:12)
+                return $check_date_time_info ? [$timestamp, true, true] : $timestamp;
             }
             // finally try to create a DateTime object with the value
-            if ($checkDateTimeInfo) {
-                $timestamp = new DateTime($value, new DateTimeZone($this->defaultTimeZone));
+            if ($check_date_time_info) {
+                $timestamp = new DateTime($value, new DateTimeZone($this->default_time_zone));
                 $info = date_parse($value);
-                return [
-                    $timestamp,
-                    !($info['hour'] === false && $info['minute'] === false && $info['second'] === false),
-                    !($info['year'] === false && $info['month'] === false && $info['day'] === false && empty($info['zone'])),
-                ];
+                return [$timestamp, !($info['hour'] === false && $info['minute'] === false && $info['second'] === false), !($info['year'] === false && $info['month'] === false && $info['day'] === false && empty($info['zone']))];
             }
-
-            return new DateTime($value, new DateTimeZone($this->defaultTimeZone));
+            return new DateTime($value, new DateTimeZone($this->default_time_zone));
         } catch (\Exception $e) {
-            throw new InvalidArgumentException("'$value' is not a valid date time value: " . $e->getMessage()
-                . "\n" . print_r(DateTime::getLastErrors(), true), $e->getCode(), $e);
+            throw new InvalidArgumentException("'{$value}' is not a valid date time value: " . $e->get_message() . "\n" . print_r(DateTime::get_last_errors(), true), $e->get_code(), $e);
         }
     }
-
     /**
      * Formats a date, time or datetime in a float number as UNIX timestamp (seconds since 01-01-1970).
      * @param int|string|DateTime|DateTimeInterface|null $value the value to be formatted. The following
@@ -931,15 +813,14 @@ class Formatter extends Component
      *
      * @return string the formatted result.
      */
-    public function asTimestamp($value)
+    public function as_timestamp($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-        $timestamp = $this->normalizeDatetimeValue($value);
+        $timestamp = $this->normalize_datetime_value($value);
         return number_format($timestamp->format('U'), 0, '.', '');
     }
-
     /**
      * Formats the value as the time interval between a date and now in human readable form.
      *
@@ -963,29 +844,25 @@ class Formatter extends Component
      * @return string the formatted result.
      * @throws InvalidArgumentException if the input value can not be evaluated as a date value.
      */
-    public function asRelativeTime($value, $referenceTime = null)
+    public function as_relative_time($value, $reference_time = null)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         if ($value instanceof DateInterval) {
             $interval = $value;
         } else {
-            $timestamp = $this->normalizeDatetimeValue($value);
-            $timeZone = new DateTimeZone($this->timeZone);
-
-            if ($referenceTime === null) {
-                $dateNow = new DateTime('now', $timeZone);
+            $timestamp = $this->normalize_datetime_value($value);
+            $time_zone = new DateTimeZone($this->time_zone);
+            if ($reference_time === null) {
+                $date_now = new DateTime('now', $time_zone);
             } else {
-                $dateNow = $this->normalizeDatetimeValue($referenceTime);
-                $dateNow->setTimezone($timeZone);
+                $date_now = $this->normalize_datetime_value($reference_time);
+                $date_now->set_timezone($time_zone);
             }
-
-            $dateThen = $timestamp->setTimezone($timeZone);
-            $interval = $dateThen->diff($dateNow);
+            $date_then = $timestamp->set_timezone($time_zone);
+            $interval = $date_then->diff($date_now);
         }
-
         if ($interval->invert) {
             if ($interval->y >= 1) {
                 return Yii::t('yii', 'in {delta, plural, =1{a year} other{# years}}', ['delta' => $interval->y], $this->language);
@@ -1005,10 +882,8 @@ class Formatter extends Component
             if ($interval->s == 0) {
                 return Yii::t('yii', 'just now', [], $this->language);
             }
-
             return Yii::t('yii', 'in {delta, plural, =1{a second} other{# seconds}}', ['delta' => $interval->s], $this->language);
         }
-
         if ($interval->y >= 1) {
             return Yii::t('yii', '{delta, plural, =1{a year} other{# years}} ago', ['delta' => $interval->y], $this->language);
         }
@@ -1027,10 +902,8 @@ class Formatter extends Component
         if ($interval->s == 0) {
             return Yii::t('yii', 'just now', [], $this->language);
         }
-
         return Yii::t('yii', '{delta, plural, =1{a second} other{# seconds}} ago', ['delta' => $interval->s], $this->language);
     }
-
     /**
      * Represents the value as duration in human readable format.
      *
@@ -1049,28 +922,26 @@ class Formatter extends Component
      * @return string the formatted duration.
      * @since 2.0.7
      */
-    public function asDuration($value, $implodeString = ', ', $negativeSign = '-')
+    public function as_duration($value, $implode_string = ', ', $negative_sign = '-')
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
         if ($value instanceof DateInterval) {
-            $isNegative = $value->invert;
+            $is_negative = $value->invert;
             $interval = $value;
         } elseif (is_numeric($value)) {
-            $isNegative = $value < 0;
-            $zeroDateTime = (new DateTime())->setTimestamp(0);
-            $valueDateTime = (new DateTime())->setTimestamp(abs((int) $value));
-            $interval = $valueDateTime->diff($zeroDateTime);
+            $is_negative = $value < 0;
+            $zero_date_time = (new DateTime())->set_timestamp(0);
+            $value_date_time = (new DateTime())->set_timestamp(abs((int) $value));
+            $interval = $value_date_time->diff($zero_date_time);
         } elseif (strncmp($value, 'P-', 2) === 0) {
             $interval = new DateInterval('P' . substr($value, 2));
-            $isNegative = true;
+            $is_negative = true;
         } else {
             $interval = new DateInterval($value);
-            $isNegative = $interval->invert;
+            $is_negative = $interval->invert;
         }
-
         $parts = [];
         if ($interval->y > 0) {
             $parts[] = Yii::t('yii', '{delta, plural, =1{1 year} other{# years}}', ['delta' => $interval->y], $this->language);
@@ -1092,14 +963,11 @@ class Formatter extends Component
         }
         if ($interval->s === 0 && empty($parts)) {
             $parts[] = Yii::t('yii', '{delta, plural, =1{1 second} other{# seconds}}', ['delta' => $interval->s], $this->language);
-            $isNegative = false;
+            $is_negative = false;
         }
-
-        return empty($parts) ? $this->nullDisplay : (($isNegative ? $negativeSign : '') . implode($implodeString, $parts));
+        return empty($parts) ? $this->null_display : ($is_negative ? $negative_sign : '') . implode($implode_string, $parts);
     }
-
     // number formats
-
     /**
      * Formats the value as an integer number by removing any decimal digits without rounding.
      *
@@ -1113,31 +981,25 @@ class Formatter extends Component
      * @return string the formatted result.
      * @throws InvalidArgumentException if the input value is not numeric or the formatting failed.
      */
-    public function asInteger($value, $options = [], $textOptions = [])
+    public function as_integer($value, $options = [], $text_options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        $normalizedValue = $this->normalizeNumericValue($value);
-
-        if ($this->isNormalizedValueMispresented($value, $normalizedValue)) {
-            return $this->asIntegerStringFallback((string) $value);
+        $normalized_value = $this->normalize_numeric_value($value);
+        if ($this->is_normalized_value_mispresented($value, $normalized_value)) {
+            return $this->as_integer_string_fallback((string) $value);
         }
-
-        if ($this->_intlLoaded) {
-            $f = $this->createNumberFormatter(NumberFormatter::DECIMAL, null, $options, $textOptions);
-            $f->setAttribute(NumberFormatter::FRACTION_DIGITS, 0);
-            if (($result = $f->format($normalizedValue, NumberFormatter::TYPE_INT64)) === false) {
-                throw new InvalidArgumentException('Formatting integer value failed: ' . $f->getErrorCode() . ' ' . $f->getErrorMessage());
+        if ($this->_intl_loaded) {
+            $f = $this->create_number_formatter(Number_Formatter::DECIMAL, null, $options, $text_options);
+            $f->set_attribute(Number_Formatter::FRACTION_DIGITS, 0);
+            if (($result = $f->format($normalized_value, Number_Formatter::TYPE_INT64)) === false) {
+                throw new InvalidArgumentException('Formatting integer value failed: ' . $f->get_error_code() . ' ' . $f->get_error_message());
             }
-
             return $result;
         }
-
-        return number_format((int) $normalizedValue, 0, $this->decimalSeparator, $this->thousandSeparator);
+        return number_format((int) $normalized_value, 0, $this->decimal_separator, $this->thousand_separator);
     }
-
     /**
      * Formats the value as a decimal number.
      *
@@ -1163,34 +1025,27 @@ class Formatter extends Component
      * @see decimalSeparator
      * @see thousandSeparator
      */
-    public function asDecimal($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_decimal($value, $decimals = null, $options = [], $text_options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        $normalizedValue = $this->normalizeNumericValue($value);
-
-        if ($this->isNormalizedValueMispresented($value, $normalizedValue)) {
-            return $this->asDecimalStringFallback((string) $value, $decimals);
+        $normalized_value = $this->normalize_numeric_value($value);
+        if ($this->is_normalized_value_mispresented($value, $normalized_value)) {
+            return $this->as_decimal_string_fallback((string) $value, $decimals);
         }
-
-        if ($this->_intlLoaded) {
-            $f = $this->createNumberFormatter(NumberFormatter::DECIMAL, $decimals, $options, $textOptions);
-            if (($result = $f->format($normalizedValue)) === false) {
-                throw new InvalidArgumentException('Formatting decimal value failed: ' . $f->getErrorCode() . ' ' . $f->getErrorMessage());
+        if ($this->_intl_loaded) {
+            $f = $this->create_number_formatter(Number_Formatter::DECIMAL, $decimals, $options, $text_options);
+            if (($result = $f->format($normalized_value)) === false) {
+                throw new InvalidArgumentException('Formatting decimal value failed: ' . $f->get_error_code() . ' ' . $f->get_error_message());
             }
-
             return $result;
         }
-
         if ($decimals === null) {
             $decimals = 2;
         }
-
-        return number_format($normalizedValue, $decimals, $this->decimalSeparator, $this->thousandSeparator);
+        return number_format($normalized_value, $decimals, $this->decimal_separator, $this->thousand_separator);
     }
-
     /**
      * Formats the value as a percent number with "%" sign.
      *
@@ -1211,35 +1066,28 @@ class Formatter extends Component
      * @return string the formatted result.
      * @throws InvalidArgumentException if the input value is not numeric or the formatting failed.
      */
-    public function asPercent($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_percent($value, $decimals = null, $options = [], $text_options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        $normalizedValue = $this->normalizeNumericValue($value);
-
-        if ($this->isNormalizedValueMispresented($value, $normalizedValue)) {
-            return $this->asPercentStringFallback((string) $value, $decimals);
+        $normalized_value = $this->normalize_numeric_value($value);
+        if ($this->is_normalized_value_mispresented($value, $normalized_value)) {
+            return $this->as_percent_string_fallback((string) $value, $decimals);
         }
-
-        if ($this->_intlLoaded) {
-            $f = $this->createNumberFormatter(NumberFormatter::PERCENT, $decimals, $options, $textOptions);
-            if (($result = $f->format($normalizedValue)) === false) {
-                throw new InvalidArgumentException('Formatting percent value failed: ' . $f->getErrorCode() . ' ' . $f->getErrorMessage());
+        if ($this->_intl_loaded) {
+            $f = $this->create_number_formatter(Number_Formatter::PERCENT, $decimals, $options, $text_options);
+            if (($result = $f->format($normalized_value)) === false) {
+                throw new InvalidArgumentException('Formatting percent value failed: ' . $f->get_error_code() . ' ' . $f->get_error_message());
             }
-
             return $result;
         }
-
         if ($decimals === null) {
             $decimals = 0;
         }
-
-        $normalizedValue *= 100;
-        return number_format($normalizedValue, $decimals, $this->decimalSeparator, $this->thousandSeparator) . '%';
+        $normalized_value *= 100;
+        return number_format($normalized_value, $decimals, $this->decimal_separator, $this->thousand_separator) . '%';
     }
-
     /**
      * Formats the value as a scientific number.
      *
@@ -1257,36 +1105,28 @@ class Formatter extends Component
      * @return string the formatted result.
      * @throws InvalidArgumentException if the input value is not numeric or the formatting failed.
      */
-    public function asScientific($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_scientific($value, $decimals = null, $options = [], $text_options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        $value = $this->normalizeNumericValue($value);
-
-        if ($this->_intlLoaded) {
-            $f = $this->createNumberFormatter(NumberFormatter::SCIENTIFIC, $decimals, $options, $textOptions);
-
+        $value = $this->normalize_numeric_value($value);
+        if ($this->_intl_loaded) {
+            $f = $this->create_number_formatter(Number_Formatter::SCIENTIFIC, $decimals, $options, $text_options);
             if (($result = $f->format($value)) === false) {
-                throw new InvalidArgumentException('Formatting scientific number value failed: ' . $f->getErrorCode() . ' ' . $f->getErrorMessage());
+                throw new InvalidArgumentException('Formatting scientific number value failed: ' . $f->get_error_code() . ' ' . $f->get_error_message());
             }
-
             return $result;
         }
-
         if ($decimals !== null) {
             return sprintf("%.{$decimals}E", $value);
         }
-
         // PHP 8.5+ changed sprintf('%.E') behavior: empty precision now defaults to '0' instead of '6'
         // Specify explicit precision to maintain backward compatibility
         // @link https://github.com/php/php-src/commit/5ed8b2be5533fbd4db95d9724d268eb9c9741f14
         $format = PHP_VERSION_ID >= 80500 ? '%.6E' : '%.E';
-
         return sprintf($format, $value);
     }
-
     /**
      * Formats the value as a currency number.
      *
@@ -1306,48 +1146,41 @@ class Formatter extends Component
      * @throws InvalidArgumentException if the input value is not numeric or the formatting failed.
      * @throws InvalidConfigException if no currency is given and [[currencyCode]] is not defined.
      */
-    public function asCurrency($value, $currency = null, $options = [], array $textOptions = [])
+    public function as_currency($value, $currency = null, $options = [], array $text_options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        $normalizedValue = $this->normalizeNumericValue($value);
-
-        if ($this->isNormalizedValueMispresented($value, $normalizedValue)) {
-            return $this->asCurrencyStringFallback((string) $value, $currency);
+        $normalized_value = $this->normalize_numeric_value($value);
+        if ($this->is_normalized_value_mispresented($value, $normalized_value)) {
+            return $this->as_currency_string_fallback((string) $value, $currency);
         }
-
-        if ($this->_intlLoaded) {
-            $currency = $currency ?: $this->currencyCode;
+        if ($this->_intl_loaded) {
+            $currency = $currency ?: $this->currency_code;
             // currency code must be set before fraction digits
             // https://www.php.net/manual/en/numberformatter.formatcurrency.php#114376
-            if ($currency && !isset($textOptions[NumberFormatter::CURRENCY_CODE])) {
-                $textOptions[NumberFormatter::CURRENCY_CODE] = $currency;
+            if ($currency && !isset($text_options[Number_Formatter::CURRENCY_CODE])) {
+                $text_options[Number_Formatter::CURRENCY_CODE] = $currency;
             }
-            $formatter = $this->createNumberFormatter(NumberFormatter::CURRENCY, null, $options, $textOptions);
+            $formatter = $this->create_number_formatter(Number_Formatter::CURRENCY, null, $options, $text_options);
             if ($currency === null) {
-                $result = $formatter->format($normalizedValue);
+                $result = $formatter->format($normalized_value);
             } else {
-                $result = $formatter->formatCurrency($normalizedValue, $currency);
+                $result = $formatter->format_currency($normalized_value, $currency);
             }
             if ($result === false) {
-                throw new InvalidArgumentException('Formatting currency value failed: ' . $formatter->getErrorCode() . ' ' . $formatter->getErrorMessage());
+                throw new InvalidArgumentException('Formatting currency value failed: ' . $formatter->get_error_code() . ' ' . $formatter->get_error_message());
             }
-
             return $result;
         }
-
         if ($currency === null) {
-            if ($this->currencyCode === null) {
-                throw new InvalidConfigException('The default currency code for the formatter is not defined and the php intl extension is not installed which could take the default currency from the locale.');
+            if ($this->currency_code === null) {
+                throw new Invalid_Config_Exception('The default currency code for the formatter is not defined and the php intl extension is not installed which could take the default currency from the locale.');
             }
-            $currency = $this->currencyCode;
+            $currency = $this->currency_code;
         }
-
-        return $currency . ' ' . $this->asDecimal($normalizedValue, 2, $options, $textOptions);
+        return $currency . ' ' . $this->as_decimal($normalized_value, 2, $options, $text_options);
     }
-
     /**
      * Formats the value as a number spellout.
      *
@@ -1360,24 +1193,21 @@ class Formatter extends Component
      * @throws InvalidArgumentException if the input value is not numeric or the formatting failed.
      * @throws InvalidConfigException when the [PHP intl extension](https://www.php.net/manual/en/book.intl.php) is not available.
      */
-    public function asSpellout($value)
+    public function as_spellout($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-        $value = $this->normalizeNumericValue($value);
-        if ($this->_intlLoaded) {
-            $f = $this->createNumberFormatter(NumberFormatter::SPELLOUT);
+        $value = $this->normalize_numeric_value($value);
+        if ($this->_intl_loaded) {
+            $f = $this->create_number_formatter(Number_Formatter::SPELLOUT);
             if (($result = $f->format($value)) === false) {
-                throw new InvalidArgumentException('Formatting number as spellout failed: ' . $f->getErrorCode() . ' ' . $f->getErrorMessage());
+                throw new InvalidArgumentException('Formatting number as spellout failed: ' . $f->get_error_code() . ' ' . $f->get_error_message());
             }
-
             return $result;
         }
-
-        throw new InvalidConfigException('Format as Spellout is only supported when PHP intl extension is installed.');
+        throw new Invalid_Config_Exception('Format as Spellout is only supported when PHP intl extension is installed.');
     }
-
     /**
      * Formats the value as a ordinal value of a number.
      *
@@ -1390,24 +1220,21 @@ class Formatter extends Component
      * @throws InvalidArgumentException if the input value is not numeric or the formatting failed.
      * @throws InvalidConfigException when the [PHP intl extension](https://www.php.net/manual/en/book.intl.php) is not available.
      */
-    public function asOrdinal($value)
+    public function as_ordinal($value)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-        $value = $this->normalizeNumericValue($value);
-        if ($this->_intlLoaded) {
-            $f = $this->createNumberFormatter(NumberFormatter::ORDINAL);
+        $value = $this->normalize_numeric_value($value);
+        if ($this->_intl_loaded) {
+            $f = $this->create_number_formatter(Number_Formatter::ORDINAL);
             if (($result = $f->format($value)) === false) {
-                throw new InvalidArgumentException('Formatting number as ordinal failed: ' . $f->getErrorCode() . ' ' . $f->getErrorMessage());
+                throw new InvalidArgumentException('Formatting number as ordinal failed: ' . $f->get_error_code() . ' ' . $f->get_error_message());
             }
-
             return $result;
         }
-
-        throw new InvalidConfigException('Format as Ordinal is only supported when PHP intl extension is installed.');
+        throw new Invalid_Config_Exception('Format as Ordinal is only supported when PHP intl extension is installed.');
     }
-
     /**
      * Formats the value in bytes as a size in human readable form for example `12 kB`.
      *
@@ -1425,15 +1252,13 @@ class Formatter extends Component
      * @see sizeFormatBase
      * @see asSize
      */
-    public function asShortSize($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_short_size($value, $decimals = null, $options = [], $text_options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        [$params, $position] = $this->formatNumber($value, $decimals, 4, $this->sizeFormatBase, $options, $textOptions);
-
-        if ($this->sizeFormatBase == 1024) {
+        [$params, $position] = $this->format_number($value, $decimals, 4, $this->size_format_base, $options, $text_options);
+        if ($this->size_format_base == 1024) {
             switch ($position) {
                 case 0:
                     return Yii::t('yii', '{nFormatted} B', $params, $this->language);
@@ -1465,7 +1290,6 @@ class Formatter extends Component
             }
         }
     }
-
     /**
      * Formats the value in bytes as a size in human readable form, for example `12 kilobytes`.
      *
@@ -1481,15 +1305,13 @@ class Formatter extends Component
      * @see sizeFormatBase
      * @see asShortSize
      */
-    public function asSize($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_size($value, $decimals = null, $options = [], $text_options = [])
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        [$params, $position] = $this->formatNumber($value, $decimals, 4, $this->sizeFormatBase, $options, $textOptions);
-
-        if ($this->sizeFormatBase == 1024) {
+        [$params, $position] = $this->format_number($value, $decimals, 4, $this->size_format_base, $options, $text_options);
+        if ($this->size_format_base == 1024) {
             switch ($position) {
                 case 0:
                     return Yii::t('yii', '{nFormatted} {n, plural, =1{byte} other{bytes}}', $params, $this->language);
@@ -1521,7 +1343,6 @@ class Formatter extends Component
             }
         }
     }
-
     /**
      * Formats the value as a length in human readable form for example `12 meters`.
      * Check properties [[baseUnits]] if you need to change unit of value as the multiplier
@@ -1538,11 +1359,10 @@ class Formatter extends Component
      * @since 2.0.13
      * @author John Was <janek.jan@gmail.com>
      */
-    public function asLength($value, $decimals = null, $numberOptions = [], $textOptions = [])
+    public function as_length($value, $decimals = null, $number_options = [], $text_options = [])
     {
-        return $this->formatUnit(self::UNIT_LENGTH, self::FORMAT_WIDTH_LONG, $value, $decimals, $numberOptions, $textOptions);
+        return $this->format_unit(self::UNIT_LENGTH, self::FORMAT_WIDTH_LONG, $value, $decimals, $number_options, $text_options);
     }
-
     /**
      * Formats the value as a length in human readable form for example `12 m`.
      * This is the short form of [[asLength]].
@@ -1561,11 +1381,10 @@ class Formatter extends Component
      * @since 2.0.13
      * @author John Was <janek.jan@gmail.com>
      */
-    public function asShortLength($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_short_length($value, $decimals = null, $options = [], $text_options = [])
     {
-        return $this->formatUnit(self::UNIT_LENGTH, self::FORMAT_WIDTH_SHORT, $value, $decimals, $options, $textOptions);
+        return $this->format_unit(self::UNIT_LENGTH, self::FORMAT_WIDTH_SHORT, $value, $decimals, $options, $text_options);
     }
-
     /**
      * Formats the value as a weight in human readable form for example `12 kilograms`.
      * Check properties [[baseUnits]] if you need to change unit of value as the multiplier
@@ -1581,11 +1400,10 @@ class Formatter extends Component
      * @since 2.0.13
      * @author John Was <janek.jan@gmail.com>
      */
-    public function asWeight($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_weight($value, $decimals = null, $options = [], $text_options = [])
     {
-        return $this->formatUnit(self::UNIT_WEIGHT, self::FORMAT_WIDTH_LONG, $value, $decimals, $options, $textOptions);
+        return $this->format_unit(self::UNIT_WEIGHT, self::FORMAT_WIDTH_LONG, $value, $decimals, $options, $text_options);
     }
-
     /**
      * Formats the value as a weight in human readable form for example `12 kg`.
      * This is the short form of [[asWeight]].
@@ -1603,11 +1421,10 @@ class Formatter extends Component
      * @since 2.0.13
      * @author John Was <janek.jan@gmail.com>
      */
-    public function asShortWeight($value, $decimals = null, $options = [], $textOptions = [])
+    public function as_short_weight($value, $decimals = null, $options = [], $text_options = [])
     {
-        return $this->formatUnit(self::UNIT_WEIGHT, self::FORMAT_WIDTH_SHORT, $value, $decimals, $options, $textOptions);
+        return $this->format_unit(self::UNIT_WEIGHT, self::FORMAT_WIDTH_SHORT, $value, $decimals, $options, $text_options);
     }
-
     /**
      * @param string $unitType one of [[UNIT_WEIGHT]], [[UNIT_LENGTH]]
      * @param string $unitFormat one of [[FORMAT_WIDTH_SHORT]], [[FORMAT_WIDTH_LONG]]
@@ -1618,31 +1435,16 @@ class Formatter extends Component
      * @return string
      * @throws InvalidConfigException when INTL is not installed or does not contain required information
      */
-    private function formatUnit(string $unitType, string $unitFormat, $value, $decimals, $options, $textOptions)
+    private function format_unit(string $unit_type, string $unit_format, $value, $decimals, $options, $text_options)
     {
         if ($value === null) {
-            return $this->nullDisplay;
+            return $this->null_display;
         }
-
-        $multipliers = array_values($this->measureUnits[$unitType][$this->systemOfUnits]);
-
-        [$params, $position] = $this->formatNumber(
-            $this->normalizeNumericValue($value) * $this->baseUnits[$unitType][$this->systemOfUnits],
-            $decimals,
-            null,
-            $multipliers,
-            $options,
-            $textOptions
-        );
-
-        $message = $this->getUnitMessage($unitType, $unitFormat, $this->systemOfUnits, $position);
-
-        return (new \MessageFormatter($this->locale, $message))->format([
-            '0' => $params['nFormatted'],
-            'n' => $params['n'],
-        ]);
+        $multipliers = array_values($this->measure_units[$unit_type][$this->system_of_units]);
+        [$params, $position] = $this->format_number($this->normalize_numeric_value($value) * $this->base_units[$unit_type][$this->system_of_units], $decimals, null, $multipliers, $options, $text_options);
+        $message = $this->get_unit_message($unit_type, $unit_format, $this->system_of_units, $position);
+        return (new \Message_Formatter($this->locale, $message))->format(['0' => $params['nFormatted'], 'n' => $params['n']]);
     }
-
     /**
      * @param string $unitType one of [[UNIT_WEIGHT]], [[UNIT_LENGTH]]
      * @param string $unitFormat one of [[FORMAT_WIDTH_SHORT]], [[FORMAT_WIDTH_LONG]]
@@ -1651,47 +1453,39 @@ class Formatter extends Component
      * @return string
      * @throws InvalidConfigException when INTL is not installed or does not contain required information
      */
-    private function getUnitMessage(string $unitType, string $unitFormat, $system, $position)
+    private function get_unit_message(string $unit_type, string $unit_format, $system, $position)
     {
-        if (isset($this->_unitMessages[$unitType][$unitFormat][$system][$position])) {
-            return $this->_unitMessages[$unitType][$unitFormat][$system][$position];
+        if (isset($this->_unit_messages[$unit_type][$unit_format][$system][$position])) {
+            return $this->_unit_messages[$unit_type][$unit_format][$system][$position];
         }
-        if (!$this->_intlLoaded) {
-            throw new InvalidConfigException('Format of ' . $unitType . ' is only supported when PHP intl extension is installed.');
+        if (!$this->_intl_loaded) {
+            throw new Invalid_Config_Exception('Format of ' . $unit_type . ' is only supported when PHP intl extension is installed.');
         }
-
-        if ($this->_resourceBundle === null) {
+        if ($this->_resource_bundle === null) {
             try {
-                $this->_resourceBundle = new \ResourceBundle($this->locale, 'ICUDATA-unit');
-            } catch (\IntlException $e) {
-                throw new InvalidConfigException('Current ICU data does not contain information about measure units. Check system requirements.');
+                $this->_resource_bundle = new \Resource_Bundle($this->locale, 'ICUDATA-unit');
+            } catch (\Intl_Exception $e) {
+                throw new Invalid_Config_Exception('Current ICU data does not contain information about measure units. Check system requirements.');
             }
         }
-        $unitNames = array_keys($this->measureUnits[$unitType][$system]);
-        $bundleKey = 'units' . ($unitFormat === self::FORMAT_WIDTH_SHORT ? 'Short' : '');
-
-        $unitBundle = $this->_resourceBundle[$bundleKey][$unitType][$unitNames[$position]];
-        if ($unitBundle === null) {
-            throw new InvalidConfigException(
-                'Current ICU data version does not contain information about unit type "' . $unitType
-                . '" and unit measure "' . $unitNames[$position] . '". Check system requirements.'
-            );
+        $unit_names = array_keys($this->measure_units[$unit_type][$system]);
+        $bundle_key = 'units' . ($unit_format === self::FORMAT_WIDTH_SHORT ? 'Short' : '');
+        $unit_bundle = $this->_resource_bundle[$bundle_key][$unit_type][$unit_names[$position]];
+        if ($unit_bundle === null) {
+            throw new Invalid_Config_Exception('Current ICU data version does not contain information about unit type "' . $unit_type . '" and unit measure "' . $unit_names[$position] . '". Check system requirements.');
         }
-
         $message = [];
-        foreach ($unitBundle as $key => $value) {
+        foreach ($unit_bundle as $key => $value) {
             if ($key === 'dnam') {
                 continue;
             }
             if ($key === 'case') {
                 continue;
             }
-            $message[] = "$key{{$value}}";
+            $message[] = "{$key}{{$value}}";
         }
-
-        return $this->_unitMessages[$unitType][$unitFormat][$system][$position] = '{n, plural, ' . implode(' ', $message) . '}';
+        return $this->_unit_messages[$unit_type][$unit_format][$system][$position] = '{n, plural, ' . implode(' ', $message) . '}';
     }
-
     /**
      * Given the value in bytes formats number part of the human readable form.
      *
@@ -1705,36 +1499,32 @@ class Formatter extends Component
      * @throws InvalidArgumentException if the input value is not numeric or the formatting failed.
      * @since 2.0.32
      */
-    protected function formatNumber($value, $decimals, $maxPosition, $formatBase, array $options, $textOptions): array
+    protected function format_number($value, $decimals, $max_position, $format_base, array $options, $text_options): array
     {
-        $value = $this->normalizeNumericValue($value);
-
+        $value = $this->normalize_numeric_value($value);
         $position = 0;
-        if (is_array($formatBase)) {
-            $maxPosition = count($formatBase) - 1;
+        if (is_array($format_base)) {
+            $max_position = count($format_base) - 1;
         }
         do {
-            if (is_array($formatBase)) {
-                if (!isset($formatBase[$position + 1])) {
+            if (is_array($format_base)) {
+                if (!isset($format_base[$position + 1])) {
                     break;
                 }
-
-                if (abs($value) < $formatBase[$position + 1]) {
+                if (abs($value) < $format_base[$position + 1]) {
                     break;
                 }
             } else {
-                if (abs($value) < $formatBase) {
+                if (abs($value) < $format_base) {
                     break;
                 }
-                $value /= $formatBase;
+                $value /= $format_base;
             }
             $position++;
-        } while ($position < $maxPosition + 1);
-
-        if (is_array($formatBase) && $position !== 0) {
-            $value /= $formatBase[$position];
+        } while ($position < $max_position + 1);
+        if (is_array($format_base) && $position !== 0) {
+            $value /= $format_base[$position];
         }
-
         // no decimals for smallest unit
         if ($position === 0) {
             $decimals = 0;
@@ -1742,10 +1532,10 @@ class Formatter extends Component
             $value = round($value, $decimals);
         }
         // disable grouping for edge cases like 1023 to get 1023 B instead of 1,023 B
-        $oldThousandSeparator = $this->thousandSeparator;
-        $this->thousandSeparator = '';
-        if ($this->_intlLoaded && !isset($options[NumberFormatter::GROUPING_USED])) {
-            $options[NumberFormatter::GROUPING_USED] = 0;
+        $old_thousand_separator = $this->thousand_separator;
+        $this->thousand_separator = '';
+        if ($this->_intl_loaded && !isset($options[Number_Formatter::GROUPING_USED])) {
+            $options[Number_Formatter::GROUPING_USED] = 0;
         }
         // format the size value
         $params = [
@@ -1754,13 +1544,11 @@ class Formatter extends Component
             // https://english.stackexchange.com/questions/9735/is-1-followed-by-a-singular-or-plural-noun
             'n' => abs($value),
             // this is the formatted number used for display
-            'nFormatted' => $this->asDecimal($value, $decimals, $options, $textOptions),
+            'nFormatted' => $this->as_decimal($value, $decimals, $options, $text_options),
         ];
-        $this->thousandSeparator = $oldThousandSeparator;
-
+        $this->thousand_separator = $old_thousand_separator;
         return [$params, $position];
     }
-
     /**
      * Normalizes a numeric input value.
      *
@@ -1773,7 +1561,7 @@ class Formatter extends Component
      * @return float|int the normalized number value
      * @throws InvalidArgumentException if the input value is not numeric.
      */
-    protected function normalizeNumericValue($value)
+    protected function normalize_numeric_value($value)
     {
         if (empty($value)) {
             return 0;
@@ -1782,12 +1570,10 @@ class Formatter extends Component
             $value = (float) $value;
         }
         if (!is_numeric($value)) {
-            throw new InvalidArgumentException("'$value' is not a numeric value.");
+            throw new InvalidArgumentException("'{$value}' is not a numeric value.");
         }
-
         return $value;
     }
-
     /**
      * Creates a number formatter based on the given type and format.
      *
@@ -1801,188 +1587,150 @@ class Formatter extends Component
      * @param array $textOptions optional configuration for the number formatter. This parameter will be merged with [[numberFormatterTextOptions]].
      * @return NumberFormatter the created formatter instance
      */
-    protected function createNumberFormatter($style, $decimals = null, $options = [], $textOptions = []): \NumberFormatter
+    protected function create_number_formatter($style, $decimals = null, $options = [], $text_options = []): \Number_Formatter
     {
-        $formatter = new NumberFormatter($this->locale, $style);
-
+        $formatter = new Number_Formatter($this->locale, $style);
         // set text attributes
-        foreach ($this->numberFormatterTextOptions as $attribute => $value) {
-            $this->setFormatterTextAttribute($formatter, $attribute, $value, 'numberFormatterTextOptions', 'numberFormatterOptions');
+        foreach ($this->number_formatter_text_options as $attribute => $value) {
+            $this->set_formatter_text_attribute($formatter, $attribute, $value, 'numberFormatterTextOptions', 'numberFormatterOptions');
         }
-        foreach ($textOptions as $attribute => $value) {
-            $this->setFormatterTextAttribute($formatter, $attribute, $value, '$textOptions', '$options');
+        foreach ($text_options as $attribute => $value) {
+            $this->set_formatter_text_attribute($formatter, $attribute, $value, '$textOptions', '$options');
         }
-
         // set attributes
-        foreach ($this->numberFormatterOptions as $attribute => $value) {
-            $this->setFormatterIntAttribute($formatter, $attribute, $value, 'numberFormatterOptions', 'numberFormatterTextOptions');
+        foreach ($this->number_formatter_options as $attribute => $value) {
+            $this->set_formatter_int_attribute($formatter, $attribute, $value, 'numberFormatterOptions', 'numberFormatterTextOptions');
         }
         foreach ($options as $attribute => $value) {
-            $this->setFormatterIntAttribute($formatter, $attribute, $value, '$options', '$textOptions');
+            $this->set_formatter_int_attribute($formatter, $attribute, $value, '$options', '$textOptions');
         }
         if ($decimals !== null) {
-            $formatter->setAttribute(NumberFormatter::MAX_FRACTION_DIGITS, $decimals);
-            $formatter->setAttribute(NumberFormatter::MIN_FRACTION_DIGITS, $decimals);
+            $formatter->set_attribute(Number_Formatter::MAX_FRACTION_DIGITS, $decimals);
+            $formatter->set_attribute(Number_Formatter::MIN_FRACTION_DIGITS, $decimals);
         }
-
         // set symbols
-        if ($this->decimalSeparator !== null) {
-            $formatter->setSymbol(NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, $this->decimalSeparator);
+        if ($this->decimal_separator !== null) {
+            $formatter->set_symbol(Number_Formatter::DECIMAL_SEPARATOR_SYMBOL, $this->decimal_separator);
         }
-        if ($this->currencyDecimalSeparator !== null) {
-            $formatter->setSymbol(NumberFormatter::MONETARY_SEPARATOR_SYMBOL, $this->currencyDecimalSeparator);
+        if ($this->currency_decimal_separator !== null) {
+            $formatter->set_symbol(Number_Formatter::MONETARY_SEPARATOR_SYMBOL, $this->currency_decimal_separator);
         }
-        if ($this->thousandSeparator !== null) {
-            $formatter->setSymbol(NumberFormatter::GROUPING_SEPARATOR_SYMBOL, $this->thousandSeparator);
-            $formatter->setSymbol(NumberFormatter::MONETARY_GROUPING_SEPARATOR_SYMBOL, $this->thousandSeparator);
+        if ($this->thousand_separator !== null) {
+            $formatter->set_symbol(Number_Formatter::GROUPING_SEPARATOR_SYMBOL, $this->thousand_separator);
+            $formatter->set_symbol(Number_Formatter::MONETARY_GROUPING_SEPARATOR_SYMBOL, $this->thousand_separator);
         }
-        foreach ($this->numberFormatterSymbols as $symbol => $value) {
-            $this->setFormatterSymbol($formatter, $symbol, $value, 'numberFormatterSymbols');
+        foreach ($this->number_formatter_symbols as $symbol => $value) {
+            $this->set_formatter_symbol($formatter, $symbol, $value, 'numberFormatterSymbols');
         }
-
         return $formatter;
     }
-
     /**
      * @param mixed $attribute
      * @param mixed $value
      */
-    private function setFormatterTextAttribute(\NumberFormatter $formatter, $attribute, $value, string $source, string $alternative): void
+    private function set_formatter_text_attribute(\Number_Formatter $formatter, $attribute, $value, string $source, string $alternative): void
     {
         if (!is_int($attribute)) {
-            throw new InvalidArgumentException(
-                "The $source array keys must be integers recognizable by NumberFormatter::setTextAttribute(). \""
-                . gettype($attribute) . '" provided instead.'
-            );
+            throw new InvalidArgumentException("The {$source} array keys must be integers recognizable by NumberFormatter::setTextAttribute(). \"" . gettype($attribute) . '" provided instead.');
         }
         if (!is_string($value)) {
             if (is_int($value)) {
-                throw new InvalidArgumentException(
-                    "The $source array values must be strings. Did you mean to use $alternative?"
-                );
+                throw new InvalidArgumentException("The {$source} array values must be strings. Did you mean to use {$alternative}?");
             }
-            throw new InvalidArgumentException(
-                "The $source array values must be strings. \"" . gettype($value) . '" provided instead.'
-            );
+            throw new InvalidArgumentException("The {$source} array values must be strings. \"" . gettype($value) . '" provided instead.');
         }
-        $formatter->setTextAttribute($attribute, $value);
+        $formatter->set_text_attribute($attribute, $value);
     }
-
     /**
      * @param mixed $symbol
      * @param mixed $value
      */
-    private function setFormatterSymbol(\NumberFormatter $formatter, $symbol, $value, string $source): void
+    private function set_formatter_symbol(\Number_Formatter $formatter, $symbol, $value, string $source): void
     {
         if (!is_int($symbol)) {
-            throw new InvalidArgumentException(
-                "The $source array keys must be integers recognizable by NumberFormatter::setSymbol(). \""
-                . gettype($symbol) . '" provided instead.'
-            );
+            throw new InvalidArgumentException("The {$source} array keys must be integers recognizable by NumberFormatter::setSymbol(). \"" . gettype($symbol) . '" provided instead.');
         }
         if (!is_string($value)) {
-            throw new InvalidArgumentException(
-                "The $source array values must be strings. \"" . gettype($value) . '" provided instead.'
-            );
+            throw new InvalidArgumentException("The {$source} array values must be strings. \"" . gettype($value) . '" provided instead.');
         }
-        $formatter->setSymbol($symbol, $value);
+        $formatter->set_symbol($symbol, $value);
     }
-
     /**
      * @param mixed $attribute
      * @param mixed $value
      */
-    private function setFormatterIntAttribute(\NumberFormatter $formatter, $attribute, $value, string $source, string $alternative): void
+    private function set_formatter_int_attribute(\Number_Formatter $formatter, $attribute, $value, string $source, string $alternative): void
     {
         if (!is_int($attribute)) {
-            throw new InvalidArgumentException(
-                "The $source array keys must be integers recognizable by NumberFormatter::setAttribute(). \""
-                . gettype($attribute) . '" provided instead.'
-            );
+            throw new InvalidArgumentException("The {$source} array keys must be integers recognizable by NumberFormatter::setAttribute(). \"" . gettype($attribute) . '" provided instead.');
         }
         if (!is_int($value)) {
             if (is_string($value)) {
-                throw new InvalidArgumentException(
-                    "The $source array values must be integers. Did you mean to use $alternative?"
-                );
+                throw new InvalidArgumentException("The {$source} array values must be integers. Did you mean to use {$alternative}?");
             }
-            throw new InvalidArgumentException(
-                "The $source array values must be integers. \"" . gettype($value) . '" provided instead.'
-            );
+            throw new InvalidArgumentException("The {$source} array values must be integers. \"" . gettype($value) . '" provided instead.');
         }
-        $formatter->setAttribute($attribute, $value);
+        $formatter->set_attribute($attribute, $value);
     }
-
     /**
      * Checks if string representations of given value and its normalized version are different.
      * @param string|float|int $value
      * @param float|int $normalizedValue
      * @since 2.0.16
      */
-    protected function isNormalizedValueMispresented($value, $normalizedValue): bool
+    protected function is_normalized_value_mispresented($value, $normalized_value): bool
     {
         if (empty($value)) {
             $value = 0;
         }
-
-        return (string) $normalizedValue !== $this->normalizeNumericStringValue((string) $value);
+        return (string) $normalized_value !== $this->normalize_numeric_string_value((string) $value);
     }
-
     /**
      * Normalizes a numeric string value.
      * @param string $value
      * @return string the normalized number value as a string
      * @since 2.0.16
      */
-    protected function normalizeNumericStringValue($value)
+    protected function normalize_numeric_string_value($value)
     {
-        $powerPosition = strrpos($value, 'E');
-        if ($powerPosition !== false) {
-            $valuePart = substr($value, 0, $powerPosition);
-            $powerPart = substr($value, $powerPosition + 1);
+        $power_position = strrpos($value, 'E');
+        if ($power_position !== false) {
+            $value_part = substr($value, 0, $power_position);
+            $power_part = substr($value, $power_position + 1);
         } else {
-            $powerPart = null;
-            $valuePart = $value;
+            $power_part = null;
+            $value_part = $value;
         }
-
-        $separatorPosition = strrpos($valuePart, '.');
-
-        if ($separatorPosition !== false) {
-            $integerPart = substr($valuePart, 0, $separatorPosition);
-            $fractionalPart = substr($valuePart, $separatorPosition + 1);
+        $separator_position = strrpos($value_part, '.');
+        if ($separator_position !== false) {
+            $integer_part = substr($value_part, 0, $separator_position);
+            $fractional_part = substr($value_part, $separator_position + 1);
         } else {
-            $integerPart = $valuePart;
-            $fractionalPart = null;
+            $integer_part = $value_part;
+            $fractional_part = null;
         }
-
         // truncate insignificant zeros, keep minus
-        $integerPart = preg_replace('/^\+?(-?)0*(\d+)$/', '$1$2', $integerPart);
+        $integer_part = preg_replace('/^\+?(-?)0*(\d+)$/', '$1$2', $integer_part);
         // for zeros only leave one zero, keep minus
-        $integerPart = preg_replace('/^\+?(-?)0*$/', '${1}0', $integerPart);
-
-        if ($fractionalPart !== null) {
+        $integer_part = preg_replace('/^\+?(-?)0*$/', '${1}0', $integer_part);
+        if ($fractional_part !== null) {
             // truncate insignificant zeros
-            $fractionalPart = rtrim($fractionalPart, '0');
-
-            if (empty($fractionalPart)) {
-                $fractionalPart = $powerPart !== null ? '0' : null;
+            $fractional_part = rtrim($fractional_part, '0');
+            if (empty($fractional_part)) {
+                $fractional_part = $power_part !== null ? '0' : null;
             }
         }
-
-        $normalizedValue = $integerPart;
-        if ($fractionalPart !== null) {
-            $normalizedValue .= '.' . $fractionalPart;
-        } elseif ($normalizedValue === '-0') {
-            $normalizedValue = '0';
+        $normalized_value = $integer_part;
+        if ($fractional_part !== null) {
+            $normalized_value .= '.' . $fractional_part;
+        } elseif ($normalized_value === '-0') {
+            $normalized_value = '0';
         }
-
-        if ($powerPart !== null) {
-            $normalizedValue .= 'E' . $powerPart;
+        if ($power_part !== null) {
+            $normalized_value .= 'E' . $power_part;
         }
-
-        return $normalizedValue;
+        return $normalized_value;
     }
-
     /**
      * Fallback for formatting value as a decimal number.
      *
@@ -1996,110 +1744,87 @@ class Formatter extends Component
      * @see thousandSeparator
      * @since 2.0.16
      */
-    protected function asDecimalStringFallback($value, $decimals = 2): string
+    protected function as_decimal_string_fallback($value, $decimals = 2): string
     {
         if (empty($value)) {
             $value = 0;
         }
-
-        $value = $this->normalizeNumericStringValue((string) $value);
-
-        $separatorPosition = strrpos($value, '.');
-
-        if ($separatorPosition !== false) {
-            $integerPart = substr($value, 0, $separatorPosition);
-            $fractionalPart = substr($value, $separatorPosition + 1);
+        $value = $this->normalize_numeric_string_value((string) $value);
+        $separator_position = strrpos($value, '.');
+        if ($separator_position !== false) {
+            $integer_part = substr($value, 0, $separator_position);
+            $fractional_part = substr($value, $separator_position + 1);
         } else {
-            $integerPart = $value;
-            $fractionalPart = null;
+            $integer_part = $value;
+            $fractional_part = null;
         }
-
-        $decimalOutput = '';
-
+        $decimal_output = '';
         if ($decimals === null) {
             $decimals = 2;
         }
-
         $carry = 0;
-
         if ($decimals > 0) {
-            $decimalSeparator = $this->decimalSeparator;
-            if ($this->decimalSeparator === null) {
-                $decimalSeparator = '.';
+            $decimal_separator = $this->decimal_separator;
+            if ($this->decimal_separator === null) {
+                $decimal_separator = '.';
             }
-
-            if ($fractionalPart === null) {
-                $fractionalPart = str_repeat('0', $decimals);
-            } elseif (strlen($fractionalPart) > $decimals) {
+            if ($fractional_part === null) {
+                $fractional_part = str_repeat('0', $decimals);
+            } elseif (strlen($fractional_part) > $decimals) {
                 $cursor = $decimals;
-
                 // checking if fractional part must be rounded
-                if ((int) substr($fractionalPart, $cursor, 1) >= 5) {
+                if ((int) substr($fractional_part, $cursor, 1) >= 5) {
                     while (--$cursor >= 0) {
                         $carry = 0;
-
-                        $oneUp = (int) substr($fractionalPart, $cursor, 1) + 1;
-                        if ($oneUp === 10) {
-                            $oneUp = 0;
+                        $one_up = (int) substr($fractional_part, $cursor, 1) + 1;
+                        if ($one_up === 10) {
+                            $one_up = 0;
                             $carry = 1;
                         }
-
-                        $fractionalPart = substr($fractionalPart, 0, $cursor) . $oneUp . substr($fractionalPart, $cursor + 1);
-
+                        $fractional_part = substr($fractional_part, 0, $cursor) . $one_up . substr($fractional_part, $cursor + 1);
                         if ($carry === 0) {
                             break;
                         }
                     }
                 }
-
-                $fractionalPart = substr($fractionalPart, 0, $decimals);
-            } elseif (strlen($fractionalPart) < $decimals) {
-                $fractionalPart = str_pad($fractionalPart, $decimals, '0');
+                $fractional_part = substr($fractional_part, 0, $decimals);
+            } elseif (strlen($fractional_part) < $decimals) {
+                $fractional_part = str_pad($fractional_part, $decimals, '0');
             }
-
-            $decimalOutput .= $decimalSeparator . $fractionalPart;
+            $decimal_output .= $decimal_separator . $fractional_part;
         }
-
         // checking if integer part must be rounded
-        if ($carry || ($decimals === 0 && $fractionalPart !== null && (int) substr($fractionalPart, 0, 1) >= 5)) {
-            $integerPartLength = strlen($integerPart);
+        if ($carry || $decimals === 0 && $fractional_part !== null && (int) substr($fractional_part, 0, 1) >= 5) {
+            $integer_part_length = strlen($integer_part);
             $cursor = 0;
-
-            while (++$cursor <= $integerPartLength) {
+            while (++$cursor <= $integer_part_length) {
                 $carry = 0;
-
-                $oneUp = (int) substr($integerPart, -$cursor, 1) + 1;
-                if ($oneUp === 10) {
-                    $oneUp = 0;
+                $one_up = (int) substr($integer_part, -$cursor, 1) + 1;
+                if ($one_up === 10) {
+                    $one_up = 0;
                     $carry = 1;
                 }
-
-                $integerPart = substr($integerPart, 0, -$cursor) . $oneUp . substr($integerPart, $integerPartLength - $cursor + 1);
-
+                $integer_part = substr($integer_part, 0, -$cursor) . $one_up . substr($integer_part, $integer_part_length - $cursor + 1);
                 if ($carry === 0) {
                     break;
                 }
             }
             if ($carry === 1) {
-                $integerPart = '1' . $integerPart;
+                $integer_part = '1' . $integer_part;
             }
         }
-
-        if (strlen($integerPart) > 3) {
-            $thousandSeparator = $this->thousandSeparator;
-            if ($thousandSeparator === null) {
-                $thousandSeparator = ',';
+        if (strlen($integer_part) > 3) {
+            $thousand_separator = $this->thousand_separator;
+            if ($thousand_separator === null) {
+                $thousand_separator = ',';
             }
-
-            $integerPart = strrev(implode(',', str_split(strrev($integerPart), 3)));
-            if ($thousandSeparator !== ',') {
-                $integerPart = str_replace(',', $thousandSeparator, $integerPart);
+            $integer_part = strrev(implode(',', str_split(strrev($integer_part), 3)));
+            if ($thousand_separator !== ',') {
+                $integer_part = str_replace(',', $thousand_separator, $integer_part);
             }
         }
-
-        return $integerPart . $decimalOutput;
+        return $integer_part . $decimal_output;
     }
-
     /**
      * Fallback for formatting value as an integer number by removing any decimal digits without rounding.
      *
@@ -2107,24 +1832,20 @@ class Formatter extends Component
      * @return string the formatted result.
      * @since 2.0.16
      */
-    protected function asIntegerStringFallback($value)
+    protected function as_integer_string_fallback($value)
     {
         if (empty($value)) {
             $value = 0;
         }
-
-        $value = $this->normalizeNumericStringValue((string) $value);
-        $separatorPosition = strrpos($value, '.');
-
-        if ($separatorPosition !== false) {
-            $integerPart = substr($value, 0, $separatorPosition);
+        $value = $this->normalize_numeric_string_value((string) $value);
+        $separator_position = strrpos($value, '.');
+        if ($separator_position !== false) {
+            $integer_part = substr($value, 0, $separator_position);
         } else {
-            $integerPart = $value;
+            $integer_part = $value;
         }
-
-        return $this->asDecimalStringFallback($integerPart, 0);
+        return $this->as_decimal_string_fallback($integer_part, 0);
     }
-
     /**
      * Fallback for formatting value as a percent number with "%" sign.
      *
@@ -2136,38 +1857,31 @@ class Formatter extends Component
      * @return string the formatted result.
      * @since 2.0.16
      */
-    protected function asPercentStringFallback($value, $decimals = null): string
+    protected function as_percent_string_fallback($value, $decimals = null): string
     {
         if (empty($value)) {
             $value = 0;
         }
-
         if ($decimals === null) {
             $decimals = 0;
         }
-
-        $value = $this->normalizeNumericStringValue((string) $value);
-        $separatorPosition = strrpos($value, '.');
-
-        if ($separatorPosition !== false) {
-            $integerPart = substr($value, 0, $separatorPosition);
-            $fractionalPart = str_pad(substr($value, $separatorPosition + 1), 2, '0');
-
-            $integerPart .= substr($fractionalPart, 0, 2);
-            $fractionalPart = substr($fractionalPart, 2);
-
-            if ($fractionalPart === '') {
-                $multipliedValue = $integerPart;
+        $value = $this->normalize_numeric_string_value((string) $value);
+        $separator_position = strrpos($value, '.');
+        if ($separator_position !== false) {
+            $integer_part = substr($value, 0, $separator_position);
+            $fractional_part = str_pad(substr($value, $separator_position + 1), 2, '0');
+            $integer_part .= substr($fractional_part, 0, 2);
+            $fractional_part = substr($fractional_part, 2);
+            if ($fractional_part === '') {
+                $multiplied_value = $integer_part;
             } else {
-                $multipliedValue = $integerPart . '.' . $fractionalPart;
+                $multiplied_value = $integer_part . '.' . $fractional_part;
             }
         } else {
-            $multipliedValue = $value . '00';
+            $multiplied_value = $value . '00';
         }
-
-        return $this->asDecimalStringFallback($multipliedValue, $decimals) . '%';
+        return $this->as_decimal_string_fallback($multiplied_value, $decimals) . '%';
     }
-
     /**
      * Fallback for formatting value as a currency number.
      *
@@ -2178,15 +1892,14 @@ class Formatter extends Component
      * @throws InvalidConfigException if no currency is given and [[currencyCode]] is not defined.
      * @since 2.0.16
      */
-    protected function asCurrencyStringFallback($value, $currency = null): string
+    protected function as_currency_string_fallback($value, $currency = null): string
     {
         if ($currency === null) {
-            if ($this->currencyCode === null) {
-                throw new InvalidConfigException('The default currency code for the formatter is not defined.');
+            if ($this->currency_code === null) {
+                throw new Invalid_Config_Exception('The default currency code for the formatter is not defined.');
             }
-            $currency = $this->currencyCode;
+            $currency = $this->currency_code;
         }
-
-        return $currency . ' ' . $this->asDecimalStringFallback($value, 2);
+        return $currency . ' ' . $this->as_decimal_string_fallback($value, 2);
     }
 }

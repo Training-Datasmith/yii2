@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
 /**
@@ -25,7 +23,7 @@ namespace yii\caching;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ExpressionDependency extends Dependency
+class Expression_Dependency extends Dependency
 {
     /**
      * @var string the string representation of a PHP expression whose result is used to determine the dependency.
@@ -38,14 +36,13 @@ class ExpressionDependency extends Dependency
      * of this property in [[expression]] using `$this->params`.
      */
     public $params;
-
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method returns the result of the PHP expression.
      * @param CacheInterface $cache the cache component that is currently evaluating this dependency
      * @return mixed the data needed to determine if dependency has been changed.
      */
-    protected function generateDependencyData($cache)
+    protected function generate_dependency_data($cache)
     {
         // The use of eval() here is intentional and controlled: the expression is
         // developer-supplied configuration, not user input, and no safer runtime

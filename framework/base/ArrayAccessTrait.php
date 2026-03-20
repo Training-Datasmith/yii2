@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\base;
 
 /**
@@ -21,7 +19,7 @@ namespace yii\base;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-trait ArrayAccessTrait
+trait Array_Access_Trait
 {
     /**
      * Returns an iterator for traversing the data.
@@ -29,60 +27,55 @@ trait ArrayAccessTrait
      * It will be implicitly called when you use `foreach` to traverse the collection.
      * @return \ArrayIterator<array-key, mixed> an iterator for traversing the cookies in the collection.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->data);
     }
-
     /**
      * Returns the number of data items.
      * This method is required by Countable interface.
      * @return int number of data elements.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function count(): int
     {
         return count($this->data);
     }
-
     /**
      * This method is required by the interface [[\ArrayAccess]].
      * @param int|string $offset the offset to check on
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
     }
-
     /**
      * This method is required by the interface [[\ArrayAccess]].
      * @param int|string $offset the offset to retrieve element.
      * @return mixed the element at the offset, null if no element is found at the offset
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetGet($offset)
     {
         return $this->data[$offset] ?? null;
     }
-
     /**
      * This method is required by the interface [[\ArrayAccess]].
      * @param int|string $offset the offset to set element
      * @param mixed $item the element value
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetSet($offset, $item): void
     {
         $this->data[$offset] = $item;
     }
-
     /**
      * This method is required by the interface [[\ArrayAccess]].
      * @param int|string $offset the offset to unset element
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetUnset($offset): void
     {
         unset($this->data[$offset]);

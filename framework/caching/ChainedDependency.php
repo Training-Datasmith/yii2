@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
 /**
@@ -22,7 +20,7 @@ namespace yii\caching;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class ChainedDependency extends Dependency
+class Chained_Dependency extends Dependency
 {
     /**
      * @var Dependency[] list of dependencies that this dependency is composed of.
@@ -35,44 +33,40 @@ class ChainedDependency extends Dependency
      * When it is set false, it means if one of the dependencies has NOT changed, this dependency
      * is considered NOT changed.
      */
-    public $dependOnAll = true;
-
+    public $depend_on_all = true;
     /**
      * Evaluates the dependency by generating and saving the data related with dependency.
      * @param CacheInterface $cache the cache component that is currently evaluating this dependency
      */
-    public function evaluateDependency($cache): void
+    public function evaluate_dependency($cache): void
     {
         foreach ($this->dependencies as $dependency) {
-            $dependency->evaluateDependency($cache);
+            $dependency->evaluate_dependency($cache);
         }
     }
-
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method does nothing in this class.
      * @param CacheInterface $cache the cache component that is currently evaluating this dependency
      * @return mixed the data needed to determine if dependency has been changed.
      */
-    protected function generateDependencyData($cache)
+    protected function generate_dependency_data($cache)
     {
         return null;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function isChanged($cache)
+    public function is_changed($cache)
     {
         foreach ($this->dependencies as $dependency) {
-            if ($this->dependOnAll && $dependency->isChanged($cache)) {
+            if ($this->depend_on_all && $dependency->is_changed($cache)) {
                 return true;
             }
-            if (!$this->dependOnAll && !$dependency->isChanged($cache)) {
+            if (!$this->depend_on_all && !$dependency->is_changed($cache)) {
                 return false;
             }
         }
-
-        return !$this->dependOnAll;
+        return !$this->depend_on_all;
     }
 }

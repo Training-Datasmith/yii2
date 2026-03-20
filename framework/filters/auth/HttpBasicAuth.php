@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\filters\auth;
 
 use yii\base\Component;
-
 /**
  * HttpBasicAuth is an action filter that supports the HTTP Basic authentication method.
  *
@@ -65,7 +62,7 @@ use yii\base\Component;
  * @template T of Component = Component
  * @extends AuthMethod<T>
  */
-class HttpBasicAuth extends AuthMethod
+class Http_Basic_Auth extends Auth_Method
 {
     /**
      * @var string the HTTP authentication realm
@@ -93,43 +90,36 @@ class HttpBasicAuth extends AuthMethod
      * method will be called to authenticate and login the user.
      */
     public $auth;
-
     /**
      * {@inheritdoc}
      */
     public function authenticate($user, $request, $response)
     {
-        [$username, $password] = $request->getAuthCredentials();
-
+        [$username, $password] = $request->get_auth_credentials();
         if ($this->auth) {
             if ($username !== null || $password !== null) {
-                $identity = $user->getIdentity() ?: call_user_func($this->auth, $username, $password);
-
+                $identity = $user->get_identity() ?: call_user_func($this->auth, $username, $password);
                 if ($identity === null) {
-                    $this->handleFailure($response);
-                } elseif ($user->getIdentity(false) !== $identity) {
+                    $this->handle_failure($response);
+                } elseif ($user->get_identity(false) !== $identity) {
                     $user->login($identity);
                 }
-
                 return $identity;
             }
         } elseif ($username !== null) {
-            $identity = $user->loginByAccessToken($username, get_class($this));
+            $identity = $user->login_by_access_token($username, get_class($this));
             if ($identity === null) {
-                $this->handleFailure($response);
+                $this->handle_failure($response);
             }
-
             return $identity;
         }
-
         return null;
     }
-
     /**
      * {@inheritdoc}
      */
     public function challenge($response): void
     {
-        $response->getHeaders()->set('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
+        $response->get_headers()->set('WWW-Authenticate', "Basic realm=\"{$this->realm}\"");
     }
 }

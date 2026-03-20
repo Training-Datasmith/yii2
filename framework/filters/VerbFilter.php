@@ -1,22 +1,19 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\filters;
 
 use Yii;
 use yii\base\Action;
-use yii\base\ActionEvent;
+use yii\base\Action_Event;
 use yii\base\Behavior;
 use yii\web\Controller;
-use yii\web\MethodNotAllowedHttpException;
-
+use yii\web\Method_Not_Allowed_Http_Exception;
 /**
  * VerbFilter is an action filter that filters by HTTP request methods.
  *
@@ -51,7 +48,7 @@ use yii\web\MethodNotAllowedHttpException;
  *
  * @extends Behavior<Controller>
  */
-class VerbFilter extends Behavior
+class Verb_Filter extends Behavior
 {
     /**
      * @var array this property defines the allowed request methods for each action.
@@ -78,7 +75,6 @@ class VerbFilter extends Behavior
      * ```
      */
     public $actions = [];
-
     /**
      * Declares event handlers for the [[owner]]'s events.
      * @return array events (array keys) and the corresponding event handler methods (array values).
@@ -87,13 +83,12 @@ class VerbFilter extends Behavior
     {
         return [Controller::EVENT_BEFORE_ACTION => 'beforeAction'];
     }
-
     /**
      * @param ActionEvent $event
      * @return bool
      * @throws MethodNotAllowedHttpException when the request method is not allowed.
      */
-    public function beforeAction($event)
+    public function before_action($event)
     {
         $action = $event->action->id;
         if (isset($this->actions[$action])) {
@@ -101,18 +96,16 @@ class VerbFilter extends Behavior
         } elseif (isset($this->actions['*'])) {
             $verbs = $this->actions['*'];
         } else {
-            return $event->isValid;
+            return $event->is_valid;
         }
-
-        $verb = Yii::$app->getRequest()->getMethod();
+        $verb = Yii::$app->get_request()->get_method();
         $allowed = array_map('strtoupper', $verbs);
         if (!in_array($verb, $allowed)) {
-            $event->isValid = false;
+            $event->is_valid = false;
             // https://tools.ietf.org/html/rfc2616#section-14.7
-            Yii::$app->getResponse()->getHeaders()->set('Allow', implode(', ', $allowed));
-            throw new MethodNotAllowedHttpException('Method Not Allowed. This URL can only handle the following request methods: ' . implode(', ', $allowed) . '.');
+            Yii::$app->get_response()->get_headers()->set('Allow', implode(', ', $allowed));
+            throw new Method_Not_Allowed_Http_Exception('Method Not Allowed. This URL can only handle the following request methods: ' . implode(', ', $allowed) . '.');
         }
-
-        return $event->isValid;
+        return $event->is_valid;
     }
 }

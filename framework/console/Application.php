@@ -1,25 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\console;
 
 use Yii;
-use yii\base\InvalidRouteException;
+use yii\base\Invalid_Route_Exception;
 use yii\base\Module;
-
 // define STDIN, STDOUT and STDERR if the PHP SAPI did not define them (e.g. creating console application in web env)
 // https://www.php.net/manual/en/features.commandline.io-streams.php
 defined('STDIN') or define('STDIN', fopen('php://stdin', 'r'));
 defined('STDOUT') or define('STDOUT', fopen('php://stdout', 'w'));
 defined('STDERR') or define('STDERR', fopen('php://stderr', 'w'));
-
 /**
  * Application represents a console application.
  *
@@ -71,26 +67,24 @@ class Application extends \yii\base\Application
      * @var string the default route of this application. Defaults to 'help',
      * meaning the `help` command.
      */
-    public $defaultRoute = 'help';
+    public $default_route = 'help';
     /**
      * @var bool whether to enable the commands provided by the core framework.
      * Defaults to true.
      */
-    public $enableCoreCommands = true;
+    public $enable_core_commands = true;
     /**
      * @var Controller|null the currently active controller instance
      */
     public $controller;
-
     /**
      * {@inheritdoc}
      */
     public function __construct($config = [])
     {
-        $config = $this->loadConfig($config);
+        $config = $this->load_config($config);
         parent::__construct($config);
     }
-
     /**
      * Loads the configuration.
      * This method will check if the command line option [[OPTION_APPCONFIG]] is specified.
@@ -99,64 +93,57 @@ class Application extends \yii\base\Application
      * @param array $config the configuration provided in the constructor.
      * @return array the actual configuration to be used by the application.
      */
-    protected function loadConfig($config)
+    protected function load_config($config)
     {
         if (!empty($_SERVER['argv'])) {
             $option = '--' . self::OPTION_APPCONFIG . '=';
             foreach ($_SERVER['argv'] as $param) {
                 if (strpos($param, $option) !== false) {
                     $path = substr($param, strlen($option));
-                    if (!empty($path) && is_file($file = Yii::getAlias($path))) {
+                    if (!empty($path) && is_file($file = Yii::get_alias($path))) {
                         return require $file;
                     }
-
-                    exit("The configuration file does not exist: $path\n");
+                    exit("The configuration file does not exist: {$path}\n");
                 }
             }
         }
-
         return $config;
     }
-
     /**
      * Initialize the application.
      */
     public function init(): void
     {
         parent::init();
-        if ($this->enableCoreCommands) {
-            foreach ($this->coreCommands() as $id => $command) {
-                if (!isset($this->controllerMap[$id])) {
-                    $this->controllerMap[$id] = $command;
+        if ($this->enable_core_commands) {
+            foreach ($this->core_commands() as $id => $command) {
+                if (!isset($this->controller_map[$id])) {
+                    $this->controller_map[$id] = $command;
                 }
             }
         }
         // ensure we have the 'help' command so that we can list the available commands
-        if (!isset($this->controllerMap['help'])) {
-            $this->controllerMap['help'] = 'yii\console\controllers\HelpController';
+        if (!isset($this->controller_map['help'])) {
+            $this->controller_map['help'] = 'yii\console\controllers\HelpController';
         }
     }
-
     /**
      * Handles the specified request.
      * @param Request $request the request to be handled
      * @return Response the resulting response
      */
-    public function handleRequest($request)
+    public function handle_request($request)
     {
         [$route, $params] = $request->resolve();
-        $this->requestedRoute = $route;
-        $result = $this->runAction($route, $params);
+        $this->requested_route = $route;
+        $result = $this->run_action($route, $params);
         if ($result instanceof Response) {
             return $result;
         }
-
-        $response = $this->getResponse();
-        $response->exitStatus = $result;
-
+        $response = $this->get_response();
+        $response->exit_status = $result;
         return $response;
     }
-
     /**
      * Runs a controller action specified by a route.
      * This method parses the specified route and creates the corresponding child module(s), controller and action
@@ -176,69 +163,52 @@ class Application extends \yii\base\Application
      * Exit code 0 means normal, and other values mean abnormal. Exit code of `null` is treated as `0` as well.
      * @throws Exception if the route is invalid
      */
-    public function runAction(string $route, $params = [])
+    public function run_action(string $route, $params = [])
     {
         try {
-            $res = parent::runAction($route, $params);
+            $res = parent::run_action($route, $params);
             return is_object($res) ? $res : (int) $res;
-        } catch (InvalidRouteException $e) {
-            throw new UnknownCommandException($route, $this, 0, $e);
+        } catch (Invalid_Route_Exception $e) {
+            throw new Unknown_Command_Exception($route, $this, 0, $e);
         }
     }
-
     /**
      * Returns the configuration of the built-in commands.
      * @return array the configuration of the built-in commands.
      */
-    public function coreCommands(): array
+    public function core_commands(): array
     {
-        return [
-            'asset' => 'yii\console\controllers\AssetController',
-            'cache' => 'yii\console\controllers\CacheController',
-            'fixture' => 'yii\console\controllers\FixtureController',
-            'help' => 'yii\console\controllers\HelpController',
-            'message' => 'yii\console\controllers\MessageController',
-            'migrate' => 'yii\console\controllers\MigrateController',
-            'serve' => 'yii\console\controllers\ServeController',
-        ];
+        return ['asset' => 'yii\console\controllers\AssetController', 'cache' => 'yii\console\controllers\CacheController', 'fixture' => 'yii\console\controllers\FixtureController', 'help' => 'yii\console\controllers\HelpController', 'message' => 'yii\console\controllers\MessageController', 'migrate' => 'yii\console\controllers\MigrateController', 'serve' => 'yii\console\controllers\ServeController'];
     }
-
     /**
      * Returns the error handler component.
      * @return ErrorHandler the error handler application component.
      */
-    public function getErrorHandler()
+    public function get_error_handler()
     {
         return $this->get('errorHandler');
     }
-
     /**
      * Returns the request component.
      * @return Request the request component.
      */
-    public function getRequest()
+    public function get_request()
     {
         return $this->get('request');
     }
-
     /**
      * Returns the response component.
      * @return Response the response component.
      */
-    public function getResponse()
+    public function get_response()
     {
         return $this->get('response');
     }
-
     /**
      * {@inheritdoc}
      */
-    public function coreComponents(): array
+    public function core_components(): array
     {
-        return array_merge(parent::coreComponents(), [
-            'request' => ['class' => 'yii\console\Request'],
-            'response' => ['class' => 'yii\console\Response'],
-            'errorHandler' => ['class' => 'yii\console\ErrorHandler'],
-        ]);
+        return array_merge(parent::core_components(), ['request' => ['class' => 'yii\console\Request'], 'response' => ['class' => 'yii\console\Response'], 'errorHandler' => ['class' => 'yii\console\ErrorHandler']]);
     }
 }

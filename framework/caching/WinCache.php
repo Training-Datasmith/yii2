@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
 /**
@@ -23,7 +21,7 @@ namespace yii\caching;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class WinCache extends Cache
+class Win_Cache extends Cache
 {
     /**
      * Checks whether a specified key exists in the cache.
@@ -37,32 +35,28 @@ class WinCache extends Cache
      */
     public function exists($key): bool
     {
-        $key = $this->buildKey($key);
-
+        $key = $this->build_key($key);
         return wincache_ucache_exists($key);
     }
-
     /**
      * Retrieves a value from cache with a specified key.
      * This is the implementation of the method declared in the parent class.
      * @param string $key a unique key identifying the cached value
      * @return string|bool the value stored in cache, false if the value is not in the cache or expired.
      */
-    protected function getValue($key)
+    protected function get_value($key)
     {
         return wincache_ucache_get($key);
     }
-
     /**
      * Retrieves multiple values from cache with the specified keys.
      * @param array $keys a list of keys identifying the cached values
      * @return array a list of cached values indexed by the keys
      */
-    protected function getValues($keys)
+    protected function get_values($keys)
     {
         return wincache_ucache_get($keys);
     }
-
     /**
      * Stores a value identified by a key in cache.
      * This is the implementation of the method declared in the parent class.
@@ -73,22 +67,20 @@ class WinCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function setValue($key, $value, $duration): bool
+    protected function set_value($key, $value, $duration): bool
     {
         return wincache_ucache_set($key, $value, $duration);
     }
-
     /**
      * Stores multiple key-value pairs in cache.
      * @param array $data array where key corresponds to cache key while value is the value stored
      * @param int $duration the number of seconds in which the cached values will expire. 0 means never expire.
      * @return array array of failed keys
      */
-    protected function setValues($data, $duration): bool
+    protected function set_values($data, $duration): bool
     {
         return wincache_ucache_set($data, null, $duration);
     }
-
     /**
      * Stores a value identified by a key into cache if the cache does not contain this key.
      * This is the implementation of the method declared in the parent class.
@@ -99,11 +91,10 @@ class WinCache extends Cache
      * @param int $duration the number of seconds in which the cached value will expire. 0 means never expire.
      * @return bool true if the value is successfully stored into cache, false otherwise
      */
-    protected function addValue($key, $value, $duration): bool
+    protected function add_value($key, $value, $duration): bool
     {
         return wincache_ucache_add($key, $value, $duration);
     }
-
     /**
      * Adds multiple key-value pairs to cache.
      * The default implementation calls [[addValue()]] multiple times add values one by one. If the underlying cache
@@ -112,28 +103,26 @@ class WinCache extends Cache
      * @param int $duration the number of seconds in which the cached values will expire. 0 means never expire.
      * @return array array of failed keys
      */
-    protected function addValues($data, $duration): bool
+    protected function add_values($data, $duration): bool
     {
         return wincache_ucache_add($data, null, $duration);
     }
-
     /**
      * Deletes a value with the specified key from cache
      * This is the implementation of the method declared in the parent class.
      * @param string $key the key of the value to be deleted
      * @return bool if no error happens during deletion
      */
-    protected function deleteValue($key): bool
+    protected function delete_value($key): bool
     {
         return wincache_ucache_delete($key);
     }
-
     /**
      * Deletes all values from cache.
      * This is the implementation of the method declared in the parent class.
      * @return bool whether the flush operation was successful.
      */
-    protected function flushValues(): bool
+    protected function flush_values(): bool
     {
         return wincache_ucache_clear();
     }

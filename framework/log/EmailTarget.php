@@ -1,20 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\log;
 
 use Yii;
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\di\Instance;
-use yii\mail\MailerInterface;
-
+use yii\mail\Mailer_Interface;
 /**
  * EmailTarget sends selected log messages to the specified email addresses.
  *
@@ -45,7 +42,7 @@ use yii\mail\MailerInterface;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class EmailTarget extends Target
+class Email_Target extends Target
 {
     /**
      * @var array the configuration array for creating a [[\yii\mail\MessageInterface|message]] object.
@@ -59,7 +56,6 @@ class EmailTarget extends Target
      * Starting from version 2.0.2, this can also be a configuration array for creating the object.
      */
     public $mailer = 'mailer';
-
     /**
      * {@inheritdoc}
      */
@@ -67,11 +63,10 @@ class EmailTarget extends Target
     {
         parent::init();
         if (empty($this->message['to'])) {
-            throw new InvalidConfigException('The "to" option must be set for EmailTarget::message.');
+            throw new Invalid_Config_Exception('The "to" option must be set for EmailTarget::message.');
         }
         $this->mailer = Instance::ensure($this->mailer, 'yii\mail\MailerInterface');
     }
-
     /**
      * Sends log messages to specified email addresses.
      * Starting from version 2.0.14, this method throws LogRuntimeException in case the log can not be exported.
@@ -86,23 +81,21 @@ class EmailTarget extends Target
         }
         $messages = array_map([$this, 'formatMessage'], $this->messages);
         $body = wordwrap(implode("\n", $messages), 70);
-        $message = $this->composeMessage($body);
+        $message = $this->compose_message($body);
         if (!$message->send($this->mailer)) {
-            throw new LogRuntimeException('Unable to export log through email!');
+            throw new Log_Runtime_Exception('Unable to export log through email!');
         }
     }
-
     /**
      * Composes a mail message with the given body content.
      * @param string $body the body content
      * @return \yii\mail\MessageInterface $message
      */
-    protected function composeMessage($body)
+    protected function compose_message($body)
     {
         $message = $this->mailer->compose();
         Yii::configure($message, $this->message);
-        $message->setTextBody($body);
-
+        $message->set_text_body($body);
         return $message;
     }
 }

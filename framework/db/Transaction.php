@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 use Yii;
-use yii\base\InvalidConfigException;
-use yii\base\NotSupportedException;
-
+use yii\base\Invalid_Config_Exception;
+use yii\base\Not_Supported_Exception;
 /**
  * Transaction represents a DB transaction.
  *
@@ -52,7 +49,7 @@ use yii\base\NotSupportedException;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Transaction extends \yii\base\BaseObject
+class Transaction extends \yii\base\Base_Object
 {
     /**
      * A constant representing the transaction isolation level `READ UNCOMMITTED`.
@@ -78,22 +75,19 @@ class Transaction extends \yii\base\BaseObject
      * @var Connection the database connection that this transaction is associated with.
      */
     public $db;
-
     /**
      * @var int the nesting level of the transaction. 0 means the outermost level.
      */
     private int $_level = 0;
-
     /**
      * Returns a value indicating whether this transaction is active.
      * @return bool whether this transaction is active. Only an active transaction
      * can [[commit()]] or [[rollBack()]].
      */
-    public function getIsActive(): bool
+    public function get_is_active(): bool
     {
-        return $this->_level > 0 && $this->db && $this->db->isActive;
+        return $this->_level > 0 && $this->db && $this->db->is_active;
     }
-
     /**
      * Begins a transaction.
      * @param string|null $isolationLevel The [isolation level][] to use for this transaction.
@@ -117,107 +111,96 @@ class Transaction extends \yii\base\BaseObject
      * @throws NotSupportedException if the DBMS does not support nested transactions
      * @throws Exception if DB connection fails
      */
-    public function begin($isolationLevel = null): void
+    public function begin($isolation_level = null): void
     {
         if ($this->db === null) {
-            throw new InvalidConfigException('Transaction::db must be set.');
+            throw new Invalid_Config_Exception('Transaction::db must be set.');
         }
         $this->db->open();
-
         if ($this->_level === 0) {
-            if ($isolationLevel !== null) {
-                $this->db->getSchema()->setTransactionIsolationLevel($isolationLevel);
+            if ($isolation_level !== null) {
+                $this->db->get_schema()->set_transaction_isolation_level($isolation_level);
             }
-            Yii::debug('Begin transaction' . ($isolationLevel ? ' with isolation level ' . $isolationLevel : ''), __METHOD__);
-
+            Yii::debug('Begin transaction' . ($isolation_level ? ' with isolation level ' . $isolation_level : ''), __METHOD__);
             $this->db->trigger(Connection::EVENT_BEGIN_TRANSACTION);
-            $this->db->pdo->beginTransaction();
+            $this->db->pdo->begin_transaction();
             $this->_level = 1;
-
             return;
         }
-
-        $schema = $this->db->getSchema();
-        if ($schema->supportsSavepoint()) {
+        $schema = $this->db->get_schema();
+        if ($schema->supports_savepoint()) {
             Yii::debug('Set savepoint ' . $this->_level, __METHOD__);
             // make sure the transaction wasn't autocommitted
-            if ($this->db->pdo->inTransaction()) {
-                $schema->createSavepoint('LEVEL' . $this->_level);
+            if ($this->db->pdo->in_transaction()) {
+                $schema->create_savepoint('LEVEL' . $this->_level);
             }
         } else {
             Yii::info('Transaction not started: nested transaction not supported', __METHOD__);
-            throw new NotSupportedException('Transaction not started: nested transaction not supported.');
+            throw new Not_Supported_Exception('Transaction not started: nested transaction not supported.');
         }
         $this->_level++;
     }
-
     /**
      * Commits a transaction.
      * @throws Exception if the transaction is not active
      */
     public function commit(): void
     {
-        if (!$this->getIsActive()) {
+        if (!$this->get_is_active()) {
             throw new Exception('Failed to commit transaction: transaction was inactive.');
         }
-
         $this->_level--;
         if ($this->_level === 0) {
             Yii::debug('Commit transaction', __METHOD__);
             // make sure the transaction wasn't autocommitted
-            if ($this->db->pdo->inTransaction()) {
+            if ($this->db->pdo->in_transaction()) {
                 $this->db->pdo->commit();
             }
             $this->db->trigger(Connection::EVENT_COMMIT_TRANSACTION);
             return;
         }
-
-        $schema = $this->db->getSchema();
-        if ($schema->supportsSavepoint()) {
+        $schema = $this->db->get_schema();
+        if ($schema->supports_savepoint()) {
             Yii::debug('Release savepoint ' . $this->_level, __METHOD__);
             // make sure the transaction wasn't autocommitted
-            if ($this->db->pdo->inTransaction()) {
-                $schema->releaseSavepoint('LEVEL' . $this->_level);
+            if ($this->db->pdo->in_transaction()) {
+                $schema->release_savepoint('LEVEL' . $this->_level);
             }
         } else {
             Yii::info('Transaction not committed: nested transaction not supported', __METHOD__);
         }
     }
-
     /**
      * Rolls back a transaction.
      */
-    public function rollBack(): void
+    public function roll_back(): void
     {
-        if (!$this->getIsActive()) {
+        if (!$this->get_is_active()) {
             // do nothing if transaction is not active: this could be the transaction is committed
             // but the event handler to "commitTransaction" throw an exception
             return;
         }
-
         $this->_level--;
         if ($this->_level === 0) {
             Yii::debug('Roll back transaction', __METHOD__);
             // make sure the transaction wasn't autocommitted
-            if ($this->db->pdo->inTransaction()) {
-                $this->db->pdo->rollBack();
+            if ($this->db->pdo->in_transaction()) {
+                $this->db->pdo->roll_back();
             }
             $this->db->trigger(Connection::EVENT_ROLLBACK_TRANSACTION);
             return;
         }
-
-        $schema = $this->db->getSchema();
-        if ($schema->supportsSavepoint()) {
+        $schema = $this->db->get_schema();
+        if ($schema->supports_savepoint()) {
             Yii::debug('Roll back to savepoint ' . $this->_level, __METHOD__);
             // make sure the transaction wasn't autocommitted
-            if ($this->db->pdo->inTransaction()) {
-                $schema->rollBackSavepoint('LEVEL' . $this->_level);
+            if ($this->db->pdo->in_transaction()) {
+                $schema->roll_back_savepoint('LEVEL' . $this->_level);
             }
         } else {
             Yii::info('Transaction not rolled back: nested transaction not supported', __METHOD__);
         }
     }
-
     /**
      * Sets the transaction isolation level for this transaction.
      *
@@ -230,20 +213,19 @@ class Transaction extends \yii\base\BaseObject
      * @throws Exception if the transaction is not active
      * @see https://en.wikipedia.org/wiki/Isolation_%28database_systems%29#Isolation_levels
      */
-    public function setIsolationLevel(string $level): void
+    public function set_isolation_level(string $level): void
     {
-        if (!$this->getIsActive()) {
+        if (!$this->get_is_active()) {
             throw new Exception('Failed to set isolation level: transaction was inactive.');
         }
         Yii::debug('Setting transaction isolation level to ' . $level, __METHOD__);
-        $this->db->getSchema()->setTransactionIsolationLevel($level);
+        $this->db->get_schema()->set_transaction_isolation_level($level);
     }
-
     /**
      * @return int The current nesting level of the transaction.
      * @since 2.0.8
      */
-    public function getLevel()
+    public function get_level()
     {
         return $this->_level;
     }

@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
-use yii\base\BaseObject;
-
+use yii\base\Base_Object;
 /**
  * SqlToken represents SQL tokens produced by [[SqlTokenizer]] or its child classes.
  *
@@ -25,7 +22,7 @@ use yii\base\BaseObject;
  *
  * @implements \ArrayAccess<int, SqlToken>
  */
-class SqlToken extends BaseObject implements \ArrayAccess
+class Sql_Token extends Base_Object implements \ArrayAccess
 {
     public const TYPE_CODE = 0;
     public const TYPE_STATEMENT = 1;
@@ -55,30 +52,27 @@ class SqlToken extends BaseObject implements \ArrayAccess
     /**
      * @var int original SQL token start position.
      */
-    public $startOffset;
+    public $start_offset;
     /**
      * @var int original SQL token end position.
      */
-    public $endOffset;
+    public $end_offset;
     /**
      * @var SqlToken parent token.
      */
     public $parent;
-
     /**
      * @var SqlToken[] token children.
      */
     private $_children = [];
-
     /**
      * Returns the SQL code representing the token.
      * @return string SQL code.
      */
     public function __toString(): string
     {
-        return $this->getSql();
+        return $this->get_sql();
     }
-
     /**
      * Returns whether there is a child token at the specified offset.
      * This method is required by the SPL [[\ArrayAccess]] interface.
@@ -86,12 +80,11 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * @param int $offset child token offset.
      * @return bool whether the token exists.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetExists($offset)
     {
-        return isset($this->_children[$this->calculateOffset($offset)]);
+        return isset($this->_children[$this->calculate_offset($offset)]);
     }
-
     /**
      * Returns a child token at the specified offset.
      * This method is required by the SPL [[\ArrayAccess]] interface.
@@ -99,13 +92,12 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * @param int $offset child token offset.
      * @return SqlToken|null the child token at the specified offset, `null` if there's no token.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetGet($offset)
     {
-        $offset = $this->calculateOffset($offset);
+        $offset = $this->calculate_offset($offset);
         return $this->_children[$offset] ?? null;
     }
-
     /**
      * Adds a child token to the token.
      * This method is required by the SPL [[\ArrayAccess]] interface.
@@ -113,93 +105,81 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * @param int|null $offset child token offset.
      * @param SqlToken $token token to be added.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetSet($offset, $token): void
     {
         $token->parent = $this;
         if ($offset === null) {
             $this->_children[] = $token;
         } else {
-            $this->_children[$this->calculateOffset($offset)] = $token;
+            $this->_children[$this->calculate_offset($offset)] = $token;
         }
-        $this->updateCollectionOffsets();
+        $this->update_collection_offsets();
     }
-
     /**
      * Removes a child token at the specified offset.
      * This method is required by the SPL [[\ArrayAccess]] interface.
      * It is implicitly called when you use something like `unset($token[$offset])`.
      * @param int $offset child token offset.
      */
-    #[\ReturnTypeWillChange]
+    #[\Return_Type_Will_Change]
     public function offsetUnset($offset): void
     {
-        $offset = $this->calculateOffset($offset);
+        $offset = $this->calculate_offset($offset);
         if (isset($this->_children[$offset])) {
             array_splice($this->_children, $offset, 1);
         }
-        $this->updateCollectionOffsets();
+        $this->update_collection_offsets();
     }
-
     /**
      * Returns child tokens.
      * @return SqlToken[] child tokens.
      */
-    public function getChildren()
+    public function get_children()
     {
         return $this->_children;
     }
-
     /**
      * Sets a list of child tokens.
      * @param SqlToken[] $children child tokens.
      */
-    public function setChildren($children): void
+    public function set_children($children): void
     {
         $this->_children = [];
         foreach ($children as $child) {
             $child->parent = $this;
             $this->_children[] = $child;
         }
-        $this->updateCollectionOffsets();
+        $this->update_collection_offsets();
     }
-
     /**
      * Returns whether the token represents a collection of tokens.
      * @return bool whether the token represents a collection of tokens.
      */
-    public function getIsCollection(): bool
+    public function get_is_collection(): bool
     {
-        return in_array($this->type, [
-            self::TYPE_CODE,
-            self::TYPE_STATEMENT,
-            self::TYPE_PARENTHESIS,
-        ], true);
+        return in_array($this->type, [self::TYPE_CODE, self::TYPE_STATEMENT, self::TYPE_PARENTHESIS], true);
     }
-
     /**
      * Returns whether the token represents a collection of tokens and has non-zero number of children.
      * @return bool whether the token has children.
      */
-    public function getHasChildren(): bool
+    public function get_has_children(): bool
     {
-        return $this->getIsCollection() && !empty($this->_children);
+        return $this->get_is_collection() && !empty($this->_children);
     }
-
     /**
      * Returns the SQL code representing the token.
      * @return string SQL code.
      */
-    public function getSql(): string
+    public function get_sql(): string
     {
         $code = $this;
         while ($code->parent !== null) {
             $code = $code->parent;
         }
-
-        return mb_substr($code->content, $this->startOffset, $this->endOffset - $this->startOffset, 'UTF-8');
+        return mb_substr($code->content, $this->start_offset, $this->end_offset - $this->start_offset, 'UTF-8');
     }
-
     /**
      * Returns whether this token (including its children) matches the specified "pattern" SQL code.
      *
@@ -219,95 +199,80 @@ class SqlToken extends BaseObject implements \ArrayAccess
      * @param int|null $lastMatchIndex token children offset where a successful match ends.
      * @return bool whether this token matches the pattern SQL code.
      */
-    public function matches(SqlToken $patternToken, $offset = 0, &$firstMatchIndex = null, &$lastMatchIndex = null)
+    public function matches(Sql_Token $pattern_token, $offset = 0, &$first_match_index = null, &$last_match_index = null)
     {
-        if (!$patternToken->getHasChildren()) {
+        if (!$pattern_token->get_has_children()) {
             return false;
         }
-
-        $patternToken = $patternToken[0];
-        return $this->tokensMatch($patternToken, $this, $offset, $firstMatchIndex, $lastMatchIndex);
+        $pattern_token = $pattern_token[0];
+        return $this->tokens_match($pattern_token, $this, $offset, $first_match_index, $last_match_index);
     }
-
     /**
      * Tests the given token to match the specified pattern token.
      * @param int $offset
      * @param int|null $firstMatchIndex
      * @param int|null $lastMatchIndex
      */
-    private function tokensMatch(SqlToken $patternToken, SqlToken $token, $offset = 0, &$firstMatchIndex = null, &$lastMatchIndex = null): bool
+    private function tokens_match(Sql_Token $pattern_token, Sql_Token $token, $offset = 0, &$first_match_index = null, &$last_match_index = null): bool
     {
-        if (
-            $patternToken->getIsCollection() !== $token->getIsCollection()
-            || (!$patternToken->getIsCollection() && $patternToken->content !== $token->content)
-        ) {
+        if ($pattern_token->get_is_collection() !== $token->get_is_collection() || !$pattern_token->get_is_collection() && $pattern_token->content !== $token->content) {
             return false;
         }
-
-        if ($patternToken->children === $token->children) {
-            $firstMatchIndex = $lastMatchIndex = $offset;
+        if ($pattern_token->children === $token->children) {
+            $first_match_index = $last_match_index = $offset;
             return true;
         }
-
-        $firstMatchIndex = $lastMatchIndex = null;
+        $first_match_index = $last_match_index = null;
         $wildcard = false;
-        for ($index = 0, $count = count($patternToken->children); $index < $count; $index++) {
+        for ($index = 0, $count = count($pattern_token->children); $index < $count; $index++) {
             // Here we iterate token by token with an exception of "any" that toggles
             // an iteration until we matched with a next pattern token or EOF.
-            if ($patternToken[$index]->content === 'any') {
+            if ($pattern_token[$index]->content === 'any') {
                 $wildcard = true;
                 continue;
             }
-
             for ($limit = $wildcard ? count($token->children) : $offset + 1; $offset < $limit; $offset++) {
                 if (!$wildcard && !isset($token[$offset])) {
                     break;
                 }
-
-                if (!$this->tokensMatch($patternToken[$index], $token[$offset])) {
+                if (!$this->tokens_match($pattern_token[$index], $token[$offset])) {
                     continue;
                 }
-
-                if ($firstMatchIndex === null) {
-                    $firstMatchIndex = $offset;
+                if ($first_match_index === null) {
+                    $first_match_index = $offset;
                 }
-                $lastMatchIndex = $offset;
+                $last_match_index = $offset;
                 $wildcard = false;
                 $offset++;
                 continue 2;
             }
-
             return false;
         }
-
         return true;
     }
-
     /**
      * Returns an absolute offset in the children array.
      * @param int $offset
      * @return int
      */
-    private function calculateOffset($offset)
+    private function calculate_offset($offset)
     {
         if ($offset >= 0) {
             return $offset;
         }
-
         return count($this->_children) + $offset;
     }
-
     /**
      * Updates token SQL code start and end offsets based on its children.
      */
-    private function updateCollectionOffsets(): void
+    private function update_collection_offsets(): void
     {
         if (!empty($this->_children)) {
-            $this->startOffset = reset($this->_children)->startOffset;
-            $this->endOffset = end($this->_children)->endOffset;
+            $this->start_offset = reset($this->_children)->start_offset;
+            $this->end_offset = end($this->_children)->end_offset;
         }
         if ($this->parent !== null) {
-            $this->parent->updateCollectionOffsets();
+            $this->parent->update_collection_offsets();
         }
     }
 }

@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 /**
@@ -19,7 +17,7 @@ namespace yii\validators;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class DefaultValueValidator extends Validator
+class Default_Value_Validator extends Validator
 {
     /**
      * @var mixed the default value or an anonymous function that returns the default value which will
@@ -38,18 +36,17 @@ class DefaultValueValidator extends Validator
      * @var bool this property is overwritten to be false so that this validator will
      * be applied when the value being validated is empty.
      */
-    public $skipOnEmpty = false;
-
+    public $skip_on_empty = false;
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute): void
+    public function validate_attribute($model, $attribute): void
     {
-        if ($this->isEmpty($model->$attribute)) {
+        if ($this->is_empty($model->{$attribute})) {
             if ($this->value instanceof \Closure) {
-                $model->$attribute = call_user_func($this->value, $model, $attribute);
+                $model->{$attribute} = call_user_func($this->value, $model, $attribute);
             } else {
-                $model->$attribute = $this->value;
+                $model->{$attribute} = $this->value;
             }
         }
     }

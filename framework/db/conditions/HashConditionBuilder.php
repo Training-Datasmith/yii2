@@ -1,31 +1,27 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\conditions;
 
-use yii\db\ExpressionBuilderInterface;
-use yii\db\ExpressionBuilderTrait;
-use yii\db\ExpressionInterface;
+use yii\db\Expression_Builder_Interface;
+use yii\db\Expression_Builder_Trait;
+use yii\db\Expression_Interface;
 use yii\db\Query;
-use yii\helpers\ArrayHelper;
-
+use yii\helpers\Array_Helper;
 /**
  * Class HashConditionBuilder builds objects of [[HashCondition]]
  *
  * @author Dmytro Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14
  */
-class HashConditionBuilder implements ExpressionBuilderInterface
+class Hash_Condition_Builder implements Expression_Builder_Interface
 {
-    use ExpressionBuilderTrait;
-
+    use Expression_Builder_Trait;
     /**
      * Method builds the raw SQL from the $expression that will not be additionally
      * escaped or quoted.
@@ -34,29 +30,28 @@ class HashConditionBuilder implements ExpressionBuilderInterface
      * @param array $params the binding parameters.
      * @return string the raw SQL that will not be additionally escaped or quoted.
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(Expression_Interface $expression, array &$params = [])
     {
-        $hash = $expression->getHash();
+        $hash = $expression->get_hash();
         $parts = [];
         foreach ($hash as $column => $value) {
-            if (ArrayHelper::isTraversable($value) || $value instanceof Query) {
+            if (Array_Helper::is_traversable($value) || $value instanceof Query) {
                 // IN condition
-                $parts[] = $this->queryBuilder->buildCondition(new InCondition($column, 'IN', $value), $params);
+                $parts[] = $this->query_builder->build_condition(new In_Condition($column, 'IN', $value), $params);
             } else {
                 if (strpos($column, '(') === false) {
-                    $column = $this->queryBuilder->db->quoteColumnName($column);
+                    $column = $this->query_builder->db->quote_column_name($column);
                 }
                 if ($value === null) {
-                    $parts[] = "$column IS NULL";
-                } elseif ($value instanceof ExpressionInterface) {
-                    $parts[] = "$column=" . $this->queryBuilder->buildExpression($value, $params);
+                    $parts[] = "{$column} IS NULL";
+                } elseif ($value instanceof Expression_Interface) {
+                    $parts[] = "{$column}=" . $this->query_builder->build_expression($value, $params);
                 } else {
-                    $phName = $this->queryBuilder->bindParam($value, $params);
-                    $parts[] = "$column=$phName";
+                    $ph_name = $this->query_builder->bind_param($value, $params);
+                    $parts[] = "{$column}={$ph_name}";
                 }
             }
         }
-
         return count($parts) === 1 ? $parts[0] : '(' . implode(') AND (', $parts) . ')';
     }
 }

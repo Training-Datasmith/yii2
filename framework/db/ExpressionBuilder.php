@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -16,15 +14,14 @@ namespace yii\db;
  * @author Dmitry Naumenko <d.naumenko.a@gmail.com>
  * @since 2.0.14
  */
-class ExpressionBuilder implements ExpressionBuilderInterface
+class Expression_Builder implements Expression_Builder_Interface
 {
-    use ExpressionBuilderTrait;
-
+    use Expression_Builder_Trait;
     /**
      * {@inheritdoc}
      * @param Expression|ExpressionInterface $expression the expression to be built
      */
-    public function build(ExpressionInterface $expression, array &$params = [])
+    public function build(Expression_Interface $expression, array &$params = [])
     {
         $params = array_merge($params, $expression->params);
         return $expression->__toString();

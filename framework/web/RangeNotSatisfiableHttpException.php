@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -23,7 +21,7 @@ namespace yii\web;
  *
  * @since 2.0.11
  */
-class RangeNotSatisfiableHttpException extends HttpException
+class Range_Not_Satisfiable_Http_Exception extends Http_Exception
 {
     /**
      * Constructor.

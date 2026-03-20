@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -18,7 +16,7 @@ namespace yii\web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Cookie extends \yii\base\BaseObject
+class Cookie extends \yii\base\Base_Object
 {
     /**
      * SameSite policy Lax will prevent the cookie from being sent by the browser in all cross-site browsing context
@@ -76,7 +74,7 @@ class Cookie extends \yii\base\BaseObject
      * By setting this property to true, the cookie will not be accessible by scripting languages,
      * such as JavaScript, which can effectively help to reduce identity theft through XSS attacks.
      */
-    public $httpOnly = true;
+    public $http_only = true;
     /**
      * @var string SameSite prevents the browser from sending this cookie along with cross-site requests.
      *
@@ -84,8 +82,7 @@ class Cookie extends \yii\base\BaseObject
      *
      * @since 2.0.21
      */
-    public $sameSite = self::SAME_SITE_LAX;
-
+    public $same_site = self::SAME_SITE_LAX;
     /**
      * Magic method to turn a cookie object into a string without having to explicitly access [[value]].
      *

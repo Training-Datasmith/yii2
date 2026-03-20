@@ -1,18 +1,15 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\test;
 
-use yii\base\ArrayAccessTrait;
-use yii\base\InvalidConfigException;
-
+use yii\base\Array_Access_Trait;
+use yii\base\Invalid_Config_Exception;
 /**
  * BaseActiveFixture is the base class for fixture classes that support accessing fixture data as ActiveRecord objects.
  *
@@ -24,25 +21,22 @@ use yii\base\InvalidConfigException;
  * @implements \IteratorAggregate<string, array<string, mixed>>
  * @implements \ArrayAccess<string, array<string, mixed>|null>
  */
-abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate, \ArrayAccess, \Countable
+abstract class Base_Active_Fixture extends Db_Fixture implements \IteratorAggregate, \ArrayAccess, \Countable
 {
-    use ArrayAccessTrait;
-    use FileFixtureTrait;
-
+    use Array_Access_Trait;
+    use File_Fixture_Trait;
     /**
      * @var string the AR model class associated with this fixture.
      */
-    public $modelClass;
+    public $model_class;
     /**
      * @var array<string, array<string, mixed>> the data rows. Each array element represents one row of data (column name => column value).
      */
     public $data = [];
-
     /**
      * @var \yii\db\ActiveRecord[] the loaded AR models
      */
     private $_models = [];
-
     /**
      * Returns the AR model by the specified model name.
      * A model name is the key of the corresponding data row in [[data]].
@@ -50,7 +44,7 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
      * @return \yii\db\ActiveRecord|null the AR model, or null if the model cannot be found in the database
      * @throws \yii\base\InvalidConfigException if [[modelClass]] is not set.
      */
-    public function getModel($name)
+    public function get_model($name)
     {
         if (!isset($this->data[$name])) {
             return null;
@@ -58,21 +52,18 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
         if (array_key_exists($name, $this->_models)) {
             return $this->_models[$name];
         }
-
-        if ($this->modelClass === null) {
-            throw new InvalidConfigException('The "modelClass" property must be set.');
+        if ($this->model_class === null) {
+            throw new Invalid_Config_Exception('The "modelClass" property must be set.');
         }
         $row = $this->data[$name];
         /** @var \yii\db\ActiveRecord $modelClass */
-        $modelClass = $this->modelClass;
+        $model_class = $this->model_class;
         $keys = [];
-        foreach ($modelClass::primaryKey() as $key) {
+        foreach ($model_class::primary_key() as $key) {
             $keys[$key] = isset($row[$key]) ? $row[$key] : null;
         }
-
-        return $this->_models[$name] = $modelClass::findOne($keys);
+        return $this->_models[$name] = $model_class::find_one($keys);
     }
-
     /**
      * Loads the fixture.
      *
@@ -81,9 +72,8 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
      */
     public function load()
     {
-        $this->data = $this->getData();
+        $this->data = $this->get_data();
     }
-
     /**
      * Returns the fixture data.
      *
@@ -91,11 +81,10 @@ abstract class BaseActiveFixture extends DbFixture implements \IteratorAggregate
      * @throws InvalidConfigException if the specified data file does not exist.
      * @see loadData()
      */
-    protected function getData()
+    protected function get_data()
     {
-        return $this->loadData($this->dataFile);
+        return $this->load_data($this->data_file);
     }
-
     /**
      * {@inheritdoc}
      */

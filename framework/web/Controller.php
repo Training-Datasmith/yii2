@@ -1,23 +1,20 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 use Yii;
 use yii\base\Action;
 use yii\base\Controller as BaseController;
 use yii\base\Exception;
-use yii\base\InlineAction;
+use yii\base\Inline_Action;
 use yii\base\Module;
 use yii\helpers\Url;
-
 /**
  * Controller is the base class of web controllers.
  *
@@ -33,18 +30,17 @@ use yii\helpers\Url;
  * @template T of Module = Module
  * @extends BaseController<T>
  */
-class Controller extends BaseController
+class Controller extends Base_Controller
 {
     /**
      * @var bool whether to enable CSRF validation for the actions in this controller.
      * CSRF validation is enabled only when both this property and [[\yii\web\Request::enableCsrfValidation]] are true.
      */
-    public $enableCsrfValidation = true;
+    public $enable_csrf_validation = true;
     /**
      * @var array the parameters bound to the current action.
      */
-    public $actionParams = [];
-
+    public $action_params = [];
     /**
      * Renders a view in response to an AJAX request.
      *
@@ -57,14 +53,12 @@ class Controller extends BaseController
      * @param array $params the parameters (name-value pairs) that should be made available in the view.
      * @return string the rendering result.
      */
-    public function renderAjax($view, $params = [])
+    public function render_ajax($view, $params = [])
     {
         /** @var View $viewComponent */
-        $viewComponent = $this->getView();
-
-        return $viewComponent->renderAjax($view, $params, $this);
+        $view_component = $this->get_view();
+        return $view_component->render_ajax($view, $params, $this);
     }
-
     /**
      * Send data formatted as JSON.
      *
@@ -84,13 +78,12 @@ class Controller extends BaseController
      * @see Response::FORMAT_JSON
      * @see JsonResponseFormatter
      */
-    public function asJson($data)
+    public function as_json($data)
     {
         $this->response->format = Response::FORMAT_JSON;
         $this->response->data = $data;
         return $this->response;
     }
-
     /**
      * Send data formatted as XML.
      *
@@ -110,13 +103,12 @@ class Controller extends BaseController
      * @see Response::FORMAT_XML
      * @see XmlResponseFormatter
      */
-    public function asXml($data)
+    public function as_xml($data)
     {
         $this->response->format = Response::FORMAT_XML;
         $this->response->data = $data;
         return $this->response;
     }
-
     /**
      * Binds the parameters to the action.
      * This method is invoked by [[Action]] when it begins to run with the given parameters.
@@ -131,195 +123,169 @@ class Controller extends BaseController
      * @phpstan-param Action<static> $action
      * @psalm-param Action<self> $action
      */
-    public function bindActionParams($action, $params): array
+    public function bind_action_params($action, $params): array
     {
-        if ($action instanceof InlineAction) {
-            $method = new \ReflectionMethod($this, $action->actionMethod);
+        if ($action instanceof Inline_Action) {
+            $method = new \ReflectionMethod($this, $action->action_method);
         } else {
             $method = new \ReflectionMethod($action, 'run');
         }
-
         $args = [];
         $missing = [];
-        $actionParams = [];
-        $requestedParams = [];
-        foreach ($method->getParameters() as $param) {
-            $name = $param->getName();
+        $action_params = [];
+        $requested_params = [];
+        foreach ($method->get_parameters() as $param) {
+            $name = $param->get_name();
             if (array_key_exists($name, $params)) {
-                $isValid = true;
-                $type = $param->getType();
+                $is_valid = true;
+                $type = $param->get_type();
                 if ($type instanceof \ReflectionNamedType) {
-                    [$result, $isValid] = $this->filterSingleTypeActionParam($params[$name], $type);
+                    [$result, $is_valid] = $this->filter_single_type_action_param($params[$name], $type);
                     $params[$name] = $result;
                 } elseif ($type instanceof \ReflectionUnionType) {
-                    [$result, $isValid] = $this->filterUnionTypeActionParam($params[$name], $type);
+                    [$result, $is_valid] = $this->filter_union_type_action_param($params[$name], $type);
                     $params[$name] = $result;
                 }
-
-                if (!$isValid) {
-                    throw new BadRequestHttpException(
-                        Yii::t('yii', 'Invalid data received for parameter "{param}".', ['param' => $name])
-                    );
+                if (!$is_valid) {
+                    throw new Bad_Request_Http_Exception(Yii::t('yii', 'Invalid data received for parameter "{param}".', ['param' => $name]));
                 }
-                $args[] = $actionParams[$name] = $params[$name];
+                $args[] = $action_params[$name] = $params[$name];
                 unset($params[$name]);
-            } elseif (
-                PHP_VERSION_ID >= 70100
-                && ($type = $param->getType()) !== null
-                && $type instanceof \ReflectionNamedType
-                && !$type->isBuiltin()
-            ) {
+            } elseif (PHP_VERSION_ID >= 70100 && ($type = $param->get_type()) !== null && $type instanceof \ReflectionNamedType && !$type->is_builtin()) {
                 try {
-                    $this->bindInjectedParams($type, $name, $args, $requestedParams);
-                } catch (HttpException $e) {
+                    $this->bind_injected_params($type, $name, $args, $requested_params);
+                } catch (Http_Exception $e) {
                     throw $e;
                 } catch (Exception $e) {
-                    throw new ServerErrorHttpException($e->getMessage(), 0, $e);
+                    throw new Server_Error_Http_Exception($e->get_message(), 0, $e);
                 }
-            } elseif ($param->isDefaultValueAvailable()) {
-                $args[] = $actionParams[$name] = $param->getDefaultValue();
+            } elseif ($param->is_default_value_available()) {
+                $args[] = $action_params[$name] = $param->get_default_value();
             } else {
                 $missing[] = $name;
             }
         }
-
         if (!empty($missing)) {
-            throw new BadRequestHttpException(
-                Yii::t('yii', 'Missing required parameters: {params}', ['params' => implode(', ', $missing)])
-            );
+            throw new Bad_Request_Http_Exception(Yii::t('yii', 'Missing required parameters: {params}', ['params' => implode(', ', $missing)]));
         }
-
-        $this->actionParams = $actionParams;
-
+        $this->action_params = $action_params;
         // We use a different array here, specifically one that doesn't contain service instances but descriptions instead.
-        if (Yii::$app->requestedParams === null) {
-            Yii::$app->requestedParams = array_merge($actionParams, $requestedParams);
+        if (Yii::$app->requested_params === null) {
+            Yii::$app->requested_params = array_merge($action_params, $requested_params);
         }
-
         return $args;
     }
-
     /**
      * The logic for [[bindActionParam]] to validate whether a given parameter matches the action's typing
      * if the function parameter has a single named type.
      * @param mixed $param The parameter value.
      * @return array{mixed, bool} The resulting parameter value and a boolean indicating whether the value is valid.
      */
-    private function filterSingleTypeActionParam($param, \ReflectionNamedType $type): array
+    private function filter_single_type_action_param($param, \ReflectionNamedType $type): array
     {
-        $isArray = $type->getName() === 'array';
-        if ($isArray) {
-            return [(array)$param, true];
+        $is_array = $type->get_name() === 'array';
+        if ($is_array) {
+            return [(array) $param, true];
         }
-        $isMixed = $type->getName() === 'mixed';
-        if ($isMixed) {
+        $is_mixed = $type->get_name() === 'mixed';
+        if ($is_mixed) {
             return [$param, true];
         }
-
         if (is_array($param)) {
             return [$param, false];
         }
-
-        if (
-            PHP_VERSION_ID >= 70000
-            && method_exists($type, 'isBuiltin')
-            && $type->isBuiltin()
-            && ($param !== null || !$type->allowsNull())
-        ) {
-            $typeName = PHP_VERSION_ID >= 70100 ? $type->getName() : (string)$type;
-            if ($param === '' && $type->allowsNull()) {
-                if ($typeName !== 'string') { // for old string behavior compatibility
+        if (PHP_VERSION_ID >= 70000 && method_exists($type, 'isBuiltin') && $type->is_builtin() && ($param !== null || !$type->allows_null())) {
+            $type_name = PHP_VERSION_ID >= 70100 ? $type->get_name() : (string) $type;
+            if ($param === '' && $type->allows_null()) {
+                if ($type_name !== 'string') {
+                    // for old string behavior compatibility
                     return [null, true];
                 }
                 return ['', true];
             }
-
-            if ($typeName === 'string') {
+            if ($type_name === 'string') {
                 return [$param, true];
             }
-            $filterResult = $this->filterParamByType($param, $typeName);
-            return [$filterResult, $filterResult !== null];
+            $filter_result = $this->filter_param_by_type($param, $type_name);
+            return [$filter_result, $filter_result !== null];
         }
         return [$param, true];
     }
-
     /**
      * The logic for [[bindActionParam]] to validate whether a given parameter matches the action's typing
      * if the function parameter has a union type.
      * @param mixed $param The parameter value.
      * @return array{mixed, bool} The resulting parameter value and a boolean indicating whether the value is valid.
      */
-    private function filterUnionTypeActionParam($param, \ReflectionUnionType $type): array
+    private function filter_union_type_action_param($param, \ReflectionUnionType $type): array
     {
-        $types = $type->getTypes();
-        if ($param === '' && $type->allowsNull()) {
+        $types = $type->get_types();
+        if ($param === '' && $type->allows_null()) {
             // check if type can be string for old string behavior compatibility
-            foreach ($types as $partialType) {
-                if ($partialType === null) {
+            foreach ($types as $partial_type) {
+                if ($partial_type === null) {
                     continue;
                 }
-                if (!method_exists($partialType, 'isBuiltin')) {
+                if (!method_exists($partial_type, 'isBuiltin')) {
                     continue;
                 }
-                if (!$partialType->isBuiltin()) {
+                if (!$partial_type->is_builtin()) {
                     continue;
                 }
-                $typeName = PHP_VERSION_ID >= 70100 ? $partialType->getName() : (string)$partialType;
-                if ($typeName === 'string') {
+                $type_name = PHP_VERSION_ID >= 70100 ? $partial_type->get_name() : (string) $partial_type;
+                if ($type_name === 'string') {
                     return ['', true];
                 }
             }
             return [null, true];
         }
         // if we found a built-in type but didn't return out, its validation failed
-        $foundBuiltinType = false;
+        $found_builtin_type = false;
         // we save returning out an array or string for later because other types should take precedence
-        $canBeArray = false;
-        $canBeString = false;
-        foreach ($types as $partialType) {
-            if ($partialType === null) {
+        $can_be_array = false;
+        $can_be_string = false;
+        foreach ($types as $partial_type) {
+            if ($partial_type === null) {
                 continue;
             }
-            if (!method_exists($partialType, 'isBuiltin')) {
+            if (!method_exists($partial_type, 'isBuiltin')) {
                 continue;
             }
-            if (!$partialType->isBuiltin()) {
+            if (!$partial_type->is_builtin()) {
                 continue;
             }
-            $foundBuiltinType = true;
-            $typeName = PHP_VERSION_ID >= 70100 ? $partialType->getName() : (string)$partialType;
-            $canBeArray |= $typeName === 'array';
-            $canBeString |= $typeName === 'string';
+            $found_builtin_type = true;
+            $type_name = PHP_VERSION_ID >= 70100 ? $partial_type->get_name() : (string) $partial_type;
+            $can_be_array |= $type_name === 'array';
+            $can_be_string |= $type_name === 'string';
             if (is_array($param)) {
-                if ($canBeArray) {
+                if ($can_be_array) {
                     break;
                 }
                 continue;
             }
-
-            $filterResult = $this->filterParamByType($param, $typeName);
-            if ($filterResult !== null) {
-                return [$filterResult, true];
+            $filter_result = $this->filter_param_by_type($param, $type_name);
+            if ($filter_result !== null) {
+                return [$filter_result, true];
             }
         }
-        if (!is_array($param) && $canBeString) {
+        if (!is_array($param) && $can_be_string) {
             return [$param, true];
         }
-        if ($canBeArray) {
-            return [(array)$param, true];
+        if ($can_be_array) {
+            return [(array) $param, true];
         }
-        return [$param, $canBeString || !$foundBuiltinType];
+        return [$param, $can_be_string || !$found_builtin_type];
     }
-
     /**
      * Run the according filter_var logic for teh given type.
      * @param string $param The value to filter.
      * @param string $typeName The type name.
      * @return mixed|null The resulting value, or null if validation failed or the type can't be validated.
      */
-    private function filterParamByType(string $param, string $typeName)
+    private function filter_param_by_type(string $param, string $type_name)
     {
-        switch ($typeName) {
+        switch ($type_name) {
             case 'int':
                 return filter_var($param, FILTER_VALIDATE_INT, FILTER_NULL_ON_FAILURE);
             case 'float':
@@ -329,23 +295,19 @@ class Controller extends BaseController
         }
         return null;
     }
-
     /**
      * {@inheritdoc}
      */
-    public function beforeAction($action): bool
+    public function before_action($action): bool
     {
-        if (parent::beforeAction($action)) {
-            if ($this->enableCsrfValidation && Yii::$app->getErrorHandler()->exception === null && !$this->request->validateCsrfToken()) {
-                throw new BadRequestHttpException(Yii::t('yii', 'Unable to verify your data submission.'));
+        if (parent::before_action($action)) {
+            if ($this->enable_csrf_validation && Yii::$app->get_error_handler()->exception === null && !$this->request->validate_csrf_token()) {
+                throw new Bad_Request_Http_Exception(Yii::t('yii', 'Unable to verify your data submission.'));
             }
-
             return true;
         }
-
         return false;
     }
-
     /**
      * Redirects the browser to the specified URL.
      * This method is a shortcut to [[Response::redirect()]].
@@ -372,12 +334,11 @@ class Controller extends BaseController
      * for details about HTTP status code
      * @return Response the current response object
      */
-    public function redirect($url, $statusCode = 302)
+    public function redirect($url, $status_code = 302)
     {
         // calling Url::to() here because Response::redirect() modifies route before calling Url::to()
-        return $this->response->redirect(Url::to($url), $statusCode);
+        return $this->response->redirect(Url::to($url), $status_code);
     }
-
     /**
      * Redirects the browser to the home page.
      *
@@ -390,11 +351,10 @@ class Controller extends BaseController
      *
      * @return Response the current response object
      */
-    public function goHome()
+    public function go_home()
     {
-        return $this->response->redirect(Yii::$app->getHomeUrl());
+        return $this->response->redirect(Yii::$app->get_home_url());
     }
-
     /**
      * Redirects the browser to the last visited page.
      *
@@ -413,11 +373,10 @@ class Controller extends BaseController
      * @return Response the current response object
      * @see User::getReturnUrl()
      */
-    public function goBack($defaultUrl = null)
+    public function go_back($default_url = null)
     {
-        return $this->response->redirect(Yii::$app->getUser()->getReturnUrl($defaultUrl));
+        return $this->response->redirect(Yii::$app->get_user()->get_return_url($default_url));
     }
-
     /**
      * Refreshes the current page.
      * This method is a shortcut to [[Response::refresh()]].
@@ -435,6 +394,6 @@ class Controller extends BaseController
      */
     public function refresh(string $anchor = '')
     {
-        return $this->response->redirect($this->request->getUrl() . $anchor);
+        return $this->response->redirect($this->request->get_url() . $anchor);
     }
 }

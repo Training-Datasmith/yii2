@@ -1,20 +1,17 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\validators;
 
 use Yii;
-use yii\base\InvalidConfigException;
-use yii\helpers\ArrayHelper;
+use yii\base\Invalid_Config_Exception;
+use yii\helpers\Array_Helper;
 use yii\helpers\Json;
-
 /**
  * RangeValidator validates that the attribute value is among a list of values.
  *
@@ -25,7 +22,7 @@ use yii\helpers\Json;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class RangeValidator extends Validator
+class Range_Validator extends Validator
 {
     /**
      * @var array|\Traversable|\Closure a list of valid values that the attribute value should be among or an anonymous function that returns
@@ -51,97 +48,72 @@ class RangeValidator extends Validator
     /**
      * @var bool whether to allow array type attribute.
      */
-    public $allowArray = false;
-
+    public $allow_array = false;
     /**
      * {@inheritdoc}
      */
     public function init(): void
     {
         parent::init();
-        if (
-            !is_array($this->range)
-            && !($this->range instanceof \Closure)
-            && !($this->range instanceof \Traversable)
-        ) {
-            throw new InvalidConfigException('The "range" property must be set.');
+        if (!is_array($this->range) && !$this->range instanceof \Closure && !$this->range instanceof \Traversable) {
+            throw new Invalid_Config_Exception('The "range" property must be set.');
         }
         if ($this->message === null) {
             $this->message = Yii::t('yii', '{attribute} is invalid.');
         }
     }
-
     /**
      * {@inheritdoc}
      */
-    protected function validateValue($value): ?array
+    protected function validate_value($value): ?array
     {
         $in = false;
-
-        if (
-            $this->allowArray
-            && (is_iterable($value))
-            && ArrayHelper::isSubset($value, $this->range, $this->strict)
-        ) {
+        if ($this->allow_array && is_iterable($value) && Array_Helper::is_subset($value, $this->range, $this->strict)) {
             $in = true;
         }
-
-        if (!$in && ArrayHelper::isIn($value, $this->range, $this->strict)) {
+        if (!$in && Array_Helper::is_in($value, $this->range, $this->strict)) {
             $in = true;
         }
-
         return $this->not !== $in ? null : [$this->message, []];
     }
-
     /**
      * {@inheritdoc}
      */
-    public function validateAttribute($model, $attribute): void
+    public function validate_attribute($model, $attribute): void
     {
         if ($this->range instanceof \Closure) {
             $this->range = call_user_func($this->range, $model, $attribute);
         }
-        parent::validateAttribute($model, $attribute);
+        parent::validate_attribute($model, $attribute);
     }
-
     /**
      * {@inheritdoc}
      */
-    public function clientValidateAttribute($model, $attribute, $view): string
+    public function client_validate_attribute($model, $attribute, $view): string
     {
         if ($this->range instanceof \Closure) {
             $this->range = call_user_func($this->range, $model, $attribute);
         }
-
-        ValidationAsset::register($view);
-        $options = $this->getClientOptions($model, $attribute);
-
-        return 'yii.validation.range(value, messages, ' . Json::htmlEncode($options) . ');';
+        Validation_Asset::register($view);
+        $options = $this->get_client_options($model, $attribute);
+        return 'yii.validation.range(value, messages, ' . Json::html_encode($options) . ');';
     }
-
     /**
      * {@inheritdoc}
      */
-    public function getClientOptions($model, $attribute): array
+    public function get_client_options($model, $attribute): array
     {
         $range = [];
         foreach ($this->range as $value) {
             $range[] = (string) $value;
         }
-        $options = [
-            'range' => $range,
-            'not' => $this->not,
-            'message' => $this->formatMessage($this->message, [
-                'attribute' => $model->getAttributeLabel($attribute),
-            ]),
-        ];
-        if ($this->skipOnEmpty) {
+        $options = ['range' => $range, 'not' => $this->not, 'message' => $this->format_message($this->message, ['attribute' => $model->get_attribute_label($attribute)])];
+        if ($this->skip_on_empty) {
             $options['skipOnEmpty'] = 1;
         }
-        if ($this->allowArray) {
+        if ($this->allow_array) {
             $options['allowArray'] = 1;
         }
-
         return $options;
     }
 }

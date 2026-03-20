@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\web;
 
 /**
@@ -56,7 +54,7 @@ namespace yii\web;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-interface IdentityInterface
+interface Identity_Interface
 {
     /**
      * Finds an identity by the given ID.
@@ -65,8 +63,7 @@ interface IdentityInterface
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)
      */
-    public static function findIdentity($id);
-
+    public static function find_identity($id);
     /**
      * Finds an identity by the given token.
      * @param mixed $token the token to be looked for
@@ -76,14 +73,12 @@ interface IdentityInterface
      * Null should be returned if such an identity cannot be found
      * or the identity is not in an active state (disabled, deleted, etc.)
      */
-    public static function findIdentityByAccessToken($token, $type = null);
-
+    public static function find_identity_by_access_token($token, $type = null);
     /**
      * Returns an ID that can uniquely identify a user identity.
      * @return string|int an ID that uniquely identifies a user identity.
      */
-    public function getId();
-
+    public function get_id();
     /**
      * Returns a key that can be used to check the validity of a given identity ID.
      *
@@ -100,8 +95,7 @@ interface IdentityInterface
      * @return string|null a key that is used to check the validity of a given identity ID.
      * @see validateAuthKey()
      */
-    public function getAuthKey();
-
+    public function get_auth_key();
     /**
      * Validates the given auth key.
      *
@@ -109,5 +103,5 @@ interface IdentityInterface
      * @return bool|null whether the given auth key is valid.
      * @see getAuthKey()
      */
-    public function validateAuthKey($authKey);
+    public function validate_auth_key($auth_key);
 }

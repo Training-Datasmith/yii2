@@ -1,37 +1,38 @@
 <?php
+
 /**
  * @var \yii\web\View $this
  * @var \Throwable $exception
  * @var \yii\web\ErrorHandler $handler
  */
-if ($exception instanceof \yii\web\HttpException) {
-    $code = $exception->statusCode;
+if ($exception instanceof \yii\web\Http_Exception) {
+    $code = $exception->status_code;
 } else {
-    $code = $exception->getCode();
+    $code = $exception->get_code();
 }
-$name = $handler->getExceptionName($exception);
+$name = $handler->get_exception_name($exception);
 if ($name === null) {
     $name = 'Error';
 }
 if ($code) {
-    $name .= " (#$code)";
+    $name .= " (#{$code})";
 }
-
-if ($exception instanceof \yii\base\UserException) {
-    $message = $exception->getMessage();
+if ($exception instanceof \yii\base\User_Exception) {
+    $message = $exception->get_message();
 } else {
     $message = 'An internal server error occurred.';
 }
-
 if (method_exists($this, 'beginPage')) {
-    $this->beginPage();
+    $this->begin_page();
 }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
     <meta charset="utf-8" />
-    <title><?= $handler->htmlEncode($name) ?></title>
+    <title><?php 
+echo $handler->html_encode($name);
+?></title>
 
     <style>
         body {
@@ -72,8 +73,12 @@ if (method_exists($this, 'beginPage')) {
 </head>
 
 <body>
-    <h1><?= $handler->htmlEncode($name) ?></h1>
-    <h2><?= nl2br($handler->htmlEncode($message)) ?></h2>
+    <h1><?php 
+echo $handler->html_encode($name);
+?></h1>
+    <h2><?php 
+echo nl2br($handler->html_encode($message));
+?></h2>
     <p>
         The above error occurred while the Web server was processing your request.
     </p>
@@ -81,13 +86,24 @@ if (method_exists($this, 'beginPage')) {
         Please contact us if you think this is a server error. Thank you.
     </p>
     <div class="version">
-        <?= date('Y-m-d H:i:s') ?>
+        <?php 
+echo date('Y-m-d H:i:s');
+?>
     </div>
-    <?php if (method_exists($this, 'endBody')): ?>
-        <?php $this->endBody() // to allow injecting code into body (mostly by Yii Debug Toolbar)?>
-    <?php endif ?>
+    <?php 
+if (method_exists($this, 'endBody')) {
+    ?>
+        <?php 
+    $this->end_body();
+    ?>
+    <?php 
+}
+?>
 </body>
 </html>
-<?php if (method_exists($this, 'endPage')): ?>
-    <?php $this->endPage() ?>
-<?php endif ?>
+<?php 
+if (method_exists($this, 'endPage')) {
+    ?>
+    <?php 
+    $this->end_page();
+}

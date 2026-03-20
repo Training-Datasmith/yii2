@@ -1,24 +1,21 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\rbac;
 
-use yii\base\BaseObject;
-
+use yii\base\Base_Object;
 /**
  * For more details and usage information on Item, see the [guide article on security authorization](guide:security-authorization).
  *
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class Item extends BaseObject
+class Item extends Base_Object
 {
     public const TYPE_ROLE = 1;
     public const TYPE_PERMISSION = 2;
@@ -37,7 +34,7 @@ class Item extends BaseObject
     /**
      * @var string|null name of the rule associated with this item
      */
-    public $ruleName;
+    public $rule_name;
     /**
      * @var mixed the additional data associated with this item
      */
@@ -45,9 +42,9 @@ class Item extends BaseObject
     /**
      * @var int UNIX timestamp representing the item creation time
      */
-    public $createdAt;
+    public $created_at;
     /**
      * @var int UNIX timestamp representing the item updating time
      */
-    public $updatedAt;
+    public $updated_at;
 }

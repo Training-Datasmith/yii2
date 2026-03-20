@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db\conditions;
 
 /**
@@ -17,13 +15,12 @@ namespace yii\db\conditions;
  * @since 2.0.14
  * @phpcs:disable Squiz.NamingConventions.ValidVariableName.PrivateNoUnderscore
  */
-class HashCondition implements ConditionInterface
+class Hash_Condition implements Condition_Interface
 {
     /**
      * @var array|null the condition specification.
      */
     private $hash;
-
     /**
      * HashCondition constructor.
      *
@@ -33,19 +30,17 @@ class HashCondition implements ConditionInterface
     {
         $this->hash = $hash;
     }
-
     /**
      * @return array|null
      */
-    public function getHash()
+    public function get_hash()
     {
         return $this->hash;
     }
-
     /**
      * {@inheritdoc}
      */
-    public static function fromArrayDefinition($operator, $operands): self
+    public static function from_array_definition($operator, $operands): self
     {
         return new static($operands);
     }

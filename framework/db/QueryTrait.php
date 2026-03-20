@@ -1,17 +1,14 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
-use yii\base\NotSupportedException;
-
+use yii\base\Not_Supported_Exception;
 /**
  * The BaseQuery trait represents the minimum method set of a database Query.
  *
@@ -21,7 +18,7 @@ use yii\base\NotSupportedException;
  * @author Carsten Brandt <mail@cebe.cc>
  * @since 2.0
  */
-trait QueryTrait
+trait Query_Trait
 {
     /**
      * @var string|array|ExpressionInterface|null query condition. This refers to the WHERE clause in a SQL statement.
@@ -47,20 +44,19 @@ trait QueryTrait
      * The array may also contain [[ExpressionInterface]] objects. If that is the case, the expressions
      * will be converted into strings without any change.
      */
-    public $orderBy;
+    public $order_by;
     /**
      * @var string|callable|null the name of the column by which the query results should be indexed by.
      * This can also be a callable (e.g. anonymous function) that returns the index value based on the given
      * row data. For more details, see [[indexBy()]]. This property is only used by [[QueryInterface::all()|all()]].
      */
-    public $indexBy;
+    public $index_by;
     /**
      * @var bool whether to emulate the actual query execution, returning empty or false results.
      * @see emulateExecution()
      * @since 2.0.11
      */
-    public $emulateExecution = false;
-
+    public $emulate_execution = false;
     /**
      * Sets the [[indexBy]] property.
      * @param string|callable $column the name of the column by which the query results should be indexed by.
@@ -76,12 +72,11 @@ trait QueryTrait
      *
      * @return $this the query object itself
      */
-    public function indexBy($column)
+    public function index_by($column)
     {
-        $this->indexBy = $column;
+        $this->index_by = $column;
         return $this;
     }
-
     /**
      * Sets the WHERE part of the query.
      *
@@ -97,7 +92,6 @@ trait QueryTrait
         $this->where = $condition;
         return $this;
     }
-
     /**
      * Adds an additional WHERE condition to the existing one.
      * The new condition and the existing one will be joined using the 'AND' operator.
@@ -107,17 +101,15 @@ trait QueryTrait
      * @see where()
      * @see orWhere()
      */
-    public function andWhere($condition)
+    public function and_where($condition)
     {
         if ($this->where === null) {
             $this->where = $condition;
         } else {
             $this->where = ['and', $this->where, $condition];
         }
-
         return $this;
     }
-
     /**
      * Adds an additional WHERE condition to the existing one.
      * The new condition and the existing one will be joined using the 'OR' operator.
@@ -127,17 +119,15 @@ trait QueryTrait
      * @see where()
      * @see andWhere()
      */
-    public function orWhere($condition)
+    public function or_where($condition)
     {
         if ($this->where === null) {
             $this->where = $condition;
         } else {
             $this->where = ['or', $this->where, $condition];
         }
-
         return $this;
     }
-
     /**
      * Sets the WHERE part of the query but ignores [[isEmpty()|empty operands]].
      *
@@ -165,16 +155,14 @@ trait QueryTrait
      * @see andFilterWhere()
      * @see orFilterWhere()
      */
-    public function filterWhere(array $condition)
+    public function filter_where(array $condition)
     {
-        $condition = $this->filterCondition($condition);
+        $condition = $this->filter_condition($condition);
         if ($condition !== []) {
             $this->where($condition);
         }
-
         return $this;
     }
-
     /**
      * Adds an additional WHERE condition to the existing one but ignores [[isEmpty()|empty operands]].
      * The new condition and the existing one will be joined using the 'AND' operator.
@@ -189,16 +177,14 @@ trait QueryTrait
      * @see filterWhere()
      * @see orFilterWhere()
      */
-    public function andFilterWhere(array $condition)
+    public function and_filter_where(array $condition)
     {
-        $condition = $this->filterCondition($condition);
+        $condition = $this->filter_condition($condition);
         if ($condition !== []) {
-            $this->andWhere($condition);
+            $this->and_where($condition);
         }
-
         return $this;
     }
-
     /**
      * Adds an additional WHERE condition to the existing one but ignores [[isEmpty()|empty operands]].
      * The new condition and the existing one will be joined using the 'OR' operator.
@@ -213,16 +199,14 @@ trait QueryTrait
      * @see filterWhere()
      * @see andFilterWhere()
      */
-    public function orFilterWhere(array $condition)
+    public function or_filter_where(array $condition)
     {
-        $condition = $this->filterCondition($condition);
+        $condition = $this->filter_condition($condition);
         if ($condition !== []) {
-            $this->orWhere($condition);
+            $this->or_where($condition);
         }
-
         return $this;
     }
-
     /**
      * Removes [[isEmpty()|empty operands]] from the given query condition.
      *
@@ -230,40 +214,34 @@ trait QueryTrait
      * @return array the condition with [[isEmpty()|empty operands]] removed.
      * @throws NotSupportedException if the condition operator is not supported
      */
-    protected function filterCondition($condition)
+    protected function filter_condition($condition)
     {
         if (!is_array($condition)) {
             return $condition;
         }
-
         if (!isset($condition[0])) {
             // hash format: 'column1' => 'value1', 'column2' => 'value2', ...
             foreach ($condition as $name => $value) {
-                if ($this->isEmpty($value)) {
+                if ($this->is_empty($value)) {
                     unset($condition[$name]);
                 }
             }
-
             return $condition;
         }
-
         // operator format: operator, operand 1, operand 2, ...
-
         $operator = array_shift($condition);
-
         switch (strtoupper($operator)) {
             case 'NOT':
             case 'AND':
             case 'OR':
                 foreach ($condition as $i => $operand) {
-                    $subCondition = $this->filterCondition($operand);
-                    if ($this->isEmpty($subCondition)) {
+                    $sub_condition = $this->filter_condition($operand);
+                    if ($this->is_empty($sub_condition)) {
                         unset($condition[$i]);
                     } else {
-                        $condition[$i] = $subCondition;
+                        $condition[$i] = $sub_condition;
                     }
                 }
-
                 if (empty($condition)) {
                     return [];
                 }
@@ -271,22 +249,19 @@ trait QueryTrait
             case 'BETWEEN':
             case 'NOT BETWEEN':
                 if (array_key_exists(1, $condition) && array_key_exists(2, $condition)) {
-                    if ($this->isEmpty($condition[1]) || $this->isEmpty($condition[2])) {
+                    if ($this->is_empty($condition[1]) || $this->is_empty($condition[2])) {
                         return [];
                     }
                 }
                 break;
             default:
-                if (array_key_exists(1, $condition) && $this->isEmpty($condition[1])) {
+                if (array_key_exists(1, $condition) && $this->is_empty($condition[1])) {
                     return [];
                 }
         }
-
         array_unshift($condition, $operator);
-
         return $condition;
     }
-
     /**
      * Returns a value indicating whether the give value is "empty".
      *
@@ -300,11 +275,10 @@ trait QueryTrait
      * @param mixed $value
      * @return bool if the value is empty
      */
-    protected function isEmpty($value): bool
+    protected function is_empty($value): bool
     {
         return $value === '' || $value === [] || $value === null || is_string($value) && trim($value) === '';
     }
-
     /**
      * Sets the ORDER BY part of the query.
      * @param string|array|ExpressionInterface|null $columns the columns (and the directions) to be ordered by.
@@ -322,12 +296,11 @@ trait QueryTrait
      * @return $this the query object itself
      * @see addOrderBy()
      */
-    public function orderBy($columns)
+    public function order_by($columns)
     {
-        $this->orderBy = $this->normalizeOrderBy($columns);
+        $this->order_by = $this->normalize_order_by($columns);
         return $this;
     }
-
     /**
      * Adds additional ORDER BY columns to the query.
      * @param string|array|ExpressionInterface $columns the columns (and the directions) to be ordered by.
@@ -345,35 +318,32 @@ trait QueryTrait
      * @return $this the query object itself
      * @see orderBy()
      */
-    public function addOrderBy($columns)
+    public function add_order_by($columns)
     {
-        $columns = $this->normalizeOrderBy($columns);
-        if ($this->orderBy === null) {
-            $this->orderBy = $columns;
+        $columns = $this->normalize_order_by($columns);
+        if ($this->order_by === null) {
+            $this->order_by = $columns;
         } else {
-            $this->orderBy = array_merge($this->orderBy, $columns);
+            $this->order_by = array_merge($this->order_by, $columns);
         }
-
         return $this;
     }
-
     /**
      * Normalizes format of ORDER BY data.
      *
      * @param array|string|ExpressionInterface|null $columns the columns value to normalize. See [[orderBy]] and [[addOrderBy]].
      */
-    protected function normalizeOrderBy($columns): array
+    protected function normalize_order_by($columns): array
     {
         if (empty($columns)) {
             return [];
         }
-        if ($columns instanceof ExpressionInterface) {
+        if ($columns instanceof Expression_Interface) {
             return [$columns];
         }
         if (is_array($columns)) {
             return $columns;
         }
-
         $columns = preg_split('/\s*,\s*/', trim($columns), -1, PREG_SPLIT_NO_EMPTY);
         $result = [];
         foreach ($columns as $column) {
@@ -383,10 +353,8 @@ trait QueryTrait
                 $result[$column] = SORT_ASC;
             }
         }
-
         return $result;
     }
-
     /**
      * Sets the LIMIT part of the query.
      * @param int|ExpressionInterface|null $limit the limit. Use null or negative value to disable limit.
@@ -397,7 +365,6 @@ trait QueryTrait
         $this->limit = $limit;
         return $this;
     }
-
     /**
      * Sets the OFFSET part of the query.
      * @param int|ExpressionInterface|null $offset the offset. Use null or negative value to disable offset.
@@ -408,7 +375,6 @@ trait QueryTrait
         $this->offset = $offset;
         return $this;
     }
-
     /**
      * Sets whether to emulate query execution, preventing any interaction with data storage.
      * After this mode is enabled, methods, returning query results like [[QueryInterface::one()]],
@@ -419,9 +385,9 @@ trait QueryTrait
      * @return $this the query object itself.
      * @since 2.0.11
      */
-    public function emulateExecution($value = true)
+    public function emulate_execution($value = true)
     {
-        $this->emulateExecution = $value;
+        $this->emulate_execution = $value;
         return $this;
     }
 }

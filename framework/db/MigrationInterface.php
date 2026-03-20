@@ -1,13 +1,11 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\db;
 
 /**
@@ -19,7 +17,7 @@ namespace yii\db;
  * @author Klimov Paul <klimov@zfort.com>
  * @since 2.0
  */
-interface MigrationInterface
+interface Migration_Interface
 {
     /**
      * This method contains the logic to be executed when applying this migration.
@@ -27,7 +25,6 @@ interface MigrationInterface
      * and should not proceed further. All other return values mean the migration succeeds.
      */
     public function up();
-
     /**
      * This method contains the logic to be executed when removing this migration.
      * The default implementation throws an exception indicating the migration cannot be removed.

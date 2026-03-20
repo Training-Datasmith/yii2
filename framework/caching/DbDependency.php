@@ -1,19 +1,16 @@
 <?php
 
-declare(strict_types=1);
-
+declare (strict_types=1);
 /**
  * @link https://www.yiiframework.com/
  * @copyright Copyright (c) 2008 Yii Software LLC
  * @license https://www.yiiframework.com/license/
  */
-
 namespace yii\caching;
 
-use yii\base\InvalidConfigException;
+use yii\base\Invalid_Config_Exception;
 use yii\db\Connection;
 use yii\di\Instance;
-
 /**
  * DbDependency represents a dependency based on the query result of a SQL statement.
  *
@@ -25,7 +22,7 @@ use yii\di\Instance;
  * @author Qiang Xue <qiang.xue@gmail.com>
  * @since 2.0
  */
-class DbDependency extends Dependency
+class Db_Dependency extends Dependency
 {
     /**
      * @var Connection|string the DB connection object or the application component ID of the DB connection.
@@ -40,7 +37,6 @@ class DbDependency extends Dependency
      * @var array the parameters (name => value) to be bound to the SQL statement specified by [[sql]].
      */
     public $params = [];
-
     /**
      * Generates the data needed to determine if dependency has been changed.
      * This method returns the value of the global state.
@@ -48,23 +44,21 @@ class DbDependency extends Dependency
      * @return mixed the data needed to determine if dependency has been changed.
      * @throws InvalidConfigException if [[db]] is not a valid application component ID
      */
-    protected function generateDependencyData($cache)
+    protected function generate_dependency_data($cache)
     {
         /** @var Connection $db */
-        $db = Instance::ensure($this->db, Connection::className());
+        $db = Instance::ensure($this->db, Connection::class_name());
         if ($this->sql === null) {
-            throw new InvalidConfigException('DbDependency::sql must be set.');
+            throw new Invalid_Config_Exception('DbDependency::sql must be set.');
         }
-
-        if ($db->enableQueryCache) {
+        if ($db->enable_query_cache) {
             // temporarily disable and re-enable query caching
-            $db->enableQueryCache = false;
-            $result = $db->createCommand($this->sql, $this->params)->queryOne();
-            $db->enableQueryCache = true;
+            $db->enable_query_cache = false;
+            $result = $db->create_command($this->sql, $this->params)->query_one();
+            $db->enable_query_cache = true;
         } else {
-            $result = $db->createCommand($this->sql, $this->params)->queryOne();
+            $result = $db->create_command($this->sql, $this->params)->query_one();
         }
-
         return $result;
     }
 }
