@@ -237,7 +237,7 @@ class Controller extends Component implements View_Context_Interface
             return Yii::create_object($action_map[$id], [$id, $this]);
         }
         if (preg_match('/^(?:[a-z0-9_]+-)*[a-z0-9_]+$/', $id)) {
-            $method_name = 'action' . str_replace(' ', '', ucwords(str_replace('-', ' ', $id)));
+            $method_name = 'action_' . str_replace('-', '_', $id);
             if (method_exists($this, $method_name)) {
                 $method = new \ReflectionMethod($this, $method_name);
                 if ($method->is_public() && $method->get_name() === $method_name) {

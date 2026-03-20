@@ -128,11 +128,11 @@ class Base_Object implements Configurable
      */
     public function __get(string $name)
     {
-        $getter = 'get' . $name;
+        $getter = 'get_' . $name;
         if (method_exists($this, $getter)) {
             return $this->{$getter}();
         }
-        if (method_exists($this, 'set' . $name)) {
+        if (method_exists($this, 'set_' . $name)) {
             throw new Invalid_Call_Exception('Getting write-only property: ' . get_class($this) . '::' . $name);
         }
         throw new Unknown_Property_Exception('Getting unknown property: ' . get_class($this) . '::' . $name);
@@ -150,10 +150,10 @@ class Base_Object implements Configurable
      */
     public function __set(string $name, $value)
     {
-        $setter = 'set' . $name;
+        $setter = 'set_' . $name;
         if (method_exists($this, $setter)) {
             $this->{$setter}($value);
-        } elseif (method_exists($this, 'get' . $name)) {
+        } elseif (method_exists($this, 'get_' . $name)) {
             throw new Invalid_Call_Exception('Setting read-only property: ' . get_class($this) . '::' . $name);
         } else {
             throw new Unknown_Property_Exception('Setting unknown property: ' . get_class($this) . '::' . $name);
@@ -172,7 +172,7 @@ class Base_Object implements Configurable
      */
     public function __isset(string $name)
     {
-        $getter = 'get' . $name;
+        $getter = 'get_' . $name;
         if (method_exists($this, $getter)) {
             return $this->{$getter}() !== null;
         }
@@ -192,10 +192,10 @@ class Base_Object implements Configurable
      */
     public function __unset(string $name)
     {
-        $setter = 'set' . $name;
+        $setter = 'set_' . $name;
         if (method_exists($this, $setter)) {
             $this->{$setter}(null);
-        } elseif (method_exists($this, 'get' . $name)) {
+        } elseif (method_exists($this, 'get_' . $name)) {
             throw new Invalid_Call_Exception('Unsetting read-only property: ' . get_class($this) . '::' . $name);
         }
     }
@@ -251,7 +251,7 @@ class Base_Object implements Configurable
      */
     public function can_get_property(string $name, $check_vars = true): bool
     {
-        return method_exists($this, 'get' . $name) || $check_vars && property_exists($this, $name);
+        return method_exists($this, 'get_' . $name) || $check_vars && property_exists($this, $name);
     }
     /**
      * Returns a value indicating whether a property can be set.
@@ -269,7 +269,7 @@ class Base_Object implements Configurable
      */
     public function can_set_property(string $name, $check_vars = true): bool
     {
-        return method_exists($this, 'set' . $name) || $check_vars && property_exists($this, $name);
+        return method_exists($this, 'set_' . $name) || $check_vars && property_exists($this, $name);
     }
     /**
      * Returns a value indicating whether a method is defined.
