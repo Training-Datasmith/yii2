@@ -126,13 +126,18 @@ class Component extends Base_Object
      *
      * Do not call this method directly as it is a PHP magic method that
      * will be implicitly called when executing `$value = $component->property;`.
-     * @param string $name the property name
-     * @return mixed the property value or the value of a behavior's property
-     * @throws UnknownPropertyException if the property is not defined
-     * @throws InvalidCallException if the property is write-only.
+     * @param string $name The property name to read (case-sensitive for PHP properties,
+     *   case-insensitive for getter methods such as `getName()` → `$component->name`).
+     * @return mixed The property value, or the value exposed by the matching getter or
+     *   attached behavior.
+     * @throws \yii\base\UnknownPropertyException When neither a getter nor a behavior
+     *   exposes the requested property.
+     * @throws \yii\base\InvalidCallException When the property exists but is write-only
+     *   (a setter exists but no getter).
      * @see __set()
+     * @since 2.0
      */
-    public function __get($name)
+    public function __get(string $name): mixed
     {
         $getter = 'get' . $name;
         if (method_exists($this, $getter)) {
@@ -163,13 +168,17 @@ class Component extends Base_Object
      *
      * Do not call this method directly as it is a PHP magic method that
      * will be implicitly called when executing `$component->property = $value;`.
-     * @param string $name the property name or the event name
-     * @param mixed $value the property value
-     * @throws UnknownPropertyException if the property is not defined
-     * @throws InvalidCallException if the property is read-only.
+     * @param string $name The property name, `'on eventName'` to attach an event handler,
+     *   or `'as behaviorName'` to attach a behavior.
+     * @param mixed $value The value to assign. For `'on …'` syntax, must be a callable.
+     *   For `'as …'` syntax, must be a behavior configuration (class string or array).
+     * @throws \yii\base\UnknownPropertyException When no setter or behavior property matches.
+     * @throws \yii\base\InvalidCallException When the property exists but is read-only
+     *   (a getter exists but no setter).
      * @see __get()
+     * @since 2.0
      */
-    public function __set($name, $value)
+    public function __set(string $name, mixed $value): void
     {
         $setter = 'set' . $name;
         if (method_exists($this, $setter)) {
@@ -451,10 +460,17 @@ class Component extends Base_Object
     }
     /**
      * Returns a value indicating whether there is any handler attached to the named event.
-     * @param string $name the event name
-     * @return bool whether there is any handler attached to the event.
+     *
+     * Checks instance-level handlers (including wildcard patterns) and class-level
+     * handlers registered via `Event::on()`.
+     *
+     * @param string $name The event name to check. Wildcard patterns are NOT expanded
+     *   during this check — pass the exact event name that would be triggered.
+     * @return bool `true` if at least one handler is attached; `false` otherwise.
+     * @see \yii\base\Component::on() To attach an event handler.
+     * @see \yii\base\Event::hasHandlers() For class-level handler lookup.
      */
-    public function has_event_handlers($name)
+    public function has_event_handlers(string $name): bool
     {
         $this->ensure_behaviors();
         if (!empty($this->_events[$name])) {
@@ -496,16 +512,18 @@ class Component extends Base_Object
      * });
      * ```
      *
-     * @param string $name the event name
-     * @param callable $handler the event handler
-     * @param mixed $data the data to be passed to the event handler when the event is triggered.
-     * When the event handler is invoked, this data can be accessed via [[Event::data]].
-     * @param bool $append whether to append new event handler to the end of the existing
-     * handler list. If false, the new handler will be inserted at the beginning of the existing
-     * handler list.
+     * @param string $name The event name. Use a glob-style wildcard (e.g. `'event.group.*'`)
+     *   since 2.0.14 to attach the handler to all matching events.
+     * @param callable $handler A valid PHP callable. Signature: `function (Event $event): void`.
+     *   The handler receives an [[Event]] instance carrying `$event->data` and `$event->sender`.
+     * @param mixed $data Arbitrary data attached to the event. Accessible as `$event->data`
+     *   inside the handler. Defaults to `null`.
+     * @param bool $append When `true` (default) appends the handler at the end of the queue.
+     *   When `false`, prepends it so it fires before previously registered handlers.
      * @see off()
+     * @since 2.0
      */
-    public function on($name, $handler, $data = null, $append = true): void
+    public function on(string $name, callable $handler, mixed $data = null, bool $append = true): void
     {
         $this->ensure_behaviors();
         if (strpos($name, '*') !== false) {
@@ -530,13 +548,17 @@ class Component extends Base_Object
      * Note: in case wildcard pattern is passed for event name, only the handlers registered with this
      * wildcard will be removed, while handlers registered with plain names matching this wildcard will remain.
      *
-     * @param string $name event name
-     * @param callable|null $handler the event handler to be removed.
-     * If it is null, all handlers attached to the named event will be removed.
-     * @return bool if a handler is found and detached
+     * @param string $name The event name from which to detach the handler.
+     *   When a wildcard pattern is passed, only handlers attached with the exact
+     *   same wildcard are removed; handlers registered under matching plain names
+     *   are unaffected.
+     * @param callable|null $handler The specific handler callable to remove. When `null`,
+     *   ALL handlers attached to `$name` are removed.
+     * @return bool `true` if at least one handler was found and removed; `false` otherwise.
      * @see on()
+     * @since 2.0
      */
-    public function off($name, $handler = null)
+    public function off(string $name, ?callable $handler = null): bool
     {
         $this->ensure_behaviors();
         if (empty($this->_events[$name]) && empty($this->_event_wildcards[$name])) {

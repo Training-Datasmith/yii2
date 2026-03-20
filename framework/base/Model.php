@@ -338,14 +338,20 @@ class Model extends Component implements Static_Instance_Interface, IteratorAggr
      * Errors found during the validation can be retrieved via [[getErrors()]],
      * [[getFirstErrors()]] and [[getFirstError()]].
      *
-     * @param string[]|string|null $attributeNames attribute name or list of attribute names
-     * that should be validated. If this parameter is empty, it means any attribute listed in
-     * the applicable validation rules should be validated.
-     * @param bool $clearErrors whether to call [[clearErrors()]] before performing validation
-     * @return bool whether the validation is successful without any error.
-     * @throws InvalidArgumentException if the current scenario is unknown.
+     * @param string[]|string|null $attributeNames A specific attribute name or list of names
+     *   to validate. When `null` (default), all attributes governed by the current scenario's
+     *   active rules are validated.
+     * @param bool $clearErrors When `true` (default), existing errors are cleared before
+     *   running validation. Set to `false` to accumulate errors from multiple validate() calls.
+     * @return bool `true` when all applicable rules pass with no errors; `false` otherwise.
+     * @throws \yii\base\InvalidArgumentException When the current scenario is not defined
+     *   in [[scenarios()]] and strict scenario checking is enabled.
+     * @see getErrors() Retrieve the full error list after a failed validation.
+     * @see getFirstErrors() Retrieve only the first error per attribute.
+     * @complexity O(r) where r = number of applicable validation rules in the current scenario.
+     * @since 2.0
      */
-    public function validate($attribute_names = null, $clear_errors = true)
+    public function validate(array|string|null $attribute_names = null, bool $clear_errors = true): bool
     {
         if ($clear_errors) {
             $this->clear_errors();

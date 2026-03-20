@@ -374,7 +374,7 @@ class Security extends Component
      * @see hkdf()
      * @see pbkdf2()
      */
-    public function hash_data(string $data, $key, $raw_hash = false): string
+    public function hash_data(string $data, string $key, bool $raw_hash = false): string
     {
         $hash = hash_hmac($this->mac_hash, $data, $key, $raw_hash);
         if (!$hash) {
@@ -397,7 +397,7 @@ class Security extends Component
      * @throws InvalidConfigException when HMAC generation fails.
      * @see hashData()
      */
-    public function validate_data($data, $key, $raw_hash = false)
+    public function validate_data(string $data, string $key, bool $raw_hash = false): string|false
     {
         $test = @hash_hmac($this->mac_hash, '', '', $raw_hash);
         if (!$test) {
@@ -486,7 +486,7 @@ class Security extends Component
      * @throws Exception on bad password parameter or cost parameter.
      * @see validatePassword()
      */
-    public function generate_password_hash($password, $cost = null): string
+    public function generate_password_hash(string $password, ?int $cost = null): string
     {
         if ($cost === null) {
             $cost = $this->password_hash_cost;
@@ -556,13 +556,27 @@ class Security extends Component
         return $salt;
     }
     /**
-     * Performs string comparison using timing attack resistant approach.
+     * Performs string comparison using a timing-attack-resistant approach.
+     *
+     * Delegates to PHP's native `hash_equals()` when available (PHP >= 5.6),
+     * otherwise falls back to a bitwise XOR loop that runs in constant time
+     * relative to the length of `$expected` regardless of where strings diverge.
+     *
+     * **Security note**: never use `===` or `==` to compare security-sensitive
+     * strings such as HMAC signatures, CSRF tokens or password reset tokens —
+     * those operators short-circuit as soon as a differing byte is found, leaking
+     * timing information that can be exploited to guess the correct value byte-by-byte.
+     *
+     * @param string $expected The trusted reference value (e.g. server-computed HMAC).
+     * @param string $actual The untrusted user-supplied value to compare against.
+     * @return bool `true` if both strings are byte-for-byte identical; `false` otherwise.
+     * @throws \yii\base\InvalidArgumentException When either argument is not a string.
+     * @complexity O(n) where n = strlen($expected) — always runs to completion.
      * @see https://codereview.stackexchange.com/q/13512
-     * @param string $expected string to compare.
-     * @param string $actual user-supplied string.
-     * @return bool whether strings are equal.
+     * @see https://www.php.net/manual/en/function.hash-equals.php
+     * @since 2.0
      */
-    public function compare_string($expected, $actual): bool
+    public function compare_string(string $expected, string $actual): bool
     {
         if (!is_string($expected)) {
             throw new InvalidArgumentException('Expected expected value to be a string, ' . gettype($expected) . ' given.');
